@@ -1,0 +1,18 @@
+export const routeStack = {
+  "/title": { prev: "/index", next: "/country" },
+  "/country": { prev: "/title", next: "/region" },
+  "/region": { prev: "/country", next: "/day" },
+  "/day": { prev: "/region", next: "/departure" },
+  "/departure": { prev: "/day", next: "/essential" },
+  "/essential": { prev: "/departure", next: "/who" },
+  "/who": { prev: "/essential", next: "/transit" },
+  "/transit": { prev: "/who", next: "/busy" },
+  "/busy": { prev: "/transit", next: "/concept" },
+  "/concept": { prev: "/busy", next: "/play" },
+  "/play": { prev: "/concept", next: "/tour1" },
+  "/tour1": { prev: "/play", next: "/tour2" },
+  "/tour2": { prev: "/tour1", next: "/popular" },
+  "/popular": { prev: "/tour2", next: "/distance" },
+  "/distance": { prev: "/popular", next: "/finalCheck" },
+  "/finalCheck": { prev: "/distance", next: "/" },
+};

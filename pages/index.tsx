@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { View } from "react-native";
-import { BedrockRoute } from "react-native-bedrock";
+import { BedrockRoute, useNavigation } from "react-native-bedrock";
 import {
   Button,
   colors,
@@ -22,6 +22,11 @@ export function Index() {
     const data = await fetch("http://3.37.54.226/manageNetwork/ping");
     const json = await data.json();
     console.log(json);
+  };
+
+  const navigation = useNavigation();
+  const handleNext = () => {
+    navigation.navigate("/title");
   };
   const handleLogin = useCallback(async () => {
     /**
@@ -57,32 +62,87 @@ export function Index() {
         ></Top>
 
         <ListRow
-          left={<ListRow.LeftText>01.01</ListRow.LeftText>}
+          left={
+            <ListRow.Image
+              type="3d-emoji"
+              source={{
+                uri: "https://static.toss.im/2d-emojis/png/4x/u1F31E.png",
+              }}
+            />
+          }
           contents={
-            <Text typography="t5" fontWeight="semiBold" color={colors.grey700}>
-              성향에 맞춘 여행 일정
-            </Text>
+            <ListRow.Texts
+              type="2RowTypeA"
+              top="성향에 맞춘 여행 일정"
+              bottom="내 취향에 꼭 맞는 여행 일정을 추천해줘요"
+              topProps={{
+                typography: "t5",
+                fontWeight: "semiBold",
+                color: colors.grey700,
+              }}
+              bottomProps={{
+                typography: "t6",
+                fontWeight: "regular",
+                color: colors.grey600,
+              }}
+            />
           }
         />
         <ListRow
-          left={<ListRow.LeftText>01.01</ListRow.LeftText>}
+          left={
+            <ListRow.Image
+              type="3d-emoji"
+              source={{
+                uri: "https://static.toss.im/2d-emojis/png/4x/u23F3.png",
+              }}
+            />
+          }
           contents={
-            <Text typography="t5" fontWeight="semiBold" color={colors.grey700}>
-              시간 절약
-            </Text>
+            <ListRow.Texts
+              type="2RowTypeA"
+              top="시간 절약"
+              bottom="1분 만에 여행 일정을 알려줘서 빠르게 준비할 수 있어요"
+              topProps={{
+                typography: "t5",
+                fontWeight: "semiBold",
+                color: colors.grey700,
+              }}
+              bottomProps={{
+                typography: "t6",
+                fontWeight: "regular",
+                color: colors.grey600,
+              }}
+            />
           }
         />
         <ListRow
-          left={<ListRow.LeftText>01.01</ListRow.LeftText>}
+          left={
+            <ListRow.Image
+              type="3d-emoji"
+              source={{
+                uri: "https://static.toss.im/2d-emojis/png/4x/u1F4F1.png",
+              }}
+            />
+          }
           contents={
-            <Text typography="t5" fontWeight="semiBold" color={colors.grey700}>
-              즐거운 여행
-            </Text>
+            <ListRow.Texts
+              type="2RowTypeA"
+              top="손쉬운 조작"
+              bottom="누구나 쉽게 사용할 수 있도록 간단하고 편리하게 만들었어요"
+              topProps={{
+                typography: "t5",
+                fontWeight: "semiBold",
+                color: colors.grey700,
+              }}
+              bottomProps={{
+                typography: "t6",
+                fontWeight: "regular",
+                color: colors.grey600,
+              }}
+            />
           }
         />
-        {/* <FixedBottomCTA viewStyle={{ backgroundColor: "#C3F550" }}>
-          확인
-        </FixedBottomCTA> */}
+        <FixedBottomCTA onPress={handleNext}>시작하기</FixedBottomCTA>
         {/* <FixedBottomCTA.Double
           leftButton={
             <Button type="dark" style="weak">

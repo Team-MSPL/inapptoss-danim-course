@@ -10,11 +10,13 @@
   "dependencies": {
     "@apps-in-toss/framework": "^0.0.35",
     "@react-native-bedrock/native": "0.0.25",
+    "@reduxjs/toolkit": "^2.8.2",
     "@tanstack/react-query": "^5.84.1",
     "@toss-design-system/react-native": "^0.7.3",
     "react": "^18.2.0",
     "react-native": "^0.72.6",
-    "react-native-bedrock": "^0.0.25"
+    "react-native-bedrock": "^0.0.25",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.23.9",

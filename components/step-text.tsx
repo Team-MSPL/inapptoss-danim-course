@@ -1,6 +1,14 @@
 import { colors, Text, Top } from "@toss-design-system/react-native";
 
-export const StepText = ({ subTitle1, subTitle2, title }) => {
+export const StepText = ({
+  subTitle1,
+  subTitle2,
+  title,
+}: {
+  subTitle1: string;
+  subTitle2?: string;
+  title: string;
+}) => {
   return (
     <Top
       title={
