@@ -1,7 +1,6 @@
-import { ProgressBar } from "@toss-design-system/react-native";
+import { colors, ProgressBar } from "@toss-design-system/react-native";
 import { CustomColor } from "../utill/custom-color";
 import { routeStack } from "../utill/route-stack";
-import { useEffect } from "react";
 import { useNavigation } from "react-native-bedrock";
 
 export const CustomProgressBar = () => {
@@ -17,8 +16,8 @@ export const CustomProgressBar = () => {
     <ProgressBar
       progress={((index + 1) / (Object.keys(routeStack).length - 2)) * 100}
       size="light"
-      color={CustomColor.primary}
-      style={{ marginBottom: 10 }}
+      color={colors.blue500}
+      style={{ marginBottom: 10, marginHorizontal: 24 }}
     />
   );
 };

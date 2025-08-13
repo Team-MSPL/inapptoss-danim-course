@@ -4,16 +4,21 @@ import { RouteButton } from "../../components/route-button";
 import { View } from "react-native";
 import { FixedBottomCTAProvider } from "@toss-design-system/react-native";
 import { StepText } from "../../components/step-text";
+import { useNavigation } from "react-native-bedrock";
+import { routeStack } from "../../utill/route-stack";
 
 export default function Layout({ children }: PropsWithChildren) {
+  const navigation = useNavigation();
+  const textData =
+    routeStack[navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]];
   return (
     <View style={{ flex: 1 }}>
       <FixedBottomCTAProvider>
         <CustomProgressBar />
         <StepText
-          title={"여행 출발지는 어디인가요?"}
-          subTitle1={"1. 여행 계획을 알려주세요"}
-          subTitle2={"선택하신 지역 근처의 공항과 기차역을 찾아봤어요"}
+          title={textData?.title}
+          subTitle1={textData?.subTitle1}
+          subTitle2={textData?.subTitle2}
         ></StepText>
         {children}
         <RouteButton />
