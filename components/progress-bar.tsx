@@ -9,7 +9,9 @@ export const CustomProgressBar = () => {
   const stepList = Object.keys(routeStack).filter(
     (key) => key !== "/title" && key !== "/finalCheck"
   );
-  const index = stepList.indexOf(navigation.getState()?.routes?.at(-1)?.name);
+  const index = stepList.indexOf(
+    navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]
+  );
 
   return (
     <ProgressBar

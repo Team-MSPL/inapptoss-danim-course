@@ -26,7 +26,7 @@ export function Index() {
 
   const navigation = useNavigation();
   const handleNext = () => {
-    navigation.navigate("/title");
+    navigation.navigate("/enroll/title");
   };
   const handleLogin = useCallback(async () => {
     /**

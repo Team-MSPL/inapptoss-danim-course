@@ -16,7 +16,6 @@ export const tendencyList = [
       "https://static.toss.im/2d-emojis/png/4x/u1F491.png",
       "icon-person-default-man",
       "https://static.toss.im/2d-emojis/png/4x/u1F468.png",
-      "icon-person-default-man",
       "icon-emoji-grandparents",
       "icon-child",
       "https://static.toss.im/2d-emojis/png/4x/u1F9AE.png",
