@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 
 export const travelSlice = createSlice({
   name: "travel",
@@ -8,6 +9,8 @@ export const travelSlice = createSlice({
     cityIndex: null,
     region: [],
     cityDistance: [],
+    selectStartDate: moment().startOf("day").add(12, "hours"),
+    selectEndDate: null,
   },
   reducers: {
     updateFiled: (state, { payload }) => {
