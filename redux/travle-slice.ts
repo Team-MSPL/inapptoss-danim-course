@@ -5,6 +5,9 @@ export const travelSlice = createSlice({
   initialState: {
     title: "",
     country: null,
+    cityIndex: null,
+    region: [],
+    cityDistance: [],
   },
   reducers: {
     updateFiled: (state, { payload }) => {
@@ -12,6 +15,15 @@ export const travelSlice = createSlice({
       if (state.hasOwnProperty(field)) {
         state[field] = value;
       }
+    },
+    selectPopularity: (state, { payload }) => {
+      state.region = payload.region;
+      state.cityIndex = payload.cityIndex;
+      state.cityDistance = payload.cityDistance;
+    },
+    firstSelectRegion: (state, { payload }) => {
+      state.region = payload.region;
+      state.cityDistance = payload.cityDistance;
     },
   },
 });
