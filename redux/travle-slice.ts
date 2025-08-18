@@ -11,6 +11,8 @@ export const travelSlice = createSlice({
     cityDistance: [],
     selectStartDate: moment().startOf("day").add(12, "hours"),
     selectEndDate: null,
+    timeLimitArray: [9, 20],
+    minuteLimitArray: [0, 0],
   },
   reducers: {
     updateFiled: (state, { payload }) => {
@@ -27,6 +29,10 @@ export const travelSlice = createSlice({
     firstSelectRegion: (state, { payload }) => {
       state.region = payload.region;
       state.cityDistance = payload.cityDistance;
+    },
+    setTimeAndMinute: (state, { payload }) => {
+      state.timeLimitArray = payload?.time;
+      state.minuteLimitArray = payload?.minute;
     },
   },
 });

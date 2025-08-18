@@ -2,22 +2,18 @@ import {
   Badge,
   BottomSheet,
   colors,
-  FixedBottomCTAProvider,
-  Icon,
   ListRow,
-  Text,
   useBottomSheet,
+  useToast,
 } from "@toss-design-system/react-native";
-import React from "react";
+import React, { useRef } from "react";
 import { View } from "react-native";
 import { BedrockRoute } from "react-native-bedrock";
-import { CustomProgressBar } from "../../components/progress-bar";
-import { StepText } from "../../components/step-text";
-import { RouteButton } from "../../components/route-button";
 import { useAppDispatch, useAppSelector } from "store";
 import CalendarPicker from "react-native-calendar-picker";
 import { travelSliceActions } from "../../redux/travle-slice";
 import moment from "moment";
+import TimePickerModal from "../../utill/time-picker";
 export const Route = BedrockRoute("/enroll/day", {
   validateParams: (params) => params,
   component: Day,
@@ -41,9 +37,8 @@ function Day() {
     "11월",
     "12월",
   ];
-  const { selectStartDate, selectEndDate } = useAppSelector(
-    (state) => state.travelSlice
-  );
+  const { selectStartDate, selectEndDate, timeLimitArray, minuteLimitArray } =
+    useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const onDateChange = (date: any, type: string) => {
     if (type == "END_DATE") {
@@ -67,7 +62,52 @@ function Day() {
       );
     }
   };
+  const handleConfirm = (timeData: {
+    hour: number;
+    ampm: string;
+    minute: string;
+  }) => {
+    goConfirm(timeData);
+  };
 
+  const goConfirm = (timeData: {
+    hour: number;
+    ampm: string;
+    minute: string;
+  }) => {
+    let timeCopy = [...timeLimitArray];
+    let ampmCheck = timeData.ampm == "오후" ? 12 : 0;
+    timeCopy[timeSelectRef.current] = parseInt(timeData.hour) + ampmCheck;
+    let minuteCopy = [...minuteLimitArray];
+    minuteCopy[timeSelectRef.current] = parseInt(timeData.minute);
+    dispatch(
+      travelSliceActions.setTimeAndMinute({
+        time: timeCopy,
+        minute: minuteCopy,
+      })
+    );
+    return true;
+  };
+
+  const { open } = useToast();
+  const handleToast = (e: string) => {
+    open(e);
+  };
+  const goNext = () => {
+    if (timeLimitArray[0] < 6) {
+      handleToast("시작 시간을 06시 이전으로 설정하실 수 없습니다.");
+    } else if (timeLimitArray[0] > 19) {
+      handleToast("시작 시간을 20시 이후로는 설정하실 수 없습니다.");
+    } else if (timeLimitArray[1] < 12) {
+      handleToast("종료 시간을 오전으로 설정하실 수 없습니다.");
+    } else if (timeLimitArray[0] >= timeLimitArray[1]) {
+      handleToast("종료 시간을 시작 시간 이후로는 설정하실 수 없습니다.");
+    } else {
+      // navigation.navigate("SelectDeparture");
+    }
+  };
+
+  const timeSelectRef = useRef(0);
   const showBasicBottomSheet = () => {
     bottomSheet.open({
       header: <BottomSheet.Header>날짜 선택</BottomSheet.Header>,
@@ -83,21 +123,55 @@ function Day() {
             onDateChange={onDateChange}
             showDayStragglers={false}
             allowRangeSelection={true}
-            selectedRangeStartStyle={{ backgroundColor: colors.blue800 }}
-            selectedRangeStyle={{ backgroundColor: colors.black }}
-            selectedRangeEndStyle={{ backgroundColor: colors.blue800 }}
-            selectedDayColor={colors.black}
+            selectedRangeStartStyle={{ backgroundColor: colors.blue500 }}
+            selectedRangeStyle={{ backgroundColor: colors.blue200 }}
+            selectedRangeEndStyle={{ backgroundColor: colors.blue500 }}
+            selectedDayColor={colors.blue500}
+            selectedRangeStartTextStyle={{ color: colors.white }}
+            selectedRangeEndTextStyle={{ color: colors.white }}
+            selectedDayTextColor={colors.white}
             nextTitle="다음 달"
             previousTitle="이전 달"
             allowBackwardRangeSelect={true}
             selectYearTitle="년도 선택"
           />
-          <BottomSheet.CTA>선택완료</BottomSheet.CTA>
+          <BottomSheet.CTA
+            onPress={() => {
+              bottomSheet.close();
+            }}
+          >
+            선택완료
+          </BottomSheet.CTA>
         </View>
       ),
     });
   };
-
+  const childComponentRef = useRef();
+  const showHourBottomSheet = (e: number) => {
+    timeSelectRef.current = e;
+    bottomSheet.open({
+      header: <BottomSheet.Header>날짜 선택</BottomSheet.Header>,
+      children: (
+        <View>
+          <TimePickerModal
+            hour={timeLimitArray[e]}
+            minute={minuteLimitArray[e]}
+            visible={true}
+            minuteDivide={false}
+            ref={childComponentRef}
+          />
+          <BottomSheet.CTA
+            onPress={() => {
+              bottomSheet.close();
+              handleConfirm(childComponentRef.current?.handleTime());
+            }}
+          >
+            선택완료
+          </BottomSheet.CTA>
+        </View>
+      ),
+    });
+  };
   return (
     <>
       <ListRow
@@ -120,12 +194,19 @@ function Day() {
         }
       />
       <ListRow
-        onPress={showBasicBottomSheet}
+        onPress={() => showHourBottomSheet(0)}
         left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
         contents={
           <ListRow.Texts
             type="1RowTypeA"
-            top="오전 9시"
+            top={
+              (timeLimitArray[0] < 12 ? "오전" : "오후") +
+              " " +
+              String(timeLimitArray[0]).padStart(2, "0") +
+              "시 " +
+              String(minuteLimitArray[0]).padStart(2, "0") +
+              "분"
+            }
             topProps={{
               typography: "t5",
               fontWeight: "medium",
@@ -140,11 +221,19 @@ function Day() {
         }
       />
       <ListRow
+        onPress={() => showHourBottomSheet(1)}
         left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
         contents={
           <ListRow.Texts
             type="1RowTypeA"
-            top="오전 10시"
+            top={
+              (timeLimitArray[1] < 12 ? "오전" : "오후") +
+              " " +
+              String(timeLimitArray[1]).padStart(2, "0") +
+              "시 " +
+              String(minuteLimitArray[1]).padStart(2, "0") +
+              "분"
+            }
             topProps={{
               typography: "t5",
               fontWeight: "medium",
