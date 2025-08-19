@@ -62,7 +62,7 @@ export default function TendencyButton({
         {label}
       </Text>
       {imageUrl?.includes("http") ? (
-        <Image source={{ uri: imageUrl }} />
+        <Image type="circle" source={{ uri: imageUrl }} />
       ) : (
         <Icon name={imageUrl}></Icon>
       )}

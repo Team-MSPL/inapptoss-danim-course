@@ -20,6 +20,7 @@ import {
 } from "@react-native-bedrock/native/react-native-gesture-handler";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { Pressable, View } from "react-native";
+import { CustomColor } from "../../utill/custom-color";
 
 export const Route = BedrockRoute("/enroll/region", {
   validateParams: (params) => params,
@@ -196,7 +197,8 @@ function Region() {
               key={idx}
               style={{
                 padding: 10,
-                backgroundColor: cityIndex == idx ? "red" : "#FAFAFB",
+                backgroundColor:
+                  cityIndex == idx ? CustomColor.primary : "#FAFAFB",
                 borderRadius: 14,
                 minWidth: 60,
                 height: 40,
@@ -231,11 +233,13 @@ function Region() {
                 style={{
                   padding: 10,
                   backgroundColor: region.includes(item.subTitle)
-                    ? "red"
+                    ? "rgba(202, 251, 7,0.2)"
                     : "#FAFAFB",
+                  borderWidth: region.includes(item.subTitle) ? 1 : 0,
+                  borderColor: CustomColor.primary,
                   borderRadius: 14,
                   minWidth: 60,
-                  height: 40,
+                  height: region.includes(item.subTitle) ? 42 : 40,
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: 8,
