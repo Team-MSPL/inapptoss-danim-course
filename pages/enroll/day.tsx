@@ -6,7 +6,7 @@ import {
   useBottomSheet,
   useToast,
 } from "@toss-design-system/react-native";
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { View } from "react-native";
 import { BedrockRoute } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
@@ -37,8 +37,14 @@ function Day() {
     "11월",
     "12월",
   ];
-  const { selectStartDate, selectEndDate, timeLimitArray, minuteLimitArray } =
-    useAppSelector((state) => state.travelSlice);
+  const {
+    selectStartDate,
+    selectEndDate,
+    timeLimitArray,
+    minuteLimitArray,
+    accommodations,
+    Place,
+  } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const onDateChange = (date: any, type: string) => {
     if (type == "END_DATE") {
@@ -87,6 +93,77 @@ function Day() {
       })
     );
     return true;
+  };
+  useLayoutEffect(() => {
+    hanldleDay();
+  }, [selectStartDate, selectEndDate]);
+  const calculateDateDifference = () => {
+    if (selectStartDate && selectEndDate) {
+      const diffInMilliseconds = moment(selectEndDate).diff(selectStartDate);
+      const duration = moment.duration(diffInMilliseconds);
+      const days = duration.asDays();
+      return Math.ceil(Math.abs(days)); // 절대값으로 반환 (음수 값 제거)
+    }
+    return 0;
+  };
+  const hanldleDay = () => {
+    let data = [];
+    const checkDays = calculateDateDifference();
+    if (Object.keys(accommodations).length) {
+      let copy = [...accommodations];
+      if (checkDays + 2 < Object.keys(accommodations).length) {
+        copy.splice(
+          checkDays + 2,
+          Object.keys(accommodations).length - checkDays
+        );
+        data = copy;
+      } else if (checkDays + 2 > Object.keys(accommodations).length) {
+        for (
+          let i = 0;
+          i < checkDays + 2 - Object.keys(accommodations).length;
+          i++
+        ) {
+          copy.push({
+            name: "",
+            lat: 0,
+            lng: 0,
+            category: 4,
+            takenTime: 30,
+            photo: "",
+          });
+        }
+        data = copy;
+      }
+    } else {
+      data = [...Array(checkDays + 2)].map((item) => {
+        return Place;
+      });
+    }
+
+    let season = Array(4).fill(0);
+    let index = Math.floor((moment(selectStartDate).month() + 1) / 3) - 1;
+    index < 0 ? (season[3] = 1) : (season[index] = 1);
+    let dateArray = [];
+    let count = 0;
+    let copySelectedStartDate = moment(selectStartDate);
+    console.log(copySelectedStartDate, selectStartDate);
+    while (
+      checkDays > 4
+        ? copySelectedStartDate.isSameOrBefore(selectEndDate)
+        : count < 5
+    ) {
+      dateArray.push(copySelectedStartDate.clone());
+      copySelectedStartDate.add(1, "day");
+      count += 1;
+    }
+    dispatch(
+      travelSliceActions.enrollDayInfo({
+        day: dateArray,
+        nDay: checkDays,
+        accommodations: data.length == 0 ? accommodations : data,
+        season: season,
+      })
+    );
   };
 
   const { open } = useToast();

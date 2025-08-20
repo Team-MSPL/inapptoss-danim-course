@@ -1,17 +1,11 @@
 import {
   Checkbox,
   colors,
-  FixedBottomCTAProvider,
   Icon,
   ListRow,
-  SearchField,
 } from "@toss-design-system/react-native";
 import React, { MutableRefObject, useEffect, useRef } from "react";
-import { Text, View } from "react-native";
 import { BedrockRoute } from "react-native-bedrock";
-import { CustomProgressBar } from "../../components/progress-bar";
-import { StepText } from "../../components/step-text";
-import { RouteButton } from "../../components/route-button";
 import { useAppDispatch, useAppSelector } from "store";
 import {
   handleNearBySearch,

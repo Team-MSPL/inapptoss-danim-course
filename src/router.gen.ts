@@ -3,6 +3,7 @@
 import { Route as _EnrollCountryRoute } from '../pages/enroll/country';
 import { Route as _EnrollDayRoute } from '../pages/enroll/day';
 import { Route as _EnrollDepartureRoute } from '../pages/enroll/departure';
+import { Route as _EnrollEssentialSearchRoute } from '../pages/enroll/essential-search';
 import { Route as _EnrollEssentialRoute } from '../pages/enroll/essential';
 import { Route as _EnrollRegionRoute } from '../pages/enroll/region';
 import { Route as _EnrollTitleRoute } from '../pages/enroll/title';
@@ -13,6 +14,7 @@ declare module 'react-native-bedrock' {
     '/enroll/country': ReturnType<typeof _EnrollCountryRoute.useParams>;
     '/enroll/day': ReturnType<typeof _EnrollDayRoute.useParams>;
     '/enroll/departure': ReturnType<typeof _EnrollDepartureRoute.useParams>;
+    '/enroll/essential-search': ReturnType<typeof _EnrollEssentialSearchRoute.useParams>;
     '/enroll/essential': ReturnType<typeof _EnrollEssentialRoute.useParams>;
     '/enroll/region': ReturnType<typeof _EnrollRegionRoute.useParams>;
     '/enroll/title': ReturnType<typeof _EnrollTitleRoute.useParams>;

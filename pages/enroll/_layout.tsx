@@ -14,14 +14,20 @@ export default function Layout({ children }: PropsWithChildren) {
   return (
     <View style={{ flex: 1 }}>
       <FixedBottomCTAProvider>
-        <CustomProgressBar />
-        <StepText
-          title={textData?.title}
-          subTitle1={textData?.subTitle1}
-          subTitle2={textData?.subTitle2}
-        ></StepText>
-        {children}
-        <RouteButton />
+        {textData?.title ? (
+          <>
+            <CustomProgressBar />
+            <StepText
+              title={textData?.title}
+              subTitle1={textData?.subTitle1}
+              subTitle2={textData?.subTitle2}
+            ></StepText>
+            {children}
+            <RouteButton />
+          </>
+        ) : (
+          children
+        )}
       </FixedBottomCTAProvider>
     </View>
   );
