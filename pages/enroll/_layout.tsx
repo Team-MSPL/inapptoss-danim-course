@@ -2,7 +2,10 @@ import React, { PropsWithChildren } from "react";
 import { CustomProgressBar } from "../../components/progress-bar";
 import { RouteButton } from "../../components/route-button";
 import { View } from "react-native";
-import { FixedBottomCTAProvider } from "@toss-design-system/react-native";
+import {
+  colors,
+  FixedBottomCTAProvider,
+} from "@toss-design-system/react-native";
 import { StepText } from "../../components/step-text";
 import { useNavigation } from "react-native-bedrock";
 import { routeStack } from "../../utill/route-stack";

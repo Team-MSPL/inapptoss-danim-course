@@ -3,11 +3,8 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  View,
   GestureResponderEvent,
   ViewStyle,
-  TextStyle,
-  ImageStyle,
 } from "react-native";
 import { CustomColor } from "../utill/custom-color";
 import { Icon, Text } from "@toss-design-system/react-native";
@@ -19,10 +16,8 @@ export default function TendencyButton({
   divide = false,
   marginBottom,
   imageUrl,
-  imageSvg,
   width,
   disabled,
-  textSize = 16,
 }: CustomButtonProps) {
   const containerStyle: ViewStyle = {
     ...styles.buttonContainer,
@@ -38,20 +33,6 @@ export default function TendencyButton({
     gap: 10,
   };
 
-  const textStyle: TextStyle = {
-    fontSize: textSize,
-    lineHeight: textSize + 4,
-    color: bgColor ? CustomColor.ButtonGreyText : CustomColor.ButtonGreyText,
-    fontWeight: "600", // Replace with PretendardSemiBold if using custom font
-  };
-
-  const imageStyle: ImageStyle = {
-    width: 20,
-    height: 20,
-    resizeMode: "contain",
-    marginLeft: 5,
-  };
-
   return (
     <TouchableOpacity
       style={containerStyle}
@@ -62,18 +43,10 @@ export default function TendencyButton({
         {label}
       </Text>
       {imageUrl?.includes("http") ? (
-        <Image type="circle" source={{ uri: imageUrl }} />
+        <Image style={{ width: 24, height: 24 }} source={{ uri: imageUrl }} />
       ) : (
         <Icon name={imageUrl}></Icon>
       )}
-
-      {/* <Icon name="icon-flag-krw"></Icon>
-      {imageSvg && (
-        <Image
-          style={{ marginLeft: 5, width: 30, height: 30 }}
-          source={{ uri: "https://static.toss.im/2d-emojis/png/4x/u1F31E.png" }}
-        ></Image>
-      )} */}
     </TouchableOpacity>
   );
 }

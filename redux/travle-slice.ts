@@ -1,9 +1,39 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 import axiosAuth from "./api";
-import { tendencyList } from "../utill/tendency";
 import axios from "axios";
-
+const tendencyList = [
+  {
+    list: [
+      "나홀로",
+      "연인과",
+      "친구와",
+      "가족과",
+      "효도",
+      "자녀와",
+      "반려동물과",
+    ],
+  },
+  {
+    list: [
+      "힐링",
+      "활동적인",
+      "배움이 있는",
+      "맛있는",
+      "교통이 편한",
+      "알뜰한",
+    ],
+  },
+  {
+    list: ["드라이브", "산책", "이색체험", "레저 스포츠", "쇼핑", "시티투어"],
+  },
+  {
+    list: ["바다", "산", "공원", "사진 명소", "실내여행지", "문화시설"],
+  },
+  {
+    list: ["전통", "유적지", "성지", "사찰", "박물관"],
+  },
+];
 export const travelSlice = createSlice({
   name: "travel",
   initialState: {
@@ -39,6 +69,7 @@ export const travelSlice = createSlice({
     tendency: tendencyList.map((item) => {
       return Array(item.list.length).fill(0);
     }), //성향
+    bandwidth: true,
   },
   reducers: {
     updateFiled: (state, { payload }) => {
@@ -92,6 +123,15 @@ export const travelSlice = createSlice({
     },
     enrollPlace: (state, { payload }) => {
       state.Place = payload;
+    },
+    enrollTendency: (state, { payload }) => {
+      state.tendency = payload;
+    },
+    enrollTransit: (state, { payload }) => {
+      state.transit = payload;
+    },
+    enrollBandwidth: (state, { payload }) => {
+      state.bandwidth = payload;
     },
   },
 });
