@@ -70,6 +70,7 @@ export const travelSlice = createSlice({
       return Array(item.list.length).fill(0);
     }), //성향
     bandwidth: true,
+    popular: 5,
   },
   reducers: {
     updateFiled: (state, { payload }) => {

@@ -99,13 +99,13 @@ export const routeStack = {
   },
   "/distance": {
     prev: "/popular",
-    next: "/finalCheck",
+    next: "/final-check",
     title: "현재 위치에서 추천받을 여행 반경을 선택해주세요",
     subTitle1: "4. 원하는 반경의 지역을 추천해드려요",
     subTitle2:
       "그림은 이해를 돕기 위함으로 실제 결과와는 차이가 있을 수 있어요",
   },
-  "/finalCheck": {
+  "/final-check": {
     prev: "/distance",
     next: "/",
     title: "여행 출발지는 어디인가요?",

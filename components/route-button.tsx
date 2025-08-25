@@ -11,7 +11,10 @@ export const RouteButton = ({ disabled }: { disabled?: boolean }) => {
   };
   const handleNext = () => {
     navigation.navigate(
-      "/enroll" +
+      (navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1] ==
+      "/distance"
+        ? ""
+        : "/enroll") +
         routeStack[
           navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]
         ]?.next

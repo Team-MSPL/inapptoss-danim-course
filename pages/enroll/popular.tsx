@@ -2,6 +2,8 @@ import { colors, Slider, Text } from "@toss-design-system/react-native";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { BedrockRoute, Image } from "react-native-bedrock";
+import { useAppDispatch, useAppSelector } from "store";
+import { travelSliceActions } from "../../redux/travle-slice";
 
 export const Route = BedrockRoute("/enroll/popular", {
   validateParams: (params) => params,
@@ -9,16 +11,30 @@ export const Route = BedrockRoute("/enroll/popular", {
 });
 
 function EnrollPopular() {
-  const [value, onChange] = useState(5);
+  const { popular } = useAppSelector((state) => state.travelSlice);
+  const dispatch = useAppDispatch();
+  const handlePopular = (e: number) => {
+    dispatch(travelSliceActions.updateFiled({ field: "popular", value: e }));
+  };
+  const imageList = [
+    "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2Fasd.png?alt=media&token=3df1ca25-0ab7-4289-aec1-268172db19be",
+    "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F2.png?alt=media&token=a99b1cc7-2885-4051-8624-228f5e374de6",
+    "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F3.png?alt=media&token=cc71b542-6c97-4e91-b935-2fc9da9842fe",
+    "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F4.png?alt=media&token=4d270043-8980-4846-bd17-cdd9a4a5df12",
+    "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F5.png?alt=media&token=4952eea8-3f5c-44f6-bfca-45906ff9cc0c",
+  ];
   return (
     <View style={{ marginHorizontal: 24 }}>
       <Image
-        source={require("../../assets/images/asd.png")}
-        style={{ width: 300, height: 300 }}
+        key={Math.ceil(popular / 2)}
+        source={{ uri: imageList[Math.ceil(popular / 2) - 1] }}
+        style={{ width: 300, height: 300, alignSelf: "center" }}
       ></Image>
+
+      <Text>인기도: {popular}</Text>
       <Slider
-        value={value}
-        onChange={onChange}
+        value={popular}
+        onChange={(e) => handlePopular(e)}
         min={1}
         max={10}
         step={1}

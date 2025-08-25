@@ -5,6 +5,7 @@ import { Route as _EnrollConceptRoute } from '../pages/enroll/concept';
 import { Route as _EnrollCountryRoute } from '../pages/enroll/country';
 import { Route as _EnrollDayRoute } from '../pages/enroll/day';
 import { Route as _EnrollDepartureRoute } from '../pages/enroll/departure';
+import { Route as _EnrollDistanceRoute } from '../pages/enroll/distance';
 import { Route as _EnrollEssentialSearchRoute } from '../pages/enroll/essential-search';
 import { Route as _EnrollEssentialRoute } from '../pages/enroll/essential';
 import { Route as _EnrollPlayRoute } from '../pages/enroll/play';
@@ -15,6 +16,7 @@ import { Route as _EnrollTourOneRoute } from '../pages/enroll/tour-one';
 import { Route as _EnrollTourTwoRoute } from '../pages/enroll/tour-two';
 import { Route as _EnrollTransitRoute } from '../pages/enroll/transit';
 import { Route as _EnrollWhoRoute } from '../pages/enroll/who';
+import { Route as _FinalCheckRoute } from '../pages/final-check';
 import { Route as _IndexRoute } from '../pages/';
 
 declare module 'react-native-bedrock' {
@@ -24,6 +26,7 @@ declare module 'react-native-bedrock' {
     '/enroll/country': ReturnType<typeof _EnrollCountryRoute.useParams>;
     '/enroll/day': ReturnType<typeof _EnrollDayRoute.useParams>;
     '/enroll/departure': ReturnType<typeof _EnrollDepartureRoute.useParams>;
+    '/enroll/distance': ReturnType<typeof _EnrollDistanceRoute.useParams>;
     '/enroll/essential-search': ReturnType<typeof _EnrollEssentialSearchRoute.useParams>;
     '/enroll/essential': ReturnType<typeof _EnrollEssentialRoute.useParams>;
     '/enroll/play': ReturnType<typeof _EnrollPlayRoute.useParams>;
@@ -34,6 +37,7 @@ declare module 'react-native-bedrock' {
     '/enroll/tour-two': ReturnType<typeof _EnrollTourTwoRoute.useParams>;
     '/enroll/transit': ReturnType<typeof _EnrollTransitRoute.useParams>;
     '/enroll/who': ReturnType<typeof _EnrollWhoRoute.useParams>;
+    '/final-check': ReturnType<typeof _FinalCheckRoute.useParams>;
     '/': ReturnType<typeof _IndexRoute.useParams>;
   }
 }
