@@ -12,7 +12,7 @@ export const Route = BedrockRoute("/enroll/transit", {
   component: EnrollTransit,
 });
 
-function EnrollTransit() {
+export function EnrollTransit() {
   const dispatch = useAppDispatch();
   const { transit } = useAppSelector((state) => state.travelSlice);
   const moveList = [

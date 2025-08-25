@@ -11,7 +11,7 @@ export const Route = BedrockRoute("/enroll/concept", {
   component: EnrollConcept,
 });
 
-function EnrollConcept() {
+export function EnrollConcept() {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();

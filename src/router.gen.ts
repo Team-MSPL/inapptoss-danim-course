@@ -18,6 +18,7 @@ import { Route as _EnrollTransitRoute } from '../pages/enroll/transit';
 import { Route as _EnrollWhoRoute } from '../pages/enroll/who';
 import { Route as _FinalCheckRoute } from '../pages/final-check';
 import { Route as _IndexRoute } from '../pages/';
+import { Route as _PresetRoute } from '../pages/preset';
 
 declare module 'react-native-bedrock' {
   interface RegisterScreen {
@@ -39,5 +40,6 @@ declare module 'react-native-bedrock' {
     '/enroll/who': ReturnType<typeof _EnrollWhoRoute.useParams>;
     '/final-check': ReturnType<typeof _FinalCheckRoute.useParams>;
     '/': ReturnType<typeof _IndexRoute.useParams>;
+    '/preset': ReturnType<typeof _PresetRoute.useParams>;
   }
 }

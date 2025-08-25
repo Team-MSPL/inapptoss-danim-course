@@ -1,5 +1,7 @@
 import {
   Badge,
+  Border,
+  BottomSheet,
   Button,
   colors,
   FixedBottomCTA,
@@ -8,19 +10,32 @@ import {
   ListRow,
   Tab,
   Text,
+  useBottomSheet,
   useToast,
 } from "@toss-design-system/react-native";
-import React, { useState } from "react";
-import { View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Pressable, View } from "react-native";
 import {
   BedrockRoute,
   Image,
   Stack,
   useNavigation,
 } from "react-native-bedrock";
-import { useAppSelector } from "store";
+import { useAppDispatch, useAppSelector } from "store";
 import { cityViewList } from "../utill/city-list";
 import { useTendencyHandler } from "../hooks/useTendencyHandler";
+import { EnrollWho } from "./enroll/who";
+import { EnrollTransit } from "./enroll/transit";
+import { EnrollBusy } from "./enroll/busy";
+import { StepText } from "../components/step-text";
+import { routeStack } from "../utill/route-stack";
+import { EnrollConcept } from "./enroll/concept";
+import { EnrollPlay } from "./enroll/play";
+import { EnrollPopular } from "./enroll/popular";
+import { EnrollDistance } from "./enroll/distance";
+import { EnrollTourOne } from "./enroll/tour-one";
+import { EnrollTourTwo } from "./enroll/tour-two";
+import { getTravelAi, travelSliceActions } from "../redux/travle-slice";
 
 export const Route = BedrockRoute("/final-check", {
   validateParams: (params) => params,
@@ -41,6 +56,10 @@ function FinalCheck() {
     popular,
     essentialPlaces,
     accommodations,
+    regionInfo,
+    travelName,
+    distance,
+    timeLimitArray,
   } = useAppSelector((state) => state.travelSlice);
   const navigation = useNavigation();
   const { open } = useToast();
@@ -58,9 +77,124 @@ function FinalCheck() {
   ];
   const [value, setValue] = useState("0");
 
-  const { tendencyList } = useTendencyHandler();
+  const { tendencyList, countryList } = useTendencyHandler();
 
   const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  const bottomSheet = useBottomSheet();
+  const showHourBottomSheet = (e: number) => {
+    bottomSheet.open({
+      children: (
+        <ModifyBottomSheetContent
+          onCancel={() => {
+            bottomSheet.close();
+          }}
+          startIndex={e}
+        />
+      ),
+    });
+  };
+  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const goNext = useCallback(
+    async (e: number) => {
+      try {
+        setLoading(true);
+        if (
+          travelName == "신나는 여행" &&
+          tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]
+        ) {
+          let changeName =
+            tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)] +
+            (tendency[0].findIndex((item) => item == 1) == 0 ||
+            tendency[0].findIndex((item) => item == 1) == 4
+              ? " "
+              : " 함께하는 ") +
+            seasonList[season.findIndex((item) => item == 1)].title +
+            "여행";
+          dispatch(travelSliceActions.enrollTravelName(changeName));
+        }
+        let a = region.map(
+          (item) => cityViewList[country][cityIndex].title + " " + item
+        );
+        if (
+          (country == 0 &&
+            cityViewList[country][cityIndex].id >= 3 &&
+            region[0] == "전체") ||
+          (country == 0 &&
+            cityViewList[country][cityIndex].id == 1 &&
+            region[0] == "전체") ||
+          (country != 0 && region[0] == "전체")
+        ) {
+          a = cityViewList[country][cityIndex].sub.map(
+            (value, idx) =>
+              cityViewList[country][cityIndex].title + " " + value.subTitle
+          );
+          a.shift();
+        }
+        // //["해외/Vietnam/나트랑", "해외/Vietnam/다낭"]
+        if (country == 0 && cityIndex == 2) {
+          a = [region[0] + " 전체"];
+        }
+        let copy = [...tendency];
+        copy[3] = [...copy[3], ...copy[4]];
+        copy.pop();
+        copy.push(season);
+        if (country != 0) {
+          a = a.map((item, idx) => {
+            return `해외/${countryList[country].en}/${item
+              .slice(
+                item.indexOf(cityViewList[country][cityIndex].title) +
+                  cityViewList[country][cityIndex].title.length
+              )
+              .trim()}`;
+          });
+        }
+        const result = await dispatch(
+          getTravelAi({
+            regionList: a,
+            accomodationList: accommodations,
+            selectList: copy,
+            essentialPlaceList: essentialPlaces,
+            timeLimitArray: timeLimitArray,
+            nDay: nDay + 1,
+            transit: transit,
+            distanceSensitivity: distance,
+            bandwidth: bandwidth,
+            freeTicket: true,
+            version: 3,
+            password: "(주)나그네들_g5hb87r8765rt68i7ur78",
+          })
+        ).unwrap();
+
+        dispatch(travelSliceActions.selectRegion(a));
+        if (result) {
+          navigation.popToTop();
+          navigation.navigate("/preset");
+          !result.data.enoughPlace &&
+            open(
+              `해당 지역의 관광지 중 선택하신 성향의 \n 관광지가 부족하여,일정을 다 채울 수가 없었어요 ㅠㅠ`,
+              {
+                icon: "icon-warning-circle",
+              }
+            );
+        } else {
+          open(`네트워크 연결이 불안정합니다`, {
+            icon: "icon-warning-circle",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        open(`네트워크 연결이 불안정합니다`, {
+          icon: "icon-warning-circle",
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [essentialPlaces, accommodations]
+  );
+
   return (
     <FixedBottomCTAProvider>
       <View style={{ marginHorizontal: 24 }}>
@@ -72,12 +206,27 @@ function FinalCheck() {
         >
           선택사항 확인
         </Text>
+        <Border type="full" style={{ marginVertical: 16 }} />
+
         <LinearGradient
           height={200}
           degree={0}
           colors={["rgba(0,0,0,0.5)", "rgba(0,0,0,0.5)"]}
           easing={"easeOut"}
+          onPress={() => {
+            showHourBottomSheet(0);
+          }}
         >
+          <Image
+            source={{ uri: regionInfo.photo }}
+            resizeMode="stretch"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: 200,
+              opacity: 0.1,
+            }}
+          ></Image>
           <Stack.Vertical gutter={0} style={{ padding: 24 }}>
             <Stack.Horizontal justify="space-between">
               <Text typography="t7" fontWeight="medium" color={colors.white}>
@@ -101,7 +250,9 @@ function FinalCheck() {
               >
                 <Image
                   style={{ width: 42, height: 42 }}
-                  source={{ uri: seasonList[3]?.svg }}
+                  source={{
+                    uri: seasonList[season.findIndex((item) => item == 1)]?.svg,
+                  }}
                 />
               </View>
               <Text
@@ -176,8 +327,8 @@ function FinalCheck() {
         </Tab>
         {value == "0" ? (
           <Stack.Vertical
-            gutter={21}
             style={{
+              position: "relative", // ← 이걸 추가
               borderWidth: 1,
               borderColor: "#eeeeee",
               borderRadius: 13,
@@ -186,73 +337,90 @@ function FinalCheck() {
               marginTop: 10,
             }}
           >
-            {tendency[1].find((item) => item == 1) && (
+            <Text
+              onPress={() => {
+                showHourBottomSheet(3);
+              }}
+              typography="t5"
+              fontWeight="medium"
+              color={colors.grey800}
+              textAlign="right"
+            >
+              편집
+            </Text>
+            <Stack.Vertical gutter={21}>
+              {tendency[1].find((item) => item == 1) && (
+                <Stack.Vertical gutter={13}>
+                  <Text
+                    typography="t5"
+                    fontWeight="medium"
+                    color={colors.grey800}
+                  >
+                    여행테마
+                  </Text>
+                  <Stack.Horizontal gutter={4}>
+                    {tendency[1].map((item, inx) => {
+                      return item ? (
+                        <Badge size="medium" type="blue" badgeStyle="weak">
+                          {tendencyList[1]?.list[inx]}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </Stack.Horizontal>
+                </Stack.Vertical>
+              )}
+              {tendency[2].find((item) => item == 1) && (
+                <Stack.Vertical gutter={13}>
+                  <Text
+                    typography="t5"
+                    fontWeight="medium"
+                    color={colors.grey800}
+                  >
+                    이런 걸 하고 싶어요
+                  </Text>
+                  <Stack.Horizontal gutter={4}>
+                    {tendency[2].map((item, inx) => {
+                      return item ? (
+                        <Badge size="medium" type="red" badgeStyle="weak">
+                          {tendencyList[2]?.list[inx]}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </Stack.Horizontal>
+                </Stack.Vertical>
+              )}
+              {tendency[3].find((item) => item == 1) && (
+                <Stack.Vertical gutter={13}>
+                  <Text
+                    typography="t5"
+                    fontWeight="medium"
+                    color={colors.grey800}
+                  >
+                    이런 곳에 가고 싶어요
+                  </Text>
+                  <Stack.Horizontal gutter={4}>
+                    {tendency[3].map((item, inx) => {
+                      return item ? (
+                        <Badge size="medium" type="teal" badgeStyle="weak">
+                          {tendencyList[3]?.list[inx]}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </Stack.Horizontal>
+                </Stack.Vertical>
+              )}
               <Stack.Vertical gutter={13}>
                 <Text
                   typography="t5"
                   fontWeight="medium"
                   color={colors.grey800}
                 >
-                  여행테마
+                  여행지 인기도
                 </Text>
-                <Stack.Horizontal gutter={4}>
-                  {tendency[1].map((item, inx) => {
-                    return item ? (
-                      <Badge size="medium" type="blue" badgeStyle="weak">
-                        {tendencyList[1]?.list[inx]}
-                      </Badge>
-                    ) : null;
-                  })}
-                </Stack.Horizontal>
+                <Badge size="medium" type="yellow" badgeStyle="weak">
+                  {popular}
+                </Badge>
               </Stack.Vertical>
-            )}
-            {tendency[2].find((item) => item == 1) && (
-              <Stack.Vertical gutter={13}>
-                <Text
-                  typography="t5"
-                  fontWeight="medium"
-                  color={colors.grey800}
-                >
-                  이런 걸 하고 싶어요
-                </Text>
-                <Stack.Horizontal gutter={4}>
-                  {tendency[2].map((item, inx) => {
-                    return item ? (
-                      <Badge size="medium" type="red" badgeStyle="weak">
-                        {tendencyList[2]?.list[inx]}
-                      </Badge>
-                    ) : null;
-                  })}
-                </Stack.Horizontal>
-              </Stack.Vertical>
-            )}
-            {tendency[3].find((item) => item == 1) && (
-              <Stack.Vertical gutter={13}>
-                <Text
-                  typography="t5"
-                  fontWeight="medium"
-                  color={colors.grey800}
-                >
-                  이런 곳에 가고 싶어요
-                </Text>
-                <Stack.Horizontal gutter={4}>
-                  {tendency[3].map((item, inx) => {
-                    return item ? (
-                      <Badge size="medium" type="teal" badgeStyle="weak">
-                        {tendencyList[3]?.list[inx]}
-                      </Badge>
-                    ) : null;
-                  })}
-                </Stack.Horizontal>
-              </Stack.Vertical>
-            )}
-            <Stack.Vertical gutter={13}>
-              <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                여행지 인기도
-              </Text>
-              <Badge size="medium" type="yellow" badgeStyle="weak">
-                {popular}
-              </Badge>
             </Stack.Vertical>
           </Stack.Vertical>
         ) : (
@@ -386,12 +554,79 @@ function FinalCheck() {
             );
           })()
         )}
-        <FixedBottomCTA>
-          <Button type="primary" onPress={() => {}}>
-            추천 일정 조회하기
-          </Button>
+        <FixedBottomCTA
+          onPress={() => {
+            goNext();
+          }}
+        >
+          추천 일정 조회하기
         </FixedBottomCTA>
       </View>
     </FixedBottomCTAProvider>
+  );
+}
+
+type ModifyBottomSheetContentProps = {
+  startIndex: number;
+  onCancel: () => void;
+};
+
+function ModifyBottomSheetContent({
+  startIndex,
+  onCancel,
+}: ModifyBottomSheetContentProps) {
+  const navigationStack = [
+    { title: "who", component: <EnrollWho /> },
+    { title: "transit", component: <EnrollTransit /> },
+    { title: "busy", component: <EnrollBusy /> },
+    { title: "concept", component: <EnrollConcept /> },
+    { title: "play", component: <EnrollPlay /> },
+    { title: "tour-one", component: <EnrollTourOne /> },
+    { title: "tour-two", component: <EnrollTourTwo /> },
+    { title: "popular", component: <EnrollPopular /> },
+    { title: "distance", component: <EnrollDistance /> },
+  ];
+  const [step, setStep] = useState(startIndex);
+  const textData = routeStack["/" + navigationStack[step]?.title];
+
+  return (
+    <View>
+      <StepText
+        title={textData?.title}
+        subTitle1={textData?.subTitle1}
+        subTitle2={textData?.subTitle2}
+      ></StepText>
+      {navigationStack[step]?.component}
+
+      <BottomSheet.CTA.Double
+        leftButton={
+          <Button
+            type="dark"
+            style="weak"
+            display="block"
+            onPress={() => {
+              setStep(step - 1);
+            }}
+            disabled={step == 0}
+          >
+            이전으로
+          </Button>
+        }
+        rightButton={
+          <Button
+            display="block"
+            onPress={() => {
+              if (step == navigationStack.length - 1) {
+                onCancel();
+              } else {
+                setStep(step + 1);
+              }
+            }}
+          >
+            {step == navigationStack.length - 1 ? "완료" : "다음으로"}
+          </Button>
+        }
+      />
+    </View>
   );
 }

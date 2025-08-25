@@ -10,7 +10,7 @@ export const Route = BedrockRoute("/enroll/popular", {
   component: EnrollPopular,
 });
 
-function EnrollPopular() {
+export function EnrollPopular() {
   const { popular } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const handlePopular = (e: number) => {

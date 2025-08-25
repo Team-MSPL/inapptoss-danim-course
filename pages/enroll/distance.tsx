@@ -1,17 +1,31 @@
+import WebView from "@react-native-bedrock/native/react-native-webview";
 import { colors, Slider, Text } from "@toss-design-system/react-native";
 import React, { useState } from "react";
-import { View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import { BedrockRoute } from "react-native-bedrock";
+import CustomMapView from "../../components/map-view";
+import { cityViewList } from "../../utill/city-list";
+import { useAppSelector } from "store";
 
 export const Route = BedrockRoute("/enroll/distance", {
   validateParams: (params) => params,
   component: EnrollDistance,
 });
 
-function EnrollDistance() {
+export function EnrollDistance() {
   const [value, setValue] = useState();
+  const { country, cityIndex, cityDistance } = useAppSelector(
+    (state) => state.travelSlice
+  );
+
   return (
-    <>
+    <View style={{ marginHorizontal: 24 }}>
+      <CustomMapView
+        lat={cityViewList[country][cityIndex].sub[cityDistance[0]].lat}
+        lng={cityViewList[country][cityIndex].sub[cityDistance[0]].lng}
+        isWideZoom={cityDistance[0] == 0}
+        range={value}
+      />
       <Slider
         value={value}
         onChange={(e) => setValue(e)}
@@ -22,12 +36,12 @@ function EnrollDistance() {
       />
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text typography="t5" fontWeight="medium" color={colors.grey700}>
-          가장 덜 알려진
+          내 근처
         </Text>
         <Text typography="t5" fontWeight="medium" color={colors.grey700}>
-          가장 유명한
+          전체
         </Text>
       </View>
-    </>
+    </View>
   );
 }

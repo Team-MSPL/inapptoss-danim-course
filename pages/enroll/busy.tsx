@@ -11,7 +11,7 @@ export const Route = BedrockRoute("/enroll/busy", {
   component: EnrollBusy,
 });
 
-function EnrollBusy() {
+export function EnrollBusy() {
   const dispatch = useAppDispatch();
   const { bandwidth } = useAppSelector((state) => state.travelSlice);
   const moveList = [
@@ -64,7 +64,7 @@ function EnrollBusy() {
             <GridList.Item
               image={
                 <Image
-                  style={{ width: 60, height: 60 }}
+                  style={{ width: 60, height: 60, marginBottom: 20 }}
                   source={{ uri: item.image }}
                 />
               }

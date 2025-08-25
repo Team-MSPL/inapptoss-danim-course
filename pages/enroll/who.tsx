@@ -12,7 +12,7 @@ export const Route = BedrockRoute("/enroll/who", {
   component: EnrollWho,
 });
 
-function EnrollWho() {
+export function EnrollWho() {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();

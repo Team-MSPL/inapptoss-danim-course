@@ -12,7 +12,7 @@ export const Route = BedrockRoute("/enroll/tour-one", {
   component: EnrollTourOne,
 });
 
-function EnrollTourOne() {
+export function EnrollTourOne() {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();
