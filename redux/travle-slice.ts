@@ -194,7 +194,6 @@ export const travelSlice = createSlice({
                   y: 0,
                   takenTime: 150,
                   x: idx,
-                  key: shortId.generate(),
                 });
               }
             }
