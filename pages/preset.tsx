@@ -79,7 +79,14 @@ function Preset() {
                 </Button>
               }
               rightButton={
-                <Button type="primary" style="fill" display="block">
+                <Button
+                  type="primary"
+                  style="fill"
+                  display="block"
+                  onPress={() => {
+                    bottomSheet.close();
+                  }}
+                >
                   {"선택하러 가기"}
                 </Button>
               }
@@ -104,16 +111,12 @@ function Preset() {
   }, [backEvent, handler]);
   const navigation = useNavigation();
   const goDetail = (e: number) => {
-    // navigation.navigate('PresetDetail', {index: e});
+    navigation.navigate("/preset-detail", { index: e });
   };
   const onViewableItemsChanged = useRef((items) => {
     console.log(items?.changed[0]?.index);
     setTabalue(String(items?.changed[0]?.index));
   });
-  const indexScroll = useRef();
-  //   useEffect(() => {
-  //     setTabalue(viewType);
-  //   }, [viewType]);
   const calculateTendency = (e: any) => {
     let copy = [];
     let copy2 = [];
@@ -198,7 +201,7 @@ function Preset() {
                     return (
                       <Badge size="medium" type="blue" badgeStyle="weak">
                         {item + " "}{" "}
-                        {presetTendencyList[index].tendencyPointList[index]}점
+                        {presetTendencyList[index]?.tendencyPointList[index]}점
                       </Badge>
                     );
                   })}

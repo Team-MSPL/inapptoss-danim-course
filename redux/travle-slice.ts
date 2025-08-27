@@ -79,6 +79,7 @@ export const travelSlice = createSlice({
     presetDatas: [[[]]], //프리셋 저장하는곳
     timetable: [[]], // 타임테이블
     enoughPlace: false,
+    autoRecommendFlag: false,
   },
   reducers: {
     updateFiled: (state, { payload }) => {
@@ -147,6 +148,12 @@ export const travelSlice = createSlice({
     },
     selectRegion: (state, { payload }) => {
       state.region = payload;
+    },
+    setAutoRecommendFlag: (state, { payload }) => {
+      state.autoRecommendFlag = payload;
+    },
+    enrollTimetable: (state, { payload }) => {
+      state.timetable = payload;
     },
   },
   extraReducers: (builder) => {

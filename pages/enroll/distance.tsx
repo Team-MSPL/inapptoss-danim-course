@@ -13,7 +13,7 @@ export const Route = BedrockRoute("/enroll/distance", {
 });
 
 export function EnrollDistance() {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState(5);
   const { country, cityIndex, cityDistance } = useAppSelector(
     (state) => state.travelSlice
   );

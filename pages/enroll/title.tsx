@@ -18,14 +18,10 @@ export const Route = BedrockRoute("/enroll/title", {
 });
 
 function EnrollTitle() {
-  const navigation = useNavigation();
-  const handleNext = () => {
-    navigation.navigate("/enroll/country");
-  };
-  const { title } = useAppSelector((state) => state.travelSlice);
+  const { travelName } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const handleChange = (e: string) => {
-    dispatch(travelSliceActions.updateFiled({ field: "title", value: e }));
+    dispatch(travelSliceActions.updateFiled({ field: "travelName", value: e }));
   };
   return (
     <>
@@ -33,12 +29,9 @@ function EnrollTitle() {
         variant="line"
         help="15자 안으로 적어주세요"
         placeholder="예) 신나는 여행"
-        value={title}
+        value={travelName}
         onChangeText={(e) => handleChange(e)}
       />
-      <FixedBottomCTA onPress={handleNext} disabled={title == ""}>
-        다음으로
-      </FixedBottomCTA>
     </>
   );
 }
