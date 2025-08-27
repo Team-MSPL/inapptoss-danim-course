@@ -456,6 +456,53 @@ export const googleDetailApi = createAsyncThunk(
     }
   }
 );
+export const axiosKakao = axios.create({
+  baseURL: "https://dapi.kakao.com/v2/local/search",
+  headers: {
+    "content-type": "application/json",
+    Authorization: `KakaoAK ${"7dcbff3c20877747849dacb808c37bc2"}`,
+  },
+});
+//카카오 식당,카페 등 추천 장소 얻는 거
+export const recommendApi = createAsyncThunk(
+  "/recommendApi",
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const response = await axiosKakao.get(
+        `/category.json?category_group_code=${data.category}&x=${data.lng}&y=${data.lat}&radius=${data.radius}&sort=accuracy`
+      );
+      return response.data.documents;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
+    }
+  }
+);
+
+export const axiosTripadvisor = axios.create({
+  baseURL: "https://api.content.tripadvisor.com/api/v1/location",
+
+  headers: { "content-type": "application/json" },
+});
+
+//트립어드바이져 식당,카페 등 추천 장소 얻는 거
+export const recommendTripadvisor = createAsyncThunk(
+  "/recommendTripadvisor",
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const response = await axiosTripadvisor.get(
+        `/search?key=${"02F5B2FD8DAD4CFBA7C2D77F11FD9BD8"}&searchQuery=${
+          data.name
+        }&category=${data.category}&latLong=${data.lat}%2C${
+          data.lng
+        }&language=ko&radius=${data.radius}&radiusUnit=m`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
+    }
+  }
+);
+
 export const axiosGoogle = axios.create({
   baseURL: "https://maps.googleapis.com/maps/api",
   headers: { "content-type": "application/json" },

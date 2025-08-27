@@ -387,6 +387,7 @@ function Timetable() {
                   navigation.navigate("/add-place", {
                     day: index,
                     index: idx,
+                    data: copyTimetable,
                   });
                 }}
                 left={

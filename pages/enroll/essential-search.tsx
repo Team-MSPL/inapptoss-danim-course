@@ -260,7 +260,7 @@ function HourBottomSheetContent({
     </View>
   );
 }
-const regionOneList = {
+export const regionOneList = {
   서울특별시: "서울",
   부산광역시: "부산",
   대구광역시: "대구",
@@ -279,7 +279,7 @@ const regionOneList = {
   경상남도: "경남",
   제주도: "제주",
 };
-const regionList = {
+export const regionList = {
   부산광역시: "전체",
   대구광역시: "전체",
   인천광역시: "전체",
@@ -288,7 +288,7 @@ const regionList = {
   울산광역시: "전체",
   세종특별시: "전체",
 };
-const cityList = {
+export const cityList = {
   종로구: "도심권",
   중구: "도심권",
   용산구: "도심권",
