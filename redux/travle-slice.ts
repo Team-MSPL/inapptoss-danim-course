@@ -80,6 +80,7 @@ export const travelSlice = createSlice({
     timetable: [[]], // 타임테이블
     enoughPlace: false,
     autoRecommendFlag: false,
+    travelId: "",
   },
   reducers: {
     updateFiled: (state, { payload }) => {
@@ -165,7 +166,16 @@ export const travelSlice = createSlice({
       state.regionInfo.lat = payload.latitude;
       state.regionInfo.lng = payload.longitude;
     });
-
+    builder.addCase(getOneTravelCourse.fulfilled, (state, { payload }) => {
+      state.day = payload.day;
+      state.nDay = payload.nDay - 1;
+      state.region = payload.region;
+      state.timetable = payload.timetable;
+      state.transit = payload.transit;
+      state.tendency = payload.tendency;
+      state.travelId = payload._id;
+      state.travelName = payload.travelName;
+    });
     builder.addCase(getTravelAi.fulfilled, (state, { payload }) => {
       console.log(payload.data.resultData);
       let updateItem = [
@@ -393,6 +403,54 @@ export const socialConnect = createAsyncThunk(
       return response;
     } catch (error) {
       throw thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+//트립어드바이져 디테일
+export const detailTripadvisor = createAsyncThunk(
+  "/detailTripadvisor",
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const response = await axiosTripadvisor.get(
+        `${
+          data.id
+        }/details?key=${"02F5B2FD8DAD4CFBA7C2D77F11FD9BD8"}&&language=ko`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
+    }
+  }
+);
+
+//내 여행 목록 가져오는거
+export const getMyTravelList = createAsyncThunk(
+  "/getMyTravelList",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuth.get(
+        `/travelCourse/travelList?userId=${data?.userId}`
+      );
+      return response.data.travelCourseList;
+    } catch (error: any) {
+      console.log(error);
+      throw rejectWithValue(error.code);
+    }
+  }
+);
+
+//여행 코스 하나 가져오기
+export const getOneTravelCourse = createAsyncThunk(
+  "/getOneTravelCourse",
+  async (data: { travelId: string }, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuth.get(
+        `/travelCourse/getOneTravelCourse?travelId=${data.travelId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
     }
   }
 );

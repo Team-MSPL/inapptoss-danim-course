@@ -66,34 +66,30 @@ export const RouteButton = ({ disabled }: { disabled?: boolean }) => {
   };
 
   const handleNext = () => {
-    console.log(
-      navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]
-    );
-    if (
-      navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1] ==
-      "/region"
-    ) {
+    const nowStep = navigation
+      .getState()
+      ?.routes?.at(-1)
+      ?.name.split("/enroll")[1];
+    if (nowStep == "/region") {
       const shouldProceed = goNext();
       if (shouldProceed) {
         navigation.navigate(
-          (navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1] ==
-          "/distance"
-            ? ""
-            : "/enroll") +
-            routeStack[
-              navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]
-            ]?.next
+          (nowStep == "/distance" ? "" : "/enroll") + routeStack[nowStep]?.next
+        );
+      }
+    } else if (nowStep == "/country") {
+      if (country == null) {
+        open("나라를 선택해주세요.", {
+          icon: "icon-warning-circle",
+        });
+      } else {
+        navigation.navigate(
+          (nowStep == "/distance" ? "" : "/enroll") + routeStack[nowStep]?.next
         );
       }
     } else {
       navigation.navigate(
-        (navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1] ==
-        "/distance"
-          ? ""
-          : "/enroll") +
-          routeStack[
-            navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]
-          ]?.next
+        (nowStep == "/distance" ? "" : "/enroll") + routeStack[nowStep]?.next
       );
     }
   };

@@ -11,15 +11,23 @@ import {
   Tab,
   Text,
   useBottomSheet,
+  useToast,
 } from "@toss-design-system/react-native";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Dimensions, View } from "react-native";
 import { BedrockRoute, Stack, useNavigation } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import CustomMapView from "../components/map-view";
 import CustomMapViewMarker from "../components/map-view-marker";
-import { travelSliceActions } from "../redux/travle-slice";
+import {
+  detailTripadvisor,
+  recommendApi,
+  recommendTripadvisor,
+  travelSliceActions,
+} from "../redux/travle-slice";
+import { useDistance } from "../hooks/useDistance";
+import { CommonActions } from "@react-native-bedrock/native/@react-navigation/native";
 
 export const Route = BedrockRoute("/preset-detail", {
   validateParams: (params) => params,
@@ -29,7 +37,7 @@ export const Route = BedrockRoute("/preset-detail", {
 function PresetDetail() {
   const params = Route.useParams();
   const [tabValue, setTabalue] = useState("0");
-  const { presetDatas, presetTendencyList, nDay, day } = useAppSelector(
+  const { presetDatas, presetTendencyList, nDay, day, region } = useAppSelector(
     (state) => state.travelSlice
   );
   const scrollRef = useRef(null);
@@ -37,7 +45,333 @@ function PresetDetail() {
   const dispatch = useAppDispatch();
   const bottomSheet = useBottomSheet();
   const navigation = useNavigation();
-  const goNext = (e: boolean) => {
+  const { open } = useToast();
+
+  const accommodationRecommend = async (e: {
+    value: any;
+    index: number;
+    idx: number;
+  }) => {
+    try {
+      let timetable = presetDatas[params?.index];
+      if (timetable[e.idx].length < 2) {
+      } else {
+        let lat = 0;
+        let lng = 0;
+        let goCheck = true;
+        if (e.index == 0) {
+          if (timetable[e.idx][e.index + 1].name.includes("추천")) {
+            goCheck = false;
+          } else {
+            lat = timetable[e.idx][e.index + 1].lat;
+            lng = timetable[e.idx][e.index + 1].lng;
+          }
+        } else {
+          if (timetable[e.idx][e.index - 1].name.includes("추천")) {
+            goCheck = false;
+          } else {
+            lat = timetable[e.idx][e.index - 1].lat;
+            lng = timetable[e.idx][e.index - 1].lng;
+          }
+        }
+        if (goCheck) {
+          const startNumber = e.value.y; // 시작 숫자
+          const count = e.value.takenTime / 30; // 원하는 갯수
+          const sequentialArray = Array.from(
+            { length: count },
+            (_, index) => startNumber + index
+          );
+          const data = await getRecommendList({
+            name: "숙소 추천",
+            x: e.value.x,
+            index: e.index,
+            y: sequentialArray,
+            category: e.value.category,
+            lat: lat,
+            lng: lng,
+            apiCategory: region[0].startsWith("해외") ? "hotels" : "AD5",
+            radius: 2000,
+            backupLat:
+              e.index != 0
+                ? timetable[e.idx][e.index - 1].lat
+                : timetable[e.idx][e.index + 1].lat,
+            backupLng:
+              e.index != 0
+                ? timetable[e.idx][e.index - 1].lng
+                : timetable[e.idx][e.index + 1].lng,
+            status:
+              e.index != 0
+                ? timetable[e.idx][e.index - 1]
+                : timetable[e.idx][e.index + 1],
+          });
+          return data;
+        } else {
+          // dispatch(
+          // 	modalSliceActions.setOpenModal({
+          // 		modalTitle: '추천이 불가합니다.',
+          // 		modalSubTitle: '앞,뒤 관광지를 바탕으로 추천을 해드려요\n관광지를 추가한 후 시도해주세요',
+          // 	}),
+          // );
+        }
+      }
+    } catch (e) {}
+  };
+
+  const getRecommendList = async (e: {
+    name: string;
+    x: number;
+    index: number;
+    y: number;
+    category: string;
+    lat: number;
+    lng: number;
+    apiCategory: string;
+    radius: number;
+    backupLat: number;
+    backupLng: number;
+    status: any;
+  }) => {
+    try {
+      let result = await dispatch(
+        region[0].startsWith("해외")
+          ? recommendTripadvisor({
+              category: e.apiCategory,
+              lat: e.lat,
+              lng: e.lng,
+              radius: e.radius,
+              name: e.status.name,
+            })
+          : recommendApi({
+              category: e.apiCategory,
+              lat: e.lat,
+              lng: e.lng,
+              radius: e.radius,
+            })
+      ).unwrap();
+      result = region[0].startsWith("해외") ? result.data : result;
+      if (result.length == 0) {
+        result = await dispatch(
+          region[0].startsWith("해외")
+            ? recommendTripadvisor({
+                category: e.apiCategory,
+                lat: e.lat,
+                lng: e.lng,
+                radius: Number(e.radius) * 1.5,
+                name: e.status.name,
+              })
+            : recommendApi({
+                category: e.apiCategory,
+                lat: e.lat,
+                lng: e.lng,
+                radius: Number(e.radius) * 1.5,
+              })
+        ).unwrap();
+        result = region[0].startsWith("해외") ? result.data : result;
+        result.length == 0 &&
+          open("동선 상에 추천할 수 있는 장소가 없습니다 ㅠㅠ");
+        return [];
+      }
+      if (region[0].startsWith("해외")) {
+        let copy = await dispatch(
+          detailTripadvisor({ id: result[0].location_id })
+        ).unwrap();
+        console.log(copy);
+        result = [
+          {
+            ...result,
+            place_name: copy.name,
+            y: copy.latitude,
+            x: copy.longitude,
+          },
+          {},
+        ];
+      }
+      return result;
+    } catch (err) {
+      open("추천 아이템이 없습니다!");
+      navigation.goBack();
+    } finally {
+      // dispatch(LoadingSliceActions.offLoading());
+    }
+  };
+
+  const restaurantRecommend = useCallback(
+    async (e: { value: any; index: number; idx: number }) => {
+      let timetable = presetDatas[params?.index];
+      try {
+        let lat = 0;
+        let lng = 0;
+        let radius = 2000;
+        let status = timetable[e.idx][e.index - 1];
+        let goCheck = true;
+        if (timetable[e.idx].length == 1) {
+        } else {
+          if (e.index == timetable[e.idx].length - 1) {
+            if (
+              timetable[e.idx][timetable[e.idx].length - 2].name.includes(
+                "추천"
+              )
+            ) {
+              goCheck = false;
+            } else {
+              lat = timetable[e.idx][timetable[e.idx].length - 2].lat;
+              lng = timetable[e.idx][timetable[e.idx].length - 2].lng;
+              status = timetable[e.idx][timetable[e.idx].length - 2];
+            }
+          } else if (e.index == 0) {
+            if (timetable[e.idx][1].name.includes("추천")) {
+              goCheck = false;
+            } else {
+              lat = timetable[e.idx][1].lat;
+              lng = timetable[e.idx][1].lng;
+              status = timetable[e.idx][1];
+            }
+          } else {
+            const departure = {
+              lat: timetable[e.idx][e.index - 1].lat,
+              lng: timetable[e.idx][e.index - 1].lng,
+            };
+            const arrival = {
+              lat: timetable[e.idx][e.index + 1].lat,
+              lng: timetable[e.idx][e.index + 1].lng,
+            };
+            const distance = Math.ceil(
+              useDistance({ departure: departure, arrival: arrival })
+            );
+            lat =
+              (timetable[e.idx][e.index - 1].lat +
+                timetable[e.idx][e.index + 1].lat) /
+              2;
+            lng =
+              (timetable[e.idx][e.index - 1].lng +
+                timetable[e.idx][e.index + 1].lng) /
+              2;
+            radius =
+              distance >= 20 ? 20000 : distance == 0 ? 2000 : distance * 1000;
+            if (
+              timetable[e.idx][e.index - 1].name.includes("추천") &&
+              timetable[e.idx][e.index + 1].name.includes("추천")
+            ) {
+              goCheck = false;
+            } else if (timetable[e.idx][e.index - 1].name.includes("추천")) {
+              status = timetable[e.idx][e.index + 1];
+            } else if (timetable[e.idx][e.index + 1].name.includes("추천")) {
+              status = timetable[e.idx][e.index - 1];
+            }
+          }
+          if (goCheck) {
+            const startNumber = e.value.y; // 시작 숫자
+            const count = e.value.takenTime / 30; // 원하는 갯수
+
+            const sequentialArray = Array.from(
+              { length: count },
+              (_, index) => startNumber + index
+            );
+            const data = await getRecommendList({
+              name: "식당 추천",
+              x: e.value.x,
+              index: e.index,
+              y: sequentialArray,
+              category: e.value.category,
+              lat: lat,
+              lng: lng,
+              apiCategory: region[0].startsWith("해외") ? "restaurants" : "FD6",
+              radius: radius,
+              backupLat: timetable[e.idx][e.index - 1]?.lat ?? 0,
+              backupLng: timetable[e.idx][e.index - 1]?.lng ?? 0,
+              status: status,
+            });
+            return data;
+          } else {
+            // dispatch(
+            // 	modalSliceActions.setOpenModal({
+            // 		modalTitle: '추천이 불가합니다.',
+            // 		modalSubTitle: '앞,뒤 관광지를 바탕으로 추천을 해드려요\n관광지를 추가한 후 시도해주세요',
+            // 	}),
+            // );
+          }
+        }
+      } catch (e) {}
+    },
+    [presetDatas, region]
+  );
+
+  const handleAutoRecommend = async ({ item, copy, idx }: any) => {
+    try {
+      let copy2 = [...item];
+      const handleItems = item.map(async (value, index) => {
+        if (value.name == "점심 추천" || value.name == "저녁 추천") {
+          let items = await restaurantRecommend({
+            value: value,
+            index: index,
+            idx: idx,
+          });
+          if (items?.length != 0) {
+            let checks = copy2.filter((checkValue, checkIndex) => {
+              items[0].place_name == checkValue.name;
+            });
+            items = items[checks.length == 0 ? 0 : 1];
+            copy2[index] = {
+              ...copy2[index],
+              name: items.place_name,
+              lat: Number(items.y),
+              lng: Number(items.x),
+              category: value.category,
+              x: value.x,
+              y: value.y,
+              id: Number(items.y) + copy2[index]?.name,
+            };
+          } else {
+            open("추천 아이템이 없습니다!");
+          }
+        } else if (value.name == "숙소 추천" && index != 0) {
+          let items = await accommodationRecommend({
+            value: value,
+            index: index,
+            idx: idx,
+          });
+          if (items?.length != 0) {
+            items = items[0];
+            copy2[index] = {
+              ...copy2[index],
+              name: items.place_name,
+              lat: Number(items.y),
+              lng: Number(items.x),
+              category: value.category,
+              x: value.x,
+              y: value.y,
+              id: Number(items.y) + copy2[index]?.name,
+            };
+          } else {
+            open("추천 아이템이 없습니다!");
+          }
+        } else if (index == 0 && value.name == "숙소 추천") {
+          if (
+            copy[idx - 1].at(-1)?.category == value.category &&
+            copy[idx - 1].at(-1)?.name != "숙소 추천"
+          ) {
+            copy2[index] = {
+              ...copy2[index],
+              name: copy[idx - 1].at(-1)?.name,
+              lat: Number(copy[idx - 1].at(-1)?.lat),
+              lng: Number(copy[idx - 1].at(-1)?.lng),
+              category: value.category,
+              x: value.x,
+              y: value.y,
+              id: Number(copy[idx - 1].at(-1)?.lat) + copy2[index]?.name,
+            };
+          }
+        }
+      });
+      await Promise.all(handleItems);
+      return copy2;
+    } catch (e: any) {
+    } finally {
+      // dispatch(LoadingSliceActions.offLoading());
+    }
+  };
+
+  const goNext = async (e: boolean) => {
     try {
       let copy = [...presetDatas[params.index]];
       if (presetDatas[params.index].length != nDay + 1) {
@@ -47,63 +381,79 @@ function PresetDetail() {
         }
       }
       dispatch(travelSliceActions.setAutoRecommendFlag(e));
+      if (e) {
+        await copy.reduce(async (prev, item, idx) => {
+          await prev;
+          const newElem = await handleAutoRecommend({ item, copy, idx });
+          copy[idx] = newElem;
+        }, Promise.resolve());
+      }
       dispatch(travelSliceActions.enrollTimetable(copy));
-      navigation.navigate("/timetable");
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "/timetable" }],
+        })
+      );
     } catch (err) {
       console.log(err, "에러");
     }
   };
   const handleAccommodation = () => {
-    bottomSheet.open({
-      children: (
-        <>
-          <Text
-            typography="t4"
-            fontWeight="bold"
-            color={colors.grey800}
-            style={{ alignSelf: "center" }}
-          >
-            식당과 숙소까지 한번에{`\n`}추천해드릴까요?
-          </Text>
-          <Text
-            typography="t5"
-            fontWeight="regular"
-            color={colors.grey600}
-            style={{ textAlign: "center" }}
-          >
-            별점이 높은 곳부터 추천해드려요
-          </Text>
-          <BottomSheet.CTA.Double
-            leftButton={
-              <Button
-                type="dark"
-                style="weak"
-                display="block"
-                onPress={() => {
-                  handleRecommend(false);
-                  bottomSheet.close();
-                }}
-              >
-                {"아니오"}
-              </Button>
-            }
-            rightButton={
-              <Button
-                type="primary"
-                style="fill"
-                display="block"
-                onPress={() => {
-                  handleRecommend(true);
-                  bottomSheet.close();
-                }}
-              >
-                {"네"}
-              </Button>
-            }
-          ></BottomSheet.CTA.Double>
-        </>
-      ),
-    });
+    if (nDay == 0) {
+      handleRecommend(false);
+    } else {
+      bottomSheet.open({
+        children: (
+          <>
+            <Text
+              typography="t4"
+              fontWeight="bold"
+              color={colors.grey800}
+              style={{ alignSelf: "center" }}
+            >
+              식당과 숙소까지 한번에{`\n`}추천해드릴까요?
+            </Text>
+            <Text
+              typography="t5"
+              fontWeight="regular"
+              color={colors.grey600}
+              style={{ textAlign: "center" }}
+            >
+              별점이 높은 곳부터 추천해드려요
+            </Text>
+            <BottomSheet.CTA.Double
+              leftButton={
+                <Button
+                  type="dark"
+                  style="weak"
+                  display="block"
+                  onPress={() => {
+                    handleRecommend(false);
+                    bottomSheet.close();
+                  }}
+                >
+                  {"아니오"}
+                </Button>
+              }
+              rightButton={
+                <Button
+                  type="primary"
+                  style="fill"
+                  display="block"
+                  onPress={() => {
+                    handleRecommend(true);
+                    bottomSheet.close();
+                  }}
+                >
+                  {"네"}
+                </Button>
+              }
+            ></BottomSheet.CTA.Double>
+          </>
+        ),
+      });
+    }
   };
   const handleRecommend = (e: boolean) => {
     bottomSheet.open({
@@ -232,9 +582,9 @@ function PresetDetail() {
                     ? Math.floor(value.takenTime / 60) != 0 &&
                       Math.floor(value.takenTime / 60) +
                         "시간" +
-                        (value.takenTime % 60) !=
-                        0 &&
-                      (value.takenTime % 60) + "분"
+                        (value.takenTime % 60 != 0
+                          ? (value.takenTime % 60) + "분"
+                          : "")
                     : ""
                 }
               />

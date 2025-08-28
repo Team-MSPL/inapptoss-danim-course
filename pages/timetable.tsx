@@ -19,8 +19,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Dimensions, Pressable, View } from "react-native";
 import {
   BedrockRoute,
+  closeView,
   ImpressionArea,
   Stack,
+  useBackEvent,
   useNavigation,
 } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
@@ -84,6 +86,73 @@ function Timetable() {
   };
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();
+  const backEvent = useBackEvent();
+
+  const [handler, setHandler] = useState<{ callback: () => void } | undefined>({
+    callback: () =>
+      bottomSheet.open({
+        children: (
+          <>
+            <Text
+              typography="t4"
+              fontWeight="bold"
+              color={colors.grey800}
+              style={{ alignSelf: "center" }}
+            >
+              일정을 저장할까요?
+            </Text>
+            <Text
+              typography="t5"
+              fontWeight="regular"
+              color={colors.grey600}
+              style={{ textAlign: "center" }}
+            >
+              저장된 일정은 오른쪽 상단 {`\n`}비행기 아이콘에서 볼 수 있어요.
+            </Text>
+            <BottomSheet.CTA.Double
+              leftButton={
+                <Button
+                  type="dark"
+                  style="weak"
+                  display="block"
+                  onPress={closeView}
+                >
+                  {"나가기"}
+                </Button>
+              }
+              rightButton={
+                <Button
+                  type="primary"
+                  style="fill"
+                  display="block"
+                  onPress={() => {
+                    bottomSheet.close();
+                    closeView();
+                  }}
+                >
+                  {"저장 후 나가기"}
+                </Button>
+              }
+            ></BottomSheet.CTA.Double>
+          </>
+        ),
+      }),
+  });
+
+  useEffect(() => {
+    const callback = handler?.callback;
+
+    if (callback != null) {
+      backEvent.addEventListener(callback);
+
+      return () => {
+        backEvent.removeEventListener(callback);
+      };
+    }
+
+    return;
+  }, [backEvent, handler]);
+
   const { open } = useToast();
   const goModify = (e: number) => {
     const newY = copyTimetable[tooltips?.day][tooltips?.index].y;
@@ -388,6 +457,7 @@ function Timetable() {
                     day: index,
                     index: idx,
                     data: copyTimetable,
+                    setCopyTimetable: setCopyTimetable,
                   });
                 }}
                 left={

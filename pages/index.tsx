@@ -25,8 +25,12 @@ export function Index() {
   };
 
   const navigation = useNavigation();
+  navigation.setOptions({
+    title: "qwe",
+  });
   const handleNext = () => {
-    navigation.navigate("/enroll/title");
+    // navigation.navigate("/enroll/title");
+    navigation.navigate("/my-travle-list");
   };
   const handleLogin = useCallback(async () => {
     /**

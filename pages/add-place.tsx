@@ -60,6 +60,21 @@ function AddPlace() {
     }
     return title;
   };
+  const handleCategoryIndex = (e: string) => {
+    let title = 0;
+    switch (e) {
+      case "여행지":
+        title = 0;
+        break;
+      case "숙소":
+        title = 4;
+        break;
+      case "식당":
+        title = 1;
+        break;
+    }
+    return title;
+  };
   const { open } = useToast();
   const [recommendList, setRcommendList] = useState([]);
   const getRecommendList = async () => {
@@ -114,6 +129,31 @@ function AddPlace() {
       //   dispatch(LoadingSliceActions.offLoading());
     }
   };
+
+  const handleAdd = (e, time) => {
+    let copy = [...params?.data];
+    let copy2 = [...params?.data[params?.day]];
+    copy2.push({
+      ...e,
+      category: handleCategoryIndex(value1),
+      x: params?.day,
+      y:
+        isNaN(copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30) ||
+        copy2[params?.index]?.y == 36
+          ? 6
+          : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30,
+      id: e?.name + e?.lat,
+      takenTime: time * 60,
+      lat: Number(e?.lat),
+      lng: Number(e?.lng),
+    });
+    copy2 = copy2.sort((a, b) => a.y - b.y);
+    copy[params?.day] = copy2;
+    console.log(copy);
+    params?.setCopyTimetable(copy);
+
+    navigation.goBack();
+  };
   const showHourBottomSheet = (datas: any) => {
     bottomSheet.open({
       children: (
@@ -121,6 +161,7 @@ function AddPlace() {
           initialHour={1}
           onConfirm={(newHour) => {
             bottomSheet.close();
+            handleAdd(datas, newHour);
             // addPlace(newHour, datas);
             // 여기서 원하는 로직 추가 가능 (예: dispatch)
           }}
