@@ -148,9 +148,15 @@ function MyTravleList() {
     return (
       <>
         {(monthRef.current != after || item.index == 0) && (
-          <Text typography="t7" color={colors.grey700} fontWeight="regular">
-            {moment(item.item.day[item.item.nDay - 1]).format("YYYY년 MM월")}
-          </Text>
+          <Top.Root
+            title={
+              <Top.TitleParagraph typography="t7" color={colors.grey700}>
+                {moment(item.item.day[item.item.nDay - 1]).format(
+                  "YYYY년 MM월"
+                )}
+              </Top.TitleParagraph>
+            }
+          />
         )}
         <Pressable
           onPress={() => {

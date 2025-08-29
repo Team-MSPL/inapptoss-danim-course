@@ -12,6 +12,8 @@ import {
 } from "@toss-design-system/react-native";
 import { appLogin } from "@apps-in-toss/framework";
 import { StepText } from "../components/step-text";
+import { useAppDispatch } from "store";
+import { travelSliceActions } from "../redux/travle-slice";
 export const Route = BedrockRoute("/", {
   validateParams: (params) => params,
   component: Index,
@@ -28,9 +30,11 @@ export function Index() {
   navigation.setOptions({
     title: "qwe",
   });
+  const dispatch = useAppDispatch();
   const handleNext = () => {
-    // navigation.navigate("/enroll/title");
-    navigation.navigate("/my-travle-list");
+    dispatch(travelSliceActions.reset());
+    navigation.navigate("/enroll/title");
+    // navigation.navigate("/my-travle-list");
   };
   const handleLogin = useCallback(async () => {
     /**

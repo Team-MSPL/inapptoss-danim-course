@@ -88,56 +88,61 @@ function Timetable() {
   const bottomSheet = useBottomSheet();
   const backEvent = useBackEvent();
 
-  const [handler, setHandler] = useState<{ callback: () => void } | undefined>({
-    callback: () =>
-      bottomSheet.open({
-        children: (
-          <>
-            <Text
-              typography="t4"
-              fontWeight="bold"
-              color={colors.grey800}
-              style={{ alignSelf: "center" }}
-            >
-              일정을 저장할까요?
-            </Text>
-            <Text
-              typography="t5"
-              fontWeight="regular"
-              color={colors.grey600}
-              style={{ textAlign: "center" }}
-            >
-              저장된 일정은 오른쪽 상단 {`\n`}비행기 아이콘에서 볼 수 있어요.
-            </Text>
-            <BottomSheet.CTA.Double
-              leftButton={
-                <Button
-                  type="dark"
-                  style="weak"
-                  display="block"
-                  onPress={closeView}
-                >
-                  {"나가기"}
-                </Button>
-              }
-              rightButton={
-                <Button
-                  type="primary"
-                  style="fill"
-                  display="block"
-                  onPress={() => {
-                    bottomSheet.close();
-                    closeView();
-                  }}
-                >
-                  {"저장 후 나가기"}
-                </Button>
-              }
-            ></BottomSheet.CTA.Double>
-          </>
-        ),
-      }),
-  });
+  const [handler, setHandler] = useState<{ callback: () => void } | undefined>(
+    navigation.getState()?.routes.at(-2)?.name == "/my-travle-list"
+      ? undefined
+      : {
+          callback: () =>
+            bottomSheet.open({
+              children: (
+                <>
+                  <Text
+                    typography="t4"
+                    fontWeight="bold"
+                    color={colors.grey800}
+                    style={{ alignSelf: "center" }}
+                  >
+                    일정을 저장할까요?
+                  </Text>
+                  <Text
+                    typography="t5"
+                    fontWeight="regular"
+                    color={colors.grey600}
+                    style={{ textAlign: "center" }}
+                  >
+                    저장된 일정은 오른쪽 상단 {`\n`}비행기 아이콘에서 볼 수
+                    있어요.
+                  </Text>
+                  <BottomSheet.CTA.Double
+                    leftButton={
+                      <Button
+                        type="dark"
+                        style="weak"
+                        display="block"
+                        onPress={closeView}
+                      >
+                        {"나가기"}
+                      </Button>
+                    }
+                    rightButton={
+                      <Button
+                        type="primary"
+                        style="fill"
+                        display="block"
+                        onPress={() => {
+                          bottomSheet.close();
+                          closeView();
+                        }}
+                      >
+                        {"저장 후 나가기"}
+                      </Button>
+                    }
+                  ></BottomSheet.CTA.Double>
+                </>
+              ),
+            }),
+        }
+  );
 
   useEffect(() => {
     const callback = handler?.callback;
@@ -350,11 +355,21 @@ function Timetable() {
           <View>
             <ListRow
               onPress={() => {
-                setTooltips({
-                  day: index,
-                  index: idx,
-                  status: !tooltips?.status,
-                });
+                if (!modify && value?.name?.includes("추천")) {
+                  navigation.navigate("/recommend-place", {
+                    data: copyTimetable,
+                    day: index,
+                    index: idx,
+                    setCopyTimetable: setCopyTimetable,
+                    setModify: setModify,
+                  });
+                } else {
+                  setTooltips({
+                    day: index,
+                    index: idx,
+                    status: !tooltips?.status,
+                  });
+                }
               }}
               left={
                 !value?.name?.includes("추천") ? (

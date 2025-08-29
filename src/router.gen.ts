@@ -22,6 +22,7 @@ import { Route as _IndexRoute } from '../pages/';
 import { Route as _MyTravleListRoute } from '../pages/my-travle-list';
 import { Route as _PresetDetailRoute } from '../pages/preset-detail';
 import { Route as _PresetRoute } from '../pages/preset';
+import { Route as _RecommendPlaceRoute } from '../pages/recommend-place';
 import { Route as _TimetableRoute } from '../pages/timetable';
 
 declare module 'react-native-bedrock' {
@@ -48,6 +49,7 @@ declare module 'react-native-bedrock' {
     '/my-travle-list': ReturnType<typeof _MyTravleListRoute.useParams>;
     '/preset-detail': ReturnType<typeof _PresetDetailRoute.useParams>;
     '/preset': ReturnType<typeof _PresetRoute.useParams>;
+    '/recommend-place': ReturnType<typeof _RecommendPlaceRoute.useParams>;
     '/timetable': ReturnType<typeof _TimetableRoute.useParams>;
   }
 }

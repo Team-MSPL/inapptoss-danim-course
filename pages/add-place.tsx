@@ -133,26 +133,54 @@ function AddPlace() {
   const handleAdd = (e, time) => {
     let copy = [...params?.data];
     let copy2 = [...params?.data[params?.day]];
-    copy2.push({
-      ...e,
-      category: handleCategoryIndex(value1),
-      x: params?.day,
-      y:
-        isNaN(copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30) ||
-        copy2[params?.index]?.y == 36
-          ? 6
-          : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30,
-      id: e?.name + e?.lat,
-      takenTime: time * 60,
-      lat: Number(e?.lat),
-      lng: Number(e?.lng),
-    });
-    copy2 = copy2.sort((a, b) => a.y - b.y);
-    copy[params?.day] = copy2;
-    console.log(copy);
-    params?.setCopyTimetable(copy);
-
-    navigation.goBack();
+    let changeFlag = null;
+    const newY =
+      isNaN(copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30) ||
+      copy2[params?.index]?.y == 36
+        ? 6
+        : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30;
+    const newEnd = newY + time * 2;
+    for (let i = 0; i < copy2.length; i++) {
+      if (
+        ((newY <= copy2[i]?.y && newEnd > copy2[i]?.y) ||
+          (newY <= copy2[i]?.y + copy2[i].takenTime / 30 - 1 &&
+            newEnd > copy2[i]?.y + copy2[i].takenTime / 30 - 1)) &&
+        copy2[i].id != params?.data[params?.day][params?.index]?.id
+      ) {
+        changeFlag = copy2[i];
+        break;
+      }
+    }
+    if (changeFlag) {
+      open(`${changeFlag.name}과 시간이 겹쳐요`, {
+        icon: "icon-warning-circle",
+      });
+    } else {
+      copy2.push({
+        ...e,
+        category: handleCategoryIndex(value1),
+        x: params?.day,
+        y:
+          isNaN(
+            copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30
+          ) || copy2[params?.index]?.y == 36
+            ? 6
+            : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30,
+        id: (e?.name ?? e?.place_name) + e?.lat,
+        takenTime: time * 60,
+        lat: Number(e?.lat ?? e.y),
+        lng: Number(e?.lng ?? e.x),
+        name: e?.name ?? e?.place_name,
+      });
+      copy2 = copy2.sort((a, b) => a.y - b.y);
+      copy[params?.day] = copy2;
+      console.log(copy);
+      params?.setCopyTimetable(copy);
+      open(`${value1}를 추가했어요`, {
+        icon: "icon-check-circle-green",
+      });
+      navigation.goBack();
+    }
   };
   const showHourBottomSheet = (datas: any) => {
     bottomSheet.open({

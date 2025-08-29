@@ -35,54 +35,58 @@ const tendencyList = [
     list: ["전통", "유적지", "성지", "사찰", "박물관"],
   },
 ];
+const initialState = {
+  travelName: "",
+  title: "",
+  country: null,
+  cityIndex: null,
+  region: [],
+  cityDistance: [],
+  selectStartDate: moment().startOf("day").add(12, "hours"),
+  selectEndDate: null,
+  timeLimitArray: [9, 20],
+  minuteLimitArray: [0, 0],
+  departure: { lat: 0, lng: 0, name: "" },
+  departureAirport: { lat: 0, lng: 0, name: "" },
+  departureTrain: { lat: 0, lng: 0, name: "" },
+  departureSelected: "",
+  season: [0, 0, 0, 0], //계절
+  nDay: 0, // 몇박인지 5박6일이면 5
+  day: [], //타임테이블 용날짜 리스트
+  Place: {
+    name: "",
+    lat: 0,
+    lng: 0,
+    category: 4,
+    takenTime: 30,
+    photo: "",
+    formatted_address: "",
+  }, //숙소, 필수여행지 구글검색했을때 정보 저장하는용
+  accommodations: [], // 숙소리스트
+  essentialPlaces: [], //필수여행지 리스트
+  distance: 5, //여행반경
+  transit: 0, //교통수단 0= 자차 1=대중교통
+  tendency: tendencyList.map((item) => {
+    return Array(item.list.length).fill(0);
+  }), //성향
+  bandwidth: true,
+  popular: 5,
+  regionInfo: { name: "", photo: "", lat: 0, lng: 0 },
+
+  presetTendencyList: [],
+  presetDatas: [[[]]], //프리셋 저장하는곳
+  timetable: [[]], // 타임테이블
+  enoughPlace: false,
+  autoRecommendFlag: false,
+  travelId: "",
+};
 export const travelSlice = createSlice({
   name: "travel",
-  initialState: {
-    travelName: "",
-    title: "",
-    country: null,
-    cityIndex: null,
-    region: [],
-    cityDistance: [],
-    selectStartDate: moment().startOf("day").add(12, "hours"),
-    selectEndDate: null,
-    timeLimitArray: [9, 20],
-    minuteLimitArray: [0, 0],
-    departure: { lat: 0, lng: 0, name: "" },
-    departureAirport: { lat: 0, lng: 0, name: "" },
-    departureTrain: { lat: 0, lng: 0, name: "" },
-    departureSelected: "",
-    season: [0, 0, 0, 0], //계절
-    nDay: 0, // 몇박인지 5박6일이면 5
-    day: [], //타임테이블 용날짜 리스트
-    Place: {
-      name: "",
-      lat: 0,
-      lng: 0,
-      category: 4,
-      takenTime: 30,
-      photo: "",
-      formatted_address: "",
-    }, //숙소, 필수여행지 구글검색했을때 정보 저장하는용
-    accommodations: [], // 숙소리스트
-    essentialPlaces: [], //필수여행지 리스트
-    distance: 5, //여행반경
-    transit: 0, //교통수단 0= 자차 1=대중교통
-    tendency: tendencyList.map((item) => {
-      return Array(item.list.length).fill(0);
-    }), //성향
-    bandwidth: true,
-    popular: 5,
-    regionInfo: { name: "", photo: "", lat: 0, lng: 0 },
-
-    presetTendencyList: [],
-    presetDatas: [[[]]], //프리셋 저장하는곳
-    timetable: [[]], // 타임테이블
-    enoughPlace: false,
-    autoRecommendFlag: false,
-    travelId: "",
-  },
+  initialState,
   reducers: {
+    reset: (state) => {
+      Object.assign(state, initialState);
+    },
     updateFiled: (state, { payload }) => {
       const { field, value } = payload;
       if (state.hasOwnProperty(field)) {
