@@ -18,6 +18,7 @@ import { Pressable, View } from "react-native";
 import {
   BedrockRoute,
   Image,
+  Lottie,
   Stack,
   useNavigation,
 } from "react-native-bedrock";
@@ -36,6 +37,7 @@ import { EnrollDistance } from "./enroll/distance";
 import { EnrollTourOne } from "./enroll/tour-one";
 import { EnrollTourTwo } from "./enroll/tour-two";
 import { getTravelAi, travelSliceActions } from "../redux/travle-slice";
+import NavigationBar from "../components/navigation-bar";
 
 export const Route = BedrockRoute("/final-check", {
   validateParams: (params) => params,
@@ -197,6 +199,21 @@ function FinalCheck() {
 
   return (
     <FixedBottomCTAProvider>
+      <NavigationBar />
+      {loading && (
+        <Lottie
+          height={"100%"}
+          src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+          autoPlay={true}
+          loop={true}
+          onAnimationFailure={() => {
+            console.log("Animation Failed");
+          }}
+          onAnimationFinish={() => {
+            console.log("Animation Finished");
+          }}
+        />
+      )}
       <View style={{ marginHorizontal: 24 }}>
         <Text
           typography="st8"

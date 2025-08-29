@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
-import { BedrockRoute, Flex, Image, useNavigation } from "react-native-bedrock";
+import {
+  BedrockRoute,
+  Flex,
+  Image,
+  Lottie,
+  useNavigation,
+} from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import {
   getMyTravelList,
@@ -30,10 +36,11 @@ function MyTravleList() {
   const dispatch = useAppDispatch();
   const [list, setList] = useState([]);
   const navigation = useNavigation();
-  const { countryIndex } = useAppSelector((state) => state.travelSlice);
+  const [loading, setLoading] = useState(false);
   const getTravelList = async () => {
     try {
       //아이디
+      setLoading(true);
       const data = await dispatch(
         getMyTravelList({ userId: "67bfe5d2a02da54871ad36d6" })
       ).unwrap();
@@ -42,6 +49,7 @@ function MyTravleList() {
       console.log("qq", err);
       //   dispatch(travelSliceActions.setMyTravelList([]));
     } finally {
+      setLoading(false);
       //   dispatch(LoadingSliceActions.offLoading());
     }
   };
@@ -205,7 +213,20 @@ function MyTravleList() {
     );
   };
 
-  return (
+  return loading ? (
+    <Lottie
+      height={"100%"}
+      src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+      autoPlay={true}
+      loop={true}
+      onAnimationFailure={() => {
+        console.log("Animation Failed");
+      }}
+      onAnimationFinish={() => {
+        console.log("Animation Finished");
+      }}
+    />
+  ) : (
     <View>
       {list.length == 0 ? (
         <View style={{ top: 240 }}>

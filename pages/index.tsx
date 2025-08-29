@@ -1,17 +1,16 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { View } from "react-native";
 import { BedrockRoute, useNavigation } from "react-native-bedrock";
 import {
-  Button,
   colors,
   Text,
   ListRow,
   Top,
   FixedBottomCTA,
   FixedBottomCTAProvider,
+  PartnerNavigation,
 } from "@toss-design-system/react-native";
 import { appLogin } from "@apps-in-toss/framework";
-import { StepText } from "../components/step-text";
 import { useAppDispatch } from "store";
 import { travelSliceActions } from "../redux/travle-slice";
 export const Route = BedrockRoute("/", {
@@ -20,21 +19,11 @@ export const Route = BedrockRoute("/", {
 });
 
 export function Index() {
-  const handlePress = async () => {
-    const data = await fetch("http://3.37.54.226/manageNetwork/ping");
-    const json = await data.json();
-    console.log(json);
-  };
-
   const navigation = useNavigation();
-  navigation.setOptions({
-    title: "qwe",
-  });
   const dispatch = useAppDispatch();
   const handleNext = () => {
     dispatch(travelSliceActions.reset());
     navigation.navigate("/enroll/title");
-    // navigation.navigate("/my-travle-list");
   };
   const handleLogin = useCallback(async () => {
     /**
@@ -48,14 +37,29 @@ export function Index() {
      * 획득한 authorizationCode 와 referrer 값을 서버로 전달해요.
      */
   }, []);
+  useEffect(() => {
+    handleLogin();
+  }, []);
   return (
     <View style={{ flex: 1 }}>
+      <PartnerNavigation
+        title="다님"
+        icon={{ source: { uri: "https://danim.me/square_logo.png" } }}
+        rightButtons={[
+          {
+            title: "내여행",
+            id: "travle-list",
+            icon: { name: "icon-plane-mono" },
+            onPress: () => {
+              navigation.reset({
+                index: 1,
+                routes: [{ name: "/" }, { name: "/my-travle-list" }],
+              });
+            },
+          },
+        ]}
+      ></PartnerNavigation>
       <FixedBottomCTAProvider>
-        {/* <StepText
-          title={"여행 출발지는 어디인가요?"}
-          subTitle1={"1.여행 계획을 알려주세요"}
-          subTitle2={"선택하신 지역 근처의 공항과 기차역을 찾아봤어요."}
-        ></StepText> */}
         <Top
           title={
             <Text typography="t6" fontWeight="medium" color={colors.grey600}>
@@ -151,14 +155,6 @@ export function Index() {
           }
         />
         <FixedBottomCTA onPress={handleNext}>시작하기</FixedBottomCTA>
-        {/* <FixedBottomCTA.Double
-          leftButton={
-            <Button type="dark" style="weak">
-              왼팔
-            </Button>
-          }
-          rightButton={<Button>오른팔</Button>}
-        /> */}
       </FixedBottomCTAProvider>
     </View>
   );

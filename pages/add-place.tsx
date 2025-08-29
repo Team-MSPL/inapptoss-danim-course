@@ -15,7 +15,7 @@ import {
 } from "@toss-design-system/react-native";
 import React, { MutableRefObject, useRef, useState } from "react";
 import { Dimensions, View } from "react-native";
-import { BedrockRoute, useNavigation } from "react-native-bedrock";
+import { BedrockRoute, Lottie, useNavigation } from "react-native-bedrock";
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -28,6 +28,7 @@ import {
   travelSliceActions,
 } from "../redux/travle-slice";
 import { cityList, regionList, regionOneList } from "./enroll/essential-search";
+import NavigationBar from "../components/navigation-bar";
 export const Route = BedrockRoute("/add-place", {
   validateParams: (params) => params,
   component: AddPlace,
@@ -77,8 +78,10 @@ function AddPlace() {
   };
   const { open } = useToast();
   const [recommendList, setRcommendList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const getRecommendList = async () => {
     try {
+      //   setLoading(true);
       const tableData = params?.data[params?.day][params?.index - 1];
       let result = await dispatch(
         country != 0
@@ -126,6 +129,7 @@ function AddPlace() {
       open("추천 아이템이 없습니다!");
       navigation.goBack();
     } finally {
+      setLoading(false);
       //   dispatch(LoadingSliceActions.offLoading());
     }
   };
@@ -205,6 +209,21 @@ function AddPlace() {
   };
   return (
     <View style={{ flex: 1 }}>
+      {loading && (
+        <Lottie
+          height={"100%"}
+          src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+          autoPlay={true}
+          loop={true}
+          onAnimationFailure={() => {
+            console.log("Animation Failed");
+          }}
+          onAnimationFinish={() => {
+            console.log("Animation Finished");
+          }}
+        />
+      )}
+      <NavigationBar />
       <FixedBottomCTAProvider>
         <SegmentedControl.Root
           size={"large"}

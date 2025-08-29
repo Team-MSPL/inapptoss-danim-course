@@ -30,6 +30,7 @@ import CustomMapViewMarker from "../components/map-view-marker";
 import { FlatList } from "@react-native-bedrock/native/react-native-gesture-handler";
 import CustomMapViewTimetable from "../components/map-view-timetable";
 import { travelSliceActions } from "../redux/travle-slice";
+import NavigationBar from "../components/navigation-bar";
 
 export const Route = BedrockRoute("/timetable", {
   validateParams: (params) => params,
@@ -494,6 +495,7 @@ function Timetable() {
   };
   return (
     <View style={{ flex: 1 }}>
+      <NavigationBar />
       <FixedBottomCTAProvider>
         {!modify && (
           <>

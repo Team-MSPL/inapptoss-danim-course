@@ -23,6 +23,7 @@ import {
   useNavigation,
 } from "react-native-bedrock";
 import { useAppSelector } from "store";
+import NavigationBar from "../components/navigation-bar";
 
 export const Route = BedrockRoute("/preset", {
   validateParams: (params) => params,
@@ -267,6 +268,7 @@ function Preset() {
 
   return (
     <View>
+      <NavigationBar />
       <Top
         title={
           <Text typography="t6" fontWeight="regular" color={colors.grey700}>

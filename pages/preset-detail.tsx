@@ -28,6 +28,7 @@ import {
 } from "../redux/travle-slice";
 import { useDistance } from "../hooks/useDistance";
 import { CommonActions } from "@react-native-bedrock/native/@react-navigation/native";
+import NavigationBar from "../components/navigation-bar";
 
 export const Route = BedrockRoute("/preset-detail", {
   validateParams: (params) => params,
@@ -612,6 +613,7 @@ function PresetDetail() {
 
   return (
     <View style={{ flex: 1 }}>
+      <NavigationBar />
       <FixedBottomCTAProvider>
         {presetTendencyList[params?.index]?.tendencyNameList.length >= 2 && (
           <ListRow

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { BedrockRoute, useNavigation } from "react-native-bedrock";
+import { BedrockRoute, Lottie, useNavigation } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import { recommendApi, recommendTripadvisor } from "../redux/travle-slice";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@toss-design-system/react-native";
 import { ScrollView } from "@react-native-bedrock/native/react-native-gesture-handler";
 import CustomMapViewMarker from "../components/map-view-marker";
+import NavigationBar from "../components/navigation-bar";
 
 export const Route = BedrockRoute("/recommend-place", {
   validateParams: (params) => params,
@@ -95,8 +96,10 @@ function RecommendPlace() {
     navigation?.goBack();
   };
   const [recommendList, setRcommendList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const getRecommendList = async () => {
     try {
+      setLoading(true);
       const tableData = params?.data[params?.day][params?.index - 1];
       let result = await dispatch(
         country != 0
@@ -152,6 +155,7 @@ function RecommendPlace() {
       open("추천 아이템이 없습니다!");
       navigation.goBack();
     } finally {
+      setLoading(false);
       //   dispatch(LoadingSliceActions.offLoading());
     }
   };
@@ -211,6 +215,21 @@ function RecommendPlace() {
   //   const [saveDate, setSaveData] = useState(params?.data);
   return (
     <View style={{ flex: 1 }}>
+      <NavigationBar />
+      {loading && (
+        <Lottie
+          height={"100%"}
+          src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+          autoPlay={true}
+          loop={true}
+          onAnimationFailure={() => {
+            console.log("Animation Failed");
+          }}
+          onAnimationFinish={() => {
+            console.log("Animation Finished");
+          }}
+        />
+      )}
       {/* <CustomMapViewMarker
         presetData={saveDate}
         selectedIndex={params?.day}
