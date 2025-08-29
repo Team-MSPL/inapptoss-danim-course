@@ -101,7 +101,7 @@ function MyTravleList() {
       navigation.navigate("/timetable");
     } catch (err) {
       console.log(err);
-      open("코스 가져오기가 실패했습니다");
+      open("코스 가져오던 중 문제가 생겼어요. 잠시후 시도해주세요");
     } finally {
       // dispatch(LoadingSliceActions.offLoading());
     }

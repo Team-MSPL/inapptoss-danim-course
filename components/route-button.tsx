@@ -10,7 +10,13 @@ import { cityViewList } from "../utill/city-list";
 import { useTendencyHandler } from "../hooks/useTendencyHandler";
 import { getRegionInfo } from "../redux/travle-slice";
 
-export const RouteButton = ({ disabled }: { disabled?: boolean }) => {
+export const RouteButton = ({
+  disabled,
+  onPress,
+}: {
+  disabled?: boolean;
+  onPress?: () => void;
+}) => {
   const navigation = useNavigation();
   const { region, country, cityIndex } = useAppSelector(
     (state) => state.travelSlice
@@ -66,6 +72,9 @@ export const RouteButton = ({ disabled }: { disabled?: boolean }) => {
   };
 
   const handleNext = () => {
+    if (onPress) {
+      onPress();
+    }
     const nowStep = navigation
       .getState()
       ?.routes?.at(-1)

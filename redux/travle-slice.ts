@@ -93,6 +93,9 @@ export const travelSlice = createSlice({
         state[field] = value;
       }
     },
+    updatePopluar: (state, { payload }) => {
+      state.popular = payload;
+    },
     selectPopularity: (state, { payload }) => {
       state.region = payload.region;
       state.cityIndex = payload.cityIndex;

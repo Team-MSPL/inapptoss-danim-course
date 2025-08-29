@@ -121,12 +121,12 @@ function AddPlace() {
         // departure.current.lng = route.params.lng;
         result = country != 0 ? result.data : result;
         result.length == 0 &&
-          (open("동선 상에 추천할 수 있는 장소가 없습니다 ㅠㅠ"),
+          (open("동선에는 딱 맞는 추천 장소가 아직 없어요"),
           navigation.goBack());
       }
       setRcommendList(result);
     } catch (err) {
-      open("추천 아이템이 없습니다!");
+      open("동선에는 딱 맞는 추천 장소가 아직 없어요");
       navigation.goBack();
     } finally {
       setLoading(false);

@@ -165,7 +165,7 @@ function Timetable() {
     const newEnd = newY + e / 0.5;
     console.log(newY, newEnd, e);
     if (newEnd >= 49) {
-      open(`24시가 넘었습니다 다시 설정해주세요`, {
+      open(`24시 이전의 시간만 선택이 가능해요`, {
         icon: "icon-warning-circle",
       });
     } else {
@@ -187,7 +187,7 @@ function Timetable() {
       changeInputIndex =
         changeInputIndex == -1 ? copy.length : changeInputIndex;
       if (changeFlag) {
-        open(`${changeFlag.name}과 겹치는 시간입니다!`, {
+        open(`${changeFlag.name}과 시간이 겹쳐요`, {
           icon: "icon-warning-circle",
         });
       } else {

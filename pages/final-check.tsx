@@ -98,122 +98,119 @@ function FinalCheck() {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 
-  const goNext = useCallback(
-    async (e: number) => {
-      try {
-        setLoading(true);
-        if (
-          travelName == "신나는 여행" &&
-          tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]
-        ) {
-          let changeName =
-            tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)] +
-            (tendency[0].findIndex((item) => item == 1) == 0 ||
-            tendency[0].findIndex((item) => item == 1) == 4
-              ? " "
-              : " 함께하는 ") +
-            seasonList[season.findIndex((item) => item == 1)].title +
-            "여행";
-          dispatch(travelSliceActions.enrollTravelName(changeName));
-        }
-        let a = region.map(
-          (item) => cityViewList[country][cityIndex].title + " " + item
+  const goNext = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (
+        travelName == "신나는 여행" &&
+        tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]
+      ) {
+        let changeName =
+          tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)] +
+          (tendency[0].findIndex((item) => item == 1) == 0 ||
+          tendency[0].findIndex((item) => item == 1) == 4
+            ? " "
+            : " 함께하는 ") +
+          seasonList[season.findIndex((item) => item == 1)].title +
+          "여행";
+        dispatch(travelSliceActions.enrollTravelName(changeName));
+      }
+      let a = region.map(
+        (item) => cityViewList[country][cityIndex].title + " " + item
+      );
+      if (
+        (country == 0 &&
+          cityViewList[country][cityIndex].id >= 3 &&
+          region[0] == "전체") ||
+        (country == 0 &&
+          cityViewList[country][cityIndex].id == 1 &&
+          region[0] == "전체") ||
+        (country != 0 && region[0] == "전체")
+      ) {
+        a = cityViewList[country][cityIndex].sub.map(
+          (value, idx) =>
+            cityViewList[country][cityIndex].title + " " + value.subTitle
         );
-        if (
-          (country == 0 &&
-            cityViewList[country][cityIndex].id >= 3 &&
-            region[0] == "전체") ||
-          (country == 0 &&
-            cityViewList[country][cityIndex].id == 1 &&
-            region[0] == "전체") ||
-          (country != 0 && region[0] == "전체")
-        ) {
-          a = cityViewList[country][cityIndex].sub.map(
-            (value, idx) =>
-              cityViewList[country][cityIndex].title + " " + value.subTitle
-          );
-          a.shift();
-        }
-        // //["해외/Vietnam/나트랑", "해외/Vietnam/다낭"]
-        if (country == 0 && cityIndex == 2) {
-          a = [region[0] + " 전체"];
-        }
-        let copy = [...tendency];
-        copy[3] = [...copy[3], ...copy[4]];
-        copy.pop();
-        copy.push(season);
-        if (country != 0) {
-          a = a.map((item, idx) => {
-            return `해외/${countryList[country].en}/${item
-              .slice(
-                item.indexOf(cityViewList[country][cityIndex].title) +
-                  cityViewList[country][cityIndex].title.length
-              )
-              .trim()}`;
-          });
-        }
-        const result = await dispatch(
-          getTravelAi({
-            regionList: a,
-            accomodationList: accommodations,
-            selectList: copy,
-            essentialPlaceList: essentialPlaces,
-            timeLimitArray: timeLimitArray,
-            nDay: nDay + 1,
-            transit: transit,
-            distanceSensitivity: distance,
-            bandwidth: bandwidth,
-            freeTicket: true,
-            version: 3,
-            password: "(주)나그네들_g5hb87r8765rt68i7ur78",
-          })
-        ).unwrap();
+        a.shift();
+      }
+      // //["해외/Vietnam/나트랑", "해외/Vietnam/다낭"]
+      if (country == 0 && cityIndex == 2) {
+        a = [region[0] + " 전체"];
+      }
+      let copy = [...tendency];
+      copy[3] = [...copy[3], ...copy[4]];
+      copy.pop();
+      copy.push(season);
+      if (country != 0) {
+        a = a.map((item, idx) => {
+          return `해외/${countryList[country].en}/${item
+            .slice(
+              item.indexOf(cityViewList[country][cityIndex].title) +
+                cityViewList[country][cityIndex].title.length
+            )
+            .trim()}`;
+        });
+      }
+      const result = await dispatch(
+        getTravelAi({
+          regionList: a,
+          accomodationList: accommodations,
+          selectList: copy,
+          essentialPlaceList: essentialPlaces,
+          timeLimitArray: timeLimitArray,
+          nDay: nDay + 1,
+          transit: transit,
+          distanceSensitivity: distance,
+          bandwidth: bandwidth,
+          freeTicket: true,
+          version: 3,
+          password: "(주)나그네들_g5hb87r8765rt68i7ur78",
+        })
+      ).unwrap();
 
-        dispatch(travelSliceActions.selectRegion(a));
-        if (result) {
-          navigation.popToTop();
-          navigation.navigate("/preset");
-          !result.data.enoughPlace &&
-            open(
-              `해당 지역의 관광지 중 선택하신 성향의 \n 관광지가 부족하여,일정을 다 채울 수가 없었어요 ㅠㅠ`,
-              {
-                icon: "icon-warning-circle",
-              }
-            );
-        } else {
-          open(`네트워크 연결이 불안정합니다`, {
-            icon: "icon-warning-circle",
-          });
-        }
-      } catch (error) {
-        console.log(error);
-        open(`네트워크 연결이 불안정합니다`, {
+      dispatch(travelSliceActions.selectRegion(a));
+      if (result) {
+        navigation.popToTop();
+        navigation.navigate("/preset");
+        !result.data.enoughPlace &&
+          open(
+            `해당 지역에 선택하신 성향의 \n 관광지가 부족하여,일정을 채우지 못했어요`,
+            {
+              icon: "icon-warning-circle",
+            }
+          );
+      } else {
+        open(`네트워크 연결이 불안정해요${`\n`}잠시후 시도해주세요`, {
           icon: "icon-warning-circle",
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [essentialPlaces, accommodations]
-  );
+    } catch (error) {
+      console.log(error);
+      open(`네트워크 연결이 불안정해요${`\n`}잠시후 시도해주세요`, {
+        icon: "icon-warning-circle",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [essentialPlaces, accommodations]);
 
-  return (
+  return loading ? (
+    <Lottie
+      height={"100%"}
+      src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+      autoPlay={true}
+      loop={true}
+      onAnimationFailure={() => {
+        console.log("Animation Failed");
+      }}
+      onAnimationFinish={() => {
+        console.log("Animation Finished");
+      }}
+    />
+  ) : (
     <FixedBottomCTAProvider>
       <NavigationBar />
-      {loading && (
-        <Lottie
-          height={"100%"}
-          src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
-          autoPlay={true}
-          loop={true}
-          onAnimationFailure={() => {
-            console.log("Animation Failed");
-          }}
-          onAnimationFinish={() => {
-            console.log("Animation Finished");
-          }}
-        />
-      )}
+
       <View style={{ marginHorizontal: 24 }}>
         <Text
           typography="st8"

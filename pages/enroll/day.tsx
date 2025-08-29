@@ -172,13 +172,13 @@ function Day() {
   };
   const goNext = () => {
     if (timeLimitArray[0] < 6) {
-      handleToast("시작 시간을 06시 이전으로 설정하실 수 없습니다.");
+      handleToast("시작 시간은 06시 이후로만 가능해요");
     } else if (timeLimitArray[0] > 19) {
-      handleToast("시작 시간을 20시 이후로는 설정하실 수 없습니다.");
+      handleToast("시작 시간은 20시 전으로만 가능해요");
     } else if (timeLimitArray[1] < 12) {
-      handleToast("종료 시간을 오전으로 설정하실 수 없습니다.");
+      handleToast("종료 시간은 오후로만 가능해요");
     } else if (timeLimitArray[0] >= timeLimitArray[1]) {
-      handleToast("종료 시간을 시작 시간 이후로는 설정하실 수 없습니다.");
+      handleToast("종료 시간은 시작 시간이후로만 가능해요.");
     } else {
       // navigation.navigate("SelectDeparture");
     }

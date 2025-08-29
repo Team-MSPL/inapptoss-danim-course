@@ -26,7 +26,7 @@ export default function Layout({ children }: PropsWithChildren) {
               subTitle2={textData?.subTitle2}
             ></StepText>
             {children}
-            <RouteButton />
+            {textData?.next != "distance" && <RouteButton />}
           </>
         ) : (
           children

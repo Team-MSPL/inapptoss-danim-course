@@ -168,8 +168,7 @@ function PresetDetail() {
               })
         ).unwrap();
         result = region[0].startsWith("해외") ? result.data : result;
-        result.length == 0 &&
-          open("동선 상에 추천할 수 있는 장소가 없습니다 ㅠㅠ");
+        result.length == 0 && open("동선에는 딱 맞는 추천 장소가 아직 없어요");
         return [];
       }
       if (region[0].startsWith("해외")) {
@@ -189,7 +188,7 @@ function PresetDetail() {
       }
       return result;
     } catch (err) {
-      open("추천 아이템이 없습니다!");
+      open("동선에는 딱 맞는 추천 장소가 아직 없어요");
       navigation.goBack();
     } finally {
       // dispatch(LoadingSliceActions.offLoading());
@@ -323,7 +322,7 @@ function PresetDetail() {
               id: Number(items.y) + copy2[index]?.name,
             };
           } else {
-            open("추천 아이템이 없습니다!");
+            open("동선에는 딱 맞는 추천 장소가 아직 없어요");
           }
         } else if (value.name == "숙소 추천" && index != 0) {
           let items = await accommodationRecommend({
@@ -344,7 +343,7 @@ function PresetDetail() {
               id: Number(items.y) + copy2[index]?.name,
             };
           } else {
-            open("추천 아이템이 없습니다!");
+            open("동선에는 딱 맞는 추천 장소가 아직 없어요");
           }
         } else if (index == 0 && value.name == "숙소 추천") {
           if (
@@ -474,8 +473,7 @@ function PresetDetail() {
             color={colors.grey600}
             style={{ textAlign: "center" }}
           >
-            일정을 확정하면 본 결과를 다시 확인하실 수 없습니다.{`\n`}확정하시면
-            자동으로 저장됩니다.
+            일정을 확정하면 본 결과를 다시 확인하실 수 없어요
           </Text>
           <BottomSheet.CTA.Double
             leftButton={

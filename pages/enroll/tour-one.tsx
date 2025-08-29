@@ -30,7 +30,7 @@ export function EnrollTourOne() {
             imageUrl={tendencyList[3]?.photo[idx]}
             onPress={() => {
               if (tendency[0][6] == 1 && idx == 4) {
-                open(" 반려동물과 실내 여행지는 함께 선택할 수 없어요", {
+                open("반려동물과 실내 여행지는 함께 선택할 수 없어요", {
                   icon: "icon-warning-circle",
                 });
               } else {
