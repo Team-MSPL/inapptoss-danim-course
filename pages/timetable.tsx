@@ -8,6 +8,7 @@ import {
   IconButton,
   ListRow,
   NumericSpinner,
+  PartnerNavigation,
   Tab,
   Text,
   Tooltip,
@@ -29,7 +30,11 @@ import { useAppDispatch, useAppSelector } from "store";
 import CustomMapViewMarker from "../components/map-view-marker";
 import { FlatList } from "@react-native-bedrock/native/react-native-gesture-handler";
 import CustomMapViewTimetable from "../components/map-view-timetable";
-import { travelSliceActions } from "../redux/travle-slice";
+import {
+  saveTravel,
+  travelSliceActions,
+  updateTravelCourse,
+} from "../redux/travle-slice";
 import NavigationBar from "../components/navigation-bar";
 
 export const Route = BedrockRoute("/timetable", {
@@ -38,9 +43,17 @@ export const Route = BedrockRoute("/timetable", {
 });
 
 function Timetable() {
-  const { nDay, day, travelName, timetable } = useAppSelector(
-    (state) => state.travelSlice
-  );
+  const {
+    nDay,
+    day,
+    travelName,
+    timetable,
+    userId,
+    region,
+    transit,
+    tendency,
+    travelId,
+  } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const categoryTitle = [
     "여행지",
@@ -228,6 +241,35 @@ function Timetable() {
       ),
     });
   };
+  const firstSave = async () => {
+    try {
+      if (travelId != "") {
+        const data = { travelId: travelId, timetable: timetable };
+        await dispatch(updateTravelCourse(data));
+      } else {
+        const data = {
+          userId: userId,
+          region: region,
+          day: day.slice(0, nDay + 1),
+          nDay: nDay + 1,
+          transit: transit,
+          timetable: timetable,
+          tendency: tendency,
+          travelName: travelName,
+        };
+        await dispatch(saveTravel(data));
+      }
+    } catch (err) {
+      open(`잠시후 다시 시도해주세요`, {
+        icon: "icon-warning-circle",
+      });
+    } finally {
+    }
+  };
+  const handleModifySave = () => {
+    dispatch(travelSliceActions.enrollTimetable(copyTimetable));
+    setModify(false);
+  };
   const handleSave = () => {
     bottomSheet.open({
       children: (
@@ -267,8 +309,11 @@ function Timetable() {
                 style="fill"
                 display="block"
                 onPress={() => {
-                  dispatch(travelSliceActions.enrollTimetable(copyTimetable));
-                  setModify(false);
+                  firstSave();
+                  navigation.reset({
+                    index: 1,
+                    routes: [{ name: "/" }, { name: "/my-travle-list" }],
+                  });
                   bottomSheet.close();
                 }}
               >
@@ -495,7 +540,20 @@ function Timetable() {
   };
   return (
     <View style={{ flex: 1 }}>
-      <NavigationBar />
+      <PartnerNavigation
+        title="다님"
+        icon={{ source: { uri: "https://danim.me/square_logo.png" } }}
+        rightButtons={[
+          {
+            title: "내여행",
+            id: "travle-list",
+            icon: { name: "icon-plane-mono" },
+            onPress: () => {
+              handleSave();
+            },
+          },
+        ]}
+      ></PartnerNavigation>
       <FixedBottomCTAProvider>
         {!modify && (
           <>
@@ -645,10 +703,10 @@ function Timetable() {
               <Button
                 display="block"
                 onPress={() => {
-                  handleSave();
+                  handleModifySave();
                 }}
               >
-                저장하기
+                수정완료
               </Button>
             }
           />

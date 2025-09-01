@@ -79,19 +79,27 @@ const initialState = {
   enoughPlace: false,
   autoRecommendFlag: false,
   travelId: "",
+  userId: null,
+  userJwtToken: null,
 };
 export const travelSlice = createSlice({
   name: "travel",
   initialState,
   reducers: {
-    reset: (state) => {
+    reset: (state, { payload }) => {
       Object.assign(state, initialState);
+      state.userId = payload?.userId;
+      state.userJwtToken = payload?.userJwtToken;
     },
     updateFiled: (state, { payload }) => {
       const { field, value } = payload;
       if (state.hasOwnProperty(field)) {
         state[field] = value;
       }
+    },
+    enrollLogin: (state, { payload }) => {
+      state.userId = payload?.userId;
+      state.userJwtToken = payload?.userJwtToken;
     },
     updatePopluar: (state, { payload }) => {
       state.popular = payload;
@@ -389,9 +397,9 @@ export const socialConnect = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const response = await axiosAuth.post("/user/signUpAndIn", {
-        userName: "테스트용",
+        userName: "토스유저",
         userProfileImage: "https://danim.me/square_logo.png",
-        userToken: "000476.1231223.0625",
+        userToken: data?.userToken,
         loginProvider: "toss",
         signUpFlag: true,
         fcmToken: "",
@@ -401,7 +409,7 @@ export const socialConnect = createAsyncThunk(
       //성공했을때
       if (response.status != 202) {
         axiosAuth.defaults.headers.Authorization = `Bearer ${userData.userJwtToken}`;
-        // thunkAPI.dispatch(userSliceActions.setUserInfo(userData));
+        thunkAPI.dispatch(travelSliceActions.enrollLogin(userData));
         if (response.status == 203) {
           // thunkAPI.dispatch(userSliceActions.setReLogin(true));
         }
@@ -413,7 +421,36 @@ export const socialConnect = createAsyncThunk(
     }
   }
 );
-
+//여행 코스 저장
+export const saveTravel = createAsyncThunk(
+  "/saveTravel",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuth.post(
+        `/travelCourse/saveTravelCourse`,
+        data
+      );
+      return response.data;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
+    }
+  }
+);
+//코스 수정하기
+export const updateTravelCourse = createAsyncThunk(
+  "/updateTravelCourse",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuth.patch(
+        `/travelCourse/updateTravelCourse`,
+        data
+      );
+      return response.data;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
+    }
+  }
+);
 //트립어드바이져 디테일
 export const detailTripadvisor = createAsyncThunk(
   "/detailTripadvisor",

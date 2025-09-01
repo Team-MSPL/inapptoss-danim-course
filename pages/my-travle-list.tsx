@@ -37,13 +37,12 @@ function MyTravleList() {
   const [list, setList] = useState([]);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const { userId } = useAppSelector((state) => state.travelSlice);
   const getTravelList = async () => {
     try {
       //아이디
       setLoading(true);
-      const data = await dispatch(
-        getMyTravelList({ userId: "67bfe5d2a02da54871ad36d6" })
-      ).unwrap();
+      const data = await dispatch(getMyTravelList({ userId: userId })).unwrap();
       setList(data);
     } catch (err) {
       console.log("qq", err);

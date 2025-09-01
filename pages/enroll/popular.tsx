@@ -1,7 +1,7 @@
 import { colors, Slider, Text } from "@toss-design-system/react-native";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { BedrockRoute, Image } from "react-native-bedrock";
+import { BedrockRoute, Image, useNavigation } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { RouteButton } from "../../components/route-button";
@@ -26,7 +26,7 @@ export function EnrollPopular() {
     "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F4.png?alt=media&token=4d270043-8980-4846-bd17-cdd9a4a5df12",
     "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F5.png?alt=media&token=4952eea8-3f5c-44f6-bfca-45906ff9cc0c",
   ];
-
+  const navigation = useNavigation();
   return (
     <View style={{ marginHorizontal: 24 }}>
       <Image
@@ -54,11 +54,13 @@ export function EnrollPopular() {
           가장 유명한
         </Text>
       </View>
-      <RouteButton
-        onPress={() => {
-          dispatch(travelSliceActions.updatePopluar(value));
-        }}
-      />
+      {navigation.getState()?.routes?.at(-1)?.name.includes("popular") && (
+        <RouteButton
+          onPress={() => {
+            dispatch(travelSliceActions.updatePopluar(value));
+          }}
+        />
+      )}
     </View>
   );
 }

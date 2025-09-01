@@ -12,6 +12,7 @@ const axiosAuth = axios.create({
   },
   timeout: 5000,
 });
+//TODO삭제
 axiosAuth.defaults.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVG9rZW4iOiIwMDA0NzYuMTIzMTIyMy4wNjI1IiwiX2lkIjoiNjY4ZGUxNWRlYzU5NDIzMWE0Zjg3OTMwIiwiaWF0IjoxNzU2MTA5ODc4LCJleHAiOjE3NzE2NjE4Nzh9.h2F458SqfxFhvhVdpMBHMPocypnG9XdGYY0EdPHZcD0`;
 axiosAuth.interceptors.response.use(
   (response) => {

@@ -170,6 +170,9 @@ function FinalCheck() {
 
       dispatch(travelSliceActions.selectRegion(a));
       if (result) {
+        dispatch(
+          travelSliceActions.updateFiled({ field: "tendency", value: copy })
+        );
         navigation.popToTop();
         navigation.navigate("/preset");
         !result.data.enoughPlace &&

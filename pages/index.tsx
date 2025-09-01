@@ -11,8 +11,8 @@ import {
   PartnerNavigation,
 } from "@toss-design-system/react-native";
 import { appLogin } from "@apps-in-toss/framework";
-import { useAppDispatch } from "store";
-import { travelSliceActions } from "../redux/travle-slice";
+import { useAppDispatch, useAppSelector } from "store";
+import { socialConnect, travelSliceActions } from "../redux/travle-slice";
 export const Route = BedrockRoute("/", {
   validateParams: (params) => params,
   component: Index,
@@ -21,9 +21,16 @@ export const Route = BedrockRoute("/", {
 export function Index() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const { userId, userJwtToken } = useAppSelector((state) => state.travelSlice);
   const handleNext = () => {
-    dispatch(travelSliceActions.reset());
-    navigation.navigate("/enroll/title");
+    if (userId != null) {
+      dispatch(
+        travelSliceActions.reset({ userId: userId, userJwtToken: userJwtToken })
+      );
+      navigation.navigate("/enroll/title");
+    } else {
+      handleLogin();
+    }
   };
   const handleLogin = useCallback(async () => {
     /**
@@ -33,6 +40,7 @@ export function Index() {
      */
     const { authorizationCode, referrer } = await appLogin();
     console.log(authorizationCode, referrer);
+    await dispatch(socialConnect({ userToken: authorizationCode }));
     /**
      * 획득한 authorizationCode 와 referrer 값을 서버로 전달해요.
      */
@@ -45,19 +53,23 @@ export function Index() {
       <PartnerNavigation
         title="다님"
         icon={{ source: { uri: "https://danim.me/square_logo.png" } }}
-        rightButtons={[
-          {
-            title: "내여행",
-            id: "travle-list",
-            icon: { name: "icon-plane-mono" },
-            onPress: () => {
-              navigation.reset({
-                index: 1,
-                routes: [{ name: "/" }, { name: "/my-travle-list" }],
-              });
-            },
-          },
-        ]}
+        rightButtons={
+          userId != null
+            ? [
+                {
+                  title: "내여행",
+                  id: "travle-list",
+                  icon: { name: "icon-plane-mono" },
+                  onPress: () => {
+                    navigation.reset({
+                      index: 1,
+                      routes: [{ name: "/" }, { name: "/my-travle-list" }],
+                    });
+                  },
+                },
+              ]
+            : undefined
+        }
       ></PartnerNavigation>
       <FixedBottomCTAProvider>
         <Top

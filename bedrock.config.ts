@@ -11,7 +11,7 @@ export default defineConfig({
         icon: "https://danim.me/square_logo.png", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
         bridgeColorMode: "basic",
       },
-      permissions: [{ name: "geolocation", access: "access" }],
+      permissions: [],
     }),
   ],
 });
