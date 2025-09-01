@@ -1,6 +1,6 @@
 import { appsInToss } from "@apps-in-toss/framework/plugins";
 import { defineConfig } from "react-native-bedrock/config";
-import { env } from "@apps-in-toss/framework";
+import { env } from "@react-native-bedrock/plugin-env";
 
 export default defineConfig({
   appName: "danim-course",
