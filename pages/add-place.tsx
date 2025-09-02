@@ -248,7 +248,7 @@ function AddPlace() {
             autocompleteRef as MutableRefObject<GooglePlacesAutocompleteRef | null>
           }
           query={{
-            key: "AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk",
+            key: import.meta.env.GOOGLE_API_KEY,
             language: "ko",
           }}
           textInputProps={{
@@ -307,7 +307,7 @@ function AddPlace() {
             if (response.payload.result.photos) {
               const photoReference =
                 response.payload.result?.photos[0]?.photo_reference;
-              imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk`;
+              imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${import.meta.env.GOOGLE_API_KEY}`;
             } else {
               imageUrl = null;
             }

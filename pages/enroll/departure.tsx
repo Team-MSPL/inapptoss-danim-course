@@ -106,7 +106,7 @@ function Departure() {
           autocompleteRef as MutableRefObject<GooglePlacesAutocompleteRef | null>
         }
         query={{
-          key: "AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk",
+          key: import.meta.env.GOOGLE_API_KEY,
           language: "ko",
         }}
         textInputProps={{

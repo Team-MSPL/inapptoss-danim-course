@@ -549,7 +549,7 @@ export const googleDetailApi = createAsyncThunk(
   async (data: any, { rejectWithValue }) => {
     try {
       const response = await axiosGoogle.get(
-        `/place/details/json?place_id=${data.placeId}&fields=photos%2Cname%2Crating%2Creviews%2Ceditorial_summary&language=ko&key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk`
+        `/place/details/json?place_id=${data.placeId}&fields=photos%2Cname%2Crating%2Creviews%2Ceditorial_summary&language=ko&key=${import.meta.env.GOOGLE_API_KEY}`
       );
       //제로리절트 처리하기
       return response.data;
