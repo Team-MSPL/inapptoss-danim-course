@@ -45,7 +45,7 @@ export default function CustomMapViewMarker({
             width: 100%;
           }
         </style>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=${import.meta.env.GOOGLE_API_KEY}"></script>
         <script>
           function initMap() {
             const center = { lat: ${centerLat}, lng: ${centerLng} };

@@ -459,7 +459,7 @@ export const detailTripadvisor = createAsyncThunk(
       const response = await axiosTripadvisor.get(
         `${
           data.id
-        }/details?key=${"02F5B2FD8DAD4CFBA7C2D77F11FD9BD8"}&&language=ko`
+        }/details?key=${import.meta.env.Tripadvisor_KEy}&&language=ko`
       );
       return response.data;
     } catch (error: any) {
@@ -549,7 +549,7 @@ export const googleDetailApi = createAsyncThunk(
   async (data: any, { rejectWithValue }) => {
     try {
       const response = await axiosGoogle.get(
-        `/place/details/json?place_id=${data.placeId}&fields=photos%2Cname%2Crating%2Creviews%2Ceditorial_summary&language=ko&key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk`
+        `/place/details/json?place_id=${data.placeId}&fields=photos%2Cname%2Crating%2Creviews%2Ceditorial_summary&language=ko&key=${import.meta.env.GOOGLE_API_KEY}`
       );
       //제로리절트 처리하기
       return response.data;
@@ -562,7 +562,7 @@ export const axiosKakao = axios.create({
   baseURL: "https://dapi.kakao.com/v2/local/search",
   headers: {
     "content-type": "application/json",
-    Authorization: `KakaoAK ${"7dcbff3c20877747849dacb808c37bc2"}`,
+    Authorization: `KakaoAK ${import.meta.env.KAKAO_REST_API_KEY}`,
   },
 });
 //카카오 식당,카페 등 추천 장소 얻는 거
@@ -592,7 +592,7 @@ export const recommendTripadvisor = createAsyncThunk(
   async (data: any, { rejectWithValue }) => {
     try {
       const response = await axiosTripadvisor.get(
-        `/search?key=${"02F5B2FD8DAD4CFBA7C2D77F11FD9BD8"}&searchQuery=${
+        `/search?key=${import.meta.env.Tripadvisor_KEy}&searchQuery=${
           data.name
         }&category=${data.category}&latLong=${data.lat}%2C${
           data.lng

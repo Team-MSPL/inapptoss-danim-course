@@ -2,8 +2,9 @@ import axios from "axios";
 import { useState } from "react";
 // import { store } from "../src/store";
 
-const API_ROUTE = "http://3.37.54.226";
-const API_ROUTE_RELEASE = "https://danimdatabase.com";
+const API_ROUTE = import.meta.env.API_ROUTE;
+const API_ROUTE_RELEASE = import.meta.env.API_ROUTE_RELEASE;
+
 const axiosAuth = axios.create({
   baseURL: API_ROUTE,
   headers: {
