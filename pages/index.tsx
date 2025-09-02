@@ -52,6 +52,7 @@ export function Index() {
     ).unwrap();
     if (userData?.resultType == "SUCCESS") {
       await dispatch(socialConnect({ userToken: userData?.success?.userKey }));
+      navigation.navigate("/enroll/title");
     } else {
       open("로그인에 잠시 문제가 생겼어요", {
         icon: "icon-warning-circle",
@@ -63,9 +64,9 @@ export function Index() {
      * 획득한 authorizationCode 와 referrer 값을 서버로 전달해요.
      */
   }, []);
-  useEffect(() => {
-    userId || handleLogin();
-  }, [userId]);
+  // useEffect(() => {
+  //   userId || handleLogin();
+  // }, [userId]);
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
