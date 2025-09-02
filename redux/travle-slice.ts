@@ -459,7 +459,7 @@ export const detailTripadvisor = createAsyncThunk(
       const response = await axiosTripadvisor.get(
         `${
           data.id
-        }/details?key=${"02F5B2FD8DAD4CFBA7C2D77F11FD9BD8"}&&language=ko`
+        }/details?key=${import.meta.env.Tripadvisor_KEy}&&language=ko`
       );
       return response.data;
     } catch (error: any) {
@@ -592,7 +592,7 @@ export const recommendTripadvisor = createAsyncThunk(
   async (data: any, { rejectWithValue }) => {
     try {
       const response = await axiosTripadvisor.get(
-        `/search?key=${"02F5B2FD8DAD4CFBA7C2D77F11FD9BD8"}&searchQuery=${
+        `/search?key=${import.meta.env.Tripadvisor_KEy}&searchQuery=${
           data.name
         }&category=${data.category}&latLong=${data.lat}%2C${
           data.lng
