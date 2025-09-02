@@ -36,7 +36,7 @@ const tendencyList = [
   },
 ];
 const initialState = {
-  travelName: "",
+  travelName: "신나는 여행",
   title: "",
   country: null,
   cityIndex: null,
@@ -190,6 +190,9 @@ export const travelSlice = createSlice({
       state.tendency = payload.tendency;
       state.travelId = payload._id;
       state.travelName = payload.travelName;
+    });
+    builder.addCase(saveTravel.fulfilled, (state, { payload }) => {
+      state.travelId = payload.travelId;
     });
     builder.addCase(getTravelAi.fulfilled, (state, { payload }) => {
       console.log(payload.data.resultData);
@@ -421,17 +424,57 @@ export const socialConnect = createAsyncThunk(
     }
   }
 );
+
+export const tossTest = createAsyncThunk(
+  "/api-partner/v1/apps-in-toss/user/oauth2/generate-token",
+  async (data, thunkAPI) => {
+    try {
+      const response = await axiosToss.post(
+        "/api-partner/v1/apps-in-toss/user/oauth2/generate-token",
+        data
+      );
+      return response;
+    } catch (error) {
+      throw thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+export const axiosToss = axios.create({
+  baseURL: "https://apps-in-toss-api.toss.im",
+  headers: {
+    "Content-Type": "application/json;charset=utf-8",
+  },
+});
+
+//토스 유저 정보
+export const tossUser = createAsyncThunk(
+  "/toss/login",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuth.post(`/toss/login`, data);
+      return response.data;
+    } catch (error: any) {
+      console.log("ee", error);
+      throw rejectWithValue(error.code);
+    }
+  }
+);
+
 //여행 코스 저장
 export const saveTravel = createAsyncThunk(
   "/saveTravel",
   async (data, { rejectWithValue }) => {
     try {
+      console.log(data);
       const response = await axiosAuth.post(
         `/travelCourse/saveTravelCourse`,
-        data
+        data,
+        { timeout: 300 }
       );
+      console.log(response?.data, "zzz");
       return response.data;
     } catch (error: any) {
+      console.log("ee", error);
       throw rejectWithValue(error.code);
     }
   }

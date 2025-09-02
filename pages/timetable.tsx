@@ -255,7 +255,7 @@ function Timetable() {
           transit: transit,
           timetable: timetable,
           tendency: tendency,
-          travelName: travelName,
+          travelName: travelName || "신나는여행",
         };
         await dispatch(saveTravel(data));
       }

@@ -30,6 +30,7 @@ function EnrollTitle() {
         help="15자 안으로 적어주세요"
         placeholder="예) 신나는 여행"
         value={travelName}
+        autoFocus
         onChangeText={(e) => handleChange(e)}
       />
     </>
