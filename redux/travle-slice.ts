@@ -562,7 +562,7 @@ export const axiosKakao = axios.create({
   baseURL: "https://dapi.kakao.com/v2/local/search",
   headers: {
     "content-type": "application/json",
-    Authorization: `KakaoAK ${"7dcbff3c20877747849dacb808c37bc2"}`,
+    Authorization: `KakaoAK ${import.meta.env.KAKAO_REST_API_KEY}`,
   },
 });
 //카카오 식당,카페 등 추천 장소 얻는 거
