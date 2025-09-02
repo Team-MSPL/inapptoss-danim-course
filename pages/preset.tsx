@@ -200,7 +200,7 @@ function Preset() {
                   )
                   .map((item, index) => {
                     return (
-                      <Badge size="medium" type="blue" badgeStyle="weak">
+                      <Badge key={`${item}-${index}`} size="medium" type="blue" badgeStyle="weak">
                         {item + " "}{" "}
                         {presetTendencyList[index]?.tendencyPointList[index]}점
                       </Badge>
@@ -211,7 +211,7 @@ function Preset() {
           )}
           <View style={{ height: 20 }}></View>
           {item?.map((value, idx) => (
-            <StepperRow
+            <StepperRow key={value?.id ?? `step-${idx}`}
               hideLine={idx == item.length - 1}
               left={<StepperRow.NumberIcon number={idx + 1} />}
               center={
@@ -312,7 +312,7 @@ function Preset() {
                 .slice(0, 3)
                 .map((item, idx) => {
                   return (
-                    <View
+                    <View key={`${item}-${idx}`}
                       style={{
                         borderRadius: 12,
                         paddingHorizontal: 7,
@@ -363,11 +363,11 @@ function Preset() {
         value={tabValue}
         style={{ marginTop: 5 }}
       >
-        {[
-          ...Array.from({ length: presetDatas.length }, (item, index) => index),
-        ].map((item, idx) => {
-          return <Tab.Item value={String(idx)}>{idx + 1}</Tab.Item>;
-        })}
+          {Array.from({ length: presetDatas.length }, (_, idx) => idx).map((_, idx) => (
+              <Tab.Item key={`tab-${idx}`} value={String(idx)}>
+                  {idx + 1}
+              </Tab.Item>
+          ))}
       </Tab>
       <FlatList
         keyExtractor={(_, index) => index.toString()}
