@@ -12,6 +12,7 @@ import {
   getMyTravelList,
   getOneTravelCourse,
   getRegionInfo,
+  travelSliceActions,
 } from "../redux/travle-slice";
 import {
   Asset,
@@ -37,15 +38,16 @@ function MyTravleList() {
   const [list, setList] = useState([]);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-  const { userId } = useAppSelector((state) => state.travelSlice);
+  const { userId, userJwtToken } = useAppSelector((state) => state.travelSlice);
   const getTravelList = async () => {
     try {
       //아이디
       setLoading(true);
+      console.log(userId);
       const data = await dispatch(getMyTravelList({ userId: userId })).unwrap();
       setList(data);
     } catch (err) {
-      console.log("qq", err);
+      console.log("qq", err, userId);
       //   dispatch(travelSliceActions.setMyTravelList([]));
     } finally {
       setLoading(false);
@@ -265,6 +267,12 @@ function MyTravleList() {
             size="tiny"
             style="weak"
             onPress={() => {
+              dispatch(
+                travelSliceActions.reset({
+                  userId: userId,
+                  userJwtToken: userJwtToken,
+                })
+              );
               navigation.replace("/enroll/title");
             }}
           >

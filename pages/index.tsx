@@ -9,10 +9,17 @@ import {
   FixedBottomCTA,
   FixedBottomCTAProvider,
   PartnerNavigation,
+  Toast,
+  useToast,
 } from "@toss-design-system/react-native";
 import { appLogin } from "@apps-in-toss/framework";
 import { useAppDispatch, useAppSelector } from "store";
-import { socialConnect, travelSliceActions } from "../redux/travle-slice";
+import {
+  socialConnect,
+  tossTest,
+  tossUser,
+  travelSliceActions,
+} from "../redux/travle-slice";
 export const Route = BedrockRoute("/", {
   validateParams: (params) => params,
   component: Index,
@@ -32,6 +39,7 @@ export function Index() {
       handleLogin();
     }
   };
+  const { open } = useToast();
   const handleLogin = useCallback(async () => {
     /**
      * appLogin을 호출하면
@@ -39,15 +47,26 @@ export function Index() {
      * - 토스 로그인을 이미 진행한 경우 별도의 로그인 창 없이 바로 인가 코드가 반환돼요.
      */
     const { authorizationCode, referrer } = await appLogin();
-    console.log(authorizationCode, referrer);
-    await dispatch(socialConnect({ userToken: authorizationCode }));
+    const userData = await dispatch(
+      tossUser({ authorizationCode, referrer })
+    ).unwrap();
+    if (userData?.resultType == "SUCCESS") {
+      await dispatch(socialConnect({ userToken: userData?.success?.userKey }));
+      navigation.navigate("/enroll/title");
+    } else {
+      open("로그인에 잠시 문제가 생겼어요", {
+        icon: "icon-warning-circle",
+      });
+    }
+    // const a = await dispatch(tossTest({ authorizationCode, referrer }));
+
     /**
      * 획득한 authorizationCode 와 referrer 값을 서버로 전달해요.
      */
   }, []);
-  useEffect(() => {
-    handleLogin();
-  }, []);
+  // useEffect(() => {
+  //   userId || handleLogin();
+  // }, [userId]);
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
