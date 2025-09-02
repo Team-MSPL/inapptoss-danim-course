@@ -17,11 +17,13 @@ export function EnrollTransit() {
   const { transit } = useAppSelector((state) => state.travelSlice);
   const moveList = [
     {
+      id: 0,
       name: "자동차 렌트카",
       function: () => dispatch(travelSliceActions.enrollTransit(0)),
       image: "icon-car-blue",
     },
     {
+      id: 1,
       name: "대중교통",
       function: () => dispatch(travelSliceActions.enrollTransit(1)),
       image: "icon-train-blue",
@@ -48,8 +50,8 @@ export function EnrollTransit() {
       }}
     >
       <GridList column={2} style={{ marginBottom: 16 }}>
-        {moveList.map((item, idx) => {
-          const isSelected = transit === idx;
+        {moveList.map((item) => {
+          const isSelected = transit === item.id;
 
           const containerStyle: ViewStyle = {
             ...styles.buttonContainerBase,
@@ -67,7 +69,7 @@ export function EnrollTransit() {
                 <Icon style={{ width: 60, height: 60 }} name={item.image} />
               }
               title={item.name}
-              key={idx}
+              key={item.id}
               style={containerStyle}
               onPress={item.function}
             ></GridList.Item>
