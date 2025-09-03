@@ -1,4 +1,5 @@
 import {
+  AnimateSkeleton,
   Badge,
   BottomSheet,
   Button,
@@ -9,6 +10,7 @@ import {
   ListRow,
   NumericSpinner,
   SegmentedControl,
+  Skeleton,
   Text,
   useBottomSheet,
   useToast,
@@ -210,18 +212,29 @@ function AddPlace() {
   return (
     <View style={{ flex: 1 }}>
       {loading && (
-        <Lottie
-          height={"100%"}
-          src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
-          autoPlay={true}
-          loop={true}
-          onAnimationFailure={() => {
-            console.log("Animation Failed");
-          }}
-          onAnimationFinish={() => {
-            console.log("Animation Finished");
-          }}
-        />
+        <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
+          <Skeleton height={60} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+        </AnimateSkeleton>
+        // <Lottie
+        //   height={"100%"}
+        //   src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+        //   autoPlay={true}
+        //   loop={true}
+        //   onAnimationFailure={() => {
+        //     console.log("Animation Failed");
+        //   }}
+        //   onAnimationFinish={() => {
+        //     console.log("Animation Finished");
+        //   }}
+        // />
       )}
       <NavigationBar />
       <FixedBottomCTAProvider>
@@ -307,7 +320,9 @@ function AddPlace() {
             if (response.payload.result.photos) {
               const photoReference =
                 response.payload.result?.photos[0]?.photo_reference;
-              imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${import.meta.env.GOOGLE_API_KEY}`;
+              imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${
+                import.meta.env.GOOGLE_API_KEY
+              }`;
             } else {
               imageUrl = null;
             }

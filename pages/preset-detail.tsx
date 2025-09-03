@@ -473,7 +473,7 @@ function PresetDetail() {
             color={colors.grey600}
             style={{ textAlign: "center" }}
           >
-            일정을 확정하면 본 결과를 다시 확인하실 수 없어요
+            일정을 확정하면 본 결과를{`\n`}다시 확인하실 수 없어요
           </Text>
           <BottomSheet.CTA.Double
             leftButton={

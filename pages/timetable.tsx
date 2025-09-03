@@ -288,7 +288,7 @@ function Timetable() {
             color={colors.grey600}
             style={{ textAlign: "center" }}
           >
-            저장된 일정은 오른쪽 상단 비행기 아이콘에서{`\n`} 볼 수 있어요.
+            저장된 일정은 오른쪽 상단 {`\n`}비행기 아이콘에서 볼 수 있어요.
           </Text>
           <BottomSheet.CTA.Double
             leftButton={
@@ -333,7 +333,11 @@ function Timetable() {
             typography="t4"
             fontWeight="bold"
             color={colors.grey800}
-            style={{ alignSelf: "center" }}
+            style={{
+              alignSelf: "center",
+              marginHorizontal: 40,
+              textAlign: "center",
+            }}
           >
             '{copyTimetable[tooltips?.day][tooltips?.index]?.name}'일정을
             삭제할까요?
@@ -541,8 +545,12 @@ function Timetable() {
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
-        title="다님"
-        icon={{ source: { uri: "https://danim.me/square_logo.png" } }}
+        title="AI에게 여행 코스 추천 받기"
+        icon={{
+          source: {
+            uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png",
+          },
+        }}
         rightButtons={[
           {
             title: "내여행",

@@ -4,10 +4,12 @@ import { BedrockRoute, Lottie, useNavigation } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import { recommendApi, recommendTripadvisor } from "../redux/travle-slice";
 import {
+  AnimateSkeleton,
   BottomSheet,
   Button,
   colors,
   ListRow,
+  Skeleton,
   Text,
   useBottomSheet,
   useToast,
@@ -168,7 +170,11 @@ function RecommendPlace() {
             typography="t4"
             fontWeight="bold"
             color={colors.grey800}
-            style={{ alignSelf: "center" }}
+            style={{
+              alignSelf: "center",
+              marginHorizontal: 40,
+              textAlign: "center",
+            }}
           >
             {recommendList[e]?.place_name ?? recommendList[e]?.name}를
             추가하시겠습니까?
@@ -217,18 +223,29 @@ function RecommendPlace() {
     <View style={{ flex: 1 }}>
       <NavigationBar />
       {loading && (
-        <Lottie
-          height={"100%"}
-          src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
-          autoPlay={true}
-          loop={true}
-          onAnimationFailure={() => {
-            console.log("Animation Failed");
-          }}
-          onAnimationFinish={() => {
-            console.log("Animation Finished");
-          }}
-        />
+        <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
+          <Skeleton height={60} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+        </AnimateSkeleton>
+        // <Lottie
+        //   height={"100%"}
+        //   src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+        //   autoPlay={true}
+        //   loop={true}
+        //   onAnimationFailure={() => {
+        //     console.log("Animation Failed");
+        //   }}
+        //   onAnimationFinish={() => {
+        //     console.log("Animation Finished");
+        //   }}
+        // />
       )}
       {/* <CustomMapViewMarker
         presetData={saveDate}
