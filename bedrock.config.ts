@@ -7,9 +7,9 @@ export default defineConfig({
   plugins: [
     appsInToss({
       brand: {
-        displayName: "danim-course", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
+        displayName: "AI에게 여행 코스 추천 받기", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
         primaryColor: "#3182F6", // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
-        icon: "https://danim.me/square_logo.png", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
+        icon: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
         bridgeColorMode: "basic",
       },
       permissions: [],
@@ -25,7 +25,7 @@ export default defineConfig({
 
       // Google Signin 키
       Google_Signin_Key:
-          "70367155908-li7to5i4bq75mpog69prtpmo7t7hnq5e.apps.googleusercontent.com",
+        "70367155908-li7to5i4bq75mpog69prtpmo7t7hnq5e.apps.googleusercontent.com",
 
       // 네이버 api 키
       NAVER_API_KEY: "Xxpwy1KKSKJ1CmgX7iKDUdWrwUmXMxuMdHAHSb4v",
@@ -44,7 +44,7 @@ export default defineConfig({
 
       // 투어 api 키
       Tour_API_KEY:
-          "J7laKTTThB5SZdBdab6YA4Nam%2BgRrYc%2FXdqAzSQ%2FDUhLxMWFSUxBVbrn6WDpvTauz4oW2phb3ojdk9YmlZMPww%3D%3D",
+        "J7laKTTThB5SZdBdab6YA4Nam%2BgRrYc%2FXdqAzSQ%2FDUhLxMWFSUxBVbrn6WDpvTauz4oW2phb3ojdk9YmlZMPww%3D%3D",
 
       // ios 쿠폰을 위한 userId 암호화 크립토 키
       CRYPTO_KEY: "danimaabcdadanimacbdaadanimadacb",

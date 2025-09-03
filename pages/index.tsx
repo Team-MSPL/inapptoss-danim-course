@@ -11,6 +11,8 @@ import {
   PartnerNavigation,
   Toast,
   useToast,
+  Skeleton,
+  AnimateSkeleton,
 } from "@toss-design-system/react-native";
 import { appLogin } from "@apps-in-toss/framework";
 import { useAppDispatch, useAppSelector } from "store";
@@ -70,8 +72,12 @@ export function Index() {
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
-        title="다님"
-        icon={{ source: { uri: "https://danim.me/square_logo.png" } }}
+        title="AI에게 여행 코스 추천 받기"
+        icon={{
+          source: {
+            uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png",
+          },
+        }}
         rightButtons={
           userId != null
             ? [
