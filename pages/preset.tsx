@@ -1,4 +1,7 @@
-import { FlatList } from "@react-native-bedrock/native/react-native-gesture-handler";
+import {
+  FlatList,
+  ScrollView,
+} from "@react-native-bedrock/native/react-native-gesture-handler";
 import {
   Badge,
   BottomSheet,
@@ -74,7 +77,9 @@ function Preset() {
                   type="dark"
                   style="weak"
                   display="block"
-                  onPress={closeView}
+                  onPress={() => {
+                    navigation.popToTop();
+                  }}
                 >
                   {"종료하기"}
                 </Button>
@@ -267,7 +272,7 @@ function Preset() {
   };
 
   return (
-    <View>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <NavigationBar />
       <Top
         title={
@@ -389,6 +394,6 @@ function Preset() {
         }}
         renderItem={renderItem}
       ></FlatList>
-    </View>
+    </ScrollView>
   );
 }

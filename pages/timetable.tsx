@@ -145,7 +145,12 @@ function Timetable() {
                         display="block"
                         onPress={() => {
                           bottomSheet.close();
-                          closeView();
+                          firstSave();
+                          // closeView();
+                          navigation.reset({
+                            index: 0,
+                            routes: [{ name: "/" }],
+                          });
                         }}
                       >
                         {"저장 후 나가기"}
@@ -572,7 +577,7 @@ function Timetable() {
                   top={
                     moment(day[0]).format("YYYY-MM-DD") +
                     " ~ " +
-                    moment(day[nDay - 1]).format("YYYY-MM-DD")
+                    moment(day[nDay]).format("YYYY-MM-DD")
                   }
                   // bottom={calculateTendency(presetTendencyList[params.index])}
                   bottom={travelName}

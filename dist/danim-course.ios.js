@@ -1,9 +1,9 @@
 window.__bedrock = window.__bedrock || {};
-window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
+window.__bedrock.app = { name: "danim-course", buildNumber: "20250903105708" };
 (function(){if(typeof Symbol!=="undefined"&&!Symbol.asyncIterator){Symbol.asyncIterator=Symbol.for("@@asyncIterator")}})();
 
   (function (global) {
-    global.__appsInToss = {"deploymentId":"01990835-5288-7842-9242-c5f50e76a6b7","bridgeColorMode":"basic","brandDisplayName":"danim-course","brandPrimaryColor":"#3182F6","brandIcon":"https://danim.me/square_logo.png"};
+    global.__appsInToss = {"deploymentId":"01990d4a-c65f-7b9a-bc87-0de4b4f9d75d","bridgeColorMode":"basic","brandDisplayName":"AI에게 여행 코스 추천 받기","brandPrimaryColor":"#3182F6","brandIcon":"https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png"};
   })(
     typeof globalThis !== 'undefined'
       ? globalThis
@@ -73,9 +73,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return __copyProps(__defProp({}, "__esModule", { value: true }), mod);
   };
 
+  // <define:import.meta.env>
+  var define_import_meta_env_default;
+  var init_define_import_meta_env = __esm({
+    "<define:import.meta.env>"() {
+      define_import_meta_env_default = { GOOGLE_API_KEY: "AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk", API_ROUTE: "http://3.37.54.226", API_ROUTE_RELEASE: "https://danimdatabase.com", Google_Signin_Key: "70367155908-li7to5i4bq75mpog69prtpmo7t7hnq5e.apps.googleusercontent.com", NAVER_API_KEY: "Xxpwy1KKSKJ1CmgX7iKDUdWrwUmXMxuMdHAHSb4v", NAVER_API_KEY_id: "m51j8hlfow", KAKAO_REST_API_KEY: "7dcbff3c20877747849dacb808c37bc2", KAKAO_NATIVE_KEY: "1059586e7b1423286b1a1a37606f9786", Google_Ads_Key: "ca-app-pub-1677695109210729/8209411556", Google_Ads_Banner_Android: "ca-app-pub-1677695109210729/3719792156", Tour_API_KEY: "J7laKTTThB5SZdBdab6YA4Nam%2BgRrYc%2FXdqAzSQ%2FDUhLxMWFSUxBVbrn6WDpvTauz4oW2phb3ojdk9YmlZMPww%3D%3D", CRYPTO_KEY: "danimaabcdadanimacbdaadanimadacb", Tripadvisor_KEy: "02F5B2FD8DAD4CFBA7C2D77F11FD9BD8" };
+    }
+  });
+
   // protocol-bedrock-require:react
   var require_react = __commonJS({
     "protocol-bedrock-require:react"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react");
     }
   });
@@ -84,6 +93,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_react_jsx_runtime_production_min = __commonJS({
     "node_modules/react/cjs/react-jsx-runtime.production.min.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       var f3 = require_react();
       var k4 = Symbol.for("react.element");
       var l = Symbol.for("react.fragment");
@@ -121,6 +131,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_jsx_runtime = __commonJS({
     "node_modules/react/jsx-runtime.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       if (true) {
         module.exports = require_react_jsx_runtime_production_min();
       } else {
@@ -137,6 +148,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_instanceof = __esm({
     "node_modules/@swc/helpers/esm/_instanceof.js"() {
+      init_define_import_meta_env();
       init_instanceof();
     }
   });
@@ -147,6 +159,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_class_call_check = __esm({
     "node_modules/@swc/helpers/esm/_class_call_check.js"() {
+      init_define_import_meta_env();
       init_instanceof();
     }
   });
@@ -168,6 +181,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_create_class = __esm({
     "node_modules/@swc/helpers/esm/_create_class.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -185,6 +199,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_define_property = __esm({
     "node_modules/@swc/helpers/esm/_define_property.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -194,6 +209,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_array_with_holes = __esm({
     "node_modules/@swc/helpers/esm/_array_with_holes.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -224,6 +240,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_iterable_to_array_limit = __esm({
     "node_modules/@swc/helpers/esm/_iterable_to_array_limit.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -233,6 +250,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_non_iterable_rest = __esm({
     "node_modules/@swc/helpers/esm/_non_iterable_rest.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -244,6 +262,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_array_like_to_array = __esm({
     "node_modules/@swc/helpers/esm/_array_like_to_array.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -258,6 +277,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_unsupported_iterable_to_array = __esm({
     "node_modules/@swc/helpers/esm/_unsupported_iterable_to_array.js"() {
+      init_define_import_meta_env();
       init_array_like_to_array();
     }
   });
@@ -268,6 +288,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_sliced_to_array = __esm({
     "node_modules/@swc/helpers/esm/_sliced_to_array.js"() {
+      init_define_import_meta_env();
       init_array_with_holes();
       init_iterable_to_array_limit();
       init_non_iterable_rest();
@@ -281,6 +302,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_array_without_holes = __esm({
     "node_modules/@swc/helpers/esm/_array_without_holes.js"() {
+      init_define_import_meta_env();
       init_array_like_to_array();
     }
   });
@@ -293,6 +315,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_iterable_to_array = __esm({
     "node_modules/@swc/helpers/esm/_iterable_to_array.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -302,6 +325,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_non_iterable_spread = __esm({
     "node_modules/@swc/helpers/esm/_non_iterable_spread.js"() {
+      init_define_import_meta_env();
     }
   });
 
@@ -311,6 +335,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_to_consumable_array = __esm({
     "node_modules/@swc/helpers/esm/_to_consumable_array.js"() {
+      init_define_import_meta_env();
       init_array_without_holes();
       init_iterable_to_array();
       init_non_iterable_spread();
@@ -325,12 +350,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var init_type_of = __esm({
     "node_modules/@swc/helpers/esm/_type_of.js"() {
+      init_define_import_meta_env();
     }
   });
 
   // protocol-bedrock-require:react-native
   var require_react_native = __commonJS({
     "protocol-bedrock-require:react-native"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native");
     }
   });
@@ -338,6 +365,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:react-native-safe-area-context
   var require_react_native_safe_area_context = __commonJS({
     "protocol-bedrock-require:react-native-safe-area-context"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native-safe-area-context");
     }
   });
@@ -345,6 +373,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:@react-navigation/native
   var require_native = __commonJS({
     "protocol-bedrock-require:@react-navigation/native"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("@react-navigation/native");
     }
   });
@@ -352,6 +381,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:@react-navigation/native-stack
   var require_native_stack = __commonJS({
     "protocol-bedrock-require:@react-navigation/native-stack"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("@react-navigation/native-stack");
     }
   });
@@ -359,6 +389,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:react-native-svg
   var require_react_native_svg = __commonJS({
     "protocol-bedrock-require:react-native-svg"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native-svg");
     }
   });
@@ -366,6 +397,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:lottie-react-native
   var require_lottie_react_native = __commonJS({
     "protocol-bedrock-require:lottie-react-native"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("lottie-react-native");
     }
   });
@@ -373,6 +405,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:react-native-fast-image
   var require_react_native_fast_image = __commonJS({
     "protocol-bedrock-require:react-native-fast-image"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native-fast-image");
     }
   });
@@ -381,6 +414,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_defineLazyObjectProperty = __commonJS({
     "node_modules/react-native/Libraries/Utilities/defineLazyObjectProperty.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       function defineLazyObjectProperty(object, name2, descriptor) {
         var get2 = descriptor.get;
         var enumerable = descriptor.enumerable !== false;
@@ -419,6 +453,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_PolyfillFunctions = __commonJS({
     "node_modules/react-native/Libraries/Utilities/PolyfillFunctions.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var defineLazyObjectProperty = require_defineLazyObjectProperty();
       function polyfillObjectProperty(object, name2, getValue) {
         var descriptor = Object.getOwnPropertyDescriptor(object, name2);
@@ -451,6 +486,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_lib = __commonJS({
     "node_modules/whatwg-url-without-unicode/node_modules/webidl-conversions/lib/index.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_type_of();
       function _(message, opts) {
         return "".concat(opts && opts.context ? opts.context : "Value", " ").concat(message, ".");
@@ -745,6 +781,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_utils = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/utils.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_type_of();
       function isObject2(value) {
         return (typeof value === "undefined" ? "undefined" : _type_of(value)) === "object" && value !== null || typeof value === "function";
@@ -850,6 +887,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_base64_js = __commonJS({
     "node_modules/base64-js/index.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       exports.byteLength = byteLength;
       exports.toByteArray = toByteArray;
       exports.fromByteArray = fromByteArray;
@@ -949,6 +987,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/ieee754/index.js
   var require_ieee754 = __commonJS({
     "node_modules/ieee754/index.js"(exports) {
+      init_define_import_meta_env();
       exports.read = function(buffer, offset, isLE, mLen, nBytes) {
         var e4, m;
         var eLen = nBytes * 8 - mLen - 1;
@@ -1033,6 +1072,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_buffer = __commonJS({
     "node_modules/buffer/index.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       init_type_of();
       var base64 = require_base64_js();
@@ -2365,6 +2405,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_punycode = __commonJS({
     "node_modules/whatwg-url-without-unicode/node_modules/punycode/punycode.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_to_consumable_array();
       var _String;
       var maxInt = 2147483647;
@@ -2658,6 +2699,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_infra = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/infra.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       function isASCIIDigit(c2) {
         return c2 >= 48 && c2 <= 57;
       }
@@ -2683,6 +2725,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_urlencoded = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/urlencoded.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_sliced_to_array();
       var Buffer2 = require_buffer().Buffer;
       var isASCIIHex = require_infra().isASCIIHex;
@@ -2860,6 +2903,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_url_state_machine = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/url-state-machine.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var Buffer2 = require_buffer().Buffer;
       var punycode = require_punycode();
@@ -4017,6 +4061,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_URLSearchParams_impl = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/URLSearchParams-impl.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_class_call_check();
       init_create_class();
       init_type_of();
@@ -4280,6 +4325,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_URLSearchParams = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/URLSearchParams.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_class_call_check();
       init_create_class();
       init_define_property();
@@ -4847,6 +4893,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_URL_impl = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/URL-impl.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_class_call_check();
       init_create_class();
       var usm = require_url_state_machine();
@@ -5091,6 +5138,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_URL = __commonJS({
     "node_modules/whatwg-url-without-unicode/lib/URL.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_class_call_check();
       init_create_class();
       init_define_property();
@@ -5520,6 +5568,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_webidl2js_wrapper = __commonJS({
     "node_modules/whatwg-url-without-unicode/webidl2js-wrapper.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       var URL3 = require_URL();
       var URLSearchParams3 = require_URLSearchParams();
       exports.URL = URL3;
@@ -5531,6 +5580,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_whatwg_url_without_unicode = __commonJS({
     "node_modules/whatwg-url-without-unicode/index.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       var _require = require_webidl2js_wrapper();
       var URL3 = _require.URL;
       var URLSearchParams3 = _require.URLSearchParams;
@@ -5564,6 +5614,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native20, import_whatwg_url_without_unicode, BLOB_URL_PREFIX, BlobModule, URL2;
   var init_URL = __esm({
     "node_modules/react-native-url-polyfill/js/URL.js"() {
+      init_define_import_meta_env();
       import_react_native20 = __toESM(require_react_native());
       import_whatwg_url_without_unicode = __toESM(require_whatwg_url_without_unicode());
       BLOB_URL_PREFIX = null;
@@ -5596,6 +5647,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_whatwg_url_without_unicode2;
   var init_URLSearchParams = __esm({
     "node_modules/react-native-url-polyfill/js/URLSearchParams.js"() {
+      init_define_import_meta_env();
       import_whatwg_url_without_unicode2 = __toESM(require_whatwg_url_without_unicode());
     }
   });
@@ -5603,6 +5655,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:@react-native-community/blur
   var require_blur = __commonJS({
     "protocol-bedrock-require:@react-native-community/blur"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("@react-native-community/blur");
     }
   });
@@ -5611,6 +5664,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var blur_exports = {};
   var init_blur = __esm({
     "node_modules/@react-native-bedrock/native/src/@react-native-community/blur.ts"() {
+      init_define_import_meta_env();
       __reExport(blur_exports, __toESM(require_blur()));
     }
   });
@@ -5618,6 +5672,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:react-native-video
   var require_react_native_video = __commonJS({
     "protocol-bedrock-require:react-native-video"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native-video");
     }
   });
@@ -5632,6 +5687,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native_video;
   var init_react_native_video = __esm({
     "node_modules/@react-native-bedrock/native/src/react-native-video.ts"() {
+      init_define_import_meta_env();
       import_react_native_video = __toESM(require_react_native_video());
       __reExport(react_native_video_exports, __toESM(require_react_native_video()));
     }
@@ -5640,6 +5696,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:react-native-gesture-handler
   var require_react_native_gesture_handler = __commonJS({
     "protocol-bedrock-require:react-native-gesture-handler"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native-gesture-handler");
     }
   });
@@ -5648,6 +5705,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_build = __commonJS({
     "node_modules/hex-to-rgba/build/index.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var removeHash = function removeHash2(hex2) {
         return hex2.charAt(0) === "#" ? hex2.slice(1) : hex2;
       };
@@ -5697,6 +5755,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/bezier-easing/src/index.js
   var require_src = __commonJS({
     "node_modules/bezier-easing/src/index.js"(exports, module) {
+      init_define_import_meta_env();
       var NEWTON_ITERATIONS = 4;
       var NEWTON_MIN_SLOPE = 1e-3;
       var SUBDIVISION_PRECISION = 1e-7;
@@ -5792,6 +5851,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // protocol-bedrock-require:react-native-webview
   var require_react_native_webview = __commonJS({
     "protocol-bedrock-require:react-native-webview"(exports, module) {
+      init_define_import_meta_env();
       module.exports = __bedrock_require__("react-native-webview");
     }
   });
@@ -5799,6 +5859,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/lodash.debounce/index.js
   var require_lodash = __commonJS({
     "node_modules/lodash.debounce/index.js"(exports, module) {
+      init_define_import_meta_env();
       init_type_of();
       var FUNC_ERROR_TEXT = "Expected a function";
       var NAN = 0 / 0;
@@ -5934,6 +5995,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ReactPropTypesSecret = __commonJS({
     "node_modules/prop-types/lib/ReactPropTypesSecret.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var ReactPropTypesSecret = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
       module.exports = ReactPropTypesSecret;
     }
@@ -5943,6 +6005,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_factoryWithThrowingShims = __commonJS({
     "node_modules/prop-types/factoryWithThrowingShims.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var ReactPropTypesSecret = require_ReactPropTypesSecret();
       function emptyFunction() {
       }
@@ -5996,6 +6059,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/prop-types/index.js
   var require_prop_types = __commonJS({
     "node_modules/prop-types/index.js"(exports, module) {
+      init_define_import_meta_env();
       if (false) {
         ReactIs = null;
         throwOnDirectAccess = true;
@@ -6012,6 +6076,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_formats = __commonJS({
     "node_modules/qs/lib/formats.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var replace = String.prototype.replace;
       var percentTwenties = /%20/g;
       var Format = {
@@ -6038,6 +6103,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_utils2 = __commonJS({
     "node_modules/qs/lib/utils.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_type_of();
       var formats = require_formats();
       var has3 = Object.prototype.hasOwnProperty;
@@ -6253,6 +6319,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_stringify = __commonJS({
     "node_modules/qs/lib/stringify.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       init_type_of();
       var utils2 = require_utils2();
@@ -6468,6 +6535,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_parse = __commonJS({
     "node_modules/qs/lib/parse.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var utils2 = require_utils2();
       var has3 = Object.prototype.hasOwnProperty;
       var isArray2 = Array.isArray;
@@ -6666,6 +6734,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_lib2 = __commonJS({
     "node_modules/qs/lib/index.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var stringify = require_stringify();
       var parse3 = require_parse();
       var formats = require_formats();
@@ -6680,12 +6749,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/react-native-google-places-autocomplete/images/powered_by_google_on_white.png
   var require_powered_by_google_on_white = __commonJS({
     "node_modules/react-native-google-places-autocomplete/images/powered_by_google_on_white.png"() {
+      init_define_import_meta_env();
     }
   });
 
   // node_modules/moment/moment.js
   var require_moment = __commonJS({
     "node_modules/moment/moment.js"(exports, module) {
+      init_define_import_meta_env();
       init_instanceof();
       init_type_of();
       (function(global2, factory) {
@@ -10786,18 +10857,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_use_sync_external_store_with_selector_production = __commonJS({
     "node_modules/use-sync-external-store/cjs/use-sync-external-store-with-selector.production.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       var React53 = require_react();
       function is2(x, y) {
         return x === y && (0 !== x || 1 / x === 1 / y) || x !== x && y !== y;
       }
       var objectIs = "function" === typeof Object.is ? Object.is : is2;
       var useSyncExternalStore2 = React53.useSyncExternalStore;
-      var useRef69 = React53.useRef;
-      var useEffect78 = React53.useEffect;
+      var useRef70 = React53.useRef;
+      var useEffect79 = React53.useEffect;
       var useMemo74 = React53.useMemo;
       var useDebugValue3 = React53.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
-        var instRef = useRef69(null);
+        var instRef = useRef70(null);
         if (null === instRef.current) {
           var inst = {
             hasValue: false,
@@ -10840,7 +10912,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           isEqual
         ]);
         var value = useSyncExternalStore2(subscribe, instRef[0], instRef[1]);
-        useEffect78(function() {
+        useEffect79(function() {
           inst.hasValue = true;
           inst.value = value;
         }, [
@@ -10856,6 +10928,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_with_selector = __commonJS({
     "node_modules/use-sync-external-store/with-selector.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       if (true) {
         module.exports = require_use_sync_external_store_with_selector_production();
       } else {
@@ -10868,6 +10941,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ContextProvider = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/dependencies/ContextProvider.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -10887,6 +10961,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ObjectUtil = __commonJS({
     "node_modules/ts-object-utils/dist/ObjectUtil.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_type_of();
       Object.defineProperty(exports, "__esModule", {
         value: true
@@ -10926,6 +11001,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_Default = __commonJS({
     "node_modules/ts-object-utils/dist/Default.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -10949,6 +11025,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_dist = __commonJS({
     "node_modules/ts-object-utils/dist/index.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -10963,6 +11040,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_DataProvider = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/dependencies/DataProvider.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -11071,6 +11149,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_CustomError = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/exceptions/CustomError.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -11114,6 +11193,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_LayoutManager = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -11333,6 +11413,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_LayoutProvider = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/dependencies/LayoutProvider.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -11411,6 +11492,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_GridLayoutManager = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/GridLayoutManager.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -11498,6 +11580,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_GridLayoutProvider = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/dependencies/GridLayoutProvider.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -11571,6 +11654,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_emptyFunction = __commonJS({
     "node_modules/fbjs/lib/emptyFunction.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       function makeEmptyFunction(arg) {
         return function() {
           return arg;
@@ -11596,6 +11680,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_invariant = __commonJS({
     "node_modules/fbjs/lib/invariant.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var validateFormat = function validateFormat2(format2) {
       };
       if (false) {
@@ -11638,6 +11723,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_factoryWithThrowingShims2 = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/node_modules/prop-types/factoryWithThrowingShims.js"(exports, module) {
       "use strict";
+      init_define_import_meta_env();
       var emptyFunction = require_emptyFunction();
       var invariant = require_invariant();
       module.exports = function() {
@@ -11678,6 +11764,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/react-native-calendar-picker/node_modules/recyclerlistview/node_modules/prop-types/index.js
   var require_prop_types2 = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/node_modules/prop-types/index.js"(exports, module) {
+      init_define_import_meta_env();
       init_type_of();
       if (false) {
         REACT_ELEMENT_TYPE = typeof Symbol === "function" && Symbol.for && Symbol.for("react.element") || 60103;
@@ -11699,6 +11786,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_RecyclerListViewExceptions = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/exceptions/RecyclerListViewExceptions.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -11752,6 +11840,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_Constants = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/constants/Constants.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -11766,6 +11855,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_Messages = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/constants/Messages.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -11782,6 +11872,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_RecycleItemPool = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/utils/RecycleItemPool.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -11853,6 +11944,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_BinarySearch = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -12001,6 +12093,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ViewabilityTracker = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -12292,6 +12385,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_TSCast = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/utils/TSCast.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -12314,6 +12408,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_VirtualRenderer = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/VirtualRenderer.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -12645,6 +12740,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ItemAnimator = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/ItemAnimator.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -12677,6 +12773,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ComponentCompat = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/utils/ComponentCompat.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -12743,6 +12840,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_BaseScrollComponent = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollComponent.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -12785,6 +12883,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ScrollComponent = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/platform/reactnative/scrollcomponent/ScrollComponent.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -12914,6 +13013,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_BaseViewRenderer = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -12983,6 +13083,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ViewRenderer = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/platform/reactnative/viewrenderer/ViewRenderer.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -13084,6 +13185,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_RecyclerListView = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -13720,6 +13822,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_BaseScrollView = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -13762,6 +13865,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_AutoScroll = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/utils/AutoScroll.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -13810,6 +13914,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_ProgressiveListView = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/core/ProgressiveListView.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       init_instanceof();
       var __extends = exports && exports.__extends || /* @__PURE__ */ function() {
         var extendStatics = function extendStatics1(d, b) {
@@ -13903,6 +14008,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var require_reactnative = __commonJS({
     "node_modules/react-native-calendar-picker/node_modules/recyclerlistview/dist/reactnative/index.js"(exports) {
       "use strict";
+      init_define_import_meta_env();
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
@@ -13937,9 +14043,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // src/_app.tsx
-  var import_jsx_runtime298 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime300 = __toESM(require_jsx_runtime());
+
+  // node_modules/@apps-in-toss/framework/dist/index.js
+  init_define_import_meta_env();
 
   // node_modules/@swc/helpers/esm/_async_to_generator.js
+  init_define_import_meta_env();
   function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
     try {
       var info = gen[key](arg);
@@ -13972,6 +14083,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   init_create_class();
 
   // node_modules/@swc/helpers/esm/_extends.js
+  init_define_import_meta_env();
   function _extends() {
     _extends = Object.assign || function assign2(target) {
       for (var i = 1; i < arguments.length; i++) {
@@ -13983,7 +14095,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return _extends.apply(this, arguments);
   }
 
+  // node_modules/@swc/helpers/esm/_inherits.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_set_prototype_of.js
+  init_define_import_meta_env();
   function _set_prototype_of(o, p4) {
     _set_prototype_of = Object.setPrototypeOf || function setPrototypeOf2(o2, p5) {
       o2.__proto__ = p5;
@@ -14011,12 +14127,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   init_instanceof();
 
   // node_modules/@swc/helpers/esm/_object_destructuring_empty.js
+  init_define_import_meta_env();
   function _object_destructuring_empty(o) {
     if (o === null || o === void 0) throw new TypeError("Cannot destructure " + o);
     return o;
   }
 
   // node_modules/@swc/helpers/esm/_object_spread.js
+  init_define_import_meta_env();
   init_define_property();
   function _object_spread(target) {
     for (var i = 1; i < arguments.length; i++) {
@@ -14035,6 +14153,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@swc/helpers/esm/_object_spread_props.js
+  init_define_import_meta_env();
   function ownKeys(object, enumerableOnly) {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
@@ -14059,7 +14178,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return target;
   }
 
+  // node_modules/@swc/helpers/esm/_object_without_properties.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_object_without_properties_loose.js
+  init_define_import_meta_env();
   function _object_without_properties_loose(source, excluded) {
     if (source == null) return {};
     var target = {};
@@ -14095,7 +14218,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   init_to_consumable_array();
   init_type_of();
 
+  // node_modules/@swc/helpers/esm/_create_super.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_get_prototype_of.js
+  init_define_import_meta_env();
   function _get_prototype_of(o) {
     _get_prototype_of = Object.setPrototypeOf ? Object.getPrototypeOf : function getPrototypeOf3(o2) {
       return o2.__proto__ || Object.getPrototypeOf(o2);
@@ -14104,6 +14231,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@swc/helpers/esm/_is_native_reflect_construct.js
+  init_define_import_meta_env();
   function _is_native_reflect_construct() {
     try {
       var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
@@ -14115,7 +14243,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     })();
   }
 
+  // node_modules/@swc/helpers/esm/_possible_constructor_return.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_assert_this_initialized.js
+  init_define_import_meta_env();
   function _assert_this_initialized(self2) {
     if (self2 === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     return self2;
@@ -14143,7 +14275,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
 
+  // node_modules/@swc/helpers/esm/_ts_generator.js
+  init_define_import_meta_env();
+
   // node_modules/tslib/tslib.es6.mjs
+  init_define_import_meta_env();
   init_instanceof();
   init_type_of();
   function __generator(thisArg, body) {
@@ -14253,6 +14389,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@apps-in-toss/analytics/dist/index.js
+  init_define_import_meta_env();
   init_define_property();
   init_sliced_to_array();
   init_to_consumable_array();
@@ -14261,26 +14398,50 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native35 = __toESM(require_react_native(), 1);
   var import_react32 = __toESM(require_react(), 1);
 
+  // node_modules/react-native-bedrock/src/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/types/global.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/bedrock-app/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/bedrock-app/Bedrock.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime12 = __toESM(require_jsx_runtime());
 
   // node_modules/@react-native-bedrock/native/src/react-native-safe-area-context/index.ts
   var react_native_safe_area_context_exports = {};
+  init_define_import_meta_env();
   __reExport(react_native_safe_area_context_exports, __toESM(require_react_native_safe_area_context()));
 
   // node_modules/react-native-bedrock/src/bedrock-app/App/index.ios.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime4 = __toESM(require_jsx_runtime());
 
   // node_modules/react-native-bedrock/src/initial-props/context.tsx
+  init_define_import_meta_env();
   var import_react = __toESM(require_react());
   var InitialPropsContext = /* @__PURE__ */ (0, import_react.createContext)(null);
 
+  // node_modules/react-native-bedrock/src/visibility/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/visibility/react-navigation/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/visibility/react-navigation/useIsFocusedSafely.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react3 = __toESM(require_react());
 
+  // node_modules/react-native-bedrock/src/visibility/react-navigation/useNavigationSafely.tsx
+  init_define_import_meta_env();
+
   // node_modules/@react-native-bedrock/native/src/@react-navigation/native.ts
   var native_exports = {};
+  init_define_import_meta_env();
   __reExport(native_exports, __toESM(require_native()));
 
   // node_modules/react-native-bedrock/src/visibility/react-navigation/useNavigationSafely.tsx
@@ -14326,6 +14487,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/visibility/useIsAppForeground.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime = __toESM(require_jsx_runtime());
   var import_react4 = __toESM(require_react());
@@ -14357,17 +14519,33 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-bedrock/src/visibility/useVisibility.tsx
+  init_define_import_meta_env();
   var import_react_native8 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/visibility/useVisibilityChanged.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime2 = __toESM(require_jsx_runtime());
   var import_react5 = __toESM(require_react());
 
+  // node_modules/react-native-bedrock/src/native-event-emitter/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/native-event-emitter/nativeEventEmitter.ts
+  init_define_import_meta_env();
   var import_react_native7 = __toESM(require_react_native());
 
+  // node_modules/react-native-bedrock/src/native-modules/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/native-modules/natives/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/native-modules/natives/closeView.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/native-modules/natives/BedrockModule.ts
+  init_define_import_meta_env();
   var import_react_native2 = __toESM(require_react_native());
   var BedrockModule = import_react_native2.NativeModules.BedrockModule;
 
@@ -14388,19 +14566,35 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/native-modules/natives/getLocale.ts
+  init_define_import_meta_env();
   var import_react_native3 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/native-modules/natives/getSchemeUri.ts
+  init_define_import_meta_env();
   function getSchemeUri() {
     return BedrockModule.schemeUri;
   }
 
   // node_modules/react-native-bedrock/src/native-modules/natives/generateHapticFeedback/index.ts
+  init_define_import_meta_env();
   function generateHapticFeedback(options) {
     return BedrockModule.generateHapticFeedback(options);
   }
 
+  // node_modules/react-native-bedrock/src/native-modules/natives/share.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/native-modules/natives/setSecureScreen.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/native-modules/natives/setScreenAwakeMode.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/native-modules/natives/getNetworkStatus/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/native-modules/natives/setIosSwipeGestureEnabled.ts
+  init_define_import_meta_env();
   function setIosSwipeGestureEnabled(options) {
     return _setIosSwipeGestureEnabled.apply(this, arguments);
   }
@@ -14422,15 +14616,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/native-modules/natives/openURL.ts
+  init_define_import_meta_env();
   var import_react_native4 = __toESM(require_react_native());
   function openURL(url) {
     return import_react_native4.Linking.openURL(url);
   }
 
   // node_modules/react-native-bedrock/src/native-modules/natives/getPlatformOS.ts
+  init_define_import_meta_env();
   var import_react_native5 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/native-modules/core/BedrockCoreModule.ts
+  init_define_import_meta_env();
   var import_react_native6 = __toESM(require_react_native());
   var BedrockCoreModule = import_react_native6.NativeModules.BedrockCoreModule;
 
@@ -14474,9 +14671,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/visibility/useVisibilityChange.ts
+  init_define_import_meta_env();
   var import_react7 = __toESM(require_react());
 
   // node_modules/react-native-bedrock/src/visibility/utils/usePrevious.tsx
+  init_define_import_meta_env();
   var import_react6 = __toESM(require_react());
   function usePrevious(value) {
     var ref = (0, import_react6.useRef)();
@@ -14506,6 +14705,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/visibility/VisibilityProvider.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime3 = __toESM(require_jsx_runtime());
   function VisibilityProvider(param) {
     var isVisible = param.isVisible, children = param.children;
@@ -14532,6 +14732,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/bedrock-app/registerPage.ts
+  init_define_import_meta_env();
   var globalThis2 = new Function("return this")();
   function registerPage(Page) {
     if (globalThis2.__SPLIT_CHUNK_ENABLED__) {
@@ -14540,12 +14741,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return Page;
   }
 
+  // node_modules/react-native-bedrock/src/router/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/router/Router.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime10 = __toESM(require_jsx_runtime());
   var import_react11 = __toESM(require_react());
 
+  // node_modules/react-native-bedrock/src/router/components/BedrockStack.tsx
+  init_define_import_meta_env();
+
   // node_modules/@react-native-bedrock/native/src/@react-navigation/native-stack.ts
   var native_stack_exports = {};
+  init_define_import_meta_env();
   __reExport(native_stack_exports, __toESM(require_native_stack()));
 
   // node_modules/react-native-bedrock/src/router/components/BedrockStack.tsx
@@ -14559,11 +14768,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var BedrockStack = createBedrockStackNavigator();
 
   // node_modules/react-native-bedrock/src/router/components/CanGoBackGuard.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime5 = __toESM(require_jsx_runtime());
   var import_react8 = __toESM(require_react());
   var import_react_native9 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/router/hooks/useIsInitialScreen.ts
+  init_define_import_meta_env();
   function useIsInitialScreen() {
     var index = (0, native_exports.useNavigationState)(function(state) {
       var _state_index;
@@ -14614,9 +14825,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/components/RouterBackButton.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime7 = __toESM(require_jsx_runtime());
 
   // node_modules/react-native-bedrock/src/router/components/BackButton.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime6 = __toESM(require_jsx_runtime());
 
   // node_modules/@react-native-bedrock/native/src/react-native-svg.ts
@@ -14626,6 +14839,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return import_react_native_svg.default;
     }
   });
+  init_define_import_meta_env();
   var import_react_native_svg = __toESM(require_react_native_svg());
   __reExport(react_native_svg_exports, __toESM(require_react_native_svg()));
 
@@ -14705,10 +14919,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/hooks/useBedrockRouterControls.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime9 = __toESM(require_jsx_runtime());
   var import_react10 = __toESM(require_react());
 
   // node_modules/react-native-bedrock/src/router/constants.ts
+  init_define_import_meta_env();
   var RESERVED_KEYWORDS = [
     "_layout"
   ];
@@ -14716,7 +14932,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     "/_404"
   ];
 
+  // node_modules/react-native-bedrock/src/router/utils/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/router/utils/screen.tsx
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/router/utils/path.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/router/utils/matchers.ts
+  init_define_import_meta_env();
   function matchDynamicName(name2) {
     var _name_match;
     return (_name_match = name2.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)) === null || _name_match === void 0 ? void 0 : _name_match[1];
@@ -14760,9 +14986,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/BedrockRoute.ts
+  init_define_import_meta_env();
   var import_react9 = __toESM(require_react());
 
   // node_modules/react-native-bedrock/src/router/utils/defaultParserParams.ts
+  init_define_import_meta_env();
   init_sliced_to_array();
   function defaultParserParams(params) {
     return Object.fromEntries(Object.entries(params !== null && params !== void 0 ? params : {}).map(function(param) {
@@ -14885,6 +15113,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/utils/createParentRouteScreenMap.ts
+  init_define_import_meta_env();
   function getDirectoryPath(filePath, layoutDirs) {
     if (layoutDirs.has(filePath)) {
       return filePath;
@@ -15026,6 +15255,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/utils/mergeParentLayoutScreen.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime8 = __toESM(require_jsx_runtime());
   function mergeParentLayoutScreen(screens, path) {
     var _loop = function() {
@@ -15144,6 +15374,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/hooks/useInitialRouteName.tsx
+  init_define_import_meta_env();
   var import_react_native11 = __toESM(require_react_native());
   function useInitialRouteName(prefix) {
     var initialScheme = getInitialScheme();
@@ -15160,6 +15391,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/router/types/screen-option.ts
+  init_define_import_meta_env();
   var import_react_native12 = __toESM(require_react_native());
   var DEFAULT_BACKGROUND_COLOR = "#ffffff";
   var DEFAULT_HEADER_TINT_COLOR = "#333d4b";
@@ -15244,7 +15476,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }));
   }
 
+  // node_modules/react-native-bedrock/src/router/types/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/router/types/RequireContext.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/router/types/RouteScreen.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/router/types/Screen.tsx
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/use-back-event/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/use-back-event/useBackEvent.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime11 = __toESM(require_jsx_runtime());
   var import_react12 = __toESM(require_react());
@@ -15519,7 +15767,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var Bedrock = createBedrock();
 
+  // node_modules/@react-native-bedrock/style-utils/src/index.ts
+  init_define_import_meta_env();
+
   // node_modules/@react-native-bedrock/style-utils/src/box-spacing.tsx
+  init_define_import_meta_env();
   init_define_property();
   init_sliced_to_array();
   function spacing(styleProperty, option) {
@@ -15624,6 +15876,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@react-native-bedrock/style-utils/src/flex.tsx
+  init_define_import_meta_env();
   init_type_of();
   var import_jsx_runtime13 = __toESM(require_jsx_runtime());
   var import_react13 = __toESM(require_react());
@@ -15700,6 +15953,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   Flex.CenterHorizontal = FlexCenterHorizontal;
 
   // node_modules/@react-native-bedrock/style-utils/src/spacing.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime14 = __toESM(require_jsx_runtime());
   var import_react14 = __toESM(require_react());
   var import_react_native14 = __toESM(require_react_native());
@@ -15723,10 +15977,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@react-native-bedrock/style-utils/src/stack.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime16 = __toESM(require_jsx_runtime());
   var import_react16 = __toESM(require_react());
 
   // node_modules/@react-native-bedrock/style-utils/src/children.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime15 = __toESM(require_jsx_runtime());
   var import_react15 = __toESM(require_react());
   var Children = {
@@ -15792,7 +16048,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   Stack.Horizontal = StackHorizontal;
   Stack.Vertical = StackVertical;
 
+  // node_modules/@react-native-bedrock/lottie/src/index.ts
+  init_define_import_meta_env();
+
   // node_modules/@react-native-bedrock/lottie/src/Lottie.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime17 = __toESM(require_jsx_runtime());
 
   // node_modules/@react-native-bedrock/native/src/lottie-react-native.ts
@@ -15802,6 +16062,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return import_lottie_react_native.default;
     }
   });
+  init_define_import_meta_env();
   var import_lottie_react_native = __toESM(require_lottie_react_native());
   __reExport(lottie_react_native_exports, __toESM(require_lottie_react_native()));
 
@@ -15809,6 +16070,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native16 = __toESM(require_react_native());
 
   // node_modules/@react-native-bedrock/lottie/src/ensureSafeLottie.ts
+  init_define_import_meta_env();
   var import_react_native15 = __toESM(require_react_native());
   function ensureSafeLottie(jsonData) {
     if (import_react_native15.Platform.OS === "android") {
@@ -15831,6 +16093,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@react-native-bedrock/lottie/src/useFetchResource.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react17 = __toESM(require_react());
   function useFetchResource(src, onError) {
@@ -15922,7 +16185,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, props));
   }
 
+  // node_modules/@react-native-bedrock/image/src/index.ts
+  init_define_import_meta_env();
+
   // node_modules/@react-native-bedrock/image/src/Image.tsx
+  init_define_import_meta_env();
   init_type_of();
   var import_jsx_runtime19 = __toESM(require_jsx_runtime());
 
@@ -15933,6 +16200,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return import_react_native_fast_image.default;
     }
   });
+  init_define_import_meta_env();
   var import_react_native_fast_image = __toESM(require_react_native_fast_image());
   __reExport(react_native_fast_image_exports, __toESM(require_react_native_fast_image()));
 
@@ -15940,12 +16208,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native18 = __toESM(require_react_native());
 
   // node_modules/@react-native-bedrock/image/src/SvgImage.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime18 = __toESM(require_jsx_runtime());
   var import_react19 = __toESM(require_react());
   var import_react_native17 = __toESM(require_react_native());
 
   // node_modules/@react-native-bedrock/image/src/hooks/usePreservedCallback.ts
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_react18 = __toESM(require_react());
   function usePreservedCallback(callback) {
@@ -16108,17 +16378,29 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/react-native-bedrock/src/dev-entrypoint/index.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime20 = __toESM(require_jsx_runtime());
   var import_react_native21 = __toESM(require_react_native());
 
+  // node_modules/react-native-bedrock/src/rn-polyfills/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/rn-polyfills/symbol-asynciterator/index.ts
+  init_define_import_meta_env();
   function setup() {
     if (typeof Symbol !== "undefined" && !Symbol.asyncIterator) {
       Symbol.asyncIterator = Symbol.for("@@asyncIterator");
     }
   }
 
+  // node_modules/react-native-bedrock/src/rn-polyfills/url/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-url-polyfill/index.js
+  init_define_import_meta_env();
+
   // node_modules/react-native-url-polyfill/js/ios10Fix.js
+  init_define_import_meta_env();
   var import_react_native19 = __toESM(require_react_native());
   var majorVersionIOS = parseInt(import_react_native19.Platform.Version, 10);
   if (import_react_native19.Platform.OS === "ios" && majorVersionIOS === 10) {
@@ -16162,11 +16444,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/react-native-bedrock/src/dev-entrypoint/index.tsx
   setup2();
 
+  // node_modules/react-native-bedrock/src/blur/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/blur/BlurView.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime21 = __toESM(require_jsx_runtime());
   var import_react_native23 = __toESM(require_react_native());
 
+  // node_modules/react-native-bedrock/src/blur/ReactNativeBlurModule.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/blur/constants.ts
+  init_define_import_meta_env();
   var import_react_native22 = __toESM(require_react_native());
   var isBlurNativeModuleSupported = import_react_native22.Platform.OS === "ios";
 
@@ -16202,11 +16492,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   BlurView.isSupported = isBlurNativeModuleSupported;
 
+  // node_modules/react-native-bedrock/src/keyboard/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/keyboard/KeyboardAboveView.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime22 = __toESM(require_jsx_runtime());
   var import_react_native25 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/keyboard/useKeyboardAnimatedHeight.tsx
+  init_define_import_meta_env();
   var import_react20 = __toESM(require_react());
   var import_react_native24 = __toESM(require_react_native());
   function getInitialKeyboardHeight() {
@@ -16281,16 +16576,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }));
   }
 
+  // node_modules/react-native-bedrock/src/intersection-observer/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/intersection-observer/IOContext.ts
+  init_define_import_meta_env();
   var import_react21 = __toESM(require_react());
   var IOContext = (0, import_react21.createContext)({
     manager: null
   });
 
   // node_modules/react-native-bedrock/src/intersection-observer/IOFlatList.ts
+  init_define_import_meta_env();
   var import_react_native27 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/intersection-observer/withIO.tsx
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_to_consumable_array();
@@ -16299,14 +16600,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native26 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/intersection-observer/IOManager.ts
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
 
   // node_modules/react-native-bedrock/src/intersection-observer/IntersectionObserver.ts
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
 
+  // node_modules/es-toolkit/dist/index.mjs
+  init_define_import_meta_env();
+
+  // node_modules/@swc/helpers/esm/_wrap_native_super.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_construct.js
+  init_define_import_meta_env();
   function _construct(Parent, args, Class) {
     if (_is_native_reflect_construct()) _construct = Reflect.construct;
     else {
@@ -16325,6 +16635,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@swc/helpers/esm/_is_native_function.js
+  init_define_import_meta_env();
   function _is_native_function(fn5) {
     return Function.toString.call(fn5).indexOf("[native code]") !== -1;
   }
@@ -16356,6 +16667,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/es-toolkit/dist/function/debounce.mjs
+  init_define_import_meta_env();
   function debounce(func, debounceMs) {
     var _ref = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, signal = _ref.signal, edges = _ref.edges;
     var pendingThis = void 0;
@@ -16424,6 +16736,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/es-toolkit/dist/function/throttle.mjs
+  init_define_import_meta_env();
   init_to_consumable_array();
   function throttle(func, throttleMs) {
     var _ref = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, signal = _ref.signal, _ref_edges = _ref.edges, edges = _ref_edges === void 0 ? [
@@ -16455,6 +16768,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@swc/helpers/esm/_to_array.js
+  init_define_import_meta_env();
   init_array_with_holes();
   init_iterable_to_array();
   init_non_iterable_rest();
@@ -16786,6 +17100,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   ]);
 
   // node_modules/react-native-bedrock/src/intersection-observer/IOScrollView.ts
+  init_define_import_meta_env();
   var import_react_native28 = __toESM(require_react_native());
   var IOScrollView = withIO(import_react_native28.ScrollView, [
     "scrollTo",
@@ -16796,6 +17111,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   ]);
 
   // node_modules/react-native-bedrock/src/intersection-observer/InView.tsx
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_to_consumable_array();
@@ -16945,7 +17261,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     as: import_react_native29.View
   };
 
+  // node_modules/react-native-bedrock/src/impression-area/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/impression-area/ImpressionArea.tsx
+  init_define_import_meta_env();
   init_class_call_check();
   init_sliced_to_array();
   var import_jsx_runtime25 = __toESM(require_jsx_runtime());
@@ -16953,10 +17273,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native30 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/utils/noop.ts
+  init_define_import_meta_env();
   var noop = function() {
   };
 
   // node_modules/react-native-bedrock/src/utils/usePreservedCallback.ts
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_react24 = __toESM(require_react());
   function usePreservedCallback2(callback) {
@@ -17080,20 +17402,33 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   }
 
+  // node_modules/react-native-bedrock/src/scroll-view-inertial-background/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/scroll-view-inertial-background/ScrollViewInertialBackground.tsx
+  init_define_import_meta_env();
   var import_jsx_runtime26 = __toESM(require_jsx_runtime());
   var import_react_native31 = __toESM(require_react_native());
 
+  // node_modules/react-native-bedrock/src/react/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/react/useWaitForReturnNavigator.ts
+  init_define_import_meta_env();
   var import_react26 = __toESM(require_react());
 
+  // node_modules/react-native-bedrock/src/video/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/video/Video.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime28 = __toESM(require_jsx_runtime());
   var import_react28 = __toESM(require_react());
   var import_react_native33 = __toESM(require_react_native());
 
   // node_modules/react-native-bedrock/src/video/instance.tsx
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   var import_jsx_runtime27 = __toESM(require_jsx_runtime());
@@ -17175,7 +17510,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   Video2.isAvailable = isAvailable;
 
+  // node_modules/react-native-bedrock/src/bedrock-event/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/bedrock-event/abstract.ts
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   var BedrockEventDefinition = function BedrockEventDefinition2() {
@@ -17362,13 +17701,27 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }();
 
   // node_modules/react-native-bedrock/src/bedrock-event/useBedrockEvent.ts
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   var import_react29 = __toESM(require_react());
 
+  // node_modules/react-native-bedrock/src/status-bar/index.ts
+  init_define_import_meta_env();
+
   // node_modules/react-native-bedrock/src/status-bar/StatusBar.ios.tsx
+  init_define_import_meta_env();
   var import_react30 = __toESM(require_react());
   var import_react_native34 = __toESM(require_react_native());
+
+  // node_modules/react-native-bedrock/src/status-bar/utils.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/initial-props/index.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/initial-props/InitialProps.ts
+  init_define_import_meta_env();
 
   // node_modules/@apps-in-toss/analytics/dist/index.js
   var import_react33 = __toESM(require_react(), 1);
@@ -17853,16 +18206,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   TYPE_STATICS[REACT_FORWARD_REF_TYPE] = FORWARD_REF_STATICS;
   TYPE_STATICS[REACT_MEMO_TYPE] = MEMO_STATICS;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Circle/index.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime52 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/isReactText.js
+  init_define_import_meta_env();
   function isReactText(node) {
     return typeof node === "string" || typeof node === "number";
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/Keyboard.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react45 = __toESM(require_react());
   var import_react_native36 = __toESM(require_react_native());
@@ -17900,6 +18262,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/useAnimatePresence.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react46 = __toESM(require_react());
   function useAnimatePresence(visible, param) {
@@ -17965,6 +18328,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/useControlled.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react47 = __toESM(require_react());
   function useControlled(param) {
@@ -17996,6 +18360,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/useSafeAreaBottom.js
+  init_define_import_meta_env();
   var IOS_NOTCH_SAFE_AREA_BOTTOM = 34;
   function useSafeAreaBottom() {
     var safeAreaInsets = (0, react_native_safe_area_context_exports.useSafeAreaInsets)();
@@ -18004,6 +18369,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/useSafeAreaTop.js
+  init_define_import_meta_env();
   var import_react_native37 = __toESM(require_react_native());
   function useSafeAreaTop() {
     var safeAreaInsets = (0, react_native_safe_area_context_exports.useSafeAreaInsets)();
@@ -18013,6 +18379,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/deepMerge.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_type_of();
   function deepMerge(target, source) {
@@ -18050,8 +18417,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react66 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Circle/Graphic/AnimatedCheckboxGraphic.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime50 = __toESM(require_jsx_runtime());
+
+  // node_modules/@toss-design-system/colors/dist/esm/index.js
+  init_define_import_meta_env();
 
   // node_modules/@toss-design-system/colors/dist/esm/adaptive.js
   var adaptive_exports = {};
@@ -18393,8 +18764,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return yellow900;
     }
   });
+  init_define_import_meta_env();
 
   // node_modules/@toss-design-system/colors/dist/esm/deprecated/adaptive.js
+  init_define_import_meta_env();
   var opacity50 = "var(--adaptiveOpacity50)";
   var opacity100 = "var(--adaptiveOpacity100)";
   var opacity200 = "var(--adaptiveOpacity200)";
@@ -18408,6 +18781,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var disabledBlue500 = "var(--adaptiveDisabledBlue500)";
 
   // node_modules/@toss-design-system/colors/dist/esm/generated/adaptiveCssVariable/colors.js
+  init_define_import_meta_env();
   var background = "var(--adaptiveBackground)";
   var layeredBackground = "var(--adaptiveLayeredBackground)";
   var floatBackground = "var(--adaptiveFloatBackground)";
@@ -18850,6 +19224,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return yellow9003;
     }
   });
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/colors/dist/esm/deprecated/adaptiveDictionary.js
+  init_define_import_meta_env();
 
   // node_modules/@toss-design-system/colors/dist/esm/colors.js
   var colors_exports = {};
@@ -19737,8 +20115,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return yellow9002;
     }
   });
+  init_define_import_meta_env();
 
   // node_modules/@toss-design-system/colors/dist/esm/generated/singleColor/colors.js
+  init_define_import_meta_env();
   var grey502 = "#f9fafb";
   var grey1002 = "#f2f4f6";
   var grey2002 = "#e5e8eb";
@@ -20037,6 +20417,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var black = "#000000";
 
   // node_modules/@toss-design-system/colors/dist/esm/hexToRgba.js
+  init_define_import_meta_env();
   function parseHexValueStr(str) {
     return parseInt(str, 16);
   }
@@ -20114,6 +20495,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   ];
 
   // node_modules/@toss-design-system/colors/dist/esm/generated/adaptiveColor/colors.js
+  init_define_import_meta_env();
   var background3 = [
     "#ffffff",
     "#17171c"
@@ -20520,6 +20902,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   ];
 
   // node_modules/@toss-design-system/colors/dist/esm/colorsByPreference.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var colorsByPreference = {
     light: Object.fromEntries(Object.entries(adaptiveDictionary_exports).map(function(param) {
@@ -20538,7 +20921,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }))
   };
 
+  // node_modules/@toss-design-system/colors/dist/esm/tds.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/colors/dist/esm/generated/polishedValues/colors.js
+  init_define_import_meta_env();
   var toastBackground = "rgba(25,31,40,0.54)";
   var transparentBackground = "rgba(255,255,255,0)";
   var transaprentDarkBackground = "rgba(23,23,28,0)";
@@ -20742,11 +21129,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var adaptive = _object_spread({}, adaptive_exports);
   var adaptiveDictionary = _object_spread({}, adaptiveDictionary_exports);
 
+  // node_modules/@toss-design-system/react-native/dist/esm/core/hooks/useA11yCondition.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/typography/dist/esm/fixed/fixed.js
+  init_define_import_meta_env();
   init_define_property();
   init_to_consumable_array();
 
+  // node_modules/@toss-design-system/css-utils/dist/esm/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/css-utils/dist/esm/variables.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/css-utils/dist/esm/value.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/css-utils/dist/esm/createSelectorFromClassNames.js
+  init_define_import_meta_env();
   init_define_property();
   init_sliced_to_array();
 
@@ -21506,7 +21907,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }));
   }, {});
 
+  // node_modules/@toss-design-system/typography/dist/esm/mobile/android.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/typography/dist/esm/mobile/common.js
+  init_define_import_meta_env();
   var TYPOGRAPY_RULE_ORDER = [
     "t1",
     "st1",
@@ -21582,6 +21987,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/typography/dist/esm/mobile/ios.js
+  init_define_import_meta_env();
   var IOSFontA11yStyle;
   (function(IOSFontA11yStyle2) {
     IOSFontA11yStyle2["Large"] = "Large";
@@ -21793,9 +22199,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native41 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/TypographyProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime34 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/constants/typography/fontWeight.js
+  init_define_import_meta_env();
   var fontWeightMap = {
     thin: "100",
     extralight: "200",
@@ -21813,7 +22221,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     black: "900"
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/constants/typography/lineHeight.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/constants/typography/typographyMap.js
+  init_define_import_meta_env();
   var import_react_native38 = __toESM(require_react_native());
   function getTypographyRule(fontScale) {
     return import_react_native38.Platform.OS === "ios" ? getIosTypographyRule(fontScale !== null && fontScale !== void 0 ? fontScale : "Large") : import_react_native38.Platform.OS === "android" ? getAndroidTypographyRule(Math.max(fontScale, 100)) : defaultTypographyRule;
@@ -21855,6 +22267,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }));
 
   // node_modules/@toss-design-system/react-native/dist/esm/constants/typography/typographyLevel.js
+  init_define_import_meta_env();
   var iosWindowFontScaleToTypographyLevel = {
     0.823: "Large",
     0.882: "Large",
@@ -21900,6 +22313,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native40 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/hooks/useTypographyLevel.js
+  init_define_import_meta_env();
   var import_react_native39 = __toESM(require_react_native());
   function useTypographyLevel() {
     var fontScale = (0, import_react_native39.useWindowDimensions)().fontScale;
@@ -21956,10 +22370,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/AdaptiveColorProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime36 = __toESM(require_jsx_runtime());
   var import_react50 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/ColorPreferenceProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime35 = __toESM(require_jsx_runtime());
   var import_react49 = __toESM(require_react());
   var COLOR_PREFERENCE_FALLBACK = "light";
@@ -22019,22 +22435,30 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/TDSProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime45 = __toESM(require_jsx_runtime());
 
   // node_modules/@react-native-bedrock/native/src/react-native-gesture-handler/index.ts
   var react_native_gesture_handler_exports = {};
+  init_define_import_meta_env();
   __reExport(react_native_gesture_handler_exports, __toESM(require_react_native_gesture_handler()));
 
+  // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/OverlayProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime38 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/_OverlayProvider.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
   var import_jsx_runtime37 = __toESM(require_jsx_runtime());
   var import_react52 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/useOverlayCache.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react51 = __toESM(require_react());
   function useOverlayCache() {
@@ -22097,10 +22521,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/useOverlayBase.js
+  init_define_import_meta_env();
   var import_jsx_runtime40 = __toESM(require_jsx_runtime());
   var import_react54 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/OverlayController.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime39 = __toESM(require_jsx_runtime());
   var import_react53 = __toESM(require_react());
@@ -22197,6 +22623,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/overlay/useOverlay.js
+  init_define_import_meta_env();
   var import_react55 = __toESM(require_react());
   var import_react_native42 = __toESM(require_react_native());
   function useOverlay() {
@@ -22232,14 +22659,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/theme/ThemeProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime41 = __toESM(require_jsx_runtime());
   var import_react56 = __toESM(require_react());
 
+  // node_modules/@toss-design-system/react-native/dist/esm/core/theme/deriveToken/deriveToken.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/button/ButtonDerivedTokenGenerator.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/theme/deriveToken/BaseDerivedTokenGenerator.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   var BaseDerivedTokenGenerator = /* @__PURE__ */ function() {
@@ -22265,10 +22698,24 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }();
 
   // node_modules/@toss-design-system/react-native/dist/esm/utils/ColorManager.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
 
+  // node_modules/culori/src/index.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/a98/definition.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/rgb/definition.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/rgb/parseNamed.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/rgb/parseNumber.js
+  init_define_import_meta_env();
   var parseNumber = function(color, len) {
     if (typeof color !== "number") return;
     if (len === 3) {
@@ -22309,6 +22756,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var parseNumber_default = parseNumber;
 
   // node_modules/culori/src/colors/named.js
+  init_define_import_meta_env();
   var named = {
     aliceblue: 15792383,
     antiquewhite: 16444375,
@@ -22470,6 +22918,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var parseNamed_default = parseNamed;
 
   // node_modules/culori/src/rgb/parseHex.js
+  init_define_import_meta_env();
   var hex = /^#?([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})$/i;
   var parseHex = function(color) {
     var match;
@@ -22477,7 +22926,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var parseHex_default = parseHex;
 
+  // node_modules/culori/src/rgb/parseRgbLegacy.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/util/regex.js
+  init_define_import_meta_env();
   var num = "([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)";
   var num_none = "(?:".concat(num, "|none)");
   var per = "".concat(num, "%");
@@ -22530,9 +22983,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var parseRgbLegacy_default = parseRgbLegacy;
 
   // node_modules/culori/src/rgb/parseRgb.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
+  // node_modules/culori/src/parse.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/modes.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/converter.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/_prepare.js
+  init_define_import_meta_env();
   init_type_of();
   var prepare = function(color, mode) {
     return color === void 0 ? void 0 : (typeof color === "undefined" ? "undefined" : _type_of(color)) !== "object" ? parse_default(color) : color.mode !== void 0 ? color : mode ? _object_spread_props(_object_spread({}, color), {
@@ -22969,6 +23433,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var parseRgb_default = parseRgb;
 
   // node_modules/culori/src/rgb/parseTransparent.js
+  init_define_import_meta_env();
   var parseTransparent = function(c2) {
     return c2 === "transparent" ? {
       mode: "rgb",
@@ -22980,12 +23445,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var parseTransparent_default = parseTransparent;
 
+  // node_modules/culori/src/interpolate/linear.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/interpolate/lerp.js
+  init_define_import_meta_env();
   var lerp = function(a, b, t) {
     return a + t * (b - a);
   };
 
   // node_modules/culori/src/interpolate/piecewise.js
+  init_define_import_meta_env();
   var get_classes = function(arr) {
     var classes = [];
     for (var i = 0; i < arr.length - 1; i++) {
@@ -23026,6 +23496,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var interpolatorLinear = interpolatorPiecewise(lerp);
 
   // node_modules/culori/src/fixup/alpha.js
+  init_define_import_meta_env();
   var fixupAlpha = function(arr) {
     var some_defined = false;
     var res = arr.map(function(v) {
@@ -23080,6 +23551,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default = definition;
 
   // node_modules/culori/src/a98/convertA98ToXyz65.js
+  init_define_import_meta_env();
   var linearize = function() {
     var v = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 0;
     return Math.pow(Math.abs(v), 563 / 256) * Math.sign(v);
@@ -23102,6 +23574,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertA98ToXyz65_default = convertA98ToXyz65;
 
   // node_modules/culori/src/a98/convertXyz65ToA98.js
+  init_define_import_meta_env();
   var gamma = function(v) {
     return Math.pow(Math.abs(v), 256 / 563) * Math.sign(v);
   };
@@ -23123,7 +23596,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertXyz65ToA98_default = convertXyz65ToA98;
 
+  // node_modules/culori/src/xyz65/convertRgbToXyz65.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/lrgb/convertRgbToLrgb.js
+  init_define_import_meta_env();
   var fn = function() {
     var c2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 0;
     var abs2 = Math.abs(c2);
@@ -23161,7 +23638,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertRgbToXyz65_default = convertRgbToXyz65;
 
+  // node_modules/culori/src/xyz65/convertXyz65ToRgb.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/lrgb/convertLrgbToRgb.js
+  init_define_import_meta_env();
   var fn2 = function() {
     var c2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 0;
     var abs2 = Math.abs(c2);
@@ -23223,7 +23704,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default2 = definition2;
 
+  // node_modules/culori/src/cubehelix/definition.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/fixup/hue.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/util/normalizeHue.js
+  init_define_import_meta_env();
   var normalizeHue = function(hue3) {
     return (hue3 = hue3 % 360) < 0 ? hue3 + 360 : hue3;
   };
@@ -23255,7 +23743,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   };
 
+  // node_modules/culori/src/cubehelix/convertRgbToCubehelix.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/cubehelix/constants.js
+  init_define_import_meta_env();
   var M = [
     -0.14861,
     1.78277,
@@ -23291,6 +23783,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertRgbToCubehelix_default = convertRgbToCubehelix;
 
   // node_modules/culori/src/cubehelix/convertCubehelixToRgb.js
+  init_define_import_meta_env();
   var convertCubehelixToRgb = function(param) {
     var h = param.h, s = param.s, l = param.l, alpha = param.alpha;
     var res = {
@@ -23310,6 +23803,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertCubehelixToRgb_default = convertCubehelixToRgb;
 
   // node_modules/culori/src/difference.js
+  init_define_import_meta_env();
   var differenceHueSaturation = function(std, smp) {
     if (std.h === void 0 || smp.h === void 0 || !std.s || !smp.s) {
       return 0;
@@ -23341,6 +23835,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/culori/src/average.js
+  init_define_import_meta_env();
   var averageAngle = function(val) {
     var sum = val.reduce(function(sum2, val2) {
       if (val2 !== void 0) {
@@ -23411,7 +23906,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default3 = definition3;
 
+  // node_modules/culori/src/dlab/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/lch/convertLabToLch.js
+  init_define_import_meta_env();
   var convertLabToLch = function(param) {
     var l = param.l, a = param.a, b = param.b, alpha = param.alpha, mode = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "lch";
     if (a === void 0) a = 0;
@@ -23429,6 +23928,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertLabToLch_default = convertLabToLch;
 
   // node_modules/culori/src/lch/convertLchToLab.js
+  init_define_import_meta_env();
   var convertLchToLab = function(param) {
     var l = param.l, c2 = param.c, h = param.h, alpha = param.alpha, mode = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "lab";
     if (h === void 0) h = 0;
@@ -23443,11 +23943,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertLchToLab_default = convertLchToLab;
 
+  // node_modules/culori/src/lab65/convertLab65ToRgb.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/lab65/convertLab65ToXyz65.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/xyz65/constants.js
+  init_define_import_meta_env();
   var k = Math.pow(29, 3) / Math.pow(3, 3);
   var e = Math.pow(6, 3) / Math.pow(29, 3);
 
   // node_modules/culori/src/constants.js
+  init_define_import_meta_env();
   var D50 = {
     X: 0.3457 / 0.3585,
     Y: 1,
@@ -23492,7 +24000,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertLab65ToRgb_default = convertLab65ToRgb;
 
+  // node_modules/culori/src/lab65/convertRgbToLab65.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/lab65/convertXyz65ToLab65.js
+  init_define_import_meta_env();
   var f = function(value) {
     return value > e ? Math.cbrt(value) : (k * value + 16) / 116;
   };
@@ -23527,7 +24039,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertRgbToLab65_default = convertRgbToLab65;
 
+  // node_modules/culori/src/dlch/convertDlchToLab65.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/dlch/constants.js
+  init_define_import_meta_env();
   var kE = 1;
   var kCH = 1;
   var \u03B8 = 26 / 180 * Math.PI;
@@ -23556,6 +24072,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertDlchToLab65_default = convertDlchToLab65;
 
   // node_modules/culori/src/dlch/convertLab65ToDlch.js
+  init_define_import_meta_env();
   var convertLab65ToDlch = function(param) {
     var l = param.l, a = param.a, b = param.b, alpha = param.alpha;
     if (l === void 0) l = 0;
@@ -23635,6 +24152,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default4 = definition4;
 
   // node_modules/culori/src/dlch/definition.js
+  init_define_import_meta_env();
   var definition5 = {
     mode: "dlch",
     parse: [
@@ -23700,7 +24218,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default5 = definition5;
 
+  // node_modules/culori/src/hsi/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/hsi/convertHsiToRgb.js
+  init_define_import_meta_env();
   function convertHsiToRgb(param) {
     var h = param.h, s = param.s, i = param.i, alpha = param.alpha;
     h = normalizeHue_default(h !== void 0 ? h : 0);
@@ -23764,6 +24286,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/hsi/convertRgbToHsi.js
+  init_define_import_meta_env();
   function convertRgbToHsi(param) {
     var r2 = param.r, g = param.g, b = param.b, alpha = param.alpha;
     if (r2 === void 0) r2 = 0;
@@ -23827,7 +24350,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default6 = definition6;
 
+  // node_modules/culori/src/hsl/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/hsl/convertHslToRgb.js
+  init_define_import_meta_env();
   function convertHslToRgb(param) {
     var h = param.h, s = param.s, l = param.l, alpha = param.alpha;
     h = normalizeHue_default(h !== void 0 ? h : 0);
@@ -23892,6 +24419,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/hsl/convertRgbToHsl.js
+  init_define_import_meta_env();
   function convertRgbToHsl(param) {
     var r2 = param.r, g = param.g, b = param.b, alpha = param.alpha;
     if (r2 === void 0) r2 = 0;
@@ -23908,7 +24436,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return res;
   }
 
+  // node_modules/culori/src/hsl/parseHslLegacy.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/util/hue.js
+  init_define_import_meta_env();
   var hueToDeg = function(val, unit) {
     switch (unit) {
       case "deg":
@@ -23952,6 +24484,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var parseHslLegacy_default = parseHslLegacy;
 
   // node_modules/culori/src/hsl/parseHsl.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function parseHsl(color, parsed) {
     if (!parsed || parsed[0] !== "hsl" && parsed[0] !== "hsla") {
@@ -24036,7 +24569,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default7 = definition7;
 
+  // node_modules/culori/src/hsv/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/hsv/convertHsvToRgb.js
+  init_define_import_meta_env();
   function convertHsvToRgb(param) {
     var h = param.h, s = param.s, v = param.v, alpha = param.alpha;
     h = normalizeHue_default(h !== void 0 ? h : 0);
@@ -24100,6 +24637,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/hsv/convertRgbToHsv.js
+  init_define_import_meta_env();
   function convertRgbToHsv(param) {
     var r2 = param.r, g = param.g, b = param.b, alpha = param.alpha;
     if (r2 === void 0) r2 = 0;
@@ -24163,7 +24701,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default8 = definition8;
 
+  // node_modules/culori/src/hwb/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/hwb/convertHwbToRgb.js
+  init_define_import_meta_env();
   function convertHwbToRgb(param) {
     var h = param.h, w = param.w, b = param.b, alpha = param.alpha;
     if (w === void 0) w = 0;
@@ -24182,6 +24724,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/hwb/convertRgbToHwb.js
+  init_define_import_meta_env();
   function convertRgbToHwb(rgba) {
     var hsv2 = convertRgbToHsv(rgba);
     if (hsv2 === void 0) return void 0;
@@ -24198,6 +24741,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/hwb/parseHwb.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function ParseHwb(color, parsed) {
     if (!parsed || parsed[0] !== "hwb") {
@@ -24281,10 +24825,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default9 = definition9;
 
+  // node_modules/culori/src/itp/definition.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/itp/convertItpToXyz65.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/hdr/constants.js
+  init_define_import_meta_env();
   var YW = 203;
 
   // node_modules/culori/src/hdr/transfer.js
+  init_define_import_meta_env();
   var M1 = 0.1593017578125;
   var M2 = 78.84375;
   var C1 = 0.8359375;
@@ -24327,6 +24879,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertItpToXyz65_default = convertItpToXyz65;
 
   // node_modules/culori/src/itp/convertXyz65ToItp.js
+  init_define_import_meta_env();
   var toAbs = function() {
     var c2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 0;
     return Math.max(c2 * YW, 0);
@@ -24406,7 +24959,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default10 = definition10;
 
+  // node_modules/culori/src/jab/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/jab/convertXyz65ToJab.js
+  init_define_import_meta_env();
   var p = 134.03437499999998;
   var d0 = 16295499532821565e-27;
   var jabPqEncode = function(v) {
@@ -24443,6 +25000,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertXyz65ToJab_default = convertXyz65ToJab;
 
   // node_modules/culori/src/jab/convertJabToXyz65.js
+  init_define_import_meta_env();
   var p2 = 134.03437499999998;
   var d02 = 16295499532821565e-27;
   var jabPqDecode = function(v) {
@@ -24476,6 +25034,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertJabToXyz65_default = convertJabToXyz65;
 
   // node_modules/culori/src/jab/convertRgbToJab.js
+  init_define_import_meta_env();
   var convertRgbToJab = function(rgb5) {
     var res = convertXyz65ToJab_default(convertRgbToXyz65_default(rgb5));
     if (rgb5.r === rgb5.b && rgb5.b === rgb5.g) {
@@ -24486,6 +25045,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertRgbToJab_default = convertRgbToJab;
 
   // node_modules/culori/src/jab/convertJabToRgb.js
+  init_define_import_meta_env();
   var convertJabToRgb = function(color) {
     return convertXyz65ToRgb_default(convertJabToXyz65_default(color));
   };
@@ -24538,7 +25098,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default11 = definition11;
 
+  // node_modules/culori/src/jch/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/jch/convertJabToJch.js
+  init_define_import_meta_env();
   var convertJabToJch = function(param) {
     var j = param.j, a = param.a, b = param.b, alpha = param.alpha;
     if (a === void 0) a = 0;
@@ -24560,6 +25124,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertJabToJch_default = convertJabToJch;
 
   // node_modules/culori/src/jch/convertJchToJab.js
+  init_define_import_meta_env();
   var convertJchToJab = function(param) {
     var j = param.j, c2 = param.c, h = param.h, alpha = param.alpha;
     if (h === void 0) h = 0;
@@ -24634,7 +25199,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default12 = definition12;
 
+  // node_modules/culori/src/lab/definition.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/lab/convertLabToRgb.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/lab/convertLabToXyz50.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/xyz50/constants.js
+  init_define_import_meta_env();
   var k3 = Math.pow(29, 3) / Math.pow(3, 3);
   var e3 = Math.pow(6, 3) / Math.pow(29, 3);
 
@@ -24664,6 +25239,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertLabToXyz50_default = convertLabToXyz50;
 
   // node_modules/culori/src/xyz50/convertXyz50ToRgb.js
+  init_define_import_meta_env();
   var convertXyz50ToRgb = function(param) {
     var x = param.x, y = param.y, z = param.z, alpha = param.alpha;
     if (x === void 0) x = 0;
@@ -24687,7 +25263,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertLabToRgb_default = convertLabToRgb;
 
+  // node_modules/culori/src/lab/convertRgbToLab.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/xyz50/convertRgbToXyz50.js
+  init_define_import_meta_env();
   var convertRgbToXyz50 = function(rgb5) {
     var _convertRgbToLrgb = convertRgbToLrgb_default(rgb5), r2 = _convertRgbToLrgb.r, g = _convertRgbToLrgb.g, b = _convertRgbToLrgb.b, alpha = _convertRgbToLrgb.alpha;
     var res = {
@@ -24704,6 +25284,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertRgbToXyz50_default = convertRgbToXyz50;
 
   // node_modules/culori/src/lab/convertXyz50ToLab.js
+  init_define_import_meta_env();
   var f2 = function(value) {
     return value > e3 ? Math.cbrt(value) : (k3 * value + 16) / 116;
   };
@@ -24739,6 +25320,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertRgbToLab_default = convertRgbToLab;
 
   // node_modules/culori/src/lab/parseLab.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function parseLab(color, parsed) {
     if (!parsed || parsed[0] !== "lab") {
@@ -24817,6 +25399,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default13 = definition13;
 
   // node_modules/culori/src/lab65/definition.js
+  init_define_import_meta_env();
   var definition14 = _object_spread_props(_object_spread({}, definition_default13), {
     mode: "lab65",
     parse: [
@@ -24848,7 +25431,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default14 = definition14;
 
+  // node_modules/culori/src/lch/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/lch/parseLch.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function parseLch(color, parsed) {
     if (!parsed || parsed[0] !== "lch") {
@@ -24943,6 +25530,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default15 = definition15;
 
   // node_modules/culori/src/lch65/definition.js
+  init_define_import_meta_env();
   var definition16 = _object_spread_props(_object_spread({}, definition_default15), {
     mode: "lch65",
     parse: [
@@ -24982,7 +25570,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default16 = definition16;
 
+  // node_modules/culori/src/lchuv/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/lchuv/convertLuvToLchuv.js
+  init_define_import_meta_env();
   var convertLuvToLchuv = function(param) {
     var l = param.l, u = param.u, v = param.v, alpha = param.alpha;
     if (u === void 0) u = 0;
@@ -25004,6 +25596,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertLuvToLchuv_default = convertLuvToLchuv;
 
   // node_modules/culori/src/lchuv/convertLchuvToLuv.js
+  init_define_import_meta_env();
   var convertLchuvToLuv = function(param) {
     var l = param.l, c2 = param.c, h = param.h, alpha = param.alpha;
     if (h === void 0) h = 0;
@@ -25021,6 +25614,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertLchuvToLuv_default = convertLchuvToLuv;
 
   // node_modules/culori/src/luv/convertXyz50ToLuv.js
+  init_define_import_meta_env();
   var u_fn = function(x, y, z) {
     return 4 * x / (x + 15 * y + 3 * z);
   };
@@ -25060,6 +25654,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertXyz50ToLuv_default = convertXyz50ToLuv;
 
   // node_modules/culori/src/luv/convertLuvToXyz50.js
+  init_define_import_meta_env();
   var u_fn2 = function(x, y, z) {
     return 4 * x / (x + 15 * y + 3 * z);
   };
@@ -25162,6 +25757,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default17 = definition17;
 
   // node_modules/culori/src/lrgb/definition.js
+  init_define_import_meta_env();
   var definition18 = _object_spread_props(_object_spread({}, definition_default), {
     mode: "lrgb",
     toMode: {
@@ -25178,6 +25774,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default18 = definition18;
 
   // node_modules/culori/src/luv/definition.js
+  init_define_import_meta_env();
   var definition19 = {
     mode: "luv",
     toMode: {
@@ -25228,7 +25825,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default19 = definition19;
 
+  // node_modules/culori/src/okhsl/modeOkhsl.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/oklab/convertRgbToOklab.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/oklab/convertLrgbToOklab.js
+  init_define_import_meta_env();
   var convertLrgbToOklab = function(param) {
     var r2 = param.r, g = param.g, b = param.b, alpha = param.alpha;
     if (r2 === void 0) r2 = 0;
@@ -25260,7 +25864,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var convertRgbToOklab_default = convertRgbToOklab;
 
+  // node_modules/culori/src/oklab/convertOklabToRgb.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/oklab/convertOklabToLrgb.js
+  init_define_import_meta_env();
   var convertOklabToLrgb = function(param) {
     var l = param.l, a = param.a, b = param.b, alpha = param.alpha;
     if (l === void 0) l = 0;
@@ -25289,9 +25897,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertOklabToRgb_default = convertOklabToRgb;
 
   // node_modules/culori/src/okhsl/convertOklabToOkhsl.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
   // node_modules/culori/src/okhsl/helpers.js
+  init_define_import_meta_env();
   function toe(x) {
     var k_1 = 0.206;
     var k_2 = 0.03;
@@ -25502,6 +26112,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/okhsl/convertOkhslToOklab.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function convertOkhslToOklab(hsl3) {
     var h = hsl3.h !== void 0 ? hsl3.h : 0;
@@ -25567,7 +26178,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var modeOkhsl_default = modeOkhsl;
 
+  // node_modules/culori/src/okhsv/modeOkhsv.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/okhsv/convertOklabToOkhsv.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function convertOklabToOkhsv(lab2) {
     var l = lab2.l !== void 0 ? lab2.l : 0;
@@ -25608,6 +26223,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/culori/src/okhsv/convertOkhsvToOklab.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function convertOkhsvToOklab(hsv2) {
     var ret = {
@@ -25670,7 +26286,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var modeOkhsv_default = modeOkhsv;
 
+  // node_modules/culori/src/oklab/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/oklab/parseOklab.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function parseOklab(color, parsed) {
     if (!parsed || parsed[0] !== "oklab") {
@@ -25733,7 +26353,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default20 = definition20;
 
+  // node_modules/culori/src/oklch/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/oklch/parseOklch.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function parseOklch(color, parsed) {
     if (!parsed || parsed[0] !== "oklch") {
@@ -25807,7 +26431,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default21 = definition21;
 
+  // node_modules/culori/src/p3/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/p3/convertP3ToXyz65.js
+  init_define_import_meta_env();
   var convertP3ToXyz65 = function(rgb5) {
     var _convertRgbToLrgb = convertRgbToLrgb_default(rgb5), r2 = _convertRgbToLrgb.r, g = _convertRgbToLrgb.g, b = _convertRgbToLrgb.b, alpha = _convertRgbToLrgb.alpha;
     var res = {
@@ -25824,6 +26452,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertP3ToXyz65_default = convertP3ToXyz65;
 
   // node_modules/culori/src/p3/convertXyz65ToP3.js
+  init_define_import_meta_env();
   var convertXyz65ToP3 = function(param) {
     var x = param.x, y = param.y, z = param.z, alpha = param.alpha;
     if (x === void 0) x = 0;
@@ -25863,7 +26492,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default22 = definition22;
 
+  // node_modules/culori/src/prophoto/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/prophoto/convertXyz50ToProphoto.js
+  init_define_import_meta_env();
   var gamma2 = function(v) {
     var abs2 = Math.abs(v);
     if (abs2 >= 1 / 512) {
@@ -25890,6 +26523,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertXyz50ToProphoto_default = convertXyz50ToProphoto;
 
   // node_modules/culori/src/prophoto/convertProphotoToXyz50.js
+  init_define_import_meta_env();
   var linearize2 = function() {
     var v = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 0;
     var abs2 = Math.abs(v);
@@ -25937,7 +26571,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default23 = definition23;
 
+  // node_modules/culori/src/rec2020/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/rec2020/convertXyz65ToRec2020.js
+  init_define_import_meta_env();
   var \u03B1 = 1.09929682680944;
   var \u03B2 = 0.018053968510807;
   var gamma3 = function(v) {
@@ -25966,6 +26604,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertXyz65ToRec2020_default = convertXyz65ToRec2020;
 
   // node_modules/culori/src/rec2020/convertRec2020ToXyz65.js
+  init_define_import_meta_env();
   var \u03B12 = 1.09929682680944;
   var \u03B22 = 0.018053968510807;
   var linearize3 = function() {
@@ -26015,7 +26654,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var definition_default24 = definition24;
 
+  // node_modules/culori/src/xyb/definition.js
+  init_define_import_meta_env();
+
+  // node_modules/culori/src/xyb/convertRgbToXyb.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/xyb/constants.js
+  init_define_import_meta_env();
   var bias = 0.0037930732552754493;
   var bias_cbrt = Math.cbrt(bias);
 
@@ -26041,6 +26687,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertRgbToXyb_default = convertRgbToXyb;
 
   // node_modules/culori/src/xyb/convertXybToRgb.js
+  init_define_import_meta_env();
   var transfer2 = function(v) {
     return Math.pow(v + bias_cbrt, 3);
   };
@@ -26108,6 +26755,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var definition_default25 = definition25;
 
   // node_modules/culori/src/xyz50/definition.js
+  init_define_import_meta_env();
   var definition26 = {
     mode: "xyz50",
     parse: [
@@ -26154,7 +26802,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default26 = definition26;
 
+  // node_modules/culori/src/xyz65/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/xyz65/convertXyz65ToXyz50.js
+  init_define_import_meta_env();
   var convertXyz65ToXyz50 = function(xyz652) {
     var x = xyz652.x, y = xyz652.y, z = xyz652.z, alpha = xyz652.alpha;
     if (x === void 0) x = 0;
@@ -26174,6 +26826,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertXyz65ToXyz50_default = convertXyz65ToXyz50;
 
   // node_modules/culori/src/xyz65/convertXyz50ToXyz65.js
+  init_define_import_meta_env();
   var convertXyz50ToXyz65 = function(xyz502) {
     var x = xyz502.x, y = xyz502.y, z = xyz502.z, alpha = xyz502.alpha;
     if (x === void 0) x = 0;
@@ -26240,7 +26893,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default27 = definition27;
 
+  // node_modules/culori/src/yiq/definition.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/yiq/convertRgbToYiq.js
+  init_define_import_meta_env();
   var convertRgbToYiq = function(param) {
     var r2 = param.r, g = param.g, b = param.b, alpha = param.alpha;
     if (r2 === void 0) r2 = 0;
@@ -26258,6 +26915,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var convertRgbToYiq_default = convertRgbToYiq;
 
   // node_modules/culori/src/yiq/convertYiqToRgb.js
+  init_define_import_meta_env();
   var convertYiqToRgb = function(param) {
     var y = param.y, i = param.i, q = param.q, alpha = param.alpha;
     if (y === void 0) y = 0;
@@ -26315,7 +26973,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var definition_default28 = definition28;
 
+  // node_modules/culori/src/formatter.js
+  init_define_import_meta_env();
+
   // node_modules/culori/src/round.js
+  init_define_import_meta_env();
   var r = function(value, precision) {
     return Math.round(value * (precision = Math.pow(10, precision))) / precision;
   };
@@ -26351,6 +27013,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/culori/src/clamp.js
+  init_define_import_meta_env();
   var rgb2 = converter_default("rgb");
   var fixup_rgb = function(c2) {
     var res = {
@@ -26700,6 +27363,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }(BaseDerivedTokenGenerator);
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/theme/deriveToken/batchDerivedTokenGenerators.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function batchDerivedTokenGenerators(styleMap) {
     return function(seed) {
@@ -26714,10 +27378,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/BridgeDerivedTokenGenerator.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/utils/getThemeColorCodeFromOklch.js
+  init_define_import_meta_env();
   var THEME_COLOR_RANGES = [
     {
       name: "red",
@@ -26862,6 +27528,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var deriveToken = batchDerivedTokenGenerators(derivedTokenGenerators);
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/theme/seedToken/seedToken.js
+  init_define_import_meta_env();
   var seedToken = {
     color: {
       primary: colors.blue500
@@ -26898,6 +27565,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/GlobalEventProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime42 = __toESM(require_jsx_runtime());
   var import_react57 = __toESM(require_react());
   var import_react_native43 = __toESM(require_react_native());
@@ -27017,6 +27685,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/HideAccessibility.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime43 = __toESM(require_jsx_runtime());
   var import_react58 = __toESM(require_react());
@@ -27077,6 +27746,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/core/contexts/SafeAreaProvider.js
+  init_define_import_meta_env();
   var import_jsx_runtime44 = __toESM(require_jsx_runtime());
   var import_react59 = __toESM(require_react());
   function SafeAreaProvider2(param) {
@@ -27122,12 +27792,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/interactions/pressable-effect/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/pressable-effect/PressableEffect.js
+  init_define_import_meta_env();
   var import_jsx_runtime48 = __toESM(require_jsx_runtime());
   var import_react62 = __toESM(require_react());
   var import_react_native47 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/pressable-effect/Prerender.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime46 = __toESM(require_jsx_runtime());
   var import_react60 = __toESM(require_react());
@@ -27148,6 +27823,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/pressable-effect/PressableUnderlay.js
+  init_define_import_meta_env();
   var import_jsx_runtime47 = __toESM(require_jsx_runtime());
   var import_react_native45 = __toESM(require_react_native());
   function PressableUnderlay(param) {
@@ -27179,10 +27855,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/pressable-effect/usePressAnim.js
+  init_define_import_meta_env();
   var import_react61 = __toESM(require_react());
   var import_react_native46 = __toESM(require_react_native());
 
+  // node_modules/@toss-design-system/easings/dist/esm/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/easings/dist/esm/bezier.js
+  init_define_import_meta_env();
   var bezier = {
     linear: [
       0,
@@ -27217,13 +27898,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/easings/dist/esm/spring.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
+  // node_modules/@toss-design-system/spring-easing/dist/esm/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/spring-easing/dist/esm/getSpringEasing.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/spring-easing/dist/esm/spring.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
 
   // node_modules/@toss-design-system/spring-easing/dist/esm/integrator.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   var Integrator = /* @__PURE__ */ function() {
@@ -27615,6 +28305,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native50 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/const.js
+  init_define_import_meta_env();
   var TIMING_CONFIG = {
     easeing: bezier.back,
     duration: 150
@@ -27625,6 +28316,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Circle/Graphic/paths.js
+  init_define_import_meta_env();
   var import_jsx_runtime49 = __toESM(require_jsx_runtime());
   var import_react_native48 = __toESM(require_react_native());
   var AnimatedPath = import_react_native48.Animated.createAnimatedComponent(react_native_svg_exports.Path);
@@ -27640,6 +28332,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Circle/Graphic/styles.js
+  init_define_import_meta_env();
   var import_react_native49 = __toESM(require_react_native());
   var styles4 = import_react_native49.StyleSheet.create({
     container: {
@@ -27978,12 +28671,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Circle/Graphic/AnimatedCheckboxGraphicDisabled.js
+  init_define_import_meta_env();
   var import_jsx_runtime51 = __toESM(require_jsx_runtime());
   var import_hex_to_rgba2 = __toESM(require_build());
   var import_react65 = __toESM(require_react());
   var import_react_native52 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/useWiggle.js
+  init_define_import_meta_env();
   var import_react64 = __toESM(require_react());
   var import_react_native51 = __toESM(require_react_native());
   var WIGGLE_TRANSLATE_X_ARRAY = [
@@ -28167,11 +28862,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Line/index.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime56 = __toESM(require_jsx_runtime());
   var import_react69 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Line/Graphic/AnimatedCheckboxGraphic.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime54 = __toESM(require_jsx_runtime());
   var import_hex_to_rgba3 = __toESM(require_build());
@@ -28179,6 +28876,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native55 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Line/Graphic/paths.js
+  init_define_import_meta_env();
   var import_jsx_runtime53 = __toESM(require_jsx_runtime());
   var import_react_native53 = __toESM(require_react_native());
   var AnimatedPath2 = import_react_native53.Animated.createAnimatedComponent(react_native_svg_exports.Path);
@@ -28193,6 +28891,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Line/Graphic/styles.js
+  init_define_import_meta_env();
   var import_react_native54 = __toESM(require_react_native());
   var styles5 = import_react_native54.StyleSheet.create({
     container: {
@@ -28356,6 +29055,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/checkbox/Line/Graphic/AnimatedCheckboxGraphicDisabled.js
+  init_define_import_meta_env();
   var import_jsx_runtime55 = __toESM(require_jsx_runtime());
   var import_hex_to_rgba4 = __toESM(require_build());
   var import_react68 = __toESM(require_react());
@@ -28462,7 +29162,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     Line: CheckboxLine
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/txt/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/txt/Txt.js
+  init_define_import_meta_env();
   var import_jsx_runtime57 = __toESM(require_jsx_runtime());
   var import_react70 = __toESM(require_react());
   var import_react_native57 = __toESM(require_react_native());
@@ -28543,7 +29247,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var Txt_default = Txt;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/border/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/border/Border.js
+  init_define_import_meta_env();
   var import_jsx_runtime58 = __toESM(require_jsx_runtime());
   var import_react_native58 = __toESM(require_react_native());
   function Border(_param) {
@@ -28604,13 +29312,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var Border_default = Border;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/icon/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/icon/Icon.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime59 = __toESM(require_jsx_runtime());
   var import_react72 = __toESM(require_react());
   var import_react_native59 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/icon/useCachedData.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
   var import_react71 = __toESM(require_react());
@@ -28821,12 +29534,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }()
   });
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/asset/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/Asset.js
+  init_define_import_meta_env();
   var import_jsx_runtime60 = __toESM(require_jsx_runtime());
   var import_react74 = __toESM(require_react());
   var import_react_native60 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/blocks/AssetContext.js
+  init_define_import_meta_env();
   var import_react73 = __toESM(require_react());
   var AssetContext = /* @__PURE__ */ (0, import_react73.createContext)({
     shape: {}
@@ -28890,6 +29608,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/blocks/Frame.js
+  init_define_import_meta_env();
   var import_jsx_runtime61 = __toESM(require_jsx_runtime());
   var import_react75 = __toESM(require_react());
   var import_react_native61 = __toESM(require_react_native());
@@ -29007,6 +29726,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/blocks/ContentIcon.js
+  init_define_import_meta_env();
   var import_jsx_runtime62 = __toESM(require_jsx_runtime());
   var import_react76 = __toESM(require_react());
   var import_react_native62 = __toESM(require_react_native());
@@ -29050,6 +29770,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/blocks/ContentImage.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime63 = __toESM(require_jsx_runtime());
   function ContentImage(param) {
@@ -29081,6 +29802,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/blocks/ContentLottie.js
+  init_define_import_meta_env();
   var import_jsx_runtime64 = __toESM(require_jsx_runtime());
   function ContentLottie(_param) {
     var _param_scale = _param.scale, scale = _param_scale === void 0 ? 1 : _param_scale, _param_scaleType = _param.scaleType, scaleType = _param_scaleType === void 0 ? "fit" : _param_scaleType, style = _param.style, lottieProps = _object_without_properties(_param, [
@@ -29108,6 +29830,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/Icon.js
+  init_define_import_meta_env();
   var import_jsx_runtime65 = __toESM(require_jsx_runtime());
   function Icon3(_param) {
     var _param_frameShape = _param.frameShape, frameShape3 = _param_frameShape === void 0 ? {} : _param_frameShape, _param_backgroundColor = _param.backgroundColor, backgroundColor = _param_backgroundColor === void 0 ? "transparent" : _param_backgroundColor, style = _param.style, overlap = _param.overlap, acc = _param.acc, accPosition = _param.accPosition, iconProps = _object_without_properties(_param, [
@@ -29130,6 +29853,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/Image.js
+  init_define_import_meta_env();
   var import_jsx_runtime66 = __toESM(require_jsx_runtime());
   function Image2(_param) {
     var _param_frameShape = _param.frameShape, frameShape3 = _param_frameShape === void 0 ? {} : _param_frameShape, _param_backgroundColor = _param.backgroundColor, backgroundColor = _param_backgroundColor === void 0 ? "transparent" : _param_backgroundColor, style = _param.style, overlap = _param.overlap, acc = _param.acc, accPosition = _param.accPosition, imageProps = _object_without_properties(_param, [
@@ -29152,6 +29876,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/Lottie.js
+  init_define_import_meta_env();
   var import_jsx_runtime67 = __toESM(require_jsx_runtime());
   function Lottie2(_param) {
     var _param_frameShape = _param.frameShape, frameShape3 = _param_frameShape === void 0 ? {} : _param_frameShape, _param_backgroundColor = _param.backgroundColor, backgroundColor = _param_backgroundColor === void 0 ? "transparent" : _param_backgroundColor, style = _param.style, overlap = _param.overlap, acc = _param.acc, accPosition = _param.accPosition, lottieProps = _object_without_properties(_param, [
@@ -29174,9 +29899,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/Text.js
+  init_define_import_meta_env();
   var import_jsx_runtime69 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/Resource/ResourceText.js
+  init_define_import_meta_env();
   var import_jsx_runtime68 = __toESM(require_jsx_runtime());
   function ResourceText(_param) {
     var children = _param.children, color = _param.color, size = _param.size, style = _param.style, restProps = _object_without_properties(_param, [
@@ -29229,6 +29956,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/asset/presets/frameShape.js
+  init_define_import_meta_env();
   var frameShape = {
     SquareLarge: {
       width: 60,
@@ -29478,14 +30206,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     frameShape
   });
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/badge/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/badge/Badge.js
+  init_define_import_meta_env();
   var import_jsx_runtime74 = __toESM(require_jsx_runtime());
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/Paragraph.js
+  init_define_import_meta_env();
   var import_jsx_runtime70 = __toESM(require_jsx_runtime());
   var import_react_native63 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/ParagraphContext.js
+  init_define_import_meta_env();
   var import_react77 = __toESM(require_react());
   var ParagraphContext = /* @__PURE__ */ (0, import_react77.createContext)({
     typography: "t5"
@@ -29528,6 +30265,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/ParagraphText.js
+  init_define_import_meta_env();
   var import_jsx_runtime71 = __toESM(require_jsx_runtime());
   var import_react78 = __toESM(require_react());
   var ParagraphText = /* @__PURE__ */ (0, import_react78.forwardRef)(function ParagraphText2(_param, ref) {
@@ -29569,6 +30307,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/ParagraphIcon.js
+  init_define_import_meta_env();
   var import_jsx_runtime72 = __toESM(require_jsx_runtime());
   var import_react79 = __toESM(require_react());
   var import_react_native64 = __toESM(require_react_native());
@@ -29603,19 +30342,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return Math.round(1.16 * (fontSize - 11) + 12);
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/ParagraphBadge/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/ParagraphBadge/ParagraphBadge.js
+  init_define_import_meta_env();
   var import_jsx_runtime73 = __toESM(require_jsx_runtime());
   var import_hex_to_rgba5 = __toESM(require_build());
   var import_react80 = __toESM(require_react());
   var import_react_native65 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/utils.js
+  init_define_import_meta_env();
   var get\uBCF4\uC815Top = function(param) {
     var targetHeight = param.targetHeight, fontSize = param.fontSize;
     return (targetHeight - fontSize) / 2;
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/paragraph/ParagraphBadge/const.js
+  init_define_import_meta_env();
   function isValidFontSize(fontSize) {
     return fontSize < 56 && fontSize > 10;
   }
@@ -30228,12 +30973,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var Badge_default = Badge;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/BottomCTA.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/BottomCTADouble.js
+  init_define_import_meta_env();
   var import_jsx_runtime77 = __toESM(require_jsx_runtime());
   var import_react81 = __toESM(require_react());
   var import_react_native67 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/AccessoryText.js
+  init_define_import_meta_env();
   var import_jsx_runtime75 = __toESM(require_jsx_runtime());
   function AccessoryText(props) {
     var adaptive2 = useAdaptive();
@@ -30244,6 +30997,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/BottomCTAGradient.js
+  init_define_import_meta_env();
   var import_jsx_runtime76 = __toESM(require_jsx_runtime());
   var import_react_native66 = __toESM(require_react_native());
   function BottomCTAGradient(param) {
@@ -30302,6 +31056,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   BottomCTAGradient.HEIGHT = HEIGHT;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/useBottomCTAContainerStyle.js
+  init_define_import_meta_env();
   function useBottomCTAContainerStyle(param) {
     var _param_type = param.type, type = _param_type === void 0 ? "single" : _param_type, _param_keyboardStyleEnabled = param.keyboardStyleEnabled, keyboardStyleEnabled = _param_keyboardStyleEnabled === void 0 ? false : _param_keyboardStyleEnabled;
     var _useSafeAreaBottom;
@@ -30421,11 +31176,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var BottomCTADouble_default = BottomCTADouble;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-cta/BottomCTASingle.js
+  init_define_import_meta_env();
   var import_jsx_runtime81 = __toESM(require_jsx_runtime());
   var import_react85 = __toESM(require_react());
   var import_react_native71 = __toESM(require_react_native());
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/button/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/button/Button.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
   var import_jsx_runtime80 = __toESM(require_jsx_runtime());
@@ -30433,9 +31193,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native70 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/animated/Animated.js
+  init_define_import_meta_env();
   var import_react_native69 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/animated/spring.js
+  init_define_import_meta_env();
   var import_react_native68 = __toESM(require_react_native());
   var spring3 = function spring4(value, config) {
     var stiffness = config.stiffness, damping = config.damping, velocity = config.velocity, tolerance = config.tolerance, mass = config.mass, restConfig = _object_without_properties(config, [
@@ -30463,11 +31225,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     spring: spring3
   });
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/gradient/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/gradient/LinearGradient.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime78 = __toESM(require_jsx_runtime());
 
+  // node_modules/@toss-design-system/color-utils/dist/esm/convertColorToRgba.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/color-utils/dist/esm/getColorFormat.js
+  init_define_import_meta_env();
   var hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
   var rgbPattern = /^rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)$/;
   var rgbaPattern = /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/;
@@ -30481,7 +31251,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return rgbaPattern.test(color);
   }
 
+  // node_modules/@toss-design-system/color-utils/dist/esm/hexToRgba.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss/utils/esm/index.mjs
+  init_define_import_meta_env();
+
   // node_modules/@toss/utils/esm/delay.mjs
+  init_define_import_meta_env();
   function delay(milliseconds) {
     return new Promise(function(resolve) {
       setTimeout(resolve, milliseconds);
@@ -30489,6 +31266,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss/utils/esm/hexToRgba.mjs
+  init_define_import_meta_env();
   function parseHexValueStr2(str) {
     return parseInt(str, 16);
   }
@@ -30515,6 +31293,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss/utils/esm/object/object-entries.mjs
+  init_define_import_meta_env();
   function objectEntries(obj) {
     return Object.entries(obj);
   }
@@ -30537,6 +31316,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/rgbToRgba.js
+  init_define_import_meta_env();
   function rgbToRgba(color) {
     var alpha = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1;
     if (isRgbColor(color)) {
@@ -30546,6 +31326,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/rgbaToRgba.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function rgbaToRgba(color, alpha) {
     var match = color.match(rgbaPattern);
@@ -30571,18 +31352,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/extractNonNumeric.js
+  init_define_import_meta_env();
   function extractNonNumeric(str) {
     var match = str.match(/[^\d]+/);
     return match ? match[0] : null;
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/extractNumber.js
+  init_define_import_meta_env();
   function extractNumber(str) {
     var match = str.match(/\d+/);
     return match ? parseInt(match[0], 10) : null;
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/extractNumbersFromRGBA.js
+  init_define_import_meta_env();
   function extractNumbersFromRGBA(rgbaString) {
     var match = rgbaString.match(/rgba\(([\d.,\s]+)\)/);
     if (!match) {
@@ -30601,15 +31385,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/fixedDecimalRound.js
+  init_define_import_meta_env();
   function fixedDecimalRound(num3, decimalPlaces) {
     var factor2 = Math.pow(10, decimalPlaces);
     return Math.round(num3 * factor2) / factor2;
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/getColorValue.js
+  init_define_import_meta_env();
   init_type_of();
 
   // node_modules/@toss-design-system/color-utils/dist/esm/utils/reverseKeyValue.js
+  init_define_import_meta_env();
   function reverseKeyValue(obj) {
     var reversedObj = {};
     for (var key in obj) {
@@ -30641,6 +31428,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/getDigitCount.js
+  init_define_import_meta_env();
   function getDigitCount(num3) {
     if (num3 === 0) {
       return 0;
@@ -30654,6 +31442,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/getEaseFunction.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_bezier_easing = __toESM(require_src(), 1);
   function getEaseFunction(bezierArray) {
@@ -30661,6 +31450,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/getEasedRGBAArray.js
+  init_define_import_meta_env();
   var DECIMAL_PRECISION = 4;
   function getEasedRGBAArray(param) {
     var rgbas = param.rgbas, easeFunction = param.easeFunction, positions = param.positions, colorStopCount = param.colorStopCount;
@@ -30700,9 +31490,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/getLinearGradient.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
   // node_modules/@toss-design-system/color-utils/dist/esm/getMultipliedAlphaInRgba.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function getMultipliedAlphaInRgba(color, alpha) {
     var match = color.match(rgbaPattern);
@@ -30803,7 +31595,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   }
 
+  // node_modules/@toss-design-system/color-utils/dist/esm/getNextColorValue.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/color-utils/dist/esm/getUpscaleColor.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/color-utils/dist/esm/getUpscaleColorCode.js
+  init_define_import_meta_env();
   var CODE_NUMBERS = [
     50,
     100,
@@ -30852,6 +31651,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/color-utils/dist/esm/utils/filterByKeys.js
+  init_define_import_meta_env();
   function filterByKeys(target, keys) {
     var result = {};
     Object.keys(target).forEach(function(key) {
@@ -30984,6 +31784,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/gradient/RadialGradient.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime79 = __toESM(require_jsx_runtime());
   var import_react83 = __toESM(require_react());
@@ -31908,15 +32709,24 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     Double: BottomCTADouble_default
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/BottomSheet.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/CTA/index.js
+  init_define_import_meta_env();
   var import_jsx_runtime86 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/CTA/DoubleCTA.js
+  init_define_import_meta_env();
   var import_jsx_runtime84 = __toESM(require_jsx_runtime());
   var import_react88 = __toESM(require_react());
   var import_react_native73 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/utils/CTAAnimation.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime82 = __toESM(require_jsx_runtime());
   var import_react86 = __toESM(require_react());
@@ -31942,6 +32752,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/CTA/Gradient.js
+  init_define_import_meta_env();
   var import_jsx_runtime83 = __toESM(require_jsx_runtime());
   var import_react87 = __toESM(require_react());
   var Gradient = /* @__PURE__ */ (0, import_react87.memo)(function Gradient2(param) {
@@ -32076,6 +32887,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/CTA/SingleCTA.js
+  init_define_import_meta_env();
   var import_jsx_runtime85 = __toESM(require_jsx_runtime());
   var import_react89 = __toESM(require_react());
   var import_react_native74 = __toESM(require_react_native());
@@ -32157,6 +32969,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   BottomSheetCTA.Double = BottomSheetDoubleCTA;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/Header.js
+  init_define_import_meta_env();
   var import_jsx_runtime87 = __toESM(require_jsx_runtime());
   var import_react90 = __toESM(require_react());
   var import_react_native75 = __toESM(require_react_native());
@@ -32180,6 +32993,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/HeaderDescription.js
+  init_define_import_meta_env();
   var import_jsx_runtime88 = __toESM(require_jsx_runtime());
   var import_react91 = __toESM(require_react());
   var import_react_native76 = __toESM(require_react_native());
@@ -32204,11 +33018,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/Root.js
+  init_define_import_meta_env();
   var import_jsx_runtime95 = __toESM(require_jsx_runtime());
   var import_react99 = __toESM(require_react());
   var import_react_native83 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/const.js
+  init_define_import_meta_env();
   var a11yCondition = {
     root: {
       biggerThanOrEqualTo: 160
@@ -32216,11 +33032,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/Container.js
+  init_define_import_meta_env();
   var import_jsx_runtime90 = __toESM(require_jsx_runtime());
   var import_react94 = __toESM(require_react());
   var import_react_native78 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/DragAnimation.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime89 = __toESM(require_jsx_runtime());
   var import_react92 = __toESM(require_react());
@@ -32352,6 +33170,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/utils/usePreservedCallback.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_react93 = __toESM(require_react());
   function usePreservedCallback3(fn5) {
@@ -32492,6 +33311,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/Dimmer.js
+  init_define_import_meta_env();
   var import_jsx_runtime91 = __toESM(require_jsx_runtime());
   var import_react95 = __toESM(require_react());
   var import_react_native79 = __toESM(require_react_native());
@@ -32584,6 +33404,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/Handle.js
+  init_define_import_meta_env();
   var import_jsx_runtime92 = __toESM(require_jsx_runtime());
   var import_react96 = __toESM(require_react());
   var import_react_native80 = __toESM(require_react_native());
@@ -32608,6 +33429,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/HeaderContainer.js
+  init_define_import_meta_env();
   var import_jsx_runtime93 = __toESM(require_jsx_runtime());
   var import_react97 = __toESM(require_react());
   var import_react_native81 = __toESM(require_react_native());
@@ -32626,6 +33448,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/utils/RenderingAnimation.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime94 = __toESM(require_jsx_runtime());
   var import_react98 = __toESM(require_react());
@@ -32782,6 +33605,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/bottom-sheet/Select.js
+  init_define_import_meta_env();
   var import_jsx_runtime96 = __toESM(require_jsx_runtime());
   var import_react_native84 = __toESM(require_react_native());
   function BottomSheetSelect(param) {
@@ -32853,7 +33677,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     Select: BottomSheetSelect
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/text-button/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-button/TextButton.js
+  init_define_import_meta_env();
   var import_jsx_runtime97 = __toESM(require_jsx_runtime());
   var import_react100 = __toESM(require_react());
   var import_react_native85 = __toESM(require_react_native());
@@ -33107,10 +33935,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   TextButton.gap = 8;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/components/Dropdown.js
+  init_define_import_meta_env();
   var import_jsx_runtime100 = __toESM(require_jsx_runtime());
   var import_react_native87 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/contexts/DropdownContext.js
+  init_define_import_meta_env();
   var import_jsx_runtime98 = __toESM(require_jsx_runtime());
   var import_react101 = __toESM(require_react());
   var DropdownContext = /* @__PURE__ */ (0, import_react101.createContext)(null);
@@ -33143,6 +33973,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/components/DropdownItem.js
+  init_define_import_meta_env();
   var import_jsx_runtime99 = __toESM(require_jsx_runtime());
   var import_react_native86 = __toESM(require_react_native());
   function DropdownItem(param) {
@@ -33233,27 +34064,36 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   Dropdown.Item = DropdownItem;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/components/Trigger.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime106 = __toESM(require_jsx_runtime());
 
+  // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/components/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/components/RallySimple.js
+  init_define_import_meta_env();
   var import_jsx_runtime102 = __toESM(require_jsx_runtime());
   var import_react111 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/useRally.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react109 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/contexts/usePresence.js
+  init_define_import_meta_env();
   var import_react103 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/helper/getUniqueId.js
+  init_define_import_meta_env();
   var uniqueId = 0;
   function getUniqueId() {
     return "id".concat(uniqueId++);
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/contexts/PresenceContext.js
+  init_define_import_meta_env();
   var import_react102 = __toESM(require_react());
   var PresenceContext = /* @__PURE__ */ (0, import_react102.createContext)(null);
 
@@ -33290,10 +34130,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/useAnimationController.js
+  init_define_import_meta_env();
   var import_react105 = __toESM(require_react());
   var import_react_native88 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/utils/repeat.js
+  init_define_import_meta_env();
   function repeat(item, count) {
     var gutter, i;
     var _arguments = arguments;
@@ -33340,6 +34182,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/utils/repeatCycle.js
+  init_define_import_meta_env();
   function repeatCycle(items, count) {
     var gutter, i;
     var _arguments = arguments;
@@ -33386,6 +34229,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/utils/useWaitFor.js
+  init_define_import_meta_env();
   var import_react104 = __toESM(require_react());
   function useWaitFor(condition) {
     var callbacks = (0, import_react104.useRef)(/* @__PURE__ */ new Set()).current;
@@ -33879,11 +34723,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/useRallyAnimation.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_react107 = __toESM(require_react());
   var import_react_native90 = __toESM(require_react_native());
 
+  // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/animations/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/animations/parallel.js
+  init_define_import_meta_env();
   var parallelAnimation = function parallelAnimation2(animations, config) {
     var doneCount = 0;
     var hasEnded = {};
@@ -33938,6 +34787,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/animations/sequence.js
+  init_define_import_meta_env();
   function sequenceAnimation(animations) {
     return {
       start: function() {
@@ -34094,6 +34944,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/animations/toAnimationController.js
+  init_define_import_meta_env();
   function toAnimationController(animation, param) {
     var progress = param.progress, endProgress = param.endProgress;
     return _object_spread_props(_object_spread({}, animation), {
@@ -34117,6 +34968,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/createInterpolationStyle.js
+  init_define_import_meta_env();
   init_define_property();
   init_sliced_to_array();
   init_to_consumable_array();
@@ -34445,7 +35297,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return style;
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/createMotionAnimation.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/helper/calcRelativeOperator.js
+  init_define_import_meta_env();
   function calcRelativeOperator(baseValue, operator, value) {
     switch (operator) {
       case "-=": {
@@ -34464,6 +35320,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/helper/nativeDriver.js
+  init_define_import_meta_env();
   function shouldUseNativeDriver(key) {
     if (key === "backgroundColor") {
       return false;
@@ -34475,6 +35332,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/helper/parseMotionValue.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_type_of();
   var REGEXP = /^(\+?=|-?=|\*=|\/=)?\s*(-?\d+(?:\.\d+)?)(px|%|deg)?$/;
@@ -34503,10 +35361,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/createMotionPropertyAnimation.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_react_native89 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/constants/property.js
+  init_define_import_meta_env();
   var defaultStyles = {
     opacity: 1,
     scale: 1,
@@ -34582,9 +35442,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/toMotions/toMotions.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/height.js
+  init_define_import_meta_env();
   function getHeight(_value, param) {
     var layout = param.layout, beforeValue = param.beforeValue;
     var value = parseMotionValue(_value);
@@ -34600,6 +35462,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/opacity.js
+  init_define_import_meta_env();
   function getOpacity(_value, param) {
     var beforeValue = param.beforeValue;
     var value = parseMotionValue(_value !== null && _value !== void 0 ? _value : 0);
@@ -34613,6 +35476,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/perspective.js
+  init_define_import_meta_env();
   function getPerspective(_value, param) {
     var layout = param.layout, beforeValue = param.beforeValue;
     var _ref;
@@ -34622,6 +35486,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/rotate.js
+  init_define_import_meta_env();
   function getRotate(_value, param) {
     var beforeValue = param.beforeValue;
     var value = parseMotionValue(_value !== null && _value !== void 0 ? _value : 0);
@@ -34635,6 +35500,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/scale.js
+  init_define_import_meta_env();
   function getScale(_value, param) {
     var beforeValue = param.beforeValue;
     var value = parseMotionValue(_value !== null && _value !== void 0 ? _value : 0);
@@ -34648,6 +35514,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/transformOriginX.js
+  init_define_import_meta_env();
   var DEFAULT_ANCHOR_POINT = 0.5;
   function getTransformOriginX(_value, param) {
     var beforeValue = param.beforeValue, layout = param.layout;
@@ -34678,6 +35545,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/transformOriginY.js
+  init_define_import_meta_env();
   var DEFAULT_ANCHOR_POINT2 = 0.5;
   function getTransformOriginY(_value, param) {
     var beforeValue = param.beforeValue, layout = param.layout;
@@ -34708,6 +35576,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/translateX.js
+  init_define_import_meta_env();
   function getTranslateX(_value, param) {
     var layout = param.layout, beforeValue = param.beforeValue;
     var value = parseMotionValue(_value !== null && _value !== void 0 ? _value : 0);
@@ -34723,6 +35592,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/translateY.js
+  init_define_import_meta_env();
   function getTranslateY(_value, param) {
     var layout = param.layout, beforeValue = param.beforeValue;
     var value = parseMotionValue(_value !== null && _value !== void 0 ? _value : 0);
@@ -34738,6 +35608,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/operations/motions/properties/width.js
+  init_define_import_meta_env();
   function getWidth(_value, param) {
     var layout = param.layout, beforeValue = param.beforeValue;
     var value = parseMotionValue(_value !== null && _value !== void 0 ? _value : layout.width);
@@ -34943,6 +35814,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/useCurrentProgressStyle.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react106 = __toESM(require_react());
   function useCurrentProgressStyleIndex(progress, param) {
@@ -35038,6 +35910,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/utils/usePreservedReference.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react108 = __toESM(require_react());
   function usePreservedReference2(value) {
@@ -35187,6 +36060,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/components/RallyView.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime101 = __toESM(require_jsx_runtime());
   var import_react110 = __toESM(require_react());
@@ -35259,15 +36133,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/components/AnimateRallyPresence.js
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_jsx_runtime104 = __toESM(require_jsx_runtime());
   var import_react115 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/utils/useForceRerender.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react113 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/hooks/utils/useIsMounted.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react112 = __toESM(require_react());
   function useIsMounted() {
@@ -35297,6 +36174,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/interactions/rally/components/PresenceChild.js
+  init_define_import_meta_env();
   var import_jsx_runtime103 = __toESM(require_jsx_runtime());
   var import_react114 = __toESM(require_react());
   function PresenceChild(props) {
@@ -35492,9 +36370,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_react_native93 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/constants/z-index.js
+  init_define_import_meta_env();
   var MENU_Z_INDEX = 9e3;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/utils/mergeRefs.js
+  init_define_import_meta_env();
   function mergeRefs() {
     for (var _len = arguments.length, refs = new Array(_len), _key = 0; _key < _len; _key++) {
       refs[_key] = arguments[_key];
@@ -35511,6 +36391,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/dropdown/components/FixedFloatingDropdown.js
+  init_define_import_meta_env();
   var import_jsx_runtime105 = __toESM(require_jsx_runtime());
   var import_react116 = __toESM(require_react());
   var import_react_native92 = __toESM(require_react_native());
@@ -35917,20 +36798,27 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return false;
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/grid-list/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/grid-list/GridList.js
+  init_define_import_meta_env();
   var import_jsx_runtime108 = __toESM(require_jsx_runtime());
   var import_react_native95 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/grid-list/const.js
+  init_define_import_meta_env();
   var MARGIN = 4;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/grid-list/GridListContext.js
+  init_define_import_meta_env();
   var import_react118 = __toESM(require_react());
   var GridListContext = /* @__PURE__ */ (0, import_react118.createContext)({
     column: 3
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/grid-list/GridListItem.js
+  init_define_import_meta_env();
   var import_jsx_runtime107 = __toESM(require_jsx_runtime());
   var import_react119 = __toESM(require_react());
   var import_react_native94 = __toESM(require_react_native());
@@ -36026,13 +36914,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   GridList.Item = GridListItem;
   var GridList_default = GridList;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRow.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime113 = __toESM(require_jsx_runtime());
   var import_react123 = __toESM(require_react());
   var import_react_native101 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowDisabled.js
+  init_define_import_meta_env();
   var import_jsx_runtime109 = __toESM(require_jsx_runtime());
   var import_hex_to_rgba6 = __toESM(require_build());
   var import_react120 = __toESM(require_react());
@@ -36078,6 +36971,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightArrow.js
+  init_define_import_meta_env();
   var import_jsx_runtime110 = __toESM(require_jsx_runtime());
   var import_react_native97 = __toESM(require_react_native());
   function ListRowRightArrow() {
@@ -36102,15 +36996,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/animation/useBlinkAnimation.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react121 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/animation/sToMs.js
+  init_define_import_meta_env();
   var sToMs = function(s) {
     return s * 1e3;
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/animation/animationState.js
+  init_define_import_meta_env();
   var BlinkAnimationState;
   (function(BlinkAnimationState2) {
     BlinkAnimationState2[BlinkAnimationState2["Idle"] = 1] = "Idle";
@@ -36258,6 +37155,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/animation/useShineAnimation.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
   var import_react122 = __toESM(require_react());
@@ -36399,6 +37297,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/animation/BlinkEffect.js
+  init_define_import_meta_env();
   var import_jsx_runtime111 = __toESM(require_jsx_runtime());
   var import_react_native99 = __toESM(require_react_native());
   var ANIMATION_ENDED_FLAG = BlinkAnimationState.EndAnimation | BlinkAnimationState.Finished;
@@ -36467,6 +37366,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/animation/ShineEffect.js
+  init_define_import_meta_env();
   var import_jsx_runtime112 = __toESM(require_jsx_runtime());
   var import_react_native100 = __toESM(require_react_native());
   var ShineEffectLight = function(param) {
@@ -36827,13 +37727,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }
   });
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/ListRowRightTexts.js
+  init_define_import_meta_env();
   var import_jsx_runtime125 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts1RowTypeA.js
+  init_define_import_meta_env();
   var import_jsx_runtime115 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTextsContainer.js
+  init_define_import_meta_env();
   var import_jsx_runtime114 = __toESM(require_jsx_runtime());
   var import_react_native102 = __toESM(require_react_native());
   function RightTextsContainer(props) {
@@ -36857,6 +37763,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts1RowTypeB.js
+  init_define_import_meta_env();
   var import_jsx_runtime116 = __toESM(require_jsx_runtime());
   function RightTexts1RowTypeB(props) {
     return (0, import_jsx_runtime116.jsx)(RightTextsContainer, {
@@ -36870,6 +37777,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts1RowTypeC.js
+  init_define_import_meta_env();
   var import_jsx_runtime117 = __toESM(require_jsx_runtime());
   function RightTexts1RowTypeC(props) {
     return (0, import_jsx_runtime117.jsx)(RightTextsContainer, {
@@ -36883,6 +37791,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts1RowTypeD.js
+  init_define_import_meta_env();
   var import_jsx_runtime118 = __toESM(require_jsx_runtime());
   function RightTexts1RowTypeD(props) {
     return (0, import_jsx_runtime118.jsx)(RightTextsContainer, {
@@ -36896,6 +37805,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts1RowTypeE.js
+  init_define_import_meta_env();
   var import_jsx_runtime119 = __toESM(require_jsx_runtime());
   function RightTexts1RowTypeE(props) {
     return (0, import_jsx_runtime119.jsx)(RightTextsContainer, {
@@ -36909,6 +37819,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts2RowTypeA.js
+  init_define_import_meta_env();
   var import_jsx_runtime120 = __toESM(require_jsx_runtime());
   function RightTexts2RowTypeA(props) {
     return (0, import_jsx_runtime120.jsxs)(RightTextsContainer, {
@@ -36933,6 +37844,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts2RowTypeB.js
+  init_define_import_meta_env();
   var import_jsx_runtime121 = __toESM(require_jsx_runtime());
   function RightTexts2RowTypeB(props) {
     return (0, import_jsx_runtime121.jsxs)(RightTextsContainer, {
@@ -36954,6 +37866,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts2RowTypeC.js
+  init_define_import_meta_env();
   var import_jsx_runtime122 = __toESM(require_jsx_runtime());
   function RightTexts2RowTypeC(props) {
     return (0, import_jsx_runtime122.jsxs)(RightTextsContainer, {
@@ -36978,6 +37891,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts2RowTypeD.js
+  init_define_import_meta_env();
   var import_jsx_runtime123 = __toESM(require_jsx_runtime());
   function RightTexts2RowTypeD(props) {
     return (0, import_jsx_runtime123.jsxs)(RightTextsContainer, {
@@ -37002,6 +37916,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowRightTexts/RightTexts2RowTypeE.js
+  init_define_import_meta_env();
   var import_jsx_runtime124 = __toESM(require_jsx_runtime());
   function RightTexts2RowTypeE(props) {
     return (0, import_jsx_runtime124.jsxs)(RightTextsContainer, {
@@ -37053,13 +37968,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/ListRowTexts.js
+  init_define_import_meta_env();
   var import_jsx_runtime143 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts1RowTypeA.js
+  init_define_import_meta_env();
   var import_jsx_runtime128 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/ListRowTxt.js
+  init_define_import_meta_env();
   var import_jsx_runtime126 = __toESM(require_jsx_runtime());
   function ListRowTxt(props) {
     var _props_typography;
@@ -37077,6 +37998,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/TextsContainer.js
+  init_define_import_meta_env();
   var import_jsx_runtime127 = __toESM(require_jsx_runtime());
   var import_react_native103 = __toESM(require_react_native());
   function TextsContainer(props) {
@@ -37098,6 +38020,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts1RowTypeB.js
+  init_define_import_meta_env();
   var import_jsx_runtime129 = __toESM(require_jsx_runtime());
   function Texts1RowTypeB(props) {
     return (0, import_jsx_runtime129.jsx)(TextsContainer, {
@@ -37111,6 +38034,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts1RowTypeC.js
+  init_define_import_meta_env();
   var import_jsx_runtime130 = __toESM(require_jsx_runtime());
   function Texts1RowTypeC(props) {
     return (0, import_jsx_runtime130.jsx)(TextsContainer, {
@@ -37124,6 +38048,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts2RowTypeA.js
+  init_define_import_meta_env();
   var import_jsx_runtime131 = __toESM(require_jsx_runtime());
   function Texts2RowTypeA(props) {
     return (0, import_jsx_runtime131.jsxs)(TextsContainer, {
@@ -37148,6 +38073,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts2RowTypeB.js
+  init_define_import_meta_env();
   var import_jsx_runtime132 = __toESM(require_jsx_runtime());
   function Texts2RowTypeB(props) {
     return (0, import_jsx_runtime132.jsxs)(TextsContainer, {
@@ -37172,6 +38098,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts2RowTypeC.js
+  init_define_import_meta_env();
   var import_jsx_runtime133 = __toESM(require_jsx_runtime());
   function Texts2RowTypeC(props) {
     return (0, import_jsx_runtime133.jsxs)(TextsContainer, {
@@ -37196,6 +38123,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts2RowTypeD.js
+  init_define_import_meta_env();
   var import_jsx_runtime134 = __toESM(require_jsx_runtime());
   function Texts2RowTypeD(props) {
     return (0, import_jsx_runtime134.jsxs)(TextsContainer, {
@@ -37220,6 +38148,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts2RowTypeE.js
+  init_define_import_meta_env();
   var import_jsx_runtime135 = __toESM(require_jsx_runtime());
   function Texts2RowTypeE(props) {
     return (0, import_jsx_runtime135.jsxs)(TextsContainer, {
@@ -37244,6 +38173,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts2RowTypeF.js
+  init_define_import_meta_env();
   var import_jsx_runtime136 = __toESM(require_jsx_runtime());
   function Texts2RowTypeF(props) {
     return (0, import_jsx_runtime136.jsxs)(TextsContainer, {
@@ -37268,6 +38198,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts3RowTypeA.js
+  init_define_import_meta_env();
   var import_jsx_runtime137 = __toESM(require_jsx_runtime());
   function Texts3RowTypeA(props) {
     return (0, import_jsx_runtime137.jsxs)(TextsContainer, {
@@ -37301,6 +38232,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts3RowTypeB.js
+  init_define_import_meta_env();
   var import_jsx_runtime138 = __toESM(require_jsx_runtime());
   function Texts3RowTypeB(props) {
     return (0, import_jsx_runtime138.jsxs)(TextsContainer, {
@@ -37334,6 +38266,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts3RowTypeC.js
+  init_define_import_meta_env();
   var import_jsx_runtime139 = __toESM(require_jsx_runtime());
   function Texts3RowTypeC(props) {
     return (0, import_jsx_runtime139.jsxs)(TextsContainer, {
@@ -37367,6 +38300,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts3RowTypeD.js
+  init_define_import_meta_env();
   var import_jsx_runtime140 = __toESM(require_jsx_runtime());
   function Texts3RowTypeD(props) {
     return (0, import_jsx_runtime140.jsxs)(TextsContainer, {
@@ -37400,6 +38334,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts3RowTypeE.js
+  init_define_import_meta_env();
   var import_jsx_runtime141 = __toESM(require_jsx_runtime());
   function Texts3RowTypeE(props) {
     return (0, import_jsx_runtime141.jsxs)(TextsContainer, {
@@ -37433,6 +38368,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowTexts/Texts3RowTypeF.js
+  init_define_import_meta_env();
   var import_jsx_runtime142 = __toESM(require_jsx_runtime());
   function Texts3RowTypeF(props) {
     return (0, import_jsx_runtime142.jsxs)(TextsContainer, {
@@ -37504,6 +38440,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowImageContainer.js
+  init_define_import_meta_env();
   init_define_property();
   var import_jsx_runtime144 = __toESM(require_jsx_runtime());
   var import_react_native104 = __toESM(require_react_native());
@@ -37584,6 +38521,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowIcon.js
+  init_define_import_meta_env();
   var import_jsx_runtime145 = __toESM(require_jsx_runtime());
   var import_react_native105 = __toESM(require_react_native());
   function ListRowIcon(_param) {
@@ -37650,6 +38588,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowImage.js
+  init_define_import_meta_env();
   init_define_property();
   init_sliced_to_array();
   var import_jsx_runtime146 = __toESM(require_jsx_runtime());
@@ -37746,6 +38685,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }), _obj2);
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/list-row/ListRowLeftText.js
+  init_define_import_meta_env();
   var import_jsx_runtime147 = __toESM(require_jsx_runtime());
   var import_react_native107 = __toESM(require_react_native());
   function ListRowLeftText(_param) {
@@ -37779,6 +38719,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/prevent-font-scaling/PreventFontScaling.ios.js
+  init_define_import_meta_env();
   var import_jsx_runtime148 = __toESM(require_jsx_runtime());
   var import_react_native108 = __toESM(require_react_native());
   function PreventFontScaling(param) {
@@ -37819,7 +38760,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return "A11y_xxxLarge";
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/progress-bar/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/progress-bar/ProgressBar.js
+  init_define_import_meta_env();
   var import_jsx_runtime149 = __toESM(require_jsx_runtime());
   var import_react125 = __toESM(require_react());
   var import_react_native109 = __toESM(require_react_native());
@@ -37886,21 +38831,34 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var AnimatedRect = import_react_native109.Animated.createAnimatedComponent(react_native_svg_exports.Rect);
   var ProgressBar_default = ProgressBar;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/search-field/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/search-field/SearchField.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime174 = __toESM(require_jsx_runtime());
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/TDSTextField.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime152 = __toESM(require_jsx_runtime());
   var import_react128 = __toESM(require_react());
   var import_react_native114 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/hooks.js
+  init_define_import_meta_env();
   var import_react126 = __toESM(require_react());
   var import_react_native111 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/styles.js
+  init_define_import_meta_env();
   var import_hex_to_rgba7 = __toESM(require_build());
   var import_react_native110 = __toESM(require_react_native());
   var getLabelStyle = function(param) {
@@ -38138,10 +39096,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/TDSTextFieldContainer.js
+  init_define_import_meta_env();
   var import_jsx_runtime150 = __toESM(require_jsx_runtime());
   var import_react_native112 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/utils.js
+  init_define_import_meta_env();
   function getState(param) {
     var disabled = param.disabled, error = param.error, focus = param.focus;
     if (disabled) {
@@ -38195,6 +39155,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/TDSTextFieldContent.js
+  init_define_import_meta_env();
   var import_jsx_runtime151 = __toESM(require_jsx_runtime());
   var import_react127 = __toESM(require_react());
   var import_react_native113 = __toESM(require_react_native());
@@ -38333,6 +39294,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/OldTextField/TDSTextFieldItem.js
+  init_define_import_meta_env();
   var import_jsx_runtime153 = __toESM(require_jsx_runtime());
   var import_react_native115 = __toESM(require_react_native());
   var import_react129 = __toESM(require_react());
@@ -38407,11 +39369,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var OldTextField = TDSTextField;
   var OldTextFieldItem = TDSTextFieldItem;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/TextField.js
+  init_define_import_meta_env();
   var import_jsx_runtime173 = __toESM(require_jsx_runtime());
   var import_react151 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/utils/format.js
+  init_define_import_meta_env();
   var format = {
     phoneNumber: {
       transform: transformToPhoneNumber,
@@ -38483,12 +39450,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBig/TextFieldBig.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime157 = __toESM(require_jsx_runtime());
   var import_react136 = __toESM(require_react());
   var import_react_native119 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/components/TextFieldContainer.js
+  init_define_import_meta_env();
   var import_jsx_runtime154 = __toESM(require_jsx_runtime());
   var import_react_native116 = __toESM(require_react_native());
   function TextFieldContainer(param) {
@@ -38513,6 +39482,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/components/TextFieldHelp.js
+  init_define_import_meta_env();
   var import_jsx_runtime155 = __toESM(require_jsx_runtime());
   var import_react_native117 = __toESM(require_react_native());
   function TextFieldHelp(param) {
@@ -38534,6 +39504,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/components/TextFieldLabel.js
+  init_define_import_meta_env();
   var import_jsx_runtime156 = __toESM(require_jsx_runtime());
   var import_react_native118 = __toESM(require_react_native());
   function TextFieldLabel(param) {
@@ -38561,9 +39532,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useLabelControls.js
+  init_define_import_meta_env();
   var import_react130 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/utils/getTextFieldStatus.js
+  init_define_import_meta_env();
   function getTextFieldStatus(props, focused) {
     if (props.disabled) {
       return "disabled";
@@ -38581,6 +39554,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/utils/hasValue.js
+  init_define_import_meta_env();
   function hasValue(value) {
     return (value || "").toString().length > 0;
   }
@@ -38624,6 +39598,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useTextFieldDefaultLineBorderColor.js
+  init_define_import_meta_env();
   var import_react131 = __toESM(require_react());
   function useTextFieldDefaultLineBorderColor(props, focused) {
     var adaptive2 = useAdaptive();
@@ -38652,6 +39627,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useTextFieldDefaultPlaceholderColor.js
+  init_define_import_meta_env();
   var import_react132 = __toESM(require_react());
   function useTextFieldDefaultPlaceholderColor(props, focused) {
     var adaptive2 = useAdaptive();
@@ -38675,6 +39651,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useTextFieldDefaultTextColor.js
+  init_define_import_meta_env();
   var import_react133 = __toESM(require_react());
   function useTextFieldDefaultTextColor(props, focused) {
     var adaptive2 = useAdaptive();
@@ -38698,6 +39675,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useTextFieldHelpControls.js
+  init_define_import_meta_env();
   var import_react134 = __toESM(require_react());
   function useTextFieldHelpControls(props, focused) {
     var adaptive2 = useAdaptive();
@@ -38721,6 +39699,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useTextFieldValueControls.js
+  init_define_import_meta_env();
   var import_react135 = __toESM(require_react());
   function useTextFieldValueControls(props) {
     var _props_format;
@@ -38867,10 +39846,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBig/TextFieldBig.Clearable.js
+  init_define_import_meta_env();
   var import_jsx_runtime159 = __toESM(require_jsx_runtime());
   var import_react139 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/components/TextFieldClearButton.js
+  init_define_import_meta_env();
   var import_jsx_runtime158 = __toESM(require_jsx_runtime());
   var import_react_native120 = __toESM(require_react_native());
   function TextFieldClearButton(param) {
@@ -38887,10 +39868,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useTextFieldClearButtonControls.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_react138 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/hooks/useIsMountedRef.js
+  init_define_import_meta_env();
   var import_react137 = __toESM(require_react());
   function useIsMountedRef() {
     var state = (0, import_react137.useRef)({
@@ -38961,12 +39944,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBig/TextFieldBig.Button.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime162 = __toESM(require_jsx_runtime());
   var import_react140 = __toESM(require_react());
   var import_react_native121 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/components/TextFieldButtonArrow.js
+  init_define_import_meta_env();
   var import_jsx_runtime160 = __toESM(require_jsx_runtime());
   function TextFieldButtonArrow() {
     var adaptive2 = useAdaptive();
@@ -38978,6 +39963,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/components/TextFieldButtonText.js
+  init_define_import_meta_env();
   var import_jsx_runtime161 = __toESM(require_jsx_runtime());
   function TextFieldButtonText(_param) {
     var color = _param.color, placeholder = _param.placeholder, _param_placeholderColor = _param.placeholderColor, placeholderColor = _param_placeholderColor === void 0 ? color : _param_placeholderColor, children = _param.children, props = _object_without_properties(_param, [
@@ -39119,12 +40105,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBox/TextFieldBox.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime164 = __toESM(require_jsx_runtime());
   var import_react142 = __toESM(require_react());
   var import_react_native123 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBox/TextFieldBoxOverlay.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime163 = __toESM(require_jsx_runtime());
   var import_react141 = __toESM(require_react());
@@ -39300,6 +40288,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBox/TextFieldBox.Clearable.js
+  init_define_import_meta_env();
   var import_jsx_runtime165 = __toESM(require_jsx_runtime());
   var import_react143 = __toESM(require_react());
   var TextFieldBoxClearable = /* @__PURE__ */ (0, import_react143.forwardRef)(function TextFieldLineClearable(props, ref) {
@@ -39328,6 +40317,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldBox/TextFieldBox.Button.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime166 = __toESM(require_jsx_runtime());
   var import_react144 = __toESM(require_react());
@@ -39448,6 +40438,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldHero/TextFieldHero.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime167 = __toESM(require_jsx_runtime());
   var import_react145 = __toESM(require_react());
@@ -39571,6 +40562,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldHero/TextFieldHero.Clearable.js
+  init_define_import_meta_env();
   var import_jsx_runtime168 = __toESM(require_jsx_runtime());
   var import_react146 = __toESM(require_react());
   var TextFieldHeroClearable = /* @__PURE__ */ (0, import_react146.forwardRef)(function TextFieldHeroClearable2(props, ref) {
@@ -39599,6 +40591,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldHero/TextFieldHero.Button.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime169 = __toESM(require_jsx_runtime());
   var import_react147 = __toESM(require_react());
@@ -39722,6 +40715,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldLine/TextFieldLine.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime170 = __toESM(require_jsx_runtime());
   var import_react148 = __toESM(require_react());
@@ -39850,6 +40844,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldLine/TextFieldLine.Clearable.js
+  init_define_import_meta_env();
   var import_jsx_runtime171 = __toESM(require_jsx_runtime());
   var import_react149 = __toESM(require_react());
   var TextFieldLineClearable2 = /* @__PURE__ */ (0, import_react149.forwardRef)(function TextFieldLineClearable3(props, ref) {
@@ -39878,6 +40873,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/text-field/TextField/variants/TextFieldLine/TextFieldLine.Button.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   var import_jsx_runtime172 = __toESM(require_jsx_runtime());
   var import_react150 = __toESM(require_react());
@@ -40133,20 +41129,146 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var SearchField_default = SearchField;
 
-  // node_modules/@toss-design-system/react-native/dist/esm/components/slider/Slider.js
-  init_sliced_to_array();
+  // node_modules/@toss-design-system/react-native/dist/esm/components/skeleton/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/skeleton/Skeleton.js
+  init_define_import_meta_env();
   var import_jsx_runtime175 = __toESM(require_jsx_runtime());
-  var import_react154 = __toESM(require_react());
-  var import_react_native131 = __toESM(require_react_native());
+  var import_react_native129 = __toESM(require_react_native());
+  function Skeleton(param) {
+    var width = param.width, height = param.height, _param_borderRadius = param.borderRadius, borderRadius = _param_borderRadius === void 0 ? 6 : _param_borderRadius, style = param.style;
+    var adaptive2 = useAdaptive();
+    return (0, import_jsx_runtime175.jsx)(import_react_native129.View, {
+      style: [
+        {
+          width,
+          height,
+          borderRadius,
+          backgroundColor: adaptive2.grey200
+        },
+        style
+      ]
+    });
+  }
+  var Skeleton_default = Skeleton;
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/skeleton/AnimateSkeleton.js
+  init_define_import_meta_env();
+  var import_jsx_runtime176 = __toESM(require_jsx_runtime());
+  var import_react153 = __toESM(require_react());
+  var import_react_native130 = __toESM(require_react_native());
+  function AnimateSkeleton(param) {
+    var children = param.children, delay2 = param.delay, withGradient = param.withGradient, withShimmer = param.withShimmer;
+    var delayOpacityRef = (0, import_react153.useRef)(new import_react_native130.Animated.Value(delay2 === 500 ? 0 : 1)).current;
+    var shimmerOpacityRef = (0, import_react153.useRef)(new import_react_native130.Animated.Value(withShimmer ? 0.2 : 1)).current;
+    (0, import_react153.useEffect)(function() {
+      var delayAnimation = import_react_native130.Animated.sequence([
+        import_react_native130.Animated.delay(delay2),
+        import_react_native130.Animated.timing(delayOpacityRef, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true
+        })
+      ]);
+      var shimmerAnimation = withShimmer ? import_react_native130.Animated.sequence([
+        import_react_native130.Animated.delay(delay2),
+        import_react_native130.Animated.loop(import_react_native130.Animated.sequence([
+          import_react_native130.Animated.timing(shimmerOpacityRef, {
+            toValue: 1,
+            duration: 650,
+            useNativeDriver: true
+          }),
+          import_react_native130.Animated.timing(shimmerOpacityRef, {
+            toValue: 0.2,
+            duration: 650,
+            useNativeDriver: true
+          })
+        ]))
+      ]) : emptyAnimation;
+      import_react_native130.Animated.parallel([
+        delayAnimation,
+        shimmerAnimation
+      ]).start();
+    }, []);
+    return (0, import_jsx_runtime176.jsxs)(import_react_native130.Animated.View, {
+      style: {
+        opacity: delayOpacityRef
+      },
+      children: [
+        (0, import_jsx_runtime176.jsx)(import_react_native130.Animated.View, {
+          style: {
+            opacity: shimmerOpacityRef
+          },
+          children
+        }),
+        withGradient ? (0, import_jsx_runtime176.jsx)(GradientOverlay, {}) : null
+      ]
+    });
+  }
+  function GradientOverlay() {
+    var adaptive2 = useAdaptive();
+    var _adaptive_background;
+    var stopColor = (_adaptive_background = adaptive2.background) !== null && _adaptive_background !== void 0 ? _adaptive_background : colors.background;
+    return (0, import_jsx_runtime176.jsxs)(import_react_native_svg.default, {
+      height: "100%",
+      width: "100%",
+      style: {
+        position: "absolute",
+        top: 0,
+        left: 0
+      },
+      children: [
+        (0, import_jsx_runtime176.jsx)(react_native_svg_exports.Defs, {
+          children: (0, import_jsx_runtime176.jsxs)(react_native_svg_exports.LinearGradient, {
+            id: GRADIENT_ID3,
+            gradientTransform: "rotate(90)",
+            children: [
+              (0, import_jsx_runtime176.jsx)(react_native_svg_exports.Stop, {
+                offset: "5%",
+                stopColor,
+                stopOpacity: 0
+              }),
+              (0, import_jsx_runtime176.jsx)(react_native_svg_exports.Stop, {
+                offset: "95%",
+                stopColor
+              })
+            ]
+          })
+        }),
+        (0, import_jsx_runtime176.jsx)(react_native_svg_exports.Rect, {
+          x: "0",
+          y: "0",
+          width: "100%",
+          height: "100%",
+          fill: "url(#".concat(GRADIENT_ID3, ")")
+        })
+      ]
+    });
+  }
+  var emptyAnimation = import_react_native130.Animated.delay(0);
+  var GRADIENT_ID3 = "tds-rn-animate-skeleton-gradient";
+  var AnimateSkeleton_default = AnimateSkeleton;
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/slider/index.js
+  init_define_import_meta_env();
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/slider/Slider.js
+  init_define_import_meta_env();
+  init_sliced_to_array();
+  var import_jsx_runtime177 = __toESM(require_jsx_runtime());
+  var import_react155 = __toESM(require_react());
+  var import_react_native133 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/slider/styles.js
-  var import_react_native129 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react_native131 = __toESM(require_react_native());
   var SLIDER_HEIGHT = 40;
   var TRACK_HEIGHT = 5;
   var SLIDER_THUMB_RADIUS = 18;
   var SLIDER_THUMB_WIDTH = SLIDER_THUMB_RADIUS * 2;
   var TRACK_TOP = (SLIDER_HEIGHT - TRACK_HEIGHT) / 2;
-  var styles41 = import_react_native129.StyleSheet.create({
+  var styles41 = import_react_native131.StyleSheet.create({
     slider: {
       position: "relative",
       height: SLIDER_HEIGHT
@@ -40181,16 +41303,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/slider/useA11yMode.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_react153 = __toESM(require_react());
-  var import_react_native130 = __toESM(require_react_native());
+  var import_react154 = __toESM(require_react());
+  var import_react_native132 = __toESM(require_react_native());
   function useScreenReaderMode() {
-    var _useState = _sliced_to_array((0, import_react153.useState)(false), 2), isA11yMode = _useState[0], setIsA11yMode = _useState[1];
-    (0, import_react153.useEffect)(function() {
-      var screenReaderChangedSubscription = import_react_native130.AccessibilityInfo.addEventListener("screenReaderChanged", function(isScreenReaderEnabled) {
+    var _useState = _sliced_to_array((0, import_react154.useState)(false), 2), isA11yMode = _useState[0], setIsA11yMode = _useState[1];
+    (0, import_react154.useEffect)(function() {
+      var screenReaderChangedSubscription = import_react_native132.AccessibilityInfo.addEventListener("screenReaderChanged", function(isScreenReaderEnabled) {
         setIsA11yMode(isScreenReaderEnabled);
       });
-      import_react_native130.AccessibilityInfo.isScreenReaderEnabled().then(function(isScreenReaderEnabled) {
+      import_react_native132.AccessibilityInfo.isScreenReaderEnabled().then(function(isScreenReaderEnabled) {
         setIsA11yMode(isScreenReaderEnabled);
       });
       return function() {
@@ -40201,6 +41324,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/slider/utils.js
+  init_define_import_meta_env();
   function clamp3(value) {
     var min = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : -Infinity, max = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : Infinity;
     return Math.min(Math.max(value, min), max);
@@ -40214,7 +41338,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/slider/Slider.js
-  var Slider = /* @__PURE__ */ (0, import_react154.forwardRef)(function Slider2(_param, ref) {
+  var Slider = /* @__PURE__ */ (0, import_react155.forwardRef)(function Slider2(_param, ref) {
     var _param_min = _param.min, min = _param_min === void 0 ? 0 : _param_min, _param_max = _param.max, max = _param_max === void 0 ? 100 : _param_max, _param_value = _param.value, value = _param_value === void 0 ? min + max / 2 : _param_value, _param_step = _param.step, step = _param_step === void 0 ? 1 : _param_step, onChange = _param.onChange, _param_color = _param.color, color = _param_color === void 0 ? colors.blue400 : _param_color, style = _param.style, restProps = _object_without_properties(_param, [
       "min",
       "max",
@@ -40227,11 +41351,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     if (!Number.isInteger(step) || step <= 0) {
       throw new Error("step\uC740 \uC591\uC758 \uC815\uC218\uB9CC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4");
     }
-    var _useState = _sliced_to_array((0, import_react154.useState)({
+    var _useState = _sliced_to_array((0, import_react155.useState)({
       container: 0,
       thumb: 0
     }), 2), layoutRef = _useState[0], setLayoutRef = _useState[1];
-    var translateX = (0, import_react154.useRef)(new import_react_native131.Animated.Value(0)).current;
+    var translateX = (0, import_react155.useRef)(new import_react_native133.Animated.Value(0)).current;
     var isReady = layoutRef.container !== 0 && layoutRef.thumb !== 0;
     var getCurrentValueFromEvent = function(cursorPosition) {
       var containerWidth = layoutRef.container;
@@ -40259,7 +41383,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       onChange === null || onChange === void 0 ? void 0 : onChange(selectedValue);
       translateX.setValue(getCurrentPositionFromValue(selectedValue));
     };
-    var panGesture = (0, import_react154.useMemo)(
+    var panGesture = (0, import_react155.useMemo)(
       function() {
         return react_native_gesture_handler_exports.Gesture.Pan().onUpdate(function(event) {
           updateThumbPosition(event.x);
@@ -40272,7 +41396,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         isReady
       ]
     );
-    (0, import_react154.useEffect)(function() {
+    (0, import_react155.useEffect)(function() {
       if (!isReady) {
         return;
       }
@@ -40281,7 +41405,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       isReady
     ]);
     var isInScreenReaderMode = useScreenReaderMode();
-    (0, import_react154.useEffect)(function() {
+    (0, import_react155.useEffect)(function() {
       if (!isInScreenReaderMode) {
         return;
       }
@@ -40302,9 +41426,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           break;
       }
     };
-    return (0, import_jsx_runtime175.jsx)(react_native_gesture_handler_exports.GestureDetector, {
+    return (0, import_jsx_runtime177.jsx)(react_native_gesture_handler_exports.GestureDetector, {
       gesture: panGesture,
-      children: (0, import_jsx_runtime175.jsxs)(import_react_native131.View, _object_spread_props(_object_spread({
+      children: (0, import_jsx_runtime177.jsxs)(import_react_native133.View, _object_spread_props(_object_spread({
         ref,
         style: [
           styles41.slider,
@@ -40332,10 +41456,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         onAccessibilityAction: handleAccessibilityAction
       }, restProps), {
         children: [
-          (0, import_jsx_runtime175.jsx)(import_react_native131.View, {
+          (0, import_jsx_runtime177.jsx)(import_react_native133.View, {
             style: styles41.track,
             pointerEvents: "none",
-            children: (0, import_jsx_runtime175.jsx)(import_react_native131.Animated.View, {
+            children: (0, import_jsx_runtime177.jsx)(import_react_native133.Animated.View, {
               style: [
                 styles41.progress,
                 {
@@ -40349,7 +41473,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               ]
             })
           }),
-          (0, import_jsx_runtime175.jsx)(import_react_native131.Animated.View, {
+          (0, import_jsx_runtime177.jsx)(import_react_native133.Animated.View, {
             onLayout: function(event) {
               var width = event.nativeEvent.layout.width;
               setLayoutRef(_object_spread_props(_object_spread({}, layoutRef), {
@@ -40374,18 +41498,24 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   });
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/tab/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/tab/Tab.js
-  var import_jsx_runtime179 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime181 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/tab/FullTab.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime176 = __toESM(require_jsx_runtime());
-  var import_react157 = __toESM(require_react());
-  var import_react_native132 = __toESM(require_react_native());
+  var import_jsx_runtime178 = __toESM(require_jsx_runtime());
+  var import_react158 = __toESM(require_react());
+  var import_react_native134 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/tab/IndicatorContext.js
-  var import_react155 = __toESM(require_react());
-  var IndicatorContext = /* @__PURE__ */ (0, import_react155.createContext)({
+  init_define_import_meta_env();
+  var import_react156 = __toESM(require_react());
+  var IndicatorContext = /* @__PURE__ */ (0, import_react156.createContext)({
     width: 0,
     translateX: 0,
     setWidth: function() {
@@ -40395,8 +41525,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/tab/TabContext.js
-  var import_react156 = __toESM(require_react());
-  var TabContext = /* @__PURE__ */ (0, import_react156.createContext)({
+  init_define_import_meta_env();
+  var import_react157 = __toESM(require_react());
+  var TabContext = /* @__PURE__ */ (0, import_react157.createContext)({
     fluid: false,
     value: void 0,
     onChange: function() {
@@ -40406,134 +41537,6 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/tab/FullTab.js
   function FullTab(_param) {
-    var defaultValue = _param.defaultValue, _value = _param.value, children = _param.children, _onChange = _param.onChange, style = _param.style, _param_size = _param.size, size = _param_size === void 0 ? "large" : _param_size, viewProps = _object_without_properties(_param, [
-      "defaultValue",
-      "value",
-      "children",
-      "onChange",
-      "style",
-      "size"
-    ]);
-    var adaptive2 = useAdaptive();
-    var _useControlled = _sliced_to_array(useControlled({
-      controlledValue: _value,
-      defaultValue
-    }), 2), value = _useControlled[0], setValue = _useControlled[1];
-    var onChange = (0, import_react157.useCallback)(function(value2) {
-      _onChange === null || _onChange === void 0 ? void 0 : _onChange(value2);
-      setValue(value2);
-    }, [
-      _onChange,
-      setValue
-    ]);
-    var _useState = _sliced_to_array((0, import_react157.useState)(0), 2), translateX = _useState[0], setTranslateX = _useState[1];
-    var translateXValue = (0, import_react157.useRef)(new Animated15.Value(translateX)).current;
-    var _useState1 = _sliced_to_array((0, import_react157.useState)(0), 2), width = _useState1[0], setWidth = _useState1[1];
-    var indicatorAnimatedStyle = {
-      width,
-      transform: [
-        {
-          translateX: translateXValue
-        }
-      ]
-    };
-    (0, import_react157.useEffect)(function() {
-      Animated15.spring(translateXValue, _object_spread({
-        toValue: translateX,
-        useNativeDriver: true
-      }, spring2.quick)).start();
-    }, [
-      translateX,
-      translateXValue
-    ]);
-    var borderStyle = _object_spread_props(_object_spread({}, styles42.border), {
-      borderBottomColor: adaptive2.grey200
-    });
-    return (0, import_jsx_runtime176.jsx)(TabContext.Provider, {
-      value: {
-        fluid: false,
-        value,
-        onChange,
-        size
-      },
-      children: (0, import_jsx_runtime176.jsx)(IndicatorContext.Provider, {
-        value: {
-          width,
-          translateX,
-          setWidth,
-          setTranslateX
-        },
-        children: (0, import_jsx_runtime176.jsx)(import_react_native132.View, {
-          children: (0, import_jsx_runtime176.jsx)(import_react_native132.ScrollView, {
-            horizontal: false,
-            showsHorizontalScrollIndicator: false,
-            alwaysBounceVertical: false,
-            children: (0, import_jsx_runtime176.jsxs)(import_react_native132.View, {
-              children: [
-                (0, import_jsx_runtime176.jsxs)(import_react_native132.View, _object_spread_props(_object_spread({
-                  style: [
-                    styles42.itemList,
-                    style
-                  ],
-                  accessibilityRole: "tablist"
-                }, viewProps), {
-                  children: [
-                    (0, import_jsx_runtime176.jsx)(import_react_native132.View, {
-                      style: [
-                        styles42.padding
-                      ]
-                    }),
-                    children,
-                    (0, import_jsx_runtime176.jsx)(import_react_native132.View, {
-                      style: styles42.padding
-                    })
-                  ]
-                })),
-                (0, import_jsx_runtime176.jsx)(import_react_native132.View, {
-                  style: borderStyle
-                }),
-                (0, import_jsx_runtime176.jsx)(Animated15.View, {
-                  style: [
-                    {
-                      backgroundColor: adaptive2.grey800
-                    },
-                    styles42.indicator,
-                    indicatorAnimatedStyle
-                  ]
-                })
-              ]
-            })
-          })
-        })
-      })
-    });
-  }
-  var styles42 = import_react_native132.StyleSheet.create({
-    padding: {
-      width: 20,
-      height: 1
-    },
-    itemList: {
-      flexDirection: "row",
-      width: "100%"
-    },
-    border: {
-      width: "100%",
-      borderBottomWidth: import_react_native132.StyleSheet.hairlineWidth
-    },
-    indicator: {
-      height: 2,
-      borderRadius: 10,
-      bottom: 1
-    }
-  });
-
-  // node_modules/@toss-design-system/react-native/dist/esm/components/tab/FluidTab.js
-  init_sliced_to_array();
-  var import_jsx_runtime177 = __toESM(require_jsx_runtime());
-  var import_react158 = __toESM(require_react());
-  var import_react_native133 = __toESM(require_react_native());
-  function FluidTab(_param) {
     var defaultValue = _param.defaultValue, _value = _param.value, children = _param.children, _onChange = _param.onChange, style = _param.style, _param_size = _param.size, size = _param_size === void 0 ? "large" : _param_size, viewProps = _object_without_properties(_param, [
       "defaultValue",
       "value",
@@ -40574,9 +41577,138 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       translateX,
       translateXValue
     ]);
-    var scrollViewWrapperWidthRef = (0, import_react158.useRef)(null);
-    var scrollViewRef = (0, import_react158.useRef)(null);
-    (0, import_react158.useEffect)(function() {
+    var borderStyle = _object_spread_props(_object_spread({}, styles42.border), {
+      borderBottomColor: adaptive2.grey200
+    });
+    return (0, import_jsx_runtime178.jsx)(TabContext.Provider, {
+      value: {
+        fluid: false,
+        value,
+        onChange,
+        size
+      },
+      children: (0, import_jsx_runtime178.jsx)(IndicatorContext.Provider, {
+        value: {
+          width,
+          translateX,
+          setWidth,
+          setTranslateX
+        },
+        children: (0, import_jsx_runtime178.jsx)(import_react_native134.View, {
+          children: (0, import_jsx_runtime178.jsx)(import_react_native134.ScrollView, {
+            horizontal: false,
+            showsHorizontalScrollIndicator: false,
+            alwaysBounceVertical: false,
+            children: (0, import_jsx_runtime178.jsxs)(import_react_native134.View, {
+              children: [
+                (0, import_jsx_runtime178.jsxs)(import_react_native134.View, _object_spread_props(_object_spread({
+                  style: [
+                    styles42.itemList,
+                    style
+                  ],
+                  accessibilityRole: "tablist"
+                }, viewProps), {
+                  children: [
+                    (0, import_jsx_runtime178.jsx)(import_react_native134.View, {
+                      style: [
+                        styles42.padding
+                      ]
+                    }),
+                    children,
+                    (0, import_jsx_runtime178.jsx)(import_react_native134.View, {
+                      style: styles42.padding
+                    })
+                  ]
+                })),
+                (0, import_jsx_runtime178.jsx)(import_react_native134.View, {
+                  style: borderStyle
+                }),
+                (0, import_jsx_runtime178.jsx)(Animated15.View, {
+                  style: [
+                    {
+                      backgroundColor: adaptive2.grey800
+                    },
+                    styles42.indicator,
+                    indicatorAnimatedStyle
+                  ]
+                })
+              ]
+            })
+          })
+        })
+      })
+    });
+  }
+  var styles42 = import_react_native134.StyleSheet.create({
+    padding: {
+      width: 20,
+      height: 1
+    },
+    itemList: {
+      flexDirection: "row",
+      width: "100%"
+    },
+    border: {
+      width: "100%",
+      borderBottomWidth: import_react_native134.StyleSheet.hairlineWidth
+    },
+    indicator: {
+      height: 2,
+      borderRadius: 10,
+      bottom: 1
+    }
+  });
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/tab/FluidTab.js
+  init_define_import_meta_env();
+  init_sliced_to_array();
+  var import_jsx_runtime179 = __toESM(require_jsx_runtime());
+  var import_react159 = __toESM(require_react());
+  var import_react_native135 = __toESM(require_react_native());
+  function FluidTab(_param) {
+    var defaultValue = _param.defaultValue, _value = _param.value, children = _param.children, _onChange = _param.onChange, style = _param.style, _param_size = _param.size, size = _param_size === void 0 ? "large" : _param_size, viewProps = _object_without_properties(_param, [
+      "defaultValue",
+      "value",
+      "children",
+      "onChange",
+      "style",
+      "size"
+    ]);
+    var adaptive2 = useAdaptive();
+    var _useControlled = _sliced_to_array(useControlled({
+      controlledValue: _value,
+      defaultValue
+    }), 2), value = _useControlled[0], setValue = _useControlled[1];
+    var onChange = (0, import_react159.useCallback)(function(value2) {
+      _onChange === null || _onChange === void 0 ? void 0 : _onChange(value2);
+      setValue(value2);
+    }, [
+      _onChange,
+      setValue
+    ]);
+    var _useState = _sliced_to_array((0, import_react159.useState)(0), 2), translateX = _useState[0], setTranslateX = _useState[1];
+    var translateXValue = (0, import_react159.useRef)(new Animated15.Value(translateX)).current;
+    var _useState1 = _sliced_to_array((0, import_react159.useState)(0), 2), width = _useState1[0], setWidth = _useState1[1];
+    var indicatorAnimatedStyle = {
+      width,
+      transform: [
+        {
+          translateX: translateXValue
+        }
+      ]
+    };
+    (0, import_react159.useEffect)(function() {
+      Animated15.spring(translateXValue, _object_spread({
+        toValue: translateX,
+        useNativeDriver: true
+      }, spring2.quick)).start();
+    }, [
+      translateX,
+      translateXValue
+    ]);
+    var scrollViewWrapperWidthRef = (0, import_react159.useRef)(null);
+    var scrollViewRef = (0, import_react159.useRef)(null);
+    (0, import_react159.useEffect)(function() {
       var _scrollViewRef_current;
       if (scrollViewWrapperWidthRef.current == null) {
         return;
@@ -40591,39 +41723,39 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var borderStyle = _object_spread_props(_object_spread({}, styles43.border), {
       borderBottomColor: adaptive2.grey200
     });
-    return (0, import_jsx_runtime177.jsx)(TabContext.Provider, {
+    return (0, import_jsx_runtime179.jsx)(TabContext.Provider, {
       value: {
         fluid: true,
         value,
         onChange,
         size
       },
-      children: (0, import_jsx_runtime177.jsx)(IndicatorContext.Provider, {
+      children: (0, import_jsx_runtime179.jsx)(IndicatorContext.Provider, {
         value: {
           width,
           translateX,
           setWidth,
           setTranslateX
         },
-        children: (0, import_jsx_runtime177.jsxs)(import_react_native133.View, {
+        children: (0, import_jsx_runtime179.jsxs)(import_react_native135.View, {
           onLayout: function(event) {
             scrollViewWrapperWidthRef.current = event.nativeEvent.layout.width;
           },
           children: [
-            (0, import_jsx_runtime177.jsx)(import_react_native133.View, {
+            (0, import_jsx_runtime179.jsx)(import_react_native135.View, {
               style: [
                 borderStyle,
                 styles43.fluidBorder
               ]
             }),
-            (0, import_jsx_runtime177.jsx)(import_react_native133.ScrollView, {
+            (0, import_jsx_runtime179.jsx)(import_react_native135.ScrollView, {
               ref: scrollViewRef,
               horizontal: true,
               showsHorizontalScrollIndicator: false,
               alwaysBounceVertical: false,
-              children: (0, import_jsx_runtime177.jsxs)(import_react_native133.View, {
+              children: (0, import_jsx_runtime179.jsxs)(import_react_native135.View, {
                 children: [
-                  (0, import_jsx_runtime177.jsxs)(import_react_native133.View, _object_spread_props(_object_spread({
+                  (0, import_jsx_runtime179.jsxs)(import_react_native135.View, _object_spread_props(_object_spread({
                     style: [
                       styles43.itemList,
                       style
@@ -40631,7 +41763,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     accessibilityRole: "tablist"
                   }, viewProps), {
                     children: [
-                      (0, import_jsx_runtime177.jsx)(import_react_native133.View, {
+                      (0, import_jsx_runtime179.jsx)(import_react_native135.View, {
                         style: [
                           styles43.fluidPadding
                         ]
@@ -40639,7 +41771,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                       children
                     ]
                   })),
-                  (0, import_jsx_runtime177.jsx)(Animated15.View, {
+                  (0, import_jsx_runtime179.jsx)(Animated15.View, {
                     style: [
                       {
                         backgroundColor: adaptive2.grey800
@@ -40656,7 +41788,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       })
     });
   }
-  var styles43 = import_react_native133.StyleSheet.create({
+  var styles43 = import_react_native135.StyleSheet.create({
     fluidPadding: {
       width: 14,
       height: 1
@@ -40667,7 +41799,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     },
     border: {
       width: "100%",
-      borderBottomWidth: import_react_native133.StyleSheet.hairlineWidth
+      borderBottomWidth: import_react_native135.StyleSheet.hairlineWidth
     },
     fluidBorder: {
       position: "absolute",
@@ -40681,22 +41813,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/tab/TabItem.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime178 = __toESM(require_jsx_runtime());
-  var import_react159 = __toESM(require_react());
-  var import_react_native134 = __toESM(require_react_native());
+  var import_jsx_runtime180 = __toESM(require_jsx_runtime());
+  var import_react160 = __toESM(require_react());
+  var import_react_native136 = __toESM(require_react_native());
   function TabItem(param) {
     var _param_redBean = param.redBean, redBean = _param_redBean === void 0 ? false : _param_redBean, value = param.value, children = param.children, style = param.style, onPress = param.onPress;
-    var _useContext = (0, import_react159.useContext)(TabContext), size = _useContext.size, fluid = _useContext.fluid, selectedValue = _useContext.value, onChange = _useContext.onChange;
-    var scaleMotion = (0, import_react159.useRef)(new Animated15.Value(1)).current;
-    var selected = (0, import_react159.useMemo)(function() {
+    var _useContext = (0, import_react160.useContext)(TabContext), size = _useContext.size, fluid = _useContext.fluid, selectedValue = _useContext.value, onChange = _useContext.onChange;
+    var scaleMotion = (0, import_react160.useRef)(new Animated15.Value(1)).current;
+    var selected = (0, import_react160.useMemo)(function() {
       return value === selectedValue;
     }, [
       value,
       selectedValue
     ]);
     var adaptive2 = useAdaptive();
-    var handlePress = (0, import_react159.useCallback)(function(event) {
+    var handlePress = (0, import_react160.useCallback)(function(event) {
       onPress === null || onPress === void 0 ? void 0 : onPress(event);
       onChange === null || onChange === void 0 ? void 0 : onChange(value);
     }, [
@@ -40708,9 +41841,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       size,
       fluid
     });
-    var _useState = _sliced_to_array((0, import_react159.useState)(), 2), layout = _useState[0], setLayout = _useState[1];
-    var _useContext1 = (0, import_react159.useContext)(IndicatorContext), setWidth = _useContext1.setWidth, setTranslateX = _useContext1.setTranslateX;
-    (0, import_react159.useEffect)(function() {
+    var _useState = _sliced_to_array((0, import_react160.useState)(), 2), layout = _useState[0], setLayout = _useState[1];
+    var _useContext1 = (0, import_react160.useContext)(IndicatorContext), setWidth = _useContext1.setWidth, setTranslateX = _useContext1.setTranslateX;
+    (0, import_react160.useEffect)(function() {
       if (!selected || layout == null || setTranslateX == null || setWidth == null) {
         return;
       }
@@ -40724,7 +41857,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       spacing2.left,
       spacing2.right
     ]);
-    return (0, import_jsx_runtime178.jsxs)(import_react_native134.Pressable, {
+    return (0, import_jsx_runtime180.jsxs)(import_react_native136.Pressable, {
       accessibilityRole: "tab",
       accessibilityState: {
         selected
@@ -40756,7 +41889,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }, spring2.quick)).start();
       },
       children: [
-        (0, import_jsx_runtime178.jsx)(Animated15.View, {
+        (0, import_jsx_runtime180.jsx)(Animated15.View, {
           style: [
             styles44.innerContainer,
             {
@@ -40767,7 +41900,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               ]
             }
           ],
-          children: (0, import_jsx_runtime178.jsx)(Txt_default, {
+          children: (0, import_jsx_runtime180.jsx)(Txt_default, {
             numberOfLines: 1,
             ellipsizeMode: "clip",
             typography: size === "large" ? "t5" : "t6",
@@ -40776,13 +41909,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             children
           })
         }),
-        redBean ? (0, import_jsx_runtime178.jsx)(import_react_native134.View, {
+        redBean ? (0, import_jsx_runtime180.jsx)(import_react_native136.View, {
           style: styles44.redBean
         }) : null
       ]
     });
   }
-  var styles44 = import_react_native134.StyleSheet.create({
+  var styles44 = import_react_native136.StyleSheet.create({
     container: {
       flex: 1
     },
@@ -40817,26 +41950,35 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "fluid"
     ]);
     if (fluid) {
-      return (0, import_jsx_runtime179.jsx)(FluidTab, _object_spread({}, tabProps));
+      return (0, import_jsx_runtime181.jsx)(FluidTab, _object_spread({}, tabProps));
     }
-    return (0, import_jsx_runtime179.jsx)(FullTab, _object_spread({}, tabProps));
+    return (0, import_jsx_runtime181.jsx)(FullTab, _object_spread({}, tabProps));
   }
   Tab.Item = TabItem;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/toast/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/Toast.js
-  var import_jsx_runtime187 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime189 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastBottom.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime180 = __toESM(require_jsx_runtime());
-  var import_react164 = __toESM(require_react());
-  var import_react_native136 = __toESM(require_react_native());
+  var import_jsx_runtime182 = __toESM(require_jsx_runtime());
+  var import_react165 = __toESM(require_react());
+  var import_react_native138 = __toESM(require_react_native());
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/toast/hooks/index.js
+  init_define_import_meta_env();
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/hooks/useTextLine.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_react160 = __toESM(require_react());
+  var import_react161 = __toESM(require_react());
   var useTextLine = function() {
-    var _useState = _sliced_to_array((0, import_react160.useState)("single"), 2), textLine = _useState[0], setTextLine = _useState[1];
+    var _useState = _sliced_to_array((0, import_react161.useState)("single"), 2), textLine = _useState[0], setTextLine = _useState[1];
     var updateTextLine = function(param) {
       var lines = param.nativeEvent.lines;
       if (lines.length >= 2) {
@@ -40852,10 +41994,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/hooks/useTimer.js
-  var import_react161 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_react162 = __toESM(require_react());
   var useTimer = function(param) {
     var duration = param.duration, callback = param.callback;
-    (0, import_react161.useEffect)(function() {
+    (0, import_react162.useEffect)(function() {
       var timeoutId = setTimeout(function() {
         callback();
       }, duration * 1e3);
@@ -40866,13 +42009,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/hooks/useToastAnimation.js
-  var import_react162 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_react163 = __toESM(require_react());
   var useToastAnimation = function(param) {
     var position = param.position, initialY = param.initialY;
-    var opacity = (0, import_react162.useRef)(new Animated15.Value(0)).current;
-    var translateY = (0, import_react162.useRef)(new Animated15.Value(initialY !== null && initialY !== void 0 ? initialY : 0)).current;
-    var enterAnimationStartedRef = (0, import_react162.useRef)(false);
-    var enter = (0, import_react162.useCallback)(function() {
+    var opacity = (0, import_react163.useRef)(new Animated15.Value(0)).current;
+    var translateY = (0, import_react163.useRef)(new Animated15.Value(initialY !== null && initialY !== void 0 ? initialY : 0)).current;
+    var enterAnimationStartedRef = (0, import_react163.useRef)(false);
+    var enter = (0, import_react163.useCallback)(function() {
       return new Promise(function(resolve) {
         if (initialY === void 0) {
           resolve();
@@ -40899,7 +42043,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       position,
       translateY
     ]);
-    (0, import_react162.useEffect)(function() {
+    (0, import_react163.useEffect)(function() {
       if (!enterAnimationStartedRef.current && initialY != null) {
         enter();
       }
@@ -40943,33 +42087,34 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/hooks/useKeyboardAnimatedHeight.js
-  var import_react163 = __toESM(require_react());
-  var import_react_native135 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react164 = __toESM(require_react());
+  var import_react_native137 = __toESM(require_react_native());
   function getInitialKeyboardHeight2() {
-    if (import_react_native135.Platform.OS !== "ios") {
+    if (import_react_native137.Platform.OS !== "ios") {
       return 0;
     }
-    if (typeof (import_react_native135.Keyboard === null || import_react_native135.Keyboard === void 0 ? void 0 : import_react_native135.Keyboard.metrics) === "function") {
+    if (typeof (import_react_native137.Keyboard === null || import_react_native137.Keyboard === void 0 ? void 0 : import_react_native137.Keyboard.metrics) === "function") {
       var _Keyboard_metrics;
       var _Keyboard_metrics_height;
-      return (_Keyboard_metrics_height = (_Keyboard_metrics = import_react_native135.Keyboard.metrics()) === null || _Keyboard_metrics === void 0 ? void 0 : _Keyboard_metrics.height) !== null && _Keyboard_metrics_height !== void 0 ? _Keyboard_metrics_height : 0;
+      return (_Keyboard_metrics_height = (_Keyboard_metrics = import_react_native137.Keyboard.metrics()) === null || _Keyboard_metrics === void 0 ? void 0 : _Keyboard_metrics.height) !== null && _Keyboard_metrics_height !== void 0 ? _Keyboard_metrics_height : 0;
     } else {
       return 0;
     }
   }
   function useKeyboardAnimatedHeight2() {
-    var keyboardHeight = (0, import_react163.useRef)(new import_react_native135.Animated.Value(getInitialKeyboardHeight2())).current;
-    (0, import_react163.useEffect)(function() {
-      if (import_react_native135.Platform.OS === "ios") {
-        var willShowSubscription = import_react_native135.Keyboard.addListener("keyboardWillShow", function(event) {
+    var keyboardHeight = (0, import_react164.useRef)(new import_react_native137.Animated.Value(getInitialKeyboardHeight2())).current;
+    (0, import_react164.useEffect)(function() {
+      if (import_react_native137.Platform.OS === "ios") {
+        var willShowSubscription = import_react_native137.Keyboard.addListener("keyboardWillShow", function(event) {
           var height = event.endCoordinates.height;
-          import_react_native135.Animated.spring(keyboardHeight, _object_spread({
+          import_react_native137.Animated.spring(keyboardHeight, _object_spread({
             toValue: height,
             useNativeDriver: true
           }, spring5.quick)).start();
         });
-        var willHideSubscription = import_react_native135.Keyboard.addListener("keyboardWillHide", function() {
-          import_react_native135.Animated.spring(keyboardHeight, _object_spread({
+        var willHideSubscription = import_react_native137.Keyboard.addListener("keyboardWillHide", function() {
+          import_react_native137.Animated.spring(keyboardHeight, _object_spread({
             toValue: 0,
             useNativeDriver: true
           }, spring5.quick)).start();
@@ -40995,21 +42140,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastBottom.js
-  var AnimatedPressable2 = Animated15.createAnimatedComponent(import_react_native136.Pressable);
+  var AnimatedPressable2 = Animated15.createAnimatedComponent(import_react_native138.Pressable);
   var ToastBottom = function(param) {
     var open = param.open, text = param.text, icon = param.icon, button = param.button, _param_duration = param.duration, duration = _param_duration === void 0 ? button ? 5 : 3 : _param_duration, _param_bottomOffset = param.bottomOffset, bottomOffset = _param_bottomOffset === void 0 ? 20 : _param_bottomOffset, onClose = param.onClose, _param_onExited = param.onExited, onExited = _param_onExited === void 0 ? function() {
     } : _param_onExited, _param_onEntered = param.onEntered, onEntered = _param_onEntered === void 0 ? function() {
     } : _param_onEntered;
     var _animatedStyle_transform_;
-    var _useWindowDimensions = (0, import_react_native136.useWindowDimensions)(), windowWidth = _useWindowDimensions.width;
-    var _useState = _sliced_to_array((0, import_react164.useState)(), 2), height = _useState[0], setHeight = _useState[1];
+    var _useWindowDimensions = (0, import_react_native138.useWindowDimensions)(), windowWidth = _useWindowDimensions.width;
+    var _useState = _sliced_to_array((0, import_react165.useState)(), 2), height = _useState[0], setHeight = _useState[1];
     var safeAreaBottom = useSafeAreaBottom();
     var initialY = height ? bottomOffset + height + safeAreaBottom : void 0;
     var keyboardHeight = useKeyboardAnimatedHeight2();
     var _useTextLine = useTextLine(), textLine = _useTextLine.textLine, updateTextLine = _useTextLine.updateTextLine;
     var colorPreference = useColorPreference().colorPreference;
     var typographyLevel = useTypographyTheme().typographyLevel;
-    var isLargeFontScale = import_react_native136.Platform.OS === "android" ? typographyLevel > 200 : typographyLevel === null || typographyLevel === void 0 ? void 0 : typographyLevel.startsWith("A11y_x");
+    var isLargeFontScale = import_react_native138.Platform.OS === "android" ? typographyLevel > 200 : typographyLevel === null || typographyLevel === void 0 ? void 0 : typographyLevel.startsWith("A11y_x");
     var _useToastAnimation = useToastAnimation({
       position: "bottom",
       initialY
@@ -41028,7 +42173,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return null;
     }
     var _animatedStyle_transform__translateY;
-    return (0, import_jsx_runtime180.jsxs)(AnimatedPressable2, {
+    return (0, import_jsx_runtime182.jsxs)(AnimatedPressable2, {
       onPress: onClose,
       onLayout: function(event) {
         setHeight(event.nativeEvent.layout.height);
@@ -41056,7 +42201,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       ],
       children: [
-        (0, import_jsx_runtime180.jsxs)(import_react_native136.View, {
+        (0, import_jsx_runtime182.jsxs)(import_react_native138.View, {
           style: [
             styles45.iconTextContainer,
             isLargeFontScale ? {
@@ -41067,11 +42212,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }
           ],
           children: [
-            icon && (0, import_jsx_runtime180.jsx)(import_react_native136.View, {
+            icon && (0, import_jsx_runtime182.jsx)(import_react_native138.View, {
               style: styles45.icon,
               children: icon
             }),
-            (0, import_jsx_runtime180.jsx)(Txt_default, {
+            (0, import_jsx_runtime182.jsx)(Txt_default, {
               onTextLayout: updateTextLine,
               typography: "t6",
               fontWeight: "semiBold",
@@ -41080,7 +42225,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             })
           ]
         }),
-        button ? (0, import_jsx_runtime180.jsx)(import_react_native136.View, {
+        button ? (0, import_jsx_runtime182.jsx)(import_react_native138.View, {
           style: styles45.button,
           children: button
         }) : null
@@ -41088,7 +42233,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   };
   var marginHorizontal = 20;
-  var styles45 = import_react_native136.StyleSheet.create({
+  var styles45 = import_react_native138.StyleSheet.create({
     container: {
       position: "absolute",
       alignSelf: "center",
@@ -41111,16 +42256,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastButton.js
-  var import_jsx_runtime181 = __toESM(require_jsx_runtime());
-  var import_react165 = __toESM(require_react());
-  var import_react_native137 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime183 = __toESM(require_jsx_runtime());
+  var import_react166 = __toESM(require_react());
+  var import_react_native139 = __toESM(require_react_native());
   var ToastButton = function(_param) {
     var children = _param.children, props = _object_without_properties(_param, [
       "children"
     ]);
     var colorPreference = useColorPreference().colorPreference;
-    var overlayOpacityAnim = (0, import_react165.useRef)(new Animated15.Value(0)).current;
-    return (0, import_jsx_runtime181.jsxs)(import_react_native137.Pressable, _object_spread_props(_object_spread({
+    var overlayOpacityAnim = (0, import_react166.useRef)(new Animated15.Value(0)).current;
+    return (0, import_jsx_runtime183.jsxs)(import_react_native139.Pressable, _object_spread_props(_object_spread({
       accessibilityRole: "button",
       onPressIn: function() {
         overlayOpacityAnim.setValue(0.1);
@@ -41136,13 +42282,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     }, props), {
       children: [
-        (0, import_jsx_runtime181.jsx)(Animated15.View, {
-          style: _object_spread_props(_object_spread({}, import_react_native137.StyleSheet.absoluteFillObject), {
+        (0, import_jsx_runtime183.jsx)(Animated15.View, {
+          style: _object_spread_props(_object_spread({}, import_react_native139.StyleSheet.absoluteFillObject), {
             backgroundColor: colors.black,
             opacity: overlayOpacityAnim
           })
         }),
-        (0, import_jsx_runtime181.jsx)(Txt_default, {
+        (0, import_jsx_runtime183.jsx)(Txt_default, {
           typography: "t7",
           fontWeight: "semiBold",
           color: colors.floatBackground,
@@ -41151,7 +42297,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     }));
   };
-  var styles46 = import_react_native137.StyleSheet.create({
+  var styles46 = import_react_native139.StyleSheet.create({
     button: {
       marginLeft: "auto",
       borderRadius: 100,
@@ -41162,22 +42308,28 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastIcon.js
-  var import_jsx_runtime182 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime184 = __toESM(require_jsx_runtime());
   var ToastIcon = function(props) {
-    return (0, import_jsx_runtime182.jsx)(Icon_default, _object_spread({
+    return (0, import_jsx_runtime184.jsx)(Icon_default, _object_spread({
       type: "circle",
       size: 24
     }, props));
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastLottieIcon/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastLottieIcon/ToastLottieIcon.js
-  var import_jsx_runtime185 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime187 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastLottieIcon/CustomToastLottieIcon.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime183 = __toESM(require_jsx_runtime());
-  var import_react166 = __toESM(require_react());
-  var import_react_native138 = __toESM(require_react_native());
+  var import_jsx_runtime185 = __toESM(require_jsx_runtime());
+  var import_react167 = __toESM(require_react());
+  var import_react_native140 = __toESM(require_react_native());
   var CustomToastLottieIcon = function(_param) {
     var src = _param.src, _param_play = _param.play, play = _param_play === void 0 ? true : _param_play, _param_loop = _param.loop, loop = _param_loop === void 0 ? false : _param_loop, onFinish = _param.onFinish, style = _param.style, props = _object_without_properties(_param, [
       "src",
@@ -41186,9 +42338,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "onFinish",
       "style"
     ]);
-    var lottie = (0, import_react166.useRef)(null);
-    var _useState = _sliced_to_array((0, import_react166.useState)(), 2), jsonData = _useState[0], setData = _useState[1];
-    (0, import_react166.useEffect)(function() {
+    var lottie = (0, import_react167.useRef)(null);
+    var _useState = _sliced_to_array((0, import_react167.useState)(), 2), jsonData = _useState[0], setData = _useState[1];
+    (0, import_react167.useEffect)(function() {
       var fetchLottie = function fetchLottie2() {
         return _fetchLottie.apply(this, arguments);
       };
@@ -41224,7 +42376,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       src
     ]);
-    (0, import_react166.useEffect)(function() {
+    (0, import_react167.useEffect)(function() {
       var _lottie_current, _lottie_current1;
       play ? (_lottie_current = lottie.current) === null || _lottie_current === void 0 ? void 0 : _lottie_current.play() : (_lottie_current1 = lottie.current) === null || _lottie_current1 === void 0 ? void 0 : _lottie_current1.pause();
     }, [
@@ -41232,13 +42384,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       play
     ]);
     if (jsonData == null) {
-      return (0, import_jsx_runtime183.jsx)(import_react_native138.View, {
+      return (0, import_jsx_runtime185.jsx)(import_react_native140.View, {
         style: {
           opacity: 1
         }
       });
     }
-    return (0, import_jsx_runtime183.jsx)(import_lottie_react_native.default, _object_spread({
+    return (0, import_jsx_runtime185.jsx)(import_lottie_react_native.default, _object_spread({
       ref: lottie,
       source: jsonData,
       autoPlay: false,
@@ -41255,36 +42407,38 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastLottieIcon/PresetToastLottieIcon.js
-  var import_jsx_runtime184 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime186 = __toESM(require_jsx_runtime());
   var PresetToastLottieIcon = function(_param) {
     var type = _param.type, props = _object_without_properties(_param, [
       "type"
     ]);
-    return (0, import_jsx_runtime184.jsx)(CustomToastLottieIcon, _object_spread({
+    return (0, import_jsx_runtime186.jsx)(CustomToastLottieIcon, _object_spread({
       src: type === "complete" ? "https://static.toss.im/lotties-common/check-green-spot.json" : "https://static.toss.im/lotties-common/error-yellow-spot.json"
     }, props));
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastLottieIcon/ToastLottieIcon.js
   var ToastLottieIcon = function(props) {
-    return isPresetToastLottieIconProps(props) ? (0, import_jsx_runtime185.jsx)(PresetToastLottieIcon, _object_spread({}, props)) : (0, import_jsx_runtime185.jsx)(CustomToastLottieIcon, _object_spread({}, props));
+    return isPresetToastLottieIconProps(props) ? (0, import_jsx_runtime187.jsx)(PresetToastLottieIcon, _object_spread({}, props)) : (0, import_jsx_runtime187.jsx)(CustomToastLottieIcon, _object_spread({}, props));
   };
   function isPresetToastLottieIconProps(props) {
     return "type" in props && props.preset === true;
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/toast/components/ToastTop.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime186 = __toESM(require_jsx_runtime());
-  var import_react167 = __toESM(require_react());
-  var import_react_native139 = __toESM(require_react_native());
-  var AnimatedPressable3 = Animated15.createAnimatedComponent(import_react_native139.Pressable);
+  var import_jsx_runtime188 = __toESM(require_jsx_runtime());
+  var import_react168 = __toESM(require_react());
+  var import_react_native141 = __toESM(require_react_native());
+  var AnimatedPressable3 = Animated15.createAnimatedComponent(import_react_native141.Pressable);
   var ToastTop = function(param) {
     var open = param.open, text = param.text, icon = param.icon, _param_duration = param.duration, duration = _param_duration === void 0 ? 3 : _param_duration, onClose = param.onClose, _param_onExited = param.onExited, onExited = _param_onExited === void 0 ? function() {
     } : _param_onExited, _param_onEntered = param.onEntered, onEntered = _param_onEntered === void 0 ? function() {
     } : _param_onEntered;
     var safeAreaTop = useSafeAreaTop();
-    var _useState = _sliced_to_array((0, import_react167.useState)(), 2), height = _useState[0], setHeight = _useState[1];
+    var _useState = _sliced_to_array((0, import_react168.useState)(), 2), height = _useState[0], setHeight = _useState[1];
     var initialY = height ? -(safeAreaTop + height) : void 0;
     var _useTextLine = useTextLine(), textLine = _useTextLine.textLine, updateTextLine = _useTextLine.updateTextLine;
     var adaptive2 = useAdaptive();
@@ -41306,7 +42460,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     if (presenceState === "invisible") {
       return null;
     }
-    return (0, import_jsx_runtime186.jsxs)(AnimatedPressable3, {
+    return (0, import_jsx_runtime188.jsxs)(AnimatedPressable3, {
       onPress: onClose,
       onLayout: function(event) {
         setHeight(event.nativeEvent.layout.height);
@@ -41323,11 +42477,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       ],
       children: [
-        icon && (0, import_jsx_runtime186.jsx)(import_react_native139.View, {
+        icon && (0, import_jsx_runtime188.jsx)(import_react_native141.View, {
           style: styles47.icon,
           children: icon
         }),
-        (0, import_jsx_runtime186.jsx)(Txt_default, {
+        (0, import_jsx_runtime188.jsx)(Txt_default, {
           onTextLayout: updateTextLine,
           typography: "t6",
           fontWeight: "semiBold",
@@ -41337,7 +42491,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     });
   };
-  var styles47 = import_react_native139.StyleSheet.create({
+  var styles47 = import_react_native141.StyleSheet.create({
     container: {
       position: "absolute",
       alignSelf: "center",
@@ -41346,7 +42500,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       alignItems: "center",
       paddingVertical: 12,
       paddingRight: 16,
-      marginHorizontal: import_react_native139.Platform.OS === "ios" ? 18 : import_react_native139.Platform.OS === "android" ? 12 : 0,
+      marginHorizontal: import_react_native141.Platform.OS === "ios" ? 18 : import_react_native141.Platform.OS === "android" ? 12 : 0,
       shadowOffset: {
         width: 0,
         height: 2
@@ -41365,25 +42519,30 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var _param_position = _param.position, position = _param_position === void 0 ? "bottom" : _param_position, props = _object_without_properties(_param, [
       "position"
     ]);
-    return position === "bottom" ? (0, import_jsx_runtime187.jsx)(ToastBottom, _object_spread({}, props)) : (0, import_jsx_runtime187.jsx)(ToastTop, _object_spread({}, props));
+    return position === "bottom" ? (0, import_jsx_runtime189.jsx)(ToastBottom, _object_spread({}, props)) : (0, import_jsx_runtime189.jsx)(ToastTop, _object_spread({}, props));
   };
   Toast.Icon = ToastIcon;
   Toast.LottieIcon = ToastLottieIcon;
   Toast.Button = ToastButton;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/top/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopRoot.js
-  var import_jsx_runtime199 = __toESM(require_jsx_runtime());
-  var import_react_native144 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime201 = __toESM(require_jsx_runtime());
+  var import_react_native146 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopArrow.js
-  var import_jsx_runtime188 = __toESM(require_jsx_runtime());
-  var import_react_native140 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime190 = __toESM(require_jsx_runtime());
+  var import_react_native142 = __toESM(require_react_native());
   function RightArrow(param) {
     var style = param.style;
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime188.jsx)(import_react_native140.View, {
+    return (0, import_jsx_runtime190.jsx)(import_react_native142.View, {
       style,
-      children: (0, import_jsx_runtime188.jsx)(Icon_default, {
+      children: (0, import_jsx_runtime190.jsx)(Icon_default, {
         name: "icon-arrow-right-small-mono",
         size: 24,
         color: adaptive2.grey600
@@ -41392,13 +42551,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopBadges.js
-  var import_jsx_runtime189 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime191 = __toESM(require_jsx_runtime());
   function Badges(param) {
     var items = param.items;
-    return (0, import_jsx_runtime189.jsx)(Paragraph, {
+    return (0, import_jsx_runtime191.jsx)(Paragraph, {
       typography: "t5",
       children: items.map(function(badge, idx) {
-        return (0, import_jsx_runtime189.jsx)(ParagraphBadge, {
+        return (0, import_jsx_runtime191.jsx)(ParagraphBadge, {
           marginLeft: 0,
           type: badge.type,
           badgeStyle: badge.style,
@@ -41411,12 +42571,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var SubtitleBadges = Badges;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopButton.js
-  var import_jsx_runtime190 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime192 = __toESM(require_jsx_runtime());
   function LowerButton(_param) {
     var viewStyle = _param.viewStyle, props = _object_without_properties(_param, [
       "viewStyle"
     ]);
-    return (0, import_jsx_runtime190.jsx)(Button2, _object_spread_props(_object_spread({}, props), {
+    return (0, import_jsx_runtime192.jsx)(Button2, _object_spread_props(_object_spread({}, props), {
       viewStyle: [
         {
           marginLeft: 24
@@ -41428,18 +42589,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var RightButton = Button2;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopCTA.js
-  var import_jsx_runtime191 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime193 = __toESM(require_jsx_runtime());
   function LowerCTA(_param) {
     var props = _extends({}, _object_destructuring_empty(_param));
-    return (0, import_jsx_runtime191.jsx)(BottomCTA.Double, _object_spread({
+    return (0, import_jsx_runtime193.jsx)(BottomCTA.Double, _object_spread({
       gradient: null
     }, props));
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopSubtitleParagraph.js
-  var import_jsx_runtime192 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime194 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/const.js
+  init_define_import_meta_env();
   var titleTypographyMap = {
     22: "t3",
     28: "st2"
@@ -41461,10 +42625,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var adaptive2 = useAdaptive();
     var typography = overridingTypography !== null && overridingTypography !== void 0 ? overridingTypography : subTitleTypographyMap[size];
     var fontWeight = overridingFontWeight !== null && overridingFontWeight !== void 0 ? overridingFontWeight : subTitleFontWeightMap[size];
-    return (0, import_jsx_runtime192.jsx)(Paragraph, {
+    return (0, import_jsx_runtime194.jsx)(Paragraph, {
       typography,
       style,
-      children: (0, import_jsx_runtime192.jsx)(ParagraphText, {
+      children: (0, import_jsx_runtime194.jsx)(ParagraphText, {
         color: color !== null && color !== void 0 ? color : adaptive2.grey700,
         fontWeight,
         children
@@ -41473,26 +42637,27 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopSubtitleSelector.js
-  var import_jsx_runtime193 = __toESM(require_jsx_runtime());
-  var import_react_native141 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime195 = __toESM(require_jsx_runtime());
+  var import_react_native143 = __toESM(require_react_native());
   function SubtitleSelector(param) {
     var overridingTypography = param.typography, overridingFontWeight = param.fontWeight, _color = param.color, _param_size = param.size, size = _param_size === void 0 ? 17 : _param_size, children = param.children, style = param.style, onPress = param.onPress;
     var adaptive2 = useAdaptive();
     var typography = overridingTypography !== null && overridingTypography !== void 0 ? overridingTypography : subTitleTypographyMap[size];
     var fontWeight = overridingFontWeight !== null && overridingFontWeight !== void 0 ? overridingFontWeight : subTitleFontWeightMap[size];
     var color = _color !== null && _color !== void 0 ? _color : adaptive2.grey600;
-    return (0, import_jsx_runtime193.jsx)(import_react_native141.Pressable, {
+    return (0, import_jsx_runtime195.jsx)(import_react_native143.Pressable, {
       onPress,
       style,
-      children: (0, import_jsx_runtime193.jsxs)(Paragraph, {
+      children: (0, import_jsx_runtime195.jsxs)(Paragraph, {
         typography,
         children: [
-          (0, import_jsx_runtime193.jsx)(ParagraphText, {
+          (0, import_jsx_runtime195.jsx)(ParagraphText, {
             color,
             fontWeight,
             children
           }),
-          (0, import_jsx_runtime193.jsx)(ParagraphIcon, {
+          (0, import_jsx_runtime195.jsx)(ParagraphIcon, {
             name: "icon-arrow-down-mono",
             color
           })
@@ -41502,7 +42667,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopSubtitleTextButton.js
-  var import_jsx_runtime194 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime196 = __toESM(require_jsx_runtime());
   function SubtitleTextButton(_param) {
     var variant = _param.variant, _param_size = _param.size, size = _param_size === void 0 ? 17 : _param_size, overridingTypography = _param.typography, tmp = _param.fontWeight, overridingFontWeight = tmp === void 0 ? "regular" : tmp, _color = _param.color, props = _object_without_properties(_param, [
       "variant",
@@ -41515,7 +42681,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var color = _color !== null && _color !== void 0 ? _color : adaptive2.grey600;
     var typography = overridingTypography !== null && overridingTypography !== void 0 ? overridingTypography : subTitleTypographyMap[size];
     var fontWeight = overridingFontWeight !== null && overridingFontWeight !== void 0 ? overridingFontWeight : subTitleFontWeightMap[size];
-    return (0, import_jsx_runtime194.jsx)(TextButton, _object_spread({
+    return (0, import_jsx_runtime196.jsx)(TextButton, _object_spread({
       typography,
       variant,
       color,
@@ -41524,15 +42690,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopTitleParagraph.js
-  var import_jsx_runtime195 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime197 = __toESM(require_jsx_runtime());
   function TitleParagraph(param) {
     var overridingTypography = param.typography, _param_size = param.size, size = _param_size === void 0 ? 22 : _param_size, _param_fontWeight = param.fontWeight, fontWeight = _param_fontWeight === void 0 ? "bold" : _param_fontWeight, color = param.color, style = param.style, children = param.children;
     var adaptive2 = useAdaptive();
     var typography = overridingTypography !== null && overridingTypography !== void 0 ? overridingTypography : titleTypographyMap[size];
-    return (0, import_jsx_runtime195.jsx)(Paragraph, {
+    return (0, import_jsx_runtime197.jsx)(Paragraph, {
       typography,
       style,
-      children: (0, import_jsx_runtime195.jsx)(ParagraphText, {
+      children: (0, import_jsx_runtime197.jsx)(ParagraphText, {
         color: color !== null && color !== void 0 ? color : adaptive2.grey800,
         fontWeight,
         children
@@ -41541,25 +42708,26 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopTitleSelector.js
-  var import_jsx_runtime196 = __toESM(require_jsx_runtime());
-  var import_react_native142 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime198 = __toESM(require_jsx_runtime());
+  var import_react_native144 = __toESM(require_react_native());
   function TitleSelector(param) {
     var _color = param.color, _param_size = param.size, size = _param_size === void 0 ? 22 : _param_size, _param_fontWeight = param.fontWeight, fontWeight = _param_fontWeight === void 0 ? "bold" : _param_fontWeight, children = param.children, overridingTypography = param.typography, style = param.style, onPress = param.onPress;
     var adaptive2 = useAdaptive();
     var typography = overridingTypography !== null && overridingTypography !== void 0 ? overridingTypography : titleTypographyMap[size];
     var color = _color !== null && _color !== void 0 ? _color : adaptive2.grey800;
-    return (0, import_jsx_runtime196.jsx)(import_react_native142.Pressable, {
+    return (0, import_jsx_runtime198.jsx)(import_react_native144.Pressable, {
       onPress,
       style,
-      children: (0, import_jsx_runtime196.jsxs)(Paragraph, {
+      children: (0, import_jsx_runtime198.jsxs)(Paragraph, {
         typography,
         children: [
-          (0, import_jsx_runtime196.jsx)(ParagraphText, {
+          (0, import_jsx_runtime198.jsx)(ParagraphText, {
             color,
             fontWeight,
             children
           }),
-          (0, import_jsx_runtime196.jsx)(ParagraphIcon, {
+          (0, import_jsx_runtime198.jsx)(ParagraphIcon, {
             name: "icon-arrow-down-mono",
             color
           })
@@ -41569,7 +42737,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopTitleTextButton.js
-  var import_jsx_runtime197 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime199 = __toESM(require_jsx_runtime());
   function TitleTextButton(_param) {
     var _param_size = _param.size, size = _param_size === void 0 ? 22 : _param_size, overridingTypography = _param.typography, variant = _param.variant, _param_fontWeight = _param.fontWeight, fontWeight = _param_fontWeight === void 0 ? "bold" : _param_fontWeight, _color = _param.color, props = _object_without_properties(_param, [
       "size",
@@ -41581,7 +42750,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var adaptive2 = useAdaptive();
     var color = adaptive2.grey800;
     var typography = overridingTypography !== null && overridingTypography !== void 0 ? overridingTypography : titleTypographyMap[size];
-    return (0, import_jsx_runtime197.jsx)(TextButton, _object_spread({
+    return (0, import_jsx_runtime199.jsx)(TextButton, _object_spread({
       variant,
       typography,
       color,
@@ -41590,14 +42759,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopUpperAssetContent.js
-  var import_jsx_runtime198 = __toESM(require_jsx_runtime());
-  var import_react_native143 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime200 = __toESM(require_jsx_runtime());
+  var import_react_native145 = __toESM(require_react_native());
   function UpperAssetContent(_param) {
     var content = _param.content, style = _param.style, restProps = _object_without_properties(_param, [
       "content",
       "style"
     ]);
-    return (0, import_jsx_runtime198.jsx)(import_react_native143.View, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime200.jsx)(import_react_native145.View, _object_spread_props(_object_spread({
       style: [
         {
           marginVertical: 0
@@ -41612,7 +42782,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/@toss-design-system/react-native/dist/esm/components/top/TopRoot.js
   function TopRoot(param) {
     var _param_upperGap = param.upperGap, upperGap = _param_upperGap === void 0 ? 24 : _param_upperGap, _param_lowerGap = param.lowerGap, lowerGap = _param_lowerGap === void 0 ? 24 : _param_lowerGap, _param_rightVerticalAlign = param.rightVerticalAlign, rightVerticalAlign = _param_rightVerticalAlign === void 0 ? "center" : _param_rightVerticalAlign, upper = param.upper, subtitle1 = param.subtitle1, title = param.title, subtitle2 = param.subtitle2, lower = param.lower, right = param.right, style = param.style;
-    return (0, import_jsx_runtime199.jsxs)(import_react_native144.View, {
+    return (0, import_jsx_runtime201.jsxs)(import_react_native146.View, {
       style: [
         {
           marginTop: upperGap,
@@ -41621,28 +42791,28 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         style
       ],
       children: [
-        upper && (0, import_jsx_runtime199.jsx)(import_react_native144.View, {
+        upper && (0, import_jsx_runtime201.jsx)(import_react_native146.View, {
           style: styles48.upper,
           children: upper
         }),
-        (0, import_jsx_runtime199.jsxs)(import_react_native144.View, {
+        (0, import_jsx_runtime201.jsxs)(import_react_native146.View, {
           style: styles48.row,
           children: [
-            (0, import_jsx_runtime199.jsxs)(import_react_native144.View, {
+            (0, import_jsx_runtime201.jsxs)(import_react_native146.View, {
               style: styles48.mainContent,
               children: [
-                subtitle1 && (0, import_jsx_runtime199.jsx)(import_react_native144.View, {
+                subtitle1 && (0, import_jsx_runtime201.jsx)(import_react_native146.View, {
                   style: styles48.subtitle1,
                   children: subtitle1
                 }),
                 title,
-                subtitle2 && (0, import_jsx_runtime199.jsx)(import_react_native144.View, {
+                subtitle2 && (0, import_jsx_runtime201.jsx)(import_react_native146.View, {
                   style: styles48.subtitle2,
                   children: subtitle2
                 })
               ]
             }),
-            (0, import_jsx_runtime199.jsx)(import_react_native144.View, {
+            (0, import_jsx_runtime201.jsx)(import_react_native146.View, {
               style: [
                 styles48.right,
                 {
@@ -41653,14 +42823,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             })
           ]
         }),
-        lower && (0, import_jsx_runtime199.jsx)(import_react_native144.View, {
+        lower && (0, import_jsx_runtime201.jsx)(import_react_native146.View, {
           style: styles48.lower,
           children: lower
         })
       ]
     });
   }
-  var styles48 = import_react_native144.StyleSheet.create({
+  var styles48 = import_react_native146.StyleSheet.create({
     upper: {
       marginBottom: 16,
       paddingHorizontal: 24
@@ -41710,25 +42880,31 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   TopRoot.RightButton = RightButton;
   TopRoot.RightArrow = RightArrow;
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Item/Item.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime201 = __toESM(require_jsx_runtime());
-  var import_react172 = __toESM(require_react());
-  var import_react_native146 = __toESM(require_react_native());
+  var import_jsx_runtime203 = __toESM(require_jsx_runtime());
+  var import_react173 = __toESM(require_react());
+  var import_react_native148 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/contexts/AlignmentContext.js
-  var import_react168 = __toESM(require_react());
-  var AlignmentContext = /* @__PURE__ */ (0, import_react168.createContext)({
+  init_define_import_meta_env();
+  var import_react169 = __toESM(require_react());
+  var AlignmentContext = /* @__PURE__ */ (0, import_react169.createContext)({
     ensureFluidAlignment: function() {
       return null;
     }
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/contexts/RadioContext.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime200 = __toESM(require_jsx_runtime());
-  var import_react169 = __toESM(require_react());
-  var RadioContext = /* @__PURE__ */ (0, import_react169.createContext)({
+  var import_jsx_runtime202 = __toESM(require_jsx_runtime());
+  var import_react170 = __toESM(require_react());
+  var RadioContext = /* @__PURE__ */ (0, import_react170.createContext)({
     name: "",
     selectedValue: "",
     setSelectedValue: function() {
@@ -41742,8 +42918,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var children = _param.children, radioContextValue = _object_without_properties(_param, [
       "children"
     ]);
-    var _useState = _sliced_to_array((0, import_react169.useState)(null), 2), selectedElementLayout = _useState[0], setSelectedElementLayout = _useState[1];
-    var value = (0, import_react169.useMemo)(function() {
+    var _useState = _sliced_to_array((0, import_react170.useState)(null), 2), selectedElementLayout = _useState[0], setSelectedElementLayout = _useState[1];
+    var value = (0, import_react170.useMemo)(function() {
       return _object_spread_props(_object_spread({}, radioContextValue), {
         selectedElementLayout,
         setSelectedElementLayout
@@ -41751,19 +42927,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       radioContextValue
     ]);
-    return (0, import_jsx_runtime200.jsx)(RadioContext.Provider, {
+    return (0, import_jsx_runtime202.jsx)(RadioContext.Provider, {
       value,
       children
     });
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Item/useItemStyle.js
-  var import_react171 = __toESM(require_react());
-  var import_react_native145 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react172 = __toESM(require_react());
+  var import_react_native147 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/contexts/SizeContext.js
-  var import_react170 = __toESM(require_react());
-  var SizeContext = /* @__PURE__ */ (0, import_react170.createContext)("large");
+  init_define_import_meta_env();
+  var import_react171 = __toESM(require_react());
+  var SizeContext = /* @__PURE__ */ (0, import_react171.createContext)("large");
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Item/useItemStyle.js
   var containerStyle = {
@@ -41793,14 +42971,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     paddingHorizontal: 14
   };
   function useItemStyle(props) {
-    var parentSize = (0, import_react171.useContext)(SizeContext);
-    var alignment = (0, import_react171.useContext)(AlignmentContext).alignment;
+    var parentSize = (0, import_react172.useContext)(SizeContext);
+    var alignment = (0, import_react172.useContext)(AlignmentContext).alignment;
     var _props_size;
     var size = (_props_size = props.size) !== null && _props_size !== void 0 ? _props_size : parentSize;
     var labelStyle = size === "small" ? labelStyleSmall : labelStyleLarge;
     return {
-      containerStyle: import_react_native145.StyleSheet.compose(containerStyle, alignment === "fixed" ? containerStyleFixed : containerStyleFluid),
-      labelStyle: alignment === "fixed" ? import_react_native145.StyleSheet.compose(labelStyleFixed, labelStyle) : labelStyle,
+      containerStyle: import_react_native147.StyleSheet.compose(containerStyle, alignment === "fixed" ? containerStyleFixed : containerStyleFluid),
+      labelStyle: alignment === "fixed" ? import_react_native147.StyleSheet.compose(labelStyleFixed, labelStyle) : labelStyle,
       labelTypography: size === "small" ? "t6" : "t5"
     };
   }
@@ -41814,9 +42992,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "disabled",
       "size"
     ]);
-    var ensureFluidAlignment = (0, import_react172.useContext)(AlignmentContext).ensureFluidAlignment;
-    var _useState = _sliced_to_array((0, import_react172.useState)(null), 2), layout = _useState[0], setLayout = _useState[1];
-    var _useContext = (0, import_react172.useContext)(RadioContext), setSelectedValue = _useContext.setSelectedValue, selectedValue = _useContext.selectedValue, setSelectedElementLayout = _useContext.setSelectedElementLayout, parentDisabled = _useContext.disabled;
+    var ensureFluidAlignment = (0, import_react173.useContext)(AlignmentContext).ensureFluidAlignment;
+    var _useState = _sliced_to_array((0, import_react173.useState)(null), 2), layout = _useState[0], setLayout = _useState[1];
+    var _useContext = (0, import_react173.useContext)(RadioContext), setSelectedValue = _useContext.setSelectedValue, selectedValue = _useContext.selectedValue, setSelectedElementLayout = _useContext.setSelectedElementLayout, parentDisabled = _useContext.disabled;
     var disabled = parentDisabled || _disabled;
     var styles63 = useItemStyle({
       size,
@@ -41824,13 +43002,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
     var adaptive2 = useAdaptive();
     var selected = selectedValue === value;
-    var handlePress = (0, import_react172.useCallback)(function() {
+    var handlePress = (0, import_react173.useCallback)(function() {
       setSelectedValue(value);
     }, [
       value,
       setSelectedValue
     ]);
-    var updateLayout = (0, import_react172.useCallback)(function() {
+    var updateLayout = (0, import_react173.useCallback)(function() {
       if (layout != null) {
         setSelectedElementLayout(layout);
       }
@@ -41838,7 +43016,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       layout,
       setSelectedElementLayout
     ]);
-    (0, import_react172.useEffect)(function() {
+    (0, import_react173.useEffect)(function() {
       if (selected) {
         updateLayout();
       }
@@ -41846,7 +43024,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       selected,
       updateLayout
     ]);
-    return (0, import_jsx_runtime201.jsx)(PressableEffect, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime203.jsx)(PressableEffect, _object_spread_props(_object_spread({
       /** 선택되었다면, press 하지 않습니다. */
       onPress: disabled || selected ? void 0 : handlePress,
       onLayout: function(event) {
@@ -41870,20 +43048,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       },
       disabled
     }, props), {
-      children: (0, import_jsx_runtime201.jsx)(import_react_native146.View, {
+      children: (0, import_jsx_runtime203.jsx)(import_react_native148.View, {
         style: {
           justifyContent: "center",
           alignItems: "center"
         },
-        children: (0, import_jsx_runtime201.jsx)(PreventFontScaling, {
+        children: (0, import_jsx_runtime203.jsx)(PreventFontScaling, {
           limit: 140,
-          children: (0, import_jsx_runtime201.jsx)(Paragraph, {
+          children: (0, import_jsx_runtime203.jsx)(Paragraph, {
             typography: styles63.labelTypography,
             style: styles63.labelStyle,
             onTextLayout: function(e4) {
               ensureFluidAlignment(e4.nativeEvent.lines.length > 1);
             },
-            children: (0, import_jsx_runtime201.jsx)(ParagraphText, {
+            children: (0, import_jsx_runtime203.jsx)(ParagraphText, {
               color: disabled ? adaptive2.grey400 : selected ? adaptive2.grey800 : adaptive2.grey600,
               fontWeight: selected ? "semiBold" : "medium",
               children
@@ -41895,16 +43073,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Root.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime209 = __toESM(require_jsx_runtime());
-  var import_react181 = __toESM(require_react());
-  var import_react_native154 = __toESM(require_react_native());
+  var import_jsx_runtime211 = __toESM(require_jsx_runtime());
+  var import_react182 = __toESM(require_react());
+  var import_react_native156 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/contexts/IndicatorContext.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime202 = __toESM(require_jsx_runtime());
-  var import_react173 = __toESM(require_react());
-  var IndicatorContext2 = /* @__PURE__ */ (0, import_react173.createContext)({
+  var import_jsx_runtime204 = __toESM(require_jsx_runtime());
+  var import_react174 = __toESM(require_react());
+  var IndicatorContext2 = /* @__PURE__ */ (0, import_react174.createContext)({
     indicatorX: 0,
     indicatorWidth: 0,
     setIndicatorX: function() {
@@ -41914,9 +43094,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   function IndicatorContextProvider(param) {
     var children = param.children;
-    var _useState = _sliced_to_array((0, import_react173.useState)(0), 2), indicatorX = _useState[0], setIndicatorX = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react173.useState)(0), 2), indicatorWidth = _useState1[0], setIndicatorWidth = _useState1[1];
-    var value = (0, import_react173.useMemo)(function() {
+    var _useState = _sliced_to_array((0, import_react174.useState)(0), 2), indicatorX = _useState[0], setIndicatorX = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react174.useState)(0), 2), indicatorWidth = _useState1[0], setIndicatorWidth = _useState1[1];
+    var value = (0, import_react174.useMemo)(function() {
       return {
         indicatorX,
         indicatorWidth,
@@ -41927,24 +43107,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       indicatorX,
       indicatorWidth
     ]);
-    return (0, import_jsx_runtime202.jsx)(IndicatorContext2.Provider, {
+    return (0, import_jsx_runtime204.jsx)(IndicatorContext2.Provider, {
       value,
       children
     });
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/contexts/ScrollContext.js
-  var import_jsx_runtime203 = __toESM(require_jsx_runtime());
-  var import_react174 = __toESM(require_react());
-  var ScrollContext = /* @__PURE__ */ (0, import_react174.createContext)({
+  init_define_import_meta_env();
+  var import_jsx_runtime205 = __toESM(require_jsx_runtime());
+  var import_react175 = __toESM(require_react());
+  var ScrollContext = /* @__PURE__ */ (0, import_react175.createContext)({
     ref: null,
     scrollHandlers: /* @__PURE__ */ new Set()
   });
   function ScrollContextProvider(param) {
     var children = param.children;
-    var scrollRef = (0, import_react174.useRef)(null);
-    var scrollHandlers = (0, import_react174.useRef)(/* @__PURE__ */ new Set()).current;
-    return (0, import_jsx_runtime203.jsx)(ScrollContext.Provider, {
+    var scrollRef = (0, import_react175.useRef)(null);
+    var scrollHandlers = (0, import_react175.useRef)(/* @__PURE__ */ new Set()).current;
+    return (0, import_jsx_runtime205.jsx)(ScrollContext.Provider, {
       value: {
         ref: scrollRef,
         scrollHandlers
@@ -41954,19 +43135,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Indicator/Indicator.js
-  var import_jsx_runtime204 = __toESM(require_jsx_runtime());
-  var import_react176 = __toESM(require_react());
-  var import_react_native148 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime206 = __toESM(require_jsx_runtime());
+  var import_react177 = __toESM(require_react());
+  var import_react_native150 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/hooks/useIndicatorBackground.js
+  init_define_import_meta_env();
   function useIndicatorBackground() {
     var colorPreference = useColorPreference().colorPreference;
     return colorPreference === "light" ? colors.white : colors.inverseGrey300;
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Indicator/useIndicatorStyle.js
-  var import_react175 = __toESM(require_react());
-  var import_react_native147 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react176 = __toESM(require_react());
+  var import_react_native149 = __toESM(require_react_native());
   var indicatorStyleBase = {
     position: "absolute",
     zIndex: 0,
@@ -41983,25 +43167,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     borderRadius: 10
   };
   function useIndicatorStyle() {
-    var size = (0, import_react175.useContext)(SizeContext);
+    var size = (0, import_react176.useContext)(SizeContext);
     var sizeStyle = size === "small" ? indicatorStyleSmall : indicatorStyleLarge;
     return {
-      indicatorStyle: import_react_native147.StyleSheet.compose(indicatorStyleBase, sizeStyle)
+      indicatorStyle: import_react_native149.StyleSheet.compose(indicatorStyleBase, sizeStyle)
     };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Indicator/Indicator.js
   function Indicator(param) {
     var style = param.style, children = param.children;
-    var _useContext = (0, import_react176.useContext)(IndicatorContext2), prevIndicatorX = _useContext.indicatorX, setPrevIndicatorX = _useContext.setIndicatorX, prevIndicatorWidth = _useContext.indicatorWidth, setPrevIndicatorWidth = _useContext.setIndicatorWidth;
-    var selectedElementLayout = (0, import_react176.useContext)(RadioContext).selectedElementLayout;
+    var _useContext = (0, import_react177.useContext)(IndicatorContext2), prevIndicatorX = _useContext.indicatorX, setPrevIndicatorX = _useContext.setIndicatorX, prevIndicatorWidth = _useContext.indicatorWidth, setPrevIndicatorWidth = _useContext.setIndicatorWidth;
+    var selectedElementLayout = (0, import_react177.useContext)(RadioContext).selectedElementLayout;
     var indicatorStyle = useIndicatorStyle().indicatorStyle;
     var colorPreference = useColorPreference().colorPreference;
-    var alignment = (0, import_react176.useContext)(AlignmentContext).alignment;
+    var alignment = (0, import_react177.useContext)(AlignmentContext).alignment;
     var indicatorBackgroundColor = useIndicatorBackground();
-    var initialRender = (0, import_react176.useRef)(true);
-    var opacityProgress = (0, import_react176.useRef)(new import_react_native148.Animated.Value(0)).current;
-    var indicatorProgress = (0, import_react176.useRef)(new import_react_native148.Animated.Value(0)).current;
+    var initialRender = (0, import_react177.useRef)(true);
+    var opacityProgress = (0, import_react177.useRef)(new import_react_native150.Animated.Value(0)).current;
+    var indicatorProgress = (0, import_react177.useRef)(new import_react_native150.Animated.Value(0)).current;
     var _selectedElementLayout_x;
     var indicatorX = indicatorProgress.interpolate({
       inputRange: [
@@ -42024,7 +43208,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         (_selectedElementLayout_width = selectedElementLayout === null || selectedElementLayout === void 0 ? void 0 : selectedElementLayout.width) !== null && _selectedElementLayout_width !== void 0 ? _selectedElementLayout_width : 0
       ]
     });
-    (0, import_react176.useEffect)(function() {
+    (0, import_react177.useEffect)(function() {
       if (selectedElementLayout == null) {
         return;
       }
@@ -42032,13 +43216,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         setPrevIndicatorWidth(selectedElementLayout.width);
         setPrevIndicatorX(selectedElementLayout.x);
         initialRender.current = false;
-        import_react_native148.Animated.spring(opacityProgress, _object_spread({
+        import_react_native150.Animated.spring(opacityProgress, _object_spread({
           toValue: 1,
           useNativeDriver: false
         }, spring2.quick)).start();
       } else {
         indicatorProgress.setValue(0);
-        import_react_native148.Animated.spring(indicatorProgress, _object_spread({
+        import_react_native150.Animated.spring(indicatorProgress, _object_spread({
           toValue: 1,
           useNativeDriver: false
         }, spring2.quick)).start(function() {
@@ -42070,7 +43254,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       ]
     };
-    return (0, import_jsx_runtime204.jsx)(import_react_native148.Animated.View, {
+    return (0, import_jsx_runtime206.jsx)(import_react_native150.Animated.View, {
       style: [
         indicatorStyle,
         animatedStyle,
@@ -42090,13 +43274,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ItemGroup/ItemGroup.js
-  var import_jsx_runtime205 = __toESM(require_jsx_runtime());
-  var import_react178 = __toESM(require_react());
-  var import_react_native150 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime207 = __toESM(require_jsx_runtime());
+  var import_react179 = __toESM(require_react());
+  var import_react_native152 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ItemGroup/useItemGroupStyle.js
-  var import_react177 = __toESM(require_react());
-  var import_react_native149 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react178 = __toESM(require_react());
+  var import_react_native151 = __toESM(require_react_native());
   var containerStyleBase = {
     position: "relative",
     width: "100%",
@@ -42119,23 +43305,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     flexWrap: "nowrap"
   };
   function useItemGroupStyle() {
-    var alignment = (0, import_react177.useContext)(AlignmentContext).alignment;
-    var size = (0, import_react177.useContext)(SizeContext);
+    var alignment = (0, import_react178.useContext)(AlignmentContext).alignment;
+    var size = (0, import_react178.useContext)(SizeContext);
     var containerStyleBySize = size === "small" ? containerStyleSmall : containerStyleLarge;
     return {
-      containerStyle: alignment === "fixed" ? import_react_native149.StyleSheet.compose(containerStyleBase, import_react_native149.StyleSheet.compose(containerStyleBySize, containerStyleFixed2)) : import_react_native149.StyleSheet.compose(containerStyleBase, containerStyleBySize)
+      containerStyle: alignment === "fixed" ? import_react_native151.StyleSheet.compose(containerStyleBase, import_react_native151.StyleSheet.compose(containerStyleBySize, containerStyleFixed2)) : import_react_native151.StyleSheet.compose(containerStyleBase, containerStyleBySize)
     };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ItemGroup/ItemGroup.js
-  var ItemGroup = /* @__PURE__ */ (0, import_react178.forwardRef)(function ItemGroup2(param, forwardedRef) {
+  var ItemGroup = /* @__PURE__ */ (0, import_react179.forwardRef)(function ItemGroup2(param, forwardedRef) {
     var style = param.style, children = param.children;
-    var _useContext = (0, import_react178.useContext)(ScrollContext), scrollRef = _useContext.ref, scrollHandlers = _useContext.scrollHandlers;
-    var selectedElementLayout = (0, import_react178.useContext)(RadioContext).selectedElementLayout;
-    var alignment = (0, import_react178.useContext)(AlignmentContext).alignment;
+    var _useContext = (0, import_react179.useContext)(ScrollContext), scrollRef = _useContext.ref, scrollHandlers = _useContext.scrollHandlers;
+    var selectedElementLayout = (0, import_react179.useContext)(RadioContext).selectedElementLayout;
+    var alignment = (0, import_react179.useContext)(AlignmentContext).alignment;
     var adaptive2 = useAdaptive();
     var styles63 = useItemGroupStyle();
-    (0, import_react178.useEffect)(function() {
+    (0, import_react179.useEffect)(function() {
       if (scrollRef == null) {
         return;
       }
@@ -42150,7 +43336,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       scrollRef,
       selectedElementLayout
     ]);
-    return (0, import_jsx_runtime205.jsx)(import_react_native150.View, {
+    return (0, import_jsx_runtime207.jsx)(import_react_native152.View, {
       style: [
         styles63.containerStyle,
         {
@@ -42160,7 +43346,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ],
       accessibilityRole: "radiogroup",
       ref: forwardedRef,
-      children: alignment === "fluid" ? (0, import_jsx_runtime205.jsx)(import_react_native150.Animated.ScrollView, {
+      children: alignment === "fluid" ? (0, import_jsx_runtime207.jsx)(import_react_native152.Animated.ScrollView, {
         scrollEventThrottle: 16,
         onScroll: function(e4) {
           scrollHandlers.forEach(function(callback) {
@@ -42177,34 +43363,37 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ScrollControlOverlay/ScrollControlOverlay.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime208 = __toESM(require_jsx_runtime());
-  var import_react180 = __toESM(require_react());
-  var import_react_native153 = __toESM(require_react_native());
+  var import_jsx_runtime210 = __toESM(require_jsx_runtime());
+  var import_react181 = __toESM(require_react());
+  var import_react_native155 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/constants/spring.js
+  init_define_import_meta_env();
   var SPRING_OPTION = {
     stiffness: 1e3,
     damping: 52
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ScrollControlOverlay/EdgeGradient.js
-  var import_jsx_runtime206 = __toESM(require_jsx_runtime());
-  var import_react179 = __toESM(require_react());
-  var import_react_native151 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime208 = __toESM(require_jsx_runtime());
+  var import_react180 = __toESM(require_react());
+  var import_react_native153 = __toESM(require_react_native());
   var LEFT_GRADIENT_ID = "segmented-left-gradient";
   function useFadeAnimation() {
-    var opacity = (0, import_react179.useRef)(new import_react_native151.Animated.Value(0)).current;
-    var fadeIn = (0, import_react179.useCallback)(function() {
-      import_react_native151.Animated.spring(opacity, _object_spread({
+    var opacity = (0, import_react180.useRef)(new import_react_native153.Animated.Value(0)).current;
+    var fadeIn = (0, import_react180.useCallback)(function() {
+      import_react_native153.Animated.spring(opacity, _object_spread({
         toValue: 1,
         useNativeDriver: true
       }, SPRING_OPTION)).start();
     }, [
       opacity
     ]);
-    var fadeOut = (0, import_react179.useCallback)(function() {
-      import_react_native151.Animated.spring(opacity, _object_spread({
+    var fadeOut = (0, import_react180.useCallback)(function() {
+      import_react_native153.Animated.spring(opacity, _object_spread({
         toValue: 0,
         useNativeDriver: true
       }, SPRING_OPTION)).start();
@@ -42228,7 +43417,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var adaptive2 = useAdaptive();
     var colorPreference = useColorPreference().colorPreference;
     var _useFadeAnimation = useFadeAnimation(), fadeIn = _useFadeAnimation.fadeIn, fadeOut = _useFadeAnimation.fadeOut, fadeAnimationStyle = _useFadeAnimation.style;
-    (0, import_react179.useEffect)(function() {
+    (0, import_react180.useEffect)(function() {
       if (exiting) {
         fadeIn();
       } else {
@@ -42239,7 +43428,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       fadeIn,
       fadeOut
     ]);
-    return (0, import_jsx_runtime206.jsx)(import_react_native151.Animated.View, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime208.jsx)(import_react_native153.Animated.View, _object_spread_props(_object_spread({
       style: [
         gradientStyleBase,
         leftGradientStyle,
@@ -42247,20 +43436,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         fadeAnimationStyle
       ]
     }, props), {
-      children: (0, import_jsx_runtime206.jsxs)(import_react_native_svg.default, {
+      children: (0, import_jsx_runtime208.jsxs)(import_react_native_svg.default, {
         width: "100%",
         height: "100%",
         pointerEvents: "none",
         children: [
-          (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Defs, {
-            children: (0, import_jsx_runtime206.jsxs)(react_native_svg_exports.LinearGradient, {
+          (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Defs, {
+            children: (0, import_jsx_runtime208.jsxs)(react_native_svg_exports.LinearGradient, {
               id: LEFT_GRADIENT_ID,
               children: [
-                (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Stop, {
+                (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Stop, {
                   offset: 0,
                   stopColor: adaptive2.grey100
                 }),
-                (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Stop, {
+                (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Stop, {
                   offset: 1,
                   stopColor: colorPreference === "light" ? colors.grey100 : colors.inverseGrey100,
                   stopOpacity: 0
@@ -42268,7 +43457,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               ]
             })
           }),
-          (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Rect, {
+          (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Rect, {
             x: "0",
             y: "0",
             width: "100%",
@@ -42287,7 +43476,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var adaptive2 = useAdaptive();
     var colorPreference = useColorPreference().colorPreference;
     var _useFadeAnimation = useFadeAnimation(), fadeIn = _useFadeAnimation.fadeIn, fadeOut = _useFadeAnimation.fadeOut, fadeAnimationStyle = _useFadeAnimation.style;
-    (0, import_react179.useEffect)(function() {
+    (0, import_react180.useEffect)(function() {
       if (exiting) {
         fadeIn();
       } else {
@@ -42298,7 +43487,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       fadeIn,
       fadeOut
     ]);
-    return (0, import_jsx_runtime206.jsx)(import_react_native151.Animated.View, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime208.jsx)(import_react_native153.Animated.View, _object_spread_props(_object_spread({
       style: [
         gradientStyleBase,
         rightGradationStyle,
@@ -42306,28 +43495,28 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         fadeAnimationStyle
       ]
     }, props), {
-      children: (0, import_jsx_runtime206.jsxs)(import_react_native_svg.default, {
+      children: (0, import_jsx_runtime208.jsxs)(import_react_native_svg.default, {
         width: "100%",
         height: "100%",
         pointerEvents: "none",
         children: [
-          (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Defs, {
-            children: (0, import_jsx_runtime206.jsxs)(react_native_svg_exports.LinearGradient, {
+          (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Defs, {
+            children: (0, import_jsx_runtime208.jsxs)(react_native_svg_exports.LinearGradient, {
               id: LEFT_GRADIENT_ID,
               children: [
-                (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Stop, {
+                (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Stop, {
                   offset: 0,
                   stopColor: colorPreference === "light" ? colors.grey100 : colors.inverseGrey100,
                   stopOpacity: 0
                 }),
-                (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Stop, {
+                (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Stop, {
                   offset: 1,
                   stopColor: adaptive2.grey100
                 })
               ]
             })
           }),
-          (0, import_jsx_runtime206.jsx)(react_native_svg_exports.Rect, {
+          (0, import_jsx_runtime208.jsx)(react_native_svg_exports.Rect, {
             x: "0",
             y: "0",
             width: "100%",
@@ -42359,14 +43548,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ScrollControlOverlay/PreviousButton.js
-  var import_jsx_runtime207 = __toESM(require_jsx_runtime());
-  var import_react_native152 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime209 = __toESM(require_jsx_runtime());
+  var import_react_native154 = __toESM(require_react_native());
   function PreviousButton(param) {
     var onPress = param.onPress, style = param.style;
     var adaptive2 = useAdaptive();
     var colorPreference = useColorPreference().colorPreference;
     var backgroundColor = useIndicatorBackground();
-    return (0, import_jsx_runtime207.jsx)(import_react_native152.Pressable, {
+    return (0, import_jsx_runtime209.jsx)(import_react_native154.Pressable, {
       accessibilityRole: "button",
       style: [
         {
@@ -42390,7 +43580,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         style
       ],
       onPress,
-      children: (0, import_jsx_runtime207.jsx)(Icon_default, {
+      children: (0, import_jsx_runtime209.jsx)(Icon_default, {
         size: 12,
         name: "icon-arrow-left-small",
         color: adaptive2.grey600
@@ -42400,10 +43590,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/ScrollControlOverlay/ScrollControlOverlay.js
   function ScrollControlOverlay() {
-    var _useContext = (0, import_react180.useContext)(ScrollContext), scrollRef = _useContext.ref, scrollHandlers = _useContext.scrollHandlers;
-    var _useState = _sliced_to_array((0, import_react180.useState)(false), 2), showLeft = _useState[0], setShowLeft = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react180.useState)(false), 2), showRight = _useState1[0], setShowRight = _useState1[1];
-    var buttonProgress = (0, import_react180.useRef)(new import_react_native153.Animated.Value(0)).current;
+    var _useContext = (0, import_react181.useContext)(ScrollContext), scrollRef = _useContext.ref, scrollHandlers = _useContext.scrollHandlers;
+    var _useState = _sliced_to_array((0, import_react181.useState)(false), 2), showLeft = _useState[0], setShowLeft = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react181.useState)(false), 2), showRight = _useState1[0], setShowRight = _useState1[1];
+    var buttonProgress = (0, import_react181.useRef)(new import_react_native155.Animated.Value(0)).current;
     var buttonTranslateX = buttonProgress.interpolate({
       inputRange: [
         0,
@@ -42414,7 +43604,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         0
       ]
     });
-    (0, import_react180.useEffect)(function() {
+    (0, import_react181.useEffect)(function() {
       var scrollHandler = function scrollHandler2(scrollEvent) {
         var contentWidth = scrollEvent.nativeEvent.contentSize.width;
         var offsetX = scrollEvent.nativeEvent.contentOffset.x;
@@ -42436,9 +43626,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         x: 0
       });
     };
-    (0, import_react180.useEffect)(function() {
+    (0, import_react181.useEffect)(function() {
       return function() {
-        import_react_native153.Animated.spring(buttonProgress, _object_spread({
+        import_react_native155.Animated.spring(buttonProgress, _object_spread({
           toValue: showLeft ? 0 : 1,
           useNativeDriver: true
         }, SPRING_OPTION)).start();
@@ -42447,14 +43637,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       buttonProgress,
       showLeft
     ]);
-    return (0, import_jsx_runtime208.jsxs)(import_jsx_runtime208.Fragment, {
+    return (0, import_jsx_runtime210.jsxs)(import_jsx_runtime210.Fragment, {
       children: [
-        (0, import_jsx_runtime208.jsxs)(import_jsx_runtime208.Fragment, {
+        (0, import_jsx_runtime210.jsxs)(import_jsx_runtime210.Fragment, {
           children: [
-            (0, import_jsx_runtime208.jsx)(LeftEdgeGradient, {
+            (0, import_jsx_runtime210.jsx)(LeftEdgeGradient, {
               exiting: showLeft
             }),
-            (0, import_jsx_runtime208.jsx)(import_react_native153.Animated.View, {
+            (0, import_jsx_runtime210.jsx)(import_react_native155.Animated.View, {
               pointerEvents: showLeft ? "auto" : "none",
               style: [
                 buttonContainerStyle,
@@ -42467,13 +43657,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   opacity: buttonProgress
                 }
               ],
-              children: (0, import_jsx_runtime208.jsx)(PreviousButton, {
+              children: (0, import_jsx_runtime210.jsx)(PreviousButton, {
                 onPress: moveToBeginning
               })
             })
           ]
         }),
-        (0, import_jsx_runtime208.jsx)(RightEdgeGradient, {
+        (0, import_jsx_runtime210.jsx)(RightEdgeGradient, {
           exiting: showRight
         })
       ]
@@ -42492,7 +43682,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/segmented-control/components/Root.js
   function RootBase(_param) {
-    var value = _param.value, defaultValue = _param.defaultValue, _param_indicator = _param.indicator, indicator = _param_indicator === void 0 ? (0, import_jsx_runtime209.jsx)(Indicator, {}) : _param_indicator, previousButton = _param.previousButton, gradation = _param.gradation, _param_controller = _param.controller, controller = _param_controller === void 0 ? (0, import_jsx_runtime209.jsx)(ScrollControlOverlay, {}) : _param_controller, _param_size = _param.size, size = _param_size === void 0 ? "large" : _param_size, tmp = _param.alignment, _alignment = tmp === void 0 ? "fixed" : tmp, _param_disabled = _param.disabled, disabled = _param_disabled === void 0 ? false : _param_disabled, onChange = _param.onChange, style = _param.style, children = _param.children, props = _object_without_properties(_param, [
+    var value = _param.value, defaultValue = _param.defaultValue, _param_indicator = _param.indicator, indicator = _param_indicator === void 0 ? (0, import_jsx_runtime211.jsx)(Indicator, {}) : _param_indicator, previousButton = _param.previousButton, gradation = _param.gradation, _param_controller = _param.controller, controller = _param_controller === void 0 ? (0, import_jsx_runtime211.jsx)(ScrollControlOverlay, {}) : _param_controller, _param_size = _param.size, size = _param_size === void 0 ? "large" : _param_size, tmp = _param.alignment, _alignment = tmp === void 0 ? "fixed" : tmp, _param_disabled = _param.disabled, disabled = _param_disabled === void 0 ? false : _param_disabled, onChange = _param.onChange, style = _param.style, children = _param.children, props = _object_without_properties(_param, [
       "value",
       "defaultValue",
       "indicator",
@@ -42506,32 +43696,32 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "style",
       "children"
     ]);
-    var _useState = _sliced_to_array((0, import_react181.useState)(_alignment), 2), alignment = _useState[0], setAlignment = _useState[1];
-    var ensureFluidAlignment = (0, import_react181.useCallback)(function(shouldForce) {
+    var _useState = _sliced_to_array((0, import_react182.useState)(_alignment), 2), alignment = _useState[0], setAlignment = _useState[1];
+    var ensureFluidAlignment = (0, import_react182.useCallback)(function(shouldForce) {
       setAlignment(function(prev) {
         return prev === "fluid" ? "fluid" : shouldForce ? "fluid" : "fixed";
       });
     }, []);
-    return (0, import_jsx_runtime209.jsx)(AlignmentContext.Provider, {
+    return (0, import_jsx_runtime211.jsx)(AlignmentContext.Provider, {
       value: {
         alignment,
         ensureFluidAlignment
       },
-      children: (0, import_jsx_runtime209.jsx)(SizeContext.Provider, {
+      children: (0, import_jsx_runtime211.jsx)(SizeContext.Provider, {
         value: size,
-        children: (0, import_jsx_runtime209.jsx)(ScrollContextProvider, {
-          children: (0, import_jsx_runtime209.jsx)(RadioContextProvider, {
+        children: (0, import_jsx_runtime211.jsx)(ScrollContextProvider, {
+          children: (0, import_jsx_runtime211.jsx)(RadioContextProvider, {
             selectedValue: value,
             setSelectedValue: function(selectedValue) {
               onChange === null || onChange === void 0 ? void 0 : onChange(selectedValue);
             },
             disabled,
             name: props.name,
-            children: (0, import_jsx_runtime209.jsx)(IndicatorContextProvider, {
-              children: (0, import_jsx_runtime209.jsx)(Wrapper, {
-                children: (0, import_jsx_runtime209.jsxs)(Container, {
+            children: (0, import_jsx_runtime211.jsx)(IndicatorContextProvider, {
+              children: (0, import_jsx_runtime211.jsx)(Wrapper, {
+                children: (0, import_jsx_runtime211.jsxs)(Container, {
                   children: [
-                    (0, import_jsx_runtime209.jsxs)(ItemGroup, {
+                    (0, import_jsx_runtime211.jsxs)(ItemGroup, {
                       children: [
                         children,
                         indicator
@@ -42551,7 +43741,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var style = _param.style, props = _object_without_properties(_param, [
       "style"
     ]);
-    return (0, import_jsx_runtime209.jsx)(import_react_native154.View, _object_spread({
+    return (0, import_jsx_runtime211.jsx)(import_react_native156.View, _object_spread({
       style: [
         {
           position: "relative",
@@ -42566,7 +43756,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var style = _param.style, props = _object_without_properties(_param, [
       "style"
     ]);
-    return (0, import_jsx_runtime209.jsx)(import_react_native154.View, _object_spread({
+    return (0, import_jsx_runtime211.jsx)(import_react_native156.View, _object_spread({
       style: [
         {
           position: "relative",
@@ -42583,11 +43773,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     Item
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRow.js
-  var import_jsx_runtime216 = __toESM(require_jsx_runtime());
-  var import_react_native156 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime218 = __toESM(require_jsx_runtime());
+  var import_react_native158 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/constants/a11yCondition.js
+  init_define_import_meta_env();
   var a11yCondition2 = {
     // NOTE: 더큰텍스트이면 LeftAsset의 프레임 크기를 조정합니다.
     leftAsset: {
@@ -42613,14 +43808,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRowAssetFrame.js
-  var import_jsx_runtime211 = __toESM(require_jsx_runtime());
-  var import_react183 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_jsx_runtime213 = __toESM(require_jsx_runtime());
+  var import_react184 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRowContext.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime210 = __toESM(require_jsx_runtime());
-  var import_react182 = __toESM(require_react());
-  var StepperRowContext = /* @__PURE__ */ (0, import_react182.createContext)({
+  var import_jsx_runtime212 = __toESM(require_jsx_runtime());
+  var import_react183 = __toESM(require_react());
+  var StepperRowContext = /* @__PURE__ */ (0, import_react183.createContext)({
     left: void 0,
     center: void 0,
     right: void 0,
@@ -42633,10 +43830,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   function StepperRowContextProvider(param) {
     var children = param.children;
-    var _useState = _sliced_to_array((0, import_react182.useState)(), 2), left = _useState[0], setLeft = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react182.useState)(), 2), center = _useState1[0], setCenter = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react182.useState)(), 2), right = _useState2[0], setRight = _useState2[1];
-    var contextValue = (0, import_react182.useMemo)(function() {
+    var _useState = _sliced_to_array((0, import_react183.useState)(), 2), left = _useState[0], setLeft = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react183.useState)(), 2), center = _useState1[0], setCenter = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react183.useState)(), 2), right = _useState2[0], setRight = _useState2[1];
+    var contextValue = (0, import_react183.useMemo)(function() {
       return {
         left,
         center,
@@ -42650,13 +43847,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       center,
       right
     ]);
-    return (0, import_jsx_runtime210.jsx)(StepperRowContext.Provider, {
+    return (0, import_jsx_runtime212.jsx)(StepperRowContext.Provider, {
       value: contextValue,
       children
     });
   }
   function useStepperRowContext() {
-    var _useContext = (0, import_react182.useContext)(StepperRowContext), left = _useContext.left, center = _useContext.center, right = _useContext.right;
+    var _useContext = (0, import_react183.useContext)(StepperRowContext), left = _useContext.left, center = _useContext.center, right = _useContext.right;
     return {
       left,
       center,
@@ -42664,8 +43861,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
   function useUpdateStepperRowLeft(left) {
-    var onLeftChange = (0, import_react182.useContext)(StepperRowContext).onLeftChange;
-    (0, import_react182.useEffect)(function() {
+    var onLeftChange = (0, import_react183.useContext)(StepperRowContext).onLeftChange;
+    (0, import_react183.useEffect)(function() {
       onLeftChange(left);
     }, [
       JSON.stringify(left),
@@ -42673,8 +43870,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
   }
   function useUpdateStepperRowCenter(center) {
-    var onCenterChange = (0, import_react182.useContext)(StepperRowContext).onCenterChange;
-    (0, import_react182.useEffect)(function() {
+    var onCenterChange = (0, import_react183.useContext)(StepperRowContext).onCenterChange;
+    (0, import_react183.useEffect)(function() {
       onCenterChange(center);
     }, [
       JSON.stringify(center),
@@ -42682,8 +43879,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
   }
   function useUpdateStepperRowRight(right) {
-    var onRightChange = (0, import_react182.useContext)(StepperRowContext).onRightChange;
-    (0, import_react182.useEffect)(function() {
+    var onRightChange = (0, import_react183.useContext)(StepperRowContext).onRightChange;
+    (0, import_react183.useEffect)(function() {
       onRightChange(right);
     }, [
       JSON.stringify(right),
@@ -42701,7 +43898,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       type: isSize32 ? "asset32" : "asset40"
     });
     var isA11yText = useFontScaleCondition(a11yCondition2.leftAsset);
-    var a11yShape = (0, import_react183.useMemo)(function() {
+    var a11yShape = (0, import_react184.useMemo)(function() {
       var isCircle = shape.radius === 9999;
       var isCleanW32 = isSize32 && !isCircle;
       var isCircleSmall = isSize32 && isCircle;
@@ -42716,13 +43913,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       isSize32,
       shape
     ]);
-    return (0, import_jsx_runtime211.jsx)(Asset2.Frame, _object_spread({
+    return (0, import_jsx_runtime213.jsx)(Asset2.Frame, _object_spread({
       shape: isA11yText ? a11yShape : shape
     }, props));
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRowNumberIcon.js
-  var import_jsx_runtime212 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime214 = __toESM(require_jsx_runtime());
   var frameShape2 = Asset2.frameShape.CleanW32;
   var a11yFrameShape = Asset2.frameShape.CleanW40;
   function StepperRowNumberIcon(param) {
@@ -42732,7 +43930,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
     var isA11yText = useFontScaleCondition(a11yCondition2.leftAsset);
     var colorPreference = useColorPreference().colorPreference;
-    return (0, import_jsx_runtime212.jsx)(Asset2.Icon, {
+    return (0, import_jsx_runtime214.jsx)(Asset2.Icon, {
       frameShape: isA11yText ? a11yFrameShape : frameShape2,
       name: "icon-step".concat(number, "-rounded-").concat(colorPreference),
       accessibilityLabel: "".concat(number, "\uBC88")
@@ -42740,14 +43938,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRowRightArrow.js
-  var import_jsx_runtime213 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime215 = __toESM(require_jsx_runtime());
   function StepperRowRightArrow(param) {
     var name2 = param.name, color = param.color, frameShape3 = param.frameShape;
     var adaptive2 = useAdaptive();
     useUpdateStepperRowRight({
       type: "arrow"
     });
-    return (0, import_jsx_runtime213.jsx)(Asset2.Icon, {
+    return (0, import_jsx_runtime215.jsx)(Asset2.Icon, {
       name: name2 !== null && name2 !== void 0 ? name2 : "icon-arrow-right-mono",
       color: color !== null && color !== void 0 ? color : adaptive2.grey400,
       style: {
@@ -42758,7 +43957,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRowRightButton.js
-  var import_jsx_runtime214 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime216 = __toESM(require_jsx_runtime());
   function StepperRowRightButton(_param) {
     var _param_size = _param.size, size = _param_size === void 0 ? "tiny" : _param_size, _param_type = _param.type, type = _param_type === void 0 ? "primary" : _param_type, restProps = _object_without_properties(_param, [
       "size",
@@ -42767,21 +43967,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     useUpdateStepperRowRight({
       type: "button"
     });
-    return (0, import_jsx_runtime214.jsx)(Button2, _object_spread({
+    return (0, import_jsx_runtime216.jsx)(Button2, _object_spread({
       size,
       type
     }, restProps));
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRowTexts.js
-  var import_jsx_runtime215 = __toESM(require_jsx_runtime());
-  var import_react184 = __toESM(require_react());
-  var import_react_native155 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime217 = __toESM(require_jsx_runtime());
+  var import_react185 = __toESM(require_react());
+  var import_react_native157 = __toESM(require_react_native());
   var isReactText2 = function(child) {
     return typeof child === "string" || typeof child === "number";
   };
   var isParagraphText = function(child) {
-    return /* @__PURE__ */ (0, import_react184.isValidElement)(child) && (child.type === ParagraphText || child.type === ParagraphText);
+    return /* @__PURE__ */ (0, import_react185.isValidElement)(child) && (child.type === ParagraphText || child.type === ParagraphText);
   };
   var typeVariants = {
     A: {
@@ -42822,11 +44023,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       type,
       hasDescription: description != null
     });
-    var titleElement = import_react184.Children.only(isReactText2(title) ? (0, import_jsx_runtime215.jsx)(ParagraphText, {
+    var titleElement = import_react185.Children.only(isReactText2(title) ? (0, import_jsx_runtime217.jsx)(ParagraphText, {
       color: adaptive2.grey800,
       children: title
     }) : title);
-    var descriptionElement = description ? import_react184.Children.only(isReactText2(description) ? (0, import_jsx_runtime215.jsx)(ParagraphText, {
+    var descriptionElement = description ? import_react185.Children.only(isReactText2(description) ? (0, import_jsx_runtime217.jsx)(ParagraphText, {
       style: {
         color: adaptive2.grey600,
         paddingTop: 2
@@ -42834,21 +44035,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       children: description
     }) : description) : void 0;
     var typeVariant = typeVariants[type];
-    var styledTitleElement = isParagraphText(titleElement) ? /* @__PURE__ */ (0, import_react184.cloneElement)(titleElement, _object_spread(_object_spread_props(_object_spread({}, typeVariant.title), {
+    var styledTitleElement = isParagraphText(titleElement) ? /* @__PURE__ */ (0, import_react185.cloneElement)(titleElement, _object_spread(_object_spread_props(_object_spread({}, typeVariant.title), {
       color: adaptive2.grey800
     }), titleElement.props, titleProps)) : titleElement;
-    var styledDescriptionElement = isParagraphText(descriptionElement) ? /* @__PURE__ */ (0, import_react184.cloneElement)(descriptionElement, _object_spread(_object_spread_props(_object_spread({}, typeVariant.description), {
+    var styledDescriptionElement = isParagraphText(descriptionElement) ? /* @__PURE__ */ (0, import_react185.cloneElement)(descriptionElement, _object_spread(_object_spread_props(_object_spread({}, typeVariant.description), {
       color: adaptive2.grey600
     }), descriptionElement.props, descriptionProps)) : descriptionElement;
-    return (0, import_jsx_runtime215.jsxs)(import_react_native155.View, {
+    return (0, import_jsx_runtime217.jsxs)(import_react_native157.View, {
       children: [
-        (0, import_jsx_runtime215.jsx)(import_react_native155.View, {
+        (0, import_jsx_runtime217.jsx)(import_react_native157.View, {
           style: {
             flexDirection: "row"
           },
           children: styledTitleElement
         }),
-        description && (0, import_jsx_runtime215.jsx)(import_react_native155.View, {
+        description && (0, import_jsx_runtime217.jsx)(import_react_native157.View, {
           style: {
             flexDirection: "row"
           },
@@ -42859,6 +44060,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/utils/padding.js
+  init_define_import_meta_env();
   var CENTER_PADDING_TOP_FALLBACK = 0;
   function getCenterPaddingTop(left, center) {
     if (left == null || center == null) {
@@ -42907,8 +44109,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/stepper-row/StepperRow.js
   function StepperRow(props) {
-    return (0, import_jsx_runtime216.jsx)(StepperRowContextProvider, {
-      children: (0, import_jsx_runtime216.jsx)(StepperRowContent, _object_spread({}, props))
+    return (0, import_jsx_runtime218.jsx)(StepperRowContextProvider, {
+      children: (0, import_jsx_runtime218.jsx)(StepperRowContent, _object_spread({}, props))
     });
   }
   function StepperRowContent(param) {
@@ -42922,16 +44124,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var centerPaddingTop = getCenterPaddingTop(context2.left, context2.center);
     var rightPaddingTop = getRightPaddingTop(context2.left, context2.right);
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime216.jsxs)(import_react_native156.View, {
+    return (0, import_jsx_runtime218.jsxs)(import_react_native158.View, {
       style: styles49.rootCss,
       children: [
-        (0, import_jsx_runtime216.jsxs)(import_react_native156.View, {
+        (0, import_jsx_runtime218.jsxs)(import_react_native158.View, {
           style: styles49.leftCss,
           children: [
-            (0, import_jsx_runtime216.jsx)(import_react_native156.View, {
+            (0, import_jsx_runtime218.jsx)(import_react_native158.View, {
               children: left
             }),
-            !hideLine && (0, import_jsx_runtime216.jsx)(import_react_native156.View, {
+            !hideLine && (0, import_jsx_runtime218.jsx)(import_react_native158.View, {
               style: [
                 styles49.lineCss,
                 {
@@ -42941,13 +44143,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             })
           ]
         }),
-        (0, import_jsx_runtime216.jsxs)(import_react_native156.View, {
+        (0, import_jsx_runtime218.jsxs)(import_react_native158.View, {
           style: [
             styles49.centerRightCss,
             isRightButtonAlignA11yText && styles49.a11yCenterRightButtonAlign
           ],
           children: [
-            (0, import_jsx_runtime216.jsx)(import_react_native156.View, {
+            (0, import_jsx_runtime218.jsx)(import_react_native158.View, {
               style: [
                 styles49.centerCss,
                 isCenterA11yText && styles49.a11yCenter,
@@ -42957,7 +44159,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               ],
               children: center
             }),
-            right && (0, import_jsx_runtime216.jsx)(import_react_native156.View, {
+            right && (0, import_jsx_runtime218.jsx)(import_react_native158.View, {
               style: [
                 styles49.rightCss,
                 {
@@ -42977,7 +44179,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   StepperRow.AssetFrame = StepperRowAssetFrame;
   StepperRow.RightArrow = StepperRowRightArrow;
   StepperRow.RightButton = StepperRowRightButton;
-  var styles49 = import_react_native156.StyleSheet.create({
+  var styles49 = import_react_native158.StyleSheet.create({
     rootCss: {
       flexDirection: "row",
       paddingVertical: 3,
@@ -43026,16 +44228,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/icon/private/SvgIcon.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_sliced_to_array();
-  var import_jsx_runtime217 = __toESM(require_jsx_runtime());
-  var import_react185 = __toESM(require_react());
+  var import_jsx_runtime219 = __toESM(require_jsx_runtime());
+  var import_react186 = __toESM(require_react());
   var ICON_URL_PREFIX2 = "https://static.toss.im/icons/svg";
   var cache2 = {};
   var fillAttributesRe = /fill="#[0-9a-fA-F]{6}"/g;
   var strokeAttributesRe = /stroke="#[0-9a-fA-F]{6}"/g;
-  var Icon4 = /* @__PURE__ */ (0, import_react185.forwardRef)(function Icon5(_param, ref) {
+  var Icon4 = /* @__PURE__ */ (0, import_react186.forwardRef)(function Icon5(_param, ref) {
     var name2 = _param.name, color = _param.color, _param_size = _param.size, size = _param_size === void 0 ? 24 : _param_size, accessible = _param.accessible, accessibilityLabel = _param.accessibilityLabel, _param_type = _param.type, type = _param_type === void 0 ? "default" : _param_type, children = _param.children, restProps = _object_without_properties(_param, [
       "name",
       "color",
@@ -43048,7 +44251,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var _useCachedData = useCachedData(cache2, name2, fetchIcon2, [
       name2
     ]), iconXml = _useCachedData.data, showFallback = _useCachedData.showFallback;
-    var jsxAST = (0, import_react185.useMemo)(function() {
+    var jsxAST = (0, import_react186.useMemo)(function() {
       if (iconXml === void 0) {
         return null;
       }
@@ -43060,7 +44263,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       iconXml,
       color
     ]);
-    var svgColorProps = (0, import_react185.useMemo)(function() {
+    var svgColorProps = (0, import_react186.useMemo)(function() {
       if (iconXml === void 0 || color === void 0) {
         return {};
       }
@@ -43080,14 +44283,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       accessible
     }, svgColorProps, restProps);
     if (jsxAST == null) {
-      return (0, import_jsx_runtime217.jsx)(react_native_svg_exports.Svg, _object_spread_props(_object_spread({
+      return (0, import_jsx_runtime219.jsx)(react_native_svg_exports.Svg, _object_spread_props(_object_spread({
         ref
       }, commonProps), {
         children
       }));
     }
     if (showFallback) {
-      return (0, import_jsx_runtime217.jsx)(react_native_svg_exports.SvgUri, _object_spread_props(_object_spread({
+      return (0, import_jsx_runtime219.jsx)(react_native_svg_exports.SvgUri, _object_spread_props(_object_spread({
         uri: getIconUrl2(name2)
       }, commonProps), {
         children
@@ -43099,21 +44302,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       var cx = viewBoxWidth / 2;
       var cy = viewBoxHeight / 2;
       var r2 = Math.min(viewBoxWidth, viewBoxHeight) / 2;
-      return (0, import_jsx_runtime217.jsxs)(react_native_svg_exports.Svg, _object_spread_props(_object_spread({
+      return (0, import_jsx_runtime219.jsxs)(react_native_svg_exports.Svg, _object_spread_props(_object_spread({
         ref
       }, jsxAST.props, commonProps), {
         children: [
-          (0, import_jsx_runtime217.jsx)(react_native_svg_exports.Defs, {
-            children: (0, import_jsx_runtime217.jsx)(react_native_svg_exports.ClipPath, {
+          (0, import_jsx_runtime219.jsx)(react_native_svg_exports.Defs, {
+            children: (0, import_jsx_runtime219.jsx)(react_native_svg_exports.ClipPath, {
               id: "clip",
-              children: (0, import_jsx_runtime217.jsx)(react_native_svg_exports.Circle, {
+              children: (0, import_jsx_runtime219.jsx)(react_native_svg_exports.Circle, {
                 cx,
                 cy,
                 r: r2
               })
             })
           }),
-          (0, import_jsx_runtime217.jsx)(react_native_svg_exports.G, {
+          (0, import_jsx_runtime219.jsx)(react_native_svg_exports.G, {
             clipPath: "url(#clip)",
             children: jsxAST.children
           }),
@@ -43121,11 +44324,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         ]
       }));
     }
-    return (0, import_jsx_runtime217.jsxs)(react_native_svg_exports.Svg, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime219.jsxs)(react_native_svg_exports.Svg, _object_spread_props(_object_spread({
       ref
     }, jsxAST.props, commonProps), {
       children: [
-        (0, import_jsx_runtime217.jsx)(react_native_svg_exports.G, {
+        (0, import_jsx_runtime219.jsx)(react_native_svg_exports.G, {
           children: jsxAST.children
         }),
         children
@@ -43172,12 +44375,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       {
         key: "render",
         value: function render() {
-          return (0, import_jsx_runtime217.jsx)(Icon4, _object_spread({}, this.props));
+          return (0, import_jsx_runtime219.jsx)(Icon4, _object_spread({}, this.props));
         }
       }
     ]);
     return SvgIconClass2;
-  }(import_react185.Component);
+  }(import_react186.Component);
   var SvgIcon = Object.assign(SvgIconClass, {
     Root: SvgIconClass,
     prefetchIcon: function() {
@@ -43206,14 +44409,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/icon-button/IconButton.js
+  init_define_import_meta_env();
   init_to_consumable_array();
-  var import_jsx_runtime218 = __toESM(require_jsx_runtime());
-  var import_react186 = __toESM(require_react());
-  var import_react_native157 = __toESM(require_react_native());
+  var import_jsx_runtime220 = __toESM(require_jsx_runtime());
+  var import_react187 = __toESM(require_react());
+  var import_react_native159 = __toESM(require_react_native());
   var AnimatedSvg3 = Animated15.createAnimatedComponent(react_native_svg_exports.Svg);
   var AnimatedRect2 = Animated15.createAnimatedComponent(react_native_svg_exports.Rect);
-  var AnimatedPressable4 = Animated15.createAnimatedComponent(import_react_native157.Pressable);
-  var IconButtonImpl = /* @__PURE__ */ (0, import_react186.forwardRef)(function IconButtonImpl2(_param, ref) {
+  var AnimatedPressable4 = Animated15.createAnimatedComponent(import_react_native159.Pressable);
+  var IconButtonImpl = /* @__PURE__ */ (0, import_react187.forwardRef)(function IconButtonImpl2(_param, ref) {
     var source = _param.source, name2 = _param.name, color = _param.color, bgColorProp = _param.bgColor, _param_variant = _param.variant, variant = _param_variant === void 0 ? "clear" : _param_variant, label = _param.label, _param_iconSize = _param.iconSize, iconSize = _param_iconSize === void 0 ? 24 : _param_iconSize, children = _param.children, style = _param.style, onPressIn = _param.onPressIn, onPressOut = _param.onPressOut, restProps = _object_without_properties(_param, [
       "source",
       "name",
@@ -43234,8 +44438,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       borderStyle: "solid",
       borderColor: adaptive2.greyOpacity100
     };
-    var backgroundColorMotionInterpolateKey = (0, import_react186.useRef)(new Animated15.Value(0)).current;
-    var scaleMotion = (0, import_react186.useRef)(new Animated15.Value(1)).current;
+    var backgroundColorMotionInterpolateKey = (0, import_react187.useRef)(new Animated15.Value(0)).current;
+    var scaleMotion = (0, import_react187.useRef)(new Animated15.Value(1)).current;
     var backgroundColorMotion = backgroundColorMotionInterpolateKey.interpolate({
       inputRange: [
         0,
@@ -43248,7 +44452,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       ]
     });
-    var clearBgColorInterpolateKey = (0, import_react186.useRef)(new Animated15.Value(0)).current;
+    var clearBgColorInterpolateKey = (0, import_react187.useRef)(new Animated15.Value(0)).current;
     var clearBgColor = clearBgColorInterpolateKey.interpolate({
       inputRange: [
         0,
@@ -43260,7 +44464,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     });
     var withIconColor = color != null;
-    var iconColorInterpolateKey = (0, import_react186.useRef)(new Animated15.Value(0)).current;
+    var iconColorInterpolateKey = (0, import_react187.useRef)(new Animated15.Value(0)).current;
     var iconColor = iconColorInterpolateKey.interpolate({
       inputRange: [
         0,
@@ -43277,7 +44481,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }) : "grey"
       ]
     });
-    var downMotion = (0, import_react186.useCallback)(function() {
+    var downMotion = (0, import_react187.useCallback)(function() {
       Animated15.spring(scaleMotion, _object_spread({
         toValue: 0.9,
         useNativeDriver: false
@@ -43287,7 +44491,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         Animated15.timing(backgroundColorMotionInterpolateKey, {
           toValue: 1,
           useNativeDriver: false,
-          easing: (_Easing = import_react_native157.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
+          easing: (_Easing = import_react_native159.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
           duration: 500
         }).start();
       } else {
@@ -43310,7 +44514,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       variant,
       withIconColor
     ]);
-    var upMotion = (0, import_react186.useCallback)(function() {
+    var upMotion = (0, import_react187.useCallback)(function() {
       Animated15.spring(scaleMotion, _object_spread({
         toValue: 1,
         useNativeDriver: false
@@ -43320,7 +44524,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         Animated15.timing(backgroundColorMotionInterpolateKey, {
           toValue: 0,
           useNativeDriver: false,
-          easing: (_Easing = import_react_native157.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
+          easing: (_Easing = import_react_native159.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
           duration: 500
         }).start();
       } else {
@@ -43343,7 +44547,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       variant,
       withIconColor
     ]);
-    var handlePressIn = (0, import_react186.useCallback)(function(event) {
+    var handlePressIn = (0, import_react187.useCallback)(function(event) {
       downMotion();
       onPressIn === null || onPressIn === void 0 ? void 0 : onPressIn(event);
       generateHapticFeedback({
@@ -43353,14 +44557,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       downMotion,
       onPressIn
     ]);
-    var handlePressOut = (0, import_react186.useCallback)(function(event) {
+    var handlePressOut = (0, import_react187.useCallback)(function(event) {
       upMotion();
       onPressOut === null || onPressOut === void 0 ? void 0 : onPressOut(event);
     }, [
       onPressOut,
       upMotion
     ]);
-    return (0, import_jsx_runtime218.jsx)(AnimatedPressable4, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime220.jsx)(AnimatedPressable4, _object_spread_props(_object_spread({
       ref,
       style: [
         _object_spread({
@@ -43381,20 +44585,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       accessibilityRole: "button",
       accessibilityLabel: label
     }, restProps), {
-      children: (0, import_jsx_runtime218.jsx)(AnimatedSvg3, {
+      children: (0, import_jsx_runtime220.jsx)(AnimatedSvg3, {
         height: iconSize,
         width: iconSize,
         viewBox: "0 0 100 100",
-        children: (0, import_jsx_runtime218.jsxs)(import_jsx_runtime218.Fragment, {
+        children: (0, import_jsx_runtime220.jsxs)(import_jsx_runtime220.Fragment, {
           children: [
-            (0, import_jsx_runtime218.jsxs)(react_native_svg_exports.Mask, {
+            (0, import_jsx_runtime220.jsxs)(react_native_svg_exports.Mask, {
               id: "mask",
               x: "0",
               y: "0",
               width: "100",
               height: "100",
               children: [
-                source !== void 0 && (0, import_jsx_runtime218.jsx)(react_native_svg_exports.Image, {
+                source !== void 0 && (0, import_jsx_runtime220.jsx)(react_native_svg_exports.Image, {
                   href: source,
                   x: "0",
                   y: "0",
@@ -43403,7 +44607,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   preserveAspectRatio: "xMidYMid meet"
                   // maskSize: 'contain'` & `maskPosition: 'center'
                 }),
-                name2 !== void 0 && (0, import_jsx_runtime218.jsx)(SvgIcon, {
+                name2 !== void 0 && (0, import_jsx_runtime220.jsx)(SvgIcon, {
                   name: name2,
                   x: "0",
                   y: "0",
@@ -43414,7 +44618,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 })
               ]
             }),
-            (0, import_jsx_runtime218.jsx)(AnimatedRect2, {
+            (0, import_jsx_runtime220.jsx)(AnimatedRect2, {
               x: "0",
               y: "0",
               width: "100%",
@@ -43428,7 +44632,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       })
     }));
   });
-  var IconButton = /* @__PURE__ */ (0, import_react186.memo)(IconButtonImpl);
+  var IconButton = /* @__PURE__ */ (0, import_react187.memo)(IconButtonImpl);
   function getPaddingFromSize(size) {
     if (18 <= size && size <= 20) {
       return 9;
@@ -43445,31 +44649,36 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return 12;
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/NumericSpinner.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime222 = __toESM(require_jsx_runtime());
-  var import_react193 = __toESM(require_react());
-  var import_react_native163 = __toESM(require_react_native());
+  var import_jsx_runtime224 = __toESM(require_jsx_runtime());
+  var import_react194 = __toESM(require_react());
+  var import_react_native165 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/NumericSpinnerContainer.js
-  var import_jsx_runtime219 = __toESM(require_jsx_runtime());
-  var import_react187 = __toESM(require_react());
-  var import_react_native158 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime221 = __toESM(require_jsx_runtime());
+  var import_react188 = __toESM(require_react());
+  var import_react_native160 = __toESM(require_react_native());
   var NumericSpinnerContainerBorderRadiusBySize = {
     tiny: 8,
     small: 10,
     medium: 14,
     large: 16
   };
-  var NumericSpinnerContainer = /* @__PURE__ */ (0, import_react187.forwardRef)(function NumericSpinnerContainer2(_param, ref) {
+  var NumericSpinnerContainer = /* @__PURE__ */ (0, import_react188.forwardRef)(function NumericSpinnerContainer2(_param, ref) {
     var size = _param.size, style = _param.style, children = _param.children, restProps = _object_without_properties(_param, [
       "size",
       "style",
       "children"
     ]);
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime219.jsx)(import_react_native158.View, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime221.jsx)(import_react_native160.View, _object_spread_props(_object_spread({
       ref,
       style: [
         styles50.container,
@@ -43483,7 +44692,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       children
     }));
   });
-  var styles50 = import_react_native158.StyleSheet.create({
+  var styles50 = import_react_native160.StyleSheet.create({
     container: {
       display: "flex",
       flexDirection: "row"
@@ -43511,11 +44720,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/NumericSpinnerIconButton.js
-  var import_jsx_runtime220 = __toESM(require_jsx_runtime());
-  var import_react188 = __toESM(require_react());
-  var import_react_native159 = __toESM(require_react_native());
-  var import_react_native160 = __toESM(require_react_native());
-  var NumericSpinnerMinusIconButton = /* @__PURE__ */ (0, import_react188.forwardRef)(function NumericSpinnerMinusIconButton2(_param, ref) {
+  init_define_import_meta_env();
+  var import_jsx_runtime222 = __toESM(require_jsx_runtime());
+  var import_react189 = __toESM(require_react());
+  var import_react_native161 = __toESM(require_react_native());
+  var import_react_native162 = __toESM(require_react_native());
+  var NumericSpinnerMinusIconButton = /* @__PURE__ */ (0, import_react189.forwardRef)(function NumericSpinnerMinusIconButton2(_param, ref) {
     var size = _param.size, color = _param.color, disabled = _param.disabled, style = _param.style, restProps = _object_without_properties(_param, [
       "size",
       "color",
@@ -43523,7 +44733,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "style"
     ]);
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime220.jsx)(import_react_native160.Pressable, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime222.jsx)(import_react_native162.Pressable, _object_spread_props(_object_spread({
       ref,
       style: [
         commonStyles.container,
@@ -43533,7 +44743,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       accessibilityRole: "button",
       "aria-disabled": disabled
     }, restProps), {
-      children: (0, import_jsx_runtime220.jsx)(ParagraphIcon, {
+      children: (0, import_jsx_runtime222.jsx)(ParagraphIcon, {
         typography: size ? paragraphIconTypographyBySize[size] : void 0,
         name: "icn-stepper-minus-line",
         color: disabled ? adaptive2.grey300 : color !== null && color !== void 0 ? color : adaptive2.grey700,
@@ -43541,7 +44751,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       })
     }));
   });
-  var NumericSpinnerPlusIconButton = /* @__PURE__ */ (0, import_react188.forwardRef)(function NumericSpinnerPlusIconButton2(_param, ref) {
+  var NumericSpinnerPlusIconButton = /* @__PURE__ */ (0, import_react189.forwardRef)(function NumericSpinnerPlusIconButton2(_param, ref) {
     var size = _param.size, color = _param.color, disabled = _param.disabled, style = _param.style, restProps = _object_without_properties(_param, [
       "size",
       "color",
@@ -43549,7 +44759,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "style"
     ]);
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime220.jsx)(import_react_native160.Pressable, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime222.jsx)(import_react_native162.Pressable, _object_spread_props(_object_spread({
       ref,
       style: [
         commonStyles.container,
@@ -43559,7 +44769,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       accessibilityRole: "button",
       "aria-disabled": disabled
     }, restProps), {
-      children: (0, import_jsx_runtime220.jsx)(ParagraphIcon, {
+      children: (0, import_jsx_runtime222.jsx)(ParagraphIcon, {
         typography: size ? paragraphIconTypographyBySize[size] : void 0,
         name: "icn-stepper-plus-line",
         color: disabled ? adaptive2.grey300 : color !== null && color !== void 0 ? color : adaptive2.grey700,
@@ -43573,7 +44783,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     medium: "t6",
     large: "t6"
   };
-  var commonStyles = import_react_native159.StyleSheet.create({
+  var commonStyles = import_react_native161.StyleSheet.create({
     container: {
       display: "flex",
       justifyContent: "center",
@@ -43587,7 +44797,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       maxWidth: 24
     }
   });
-  var minusButtonStyles = import_react_native159.StyleSheet.create({
+  var minusButtonStyles = import_react_native161.StyleSheet.create({
     tiny: {
       paddingLeft: 5,
       paddingRight: 6
@@ -43605,7 +44815,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       paddingRight: 14
     }
   });
-  var plusButtonStyles = import_react_native159.StyleSheet.create({
+  var plusButtonStyles = import_react_native161.StyleSheet.create({
     tiny: {
       paddingRight: 5,
       paddingLeft: 6
@@ -43625,11 +44835,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/NumericSpinnerNumberBox.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
-  var import_jsx_runtime221 = __toESM(require_jsx_runtime());
-  var import_react189 = __toESM(require_react());
-  var import_react_native161 = __toESM(require_react_native());
+  var import_jsx_runtime223 = __toESM(require_jsx_runtime());
+  var import_react190 = __toESM(require_react());
+  var import_react_native163 = __toESM(require_react_native());
   var AnimatedParagraphText = Animated15.createAnimatedComponent(ParagraphText);
   var NumericSpinnerNumberBoxBorderRadiusBySize = {
     tiny: 6,
@@ -43637,7 +44848,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     medium: 10,
     large: 14
   };
-  var NumericSpinnerNumberBoxImpl = /* @__PURE__ */ (0, import_react189.forwardRef)(function NumericSpinnerNumberBoxImpl2(_param, ref) {
+  var NumericSpinnerNumberBoxImpl = /* @__PURE__ */ (0, import_react190.forwardRef)(function NumericSpinnerNumberBoxImpl2(_param, ref) {
     var size = _param.size, style = _param.style, children = _param.children, color = _param.color, restProps = _object_without_properties(_param, [
       "size",
       "style",
@@ -43648,7 +44859,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var backgroundColor = colorPreference === "light" ? colors.inverseGrey900 : colors.inverseGrey300;
     var fontWeight = "semibold";
     var typography = paragraphTypographyBySize[size];
-    return (0, import_jsx_runtime221.jsxs)(import_react_native161.Pressable, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime223.jsxs)(import_react_native163.Pressable, _object_spread_props(_object_spread({
       ref,
       style: [
         styles51.container,
@@ -43660,7 +44871,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     }, restProps), {
       children: [
-        (0, import_jsx_runtime221.jsx)(AnimatedParagraphText, {
+        (0, import_jsx_runtime223.jsx)(AnimatedParagraphText, {
           ref,
           fontWeight,
           typography,
@@ -43669,7 +44880,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           },
           children
         }),
-        (0, import_jsx_runtime221.jsx)(ParagraphText, {
+        (0, import_jsx_runtime223.jsx)(ParagraphText, {
           fontWeight,
           typography,
           style: {
@@ -43683,7 +44894,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     }));
   });
-  var styles51 = import_react_native161.StyleSheet.create({
+  var styles51 = import_react_native163.StyleSheet.create({
     container: {
       position: "relative",
       display: "flex",
@@ -43739,30 +44950,31 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       {
         key: "render",
         value: function render() {
-          return (0, import_jsx_runtime221.jsx)(NumericSpinnerNumberBoxImpl, _object_spread({}, this.props));
+          return (0, import_jsx_runtime223.jsx)(NumericSpinnerNumberBoxImpl, _object_spread({}, this.props));
         }
       }
     ]);
     return NumericSpinnerNumberBox2;
-  }(import_react189.Component);
+  }(import_react190.Component);
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/useAccelerateInterval.js
-  var import_react190 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_react191 = __toESM(require_react());
   function useAccelerateInterval(callback, times) {
-    var timerRef = (0, import_react190.useRef)();
-    var callbackRef = (0, import_react190.useRef)();
-    var calledCount = (0, import_react190.useRef)(0);
-    (0, import_react190.useEffect)(function() {
+    var timerRef = (0, import_react191.useRef)();
+    var callbackRef = (0, import_react191.useRef)();
+    var calledCount = (0, import_react191.useRef)(0);
+    (0, import_react191.useEffect)(function() {
       callbackRef.current = callback;
     }, [
       callback
     ]);
-    (0, import_react190.useEffect)(function() {
+    (0, import_react191.useEffect)(function() {
       return function() {
         timerRef.current && clearTimeout(timerRef.current);
       };
     }, []);
-    var executeCallback = (0, import_react190.useCallback)(function() {
+    var executeCallback = (0, import_react191.useCallback)(function() {
       var _ref = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : times, startMs = _ref.startMs, interval = _ref.interval, minMs = _ref.minMs;
       timerRef.current && clearTimeout(timerRef.current);
       timerRef.current = setTimeout(function() {
@@ -43779,7 +44991,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       times
     ]);
-    var startInterval = (0, import_react190.useCallback)(function() {
+    var startInterval = (0, import_react191.useCallback)(function() {
       calledCount.current = 0;
       if (!timerRef.current) {
         executeCallback();
@@ -43787,7 +44999,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       executeCallback
     ]);
-    var stopInterval = (0, import_react190.useCallback)(function() {
+    var stopInterval = (0, import_react191.useCallback)(function() {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = void 0;
@@ -43800,7 +45012,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/useButtonLongPress.js
-  var import_react191 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_react192 = __toESM(require_react());
   function useButtonLongPress(param) {
     var _onPressStart = param.onPressStart, onPressing = param.onPressing, _onPressEnd = param.onPressEnd;
     var _useAccelerateInterval = useAccelerateInterval(onPressing, {
@@ -43808,7 +45021,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       interval: 0.8,
       minMs: 50
     }), startInterval = _useAccelerateInterval.startInterval, stopInterval = _useAccelerateInterval.stopInterval;
-    var onPressStart = (0, import_react191.useCallback)(function() {
+    var onPressStart = (0, import_react192.useCallback)(function() {
       if (_onPressStart) {
         _onPressStart();
       }
@@ -43817,7 +45030,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       _onPressStart,
       startInterval
     ]);
-    var onPressEnd = (0, import_react191.useCallback)(function() {
+    var onPressEnd = (0, import_react192.useCallback)(function() {
       if (_onPressEnd) {
         _onPressEnd();
       }
@@ -43833,11 +45046,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/numeric-spinner/useWiggleMotion.js
-  var import_react192 = __toESM(require_react());
-  var import_react_native162 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react193 = __toESM(require_react());
+  var import_react_native164 = __toESM(require_react_native());
   function useWiggleMotion() {
-    var translateX = (0, import_react192.useRef)(new Animated15.Value(0)).current;
-    var play = (0, import_react192.useCallback)(function() {
+    var translateX = (0, import_react193.useRef)(new Animated15.Value(0)).current;
+    var play = (0, import_react193.useCallback)(function() {
       generateHapticFeedback({
         type: "wiggle"
       });
@@ -43845,31 +45059,31 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         Animated15.timing(translateX, {
           toValue: 2,
           duration: 87.5,
-          easing: import_react_native162.Easing.linear,
+          easing: import_react_native164.Easing.linear,
           useNativeDriver: false
         }),
         Animated15.timing(translateX, {
           toValue: -2,
           duration: 87.5,
-          easing: import_react_native162.Easing.linear,
+          easing: import_react_native164.Easing.linear,
           useNativeDriver: false
         }),
         Animated15.timing(translateX, {
           toValue: 1,
           duration: 87.5,
-          easing: import_react_native162.Easing.linear,
+          easing: import_react_native164.Easing.linear,
           useNativeDriver: false
         }),
         Animated15.timing(translateX, {
           toValue: -1,
           duration: 87.5,
-          easing: import_react_native162.Easing.linear,
+          easing: import_react_native164.Easing.linear,
           useNativeDriver: false
         }),
         Animated15.timing(translateX, {
           toValue: 0,
           duration: 87.5,
-          easing: import_react_native162.Easing.linear,
+          easing: import_react_native164.Easing.linear,
           useNativeDriver: false
         })
       ]).start();
@@ -43898,7 +45112,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var min = param.min, max = param.max, num3 = param.num;
     return !isNaN(num3) && num3 >= min && num3 <= max;
   };
-  var NumericSpinner = /* @__PURE__ */ (0, import_react193.forwardRef)(function NumericSpinner2(_param, ref) {
+  var NumericSpinner = /* @__PURE__ */ (0, import_react194.forwardRef)(function NumericSpinner2(_param, ref) {
     var disable = _param.disable, _param_number = _param.number, number = _param_number === void 0 ? 0 : _param_number, _param_minNumber = _param.minNumber, minNumber = _param_minNumber === void 0 ? 0 : _param_minNumber, _param_maxNumber = _param.maxNumber, maxNumber = _param_maxNumber === void 0 ? 100 : _param_maxNumber, onNumberChange = _param.onNumberChange, size = _param.size, style = _param.style, restProps = _object_without_properties(_param, [
       "disable",
       "number",
@@ -43920,7 +45134,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       min: minNumber,
       num: number - 1
     });
-    var increaseNumber = (0, import_react193.useCallback)(function() {
+    var increaseNumber = (0, import_react194.useCallback)(function() {
       if (isIncrementEnabled) {
         var nextNumber = number + 1;
         generateHapticFeedback({
@@ -43936,7 +45150,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       onNumberChange,
       wiggle
     ]);
-    var decreaseNumber = (0, import_react193.useCallback)(function() {
+    var decreaseNumber = (0, import_react194.useCallback)(function() {
       if (isDecrementEnabled) {
         var nextNumber = number - 1;
         generateHapticFeedback({
@@ -43961,7 +45175,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       onPressing: increaseNumber,
       onPressEnd: numberTextAnimation.play
     }), onRightButtonStart = _useButtonLongPress1.onPressStart, onRightButtonEnd = _useButtonLongPress1.onPressEnd;
-    var isAtTheEnd = (0, import_react193.useRef)(false);
+    var isAtTheEnd = (0, import_react194.useRef)(false);
     var increase = useAccelerateInterval(increaseNumber, {
       startMs: 400,
       interval: 0.8,
@@ -43991,8 +45205,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       decrease.stopInterval();
       isAtTheEnd.current = false;
     };
-    var numberBoxTranslateX = (0, import_react193.useRef)(new Animated15.Value(0)).current;
-    var numberBoxBorderRadius = (0, import_react193.useRef)(new Animated15.Value(NumericSpinnerNumberBoxBorderRadiusBySize[size])).current;
+    var numberBoxTranslateX = (0, import_react194.useRef)(new Animated15.Value(0)).current;
+    var numberBoxBorderRadius = (0, import_react194.useRef)(new Animated15.Value(NumericSpinnerNumberBoxBorderRadiusBySize[size])).current;
     var containerAnimation = useContainerAnimation({
       size
     });
@@ -44041,10 +45255,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       }
     };
-    var _useState = _sliced_to_array((0, import_react193.useState)(0), 2), numberBoxWidth = _useState[0], setNumberBoxWidth = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react193.useState)(0), 2), containerWidth = _useState1[0], setContainerWidth = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react193.useState)(0), 2), leftSpace = _useState2[0], setLeftSpace = _useState2[1];
-    var _useState3 = _sliced_to_array((0, import_react193.useState)(0), 2), rightSpace = _useState3[0], setRightSpace = _useState3[1];
+    var _useState = _sliced_to_array((0, import_react194.useState)(0), 2), numberBoxWidth = _useState[0], setNumberBoxWidth = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react194.useState)(0), 2), containerWidth = _useState1[0], setContainerWidth = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react194.useState)(0), 2), leftSpace = _useState2[0], setLeftSpace = _useState2[1];
+    var _useState3 = _sliced_to_array((0, import_react194.useState)(0), 2), rightSpace = _useState3[0], setRightSpace = _useState3[1];
     var translateXLimited = numberBoxTranslateX.interpolate({
       inputRange: [
         -leftSpace,
@@ -44068,7 +45282,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         resetFlags();
       }
     });
-    (0, import_react193.useEffect)(function() {
+    (0, import_react194.useEffect)(function() {
       numberBoxBorderRadius.setValue(NumericSpinnerNumberBoxBorderRadiusBySize[size]);
     }, [
       numberBoxBorderRadius,
@@ -44081,7 +45295,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var rightIconButtonPlaceholderAnimation = useRightIconButtonPlaceholderAnimation();
     var ariaLabel = "".concat(number);
     if (disable) {
-      return (0, import_jsx_runtime222.jsx)(import_react_native163.Pressable, _object_spread_props(_object_spread({
+      return (0, import_jsx_runtime224.jsx)(import_react_native165.Pressable, _object_spread_props(_object_spread({
         "aria-disabled": true,
         accessibilityRole: "button",
         accessibilityLabel: "".concat(number, ", \uBCC0\uACBD\uD560 \uC218 \uC5C6\uC5B4\uC694"),
@@ -44096,7 +45310,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           style
         ]
       }, restProps), {
-        children: (0, import_jsx_runtime222.jsxs)(AnimatedNumericSpinnerContainer, {
+        children: (0, import_jsx_runtime224.jsxs)(AnimatedNumericSpinnerContainer, {
           ref,
           size,
           style: [
@@ -44107,10 +45321,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           ],
           pointerEvents: "none",
           children: [
-            (0, import_jsx_runtime222.jsx)(NumericSpinnerMinusIconButton, {
+            (0, import_jsx_runtime224.jsx)(NumericSpinnerMinusIconButton, {
               size
             }),
-            (0, import_jsx_runtime222.jsx)(NumericSpinnerNumberBox, {
+            (0, import_jsx_runtime224.jsx)(NumericSpinnerNumberBox, {
               style: {
                 borderRadius: 8
               },
@@ -44119,14 +45333,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               color: numberTextAnimation.style.color,
               children: number
             }),
-            (0, import_jsx_runtime222.jsx)(NumericSpinnerPlusIconButton, {
+            (0, import_jsx_runtime224.jsx)(NumericSpinnerPlusIconButton, {
               size
             })
           ]
         })
       }));
     }
-    return (0, import_jsx_runtime222.jsxs)(AnimatedNumericSpinnerContainer, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime224.jsxs)(AnimatedNumericSpinnerContainer, _object_spread_props(_object_spread({
       testID: "numeric-spinner",
       ref,
       onLayout: function(event) {
@@ -44145,7 +45359,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       size
     }, restProps), {
       children: [
-        (0, import_jsx_runtime222.jsx)(AnimatedNumericSpinnerMinusIconButton, {
+        (0, import_jsx_runtime224.jsx)(AnimatedNumericSpinnerMinusIconButton, {
           "aria-label": "\uBE7C\uAE30",
           accessibilityHint: isDecrementEnabled ? "\uB450\uBC88 \uD130\uCE58\uD558\uBA74 \uC22B\uC790\uAC00 \uAC10\uC18C\uD574\uC694" : "".concat(minNumber, "\uAC1C \uC774\uD558\uB85C \uC120\uD0DD\uD560 \uC218 \uC5C6\uC5B4\uC694"),
           onLayout: function(event) {
@@ -44172,10 +45386,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           color: leftIconButtonAnimation.style.color,
           size
         }),
-        (0, import_jsx_runtime222.jsx)(react_native_gesture_handler_exports.PanGestureHandler, {
+        (0, import_jsx_runtime224.jsx)(react_native_gesture_handler_exports.PanGestureHandler, {
           onGestureEvent,
           onHandlerStateChange,
-          children: (0, import_jsx_runtime222.jsx)(AnimatedNumericSpinnerNumberBox, {
+          children: (0, import_jsx_runtime224.jsx)(AnimatedNumericSpinnerNumberBox, {
             onLayout: function(e4) {
               setNumberBoxWidth(e4.nativeEvent.layout.width);
             },
@@ -44199,7 +45413,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             children: number
           })
         }),
-        (0, import_jsx_runtime222.jsx)(AnimatedNumericSpinnerPlusIconButton, {
+        (0, import_jsx_runtime224.jsx)(AnimatedNumericSpinnerPlusIconButton, {
           "aria-label": "\uB354\uD558\uAE30",
           accessibilityHint: isIncrementEnabled ? "\uB450\uBC88 \uD130\uCE58\uD558\uBA74 \uC22B\uC790\uAC00 \uC99D\uAC00\uD574\uC694" : "".concat(maxNumber, "\uAC1C \uC774\uC0C1 \uC120\uD0DD\uD560 \uC218 \uC5C6\uC5B4\uC694"),
           onLayout: function(event) {
@@ -44226,7 +45440,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           color: rightIconButtonAnimation.style.color,
           size
         }),
-        (0, import_jsx_runtime222.jsx)(Animated15.View, {
+        (0, import_jsx_runtime224.jsx)(Animated15.View, {
           style: _object_spread({
             position: "absolute",
             top: 0,
@@ -44238,7 +45452,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             width: Math.max(containerWidth - (containerWidth - numberBoxWidth) / 2 + GapBySize[size], 0)
           }, leftIconButtonPlaceholderAnimation.style)
         }),
-        (0, import_jsx_runtime222.jsx)(Animated15.View, {
+        (0, import_jsx_runtime224.jsx)(Animated15.View, {
           style: _object_spread({
             position: "absolute",
             top: 0,
@@ -44262,7 +45476,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function useContainerAnimation(param) {
     var size = param.size;
     var adaptive2 = useAdaptive();
-    var interpolateValue = (0, import_react193.useRef)(new Animated15.Value(0)).current;
+    var interpolateValue = (0, import_react194.useRef)(new Animated15.Value(0)).current;
     var scale = interpolateValue.interpolate({
       inputRange: [
         0,
@@ -44296,7 +45510,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ],
       extrapolate: "clamp"
     });
-    var play = (0, import_react193.useCallback)(function() {
+    var play = (0, import_react194.useCallback)(function() {
       Animated15.timing(interpolateValue, {
         toValue: 100,
         useNativeDriver: false,
@@ -44306,7 +45520,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       interpolateValue
     ]);
-    var reset = (0, import_react193.useCallback)(function() {
+    var reset = (0, import_react194.useCallback)(function() {
       Animated15.timing(interpolateValue, {
         toValue: 0,
         useNativeDriver: false,
@@ -44331,8 +45545,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
   function useNumberBoxAnimation() {
-    var scale = (0, import_react193.useRef)(new Animated15.Value(1)).current;
-    var shrink = (0, import_react193.useCallback)(function() {
+    var scale = (0, import_react194.useRef)(new Animated15.Value(1)).current;
+    var shrink = (0, import_react194.useCallback)(function() {
       Animated15.timing(scale, {
         toValue: 0.9,
         useNativeDriver: false,
@@ -44342,7 +45556,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       scale
     ]);
-    var expand = (0, import_react193.useCallback)(function() {
+    var expand = (0, import_react194.useCallback)(function() {
       Animated15.timing(scale, {
         toValue: 1,
         useNativeDriver: false,
@@ -44366,9 +45580,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function useLeftIconButtonAnimation() {
     var adaptive2 = useAdaptive();
-    var _useState = _sliced_to_array((0, import_react193.useState)(adaptive2.grey700), 2), color = _useState[0], setColor = _useState[1];
-    var scale = (0, import_react193.useRef)(new Animated15.Value(1)).current;
-    var shrink = (0, import_react193.useCallback)(function() {
+    var _useState = _sliced_to_array((0, import_react194.useState)(adaptive2.grey700), 2), color = _useState[0], setColor = _useState[1];
+    var scale = (0, import_react194.useRef)(new Animated15.Value(1)).current;
+    var shrink = (0, import_react194.useCallback)(function() {
       Animated15.timing(scale, {
         toValue: 0.9,
         useNativeDriver: false,
@@ -44380,7 +45594,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       adaptive2.grey900,
       scale
     ]);
-    var expand = (0, import_react193.useCallback)(function() {
+    var expand = (0, import_react194.useCallback)(function() {
       Animated15.stagger(200, [
         Animated15.timing(scale, {
           toValue: 1.1,
@@ -44415,9 +45629,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function useRightIconButtonAnimation() {
     var adaptive2 = useAdaptive();
-    var _useState = _sliced_to_array((0, import_react193.useState)(adaptive2.grey700), 2), color = _useState[0], setColor = _useState[1];
-    var scale = (0, import_react193.useRef)(new Animated15.Value(1)).current;
-    var shrink = (0, import_react193.useCallback)(function() {
+    var _useState = _sliced_to_array((0, import_react194.useState)(adaptive2.grey700), 2), color = _useState[0], setColor = _useState[1];
+    var scale = (0, import_react194.useRef)(new Animated15.Value(1)).current;
+    var shrink = (0, import_react194.useCallback)(function() {
       Animated15.timing(scale, {
         toValue: 0.9,
         useNativeDriver: false,
@@ -44429,7 +45643,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       adaptive2.grey900,
       scale
     ]);
-    var expand = (0, import_react193.useCallback)(function() {
+    var expand = (0, import_react194.useCallback)(function() {
       Animated15.stagger(200, [
         Animated15.timing(scale, {
           toValue: 1.1,
@@ -44463,10 +45677,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
   function useLeftIconButtonPlaceholderAnimation() {
-    var scale = (0, import_react193.useRef)(new Animated15.Value(1)).current;
-    var translateX = (0, import_react193.useRef)(new Animated15.Value(0)).current;
-    var opacity = (0, import_react193.useRef)(new Animated15.Value(0)).current;
-    var shrink = (0, import_react193.useCallback)(function() {
+    var scale = (0, import_react194.useRef)(new Animated15.Value(1)).current;
+    var translateX = (0, import_react194.useRef)(new Animated15.Value(0)).current;
+    var opacity = (0, import_react194.useRef)(new Animated15.Value(0)).current;
+    var shrink = (0, import_react194.useCallback)(function() {
       Animated15.parallel([
         Animated15.timing(scale, {
           toValue: 0.92,
@@ -44492,7 +45706,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       scale,
       translateX
     ]);
-    var expand = (0, import_react193.useCallback)(function() {
+    var expand = (0, import_react194.useCallback)(function() {
       Animated15.parallel([
         Animated15.timing(scale, {
           toValue: 1,
@@ -44535,10 +45749,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
   function useRightIconButtonPlaceholderAnimation() {
-    var scale = (0, import_react193.useRef)(new Animated15.Value(1)).current;
-    var translateX = (0, import_react193.useRef)(new Animated15.Value(0)).current;
-    var opacity = (0, import_react193.useRef)(new Animated15.Value(0)).current;
-    var shrink = (0, import_react193.useCallback)(function() {
+    var scale = (0, import_react194.useRef)(new Animated15.Value(1)).current;
+    var translateX = (0, import_react194.useRef)(new Animated15.Value(0)).current;
+    var opacity = (0, import_react194.useRef)(new Animated15.Value(0)).current;
+    var shrink = (0, import_react194.useCallback)(function() {
       Animated15.parallel([
         Animated15.timing(scale, {
           toValue: 0.92,
@@ -44564,7 +45778,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       scale,
       translateX
     ]);
-    var expand = (0, import_react193.useCallback)(function() {
+    var expand = (0, import_react194.useCallback)(function() {
       Animated15.parallel([
         Animated15.timing(scale, {
           toValue: 1,
@@ -44608,7 +45822,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function useNumberTextAnimation() {
     var adaptive2 = useAdaptive();
-    var colorInterpolateValue = (0, import_react193.useRef)(new Animated15.Value(0)).current;
+    var colorInterpolateValue = (0, import_react194.useRef)(new Animated15.Value(0)).current;
     var color = colorInterpolateValue.interpolate({
       inputRange: [
         0,
@@ -44619,7 +45833,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         adaptive2.blue500
       ]
     });
-    var play = (0, import_react193.useCallback)(function() {
+    var play = (0, import_react194.useCallback)(function() {
       colorInterpolateValue.setValue(0);
       Animated15.stagger(300, [
         Animated15.timing(colorInterpolateValue, {
@@ -44646,26 +45860,31 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/components/fixed-bottom-cta/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/fixed-bottom-cta/FixedBottomCTA.js
-  var import_jsx_runtime224 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime226 = __toESM(require_jsx_runtime());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/fixed-bottom-cta/providers/FixedBottomCTAContext.js
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime223 = __toESM(require_jsx_runtime());
-  var import_react194 = __toESM(require_react());
-  var import_react_native164 = __toESM(require_react_native());
-  var FixedBottomCTAContext = /* @__PURE__ */ (0, import_react194.createContext)(null);
+  var import_jsx_runtime225 = __toESM(require_jsx_runtime());
+  var import_react195 = __toESM(require_react());
+  var import_react_native166 = __toESM(require_react_native());
+  var FixedBottomCTAContext = /* @__PURE__ */ (0, import_react195.createContext)(null);
   function FixedBottomCTAProvider(param) {
-    var children = param.children, _param_wrapper = param.wrapper, wrapper = _param_wrapper === void 0 ? import_react_native164.ScrollView : _param_wrapper, wrapperProps = param.wrapperProps;
+    var children = param.children, _param_wrapper = param.wrapper, wrapper = _param_wrapper === void 0 ? import_react_native166.ScrollView : _param_wrapper, wrapperProps = param.wrapperProps;
     var Wrapper2 = wrapper;
-    var _useState = _sliced_to_array((0, import_react194.useState)(null), 2), bottomElement = _useState[0], setBottomElement = _useState[1];
-    var render = (0, import_react194.useCallback)(function(element) {
+    var _useState = _sliced_to_array((0, import_react195.useState)(null), 2), bottomElement = _useState[0], setBottomElement = _useState[1];
+    var render = (0, import_react195.useCallback)(function(element) {
       setBottomElement(element);
     }, []);
-    var cleanup = (0, import_react194.useCallback)(function() {
+    var cleanup = (0, import_react195.useCallback)(function() {
       setBottomElement(null);
     }, []);
-    var controls = (0, import_react194.useMemo)(function() {
+    var controls = (0, import_react195.useMemo)(function() {
       return {
         render,
         cleanup
@@ -44674,18 +45893,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       render,
       cleanup
     ]);
-    return (0, import_jsx_runtime223.jsxs)(FixedBottomCTAContext.Provider, {
+    return (0, import_jsx_runtime225.jsxs)(FixedBottomCTAContext.Provider, {
       value: controls,
       children: [
-        (0, import_jsx_runtime223.jsx)(Wrapper2, _object_spread_props(_object_spread({
+        (0, import_jsx_runtime225.jsx)(Wrapper2, _object_spread_props(_object_spread({
           style: {
             flex: 1
           }
         }, wrapperProps), {
-          children: (0, import_jsx_runtime223.jsxs)(import_jsx_runtime223.Fragment, {
+          children: (0, import_jsx_runtime225.jsxs)(import_jsx_runtime225.Fragment, {
             children: [
               children,
-              (0, import_jsx_runtime223.jsx)(import_react_native164.View, {
+              (0, import_jsx_runtime225.jsx)(import_react_native166.View, {
                 style: {
                   height: BottomCTAGradient.HEIGHT
                 }
@@ -44693,9 +45912,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]
           })
         })),
-        (0, import_jsx_runtime223.jsxs)(KeyboardAboveView, {
+        (0, import_jsx_runtime225.jsxs)(KeyboardAboveView, {
           children: [
-            (0, import_jsx_runtime223.jsx)(import_react_native164.View, {
+            (0, import_jsx_runtime225.jsx)(import_react_native166.View, {
               style: {
                 marginTop: -(BottomCTAGradient.HEIGHT - 1)
               }
@@ -44708,12 +45927,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function FixedBottomCTAConsumer(param) {
     var children = param.children;
-    var controls = (0, import_react194.useContext)(FixedBottomCTAContext);
+    var controls = (0, import_react195.useContext)(FixedBottomCTAContext);
     if (controls == null) {
       throw new Error("FixedBottomCTAContext \uB294 FixedBottomCTAProvider \uC5D0\uC11C \uC2E4\uD589\uD574\uC57C\uD569\uB2C8\uB2E4.");
     }
     var render = controls.render, cleanup = controls.cleanup;
-    (0, import_react194.useEffect)(function() {
+    (0, import_react195.useEffect)(function() {
       render(children);
       return function() {
         cleanup();
@@ -44729,35 +45948,36 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // node_modules/@toss-design-system/react-native/dist/esm/components/fixed-bottom-cta/FixedBottomCTA.js
   function FixedBottomCTAWithoutConsumer(props) {
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime224.jsx)(BottomCTA.Single, _object_spread({
+    return (0, import_jsx_runtime226.jsx)(BottomCTA.Single, _object_spread({
       keyboardStyleEnabled: true,
-      gradient: (0, import_jsx_runtime224.jsx)(BottomCTAGradient, {
+      gradient: (0, import_jsx_runtime226.jsx)(BottomCTAGradient, {
         stopColor: adaptive2.background
       })
     }, props));
   }
   function FixedBottomCTADoubleWithoutConsumer(props) {
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime224.jsx)(BottomCTA.Double, _object_spread({
+    return (0, import_jsx_runtime226.jsx)(BottomCTA.Double, _object_spread({
       keyboardStyleEnabled: true,
-      gradient: (0, import_jsx_runtime224.jsx)(BottomCTAGradient, {
+      gradient: (0, import_jsx_runtime226.jsx)(BottomCTAGradient, {
         stopColor: adaptive2.background
       })
     }, props));
   }
   function FixedBottomCTA(props) {
-    return (0, import_jsx_runtime224.jsx)(FixedBottomCTAConsumer, {
-      children: (0, import_jsx_runtime224.jsx)(FixedBottomCTAWithoutConsumer, _object_spread({}, props))
+    return (0, import_jsx_runtime226.jsx)(FixedBottomCTAConsumer, {
+      children: (0, import_jsx_runtime226.jsx)(FixedBottomCTAWithoutConsumer, _object_spread({}, props))
     });
   }
   function FixedBottomCTADouble(props) {
-    return (0, import_jsx_runtime224.jsx)(FixedBottomCTAConsumer, {
-      children: (0, import_jsx_runtime224.jsx)(FixedBottomCTADoubleWithoutConsumer, _object_spread({}, props))
+    return (0, import_jsx_runtime226.jsx)(FixedBottomCTAConsumer, {
+      children: (0, import_jsx_runtime226.jsx)(FixedBottomCTADoubleWithoutConsumer, _object_spread({}, props))
     });
   }
   FixedBottomCTA.Double = FixedBottomCTADouble;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/shadow/calculateElevation.js
+  init_define_import_meta_env();
   var MAX_ELEVATION = 145;
   var ELEVATION_PROPOTION = {
     0: 0,
@@ -44790,7 +46010,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/shadow/generateShadowStyle.js
-  var import_react_native165 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react_native167 = __toESM(require_react_native());
   var generateShadowStyle = function(_param) {
     var _param_offset = _param.offset, offset = _param_offset === void 0 ? {
       x: 0,
@@ -44803,7 +46024,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
     var shadowColor = "color" in colorProps ? colorProps.color : colorPreference === "light" ? colorProps.lightColor : colorProps.darkColor;
     var _offset_x, _offset_y;
-    return import_react_native165.Platform.OS === "ios" ? {
+    return import_react_native167.Platform.OS === "ios" ? {
       shadowColor,
       shadowOffset: {
         width: (_offset_x = offset.x) !== null && _offset_x !== void 0 ? _offset_x : 0,
@@ -44817,17 +46038,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   };
 
+  // node_modules/@toss-design-system/react-native/dist/esm/extensions/overlay-extension/hooks/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/overlay-extension/hooks/useBottomSheet.js
-  var import_jsx_runtime225 = __toESM(require_jsx_runtime());
-  var import_react196 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_jsx_runtime227 = __toESM(require_jsx_runtime());
+  var import_react197 = __toESM(require_react());
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/overlay-extension/components/CapturePress.js
+  init_define_import_meta_env();
   init_to_consumable_array();
-  var import_react195 = __toESM(require_react());
+  var import_react196 = __toESM(require_react());
   function CapturePress(param) {
     var children = param.children, onPress = param.onPress;
-    var child = import_react195.Children.only(children);
-    return /* @__PURE__ */ (0, import_react195.cloneElement)(child, _object_spread_props(_object_spread({}, child.props), {
+    var child = import_react196.Children.only(children);
+    return /* @__PURE__ */ (0, import_react196.cloneElement)(child, _object_spread_props(_object_spread({}, child.props), {
       onPress: function() {
         for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
           args[_key] = arguments[_key];
@@ -44842,16 +46068,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/overlay-extension/hooks/useBottomSheet.js
-  var import_react_native166 = __toESM(require_react_native());
+  var import_react_native168 = __toESM(require_react_native());
   function useBottomSheet() {
     var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
     var overlay = useOverlay();
-    var close = (0, import_react196.useCallback)(function() {
+    var close = (0, import_react197.useCallback)(function() {
       return overlay.close();
     }, [
       overlay
     ]);
-    var open = (0, import_react196.useCallback)(function(_param) {
+    var open = (0, import_react197.useCallback)(function(_param) {
       var header = _param.header, cta = _param.cta, onExited = _param.onExited, onClose = _param.onClose, options2 = _object_without_properties(_param, [
         "header",
         "cta",
@@ -44864,96 +46090,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           onClose === null || onClose === void 0 ? void 0 : onClose();
           close2();
         };
-        return (0, import_jsx_runtime225.jsx)(BottomSheet.Root, _object_spread_props(_object_spread({}, options2), {
+        return (0, import_jsx_runtime227.jsx)(BottomSheet.Root, _object_spread_props(_object_spread({}, options2), {
           header,
           open: isOpen,
-          cta: /* @__PURE__ */ (0, import_react196.isValidElement)(cta) ? (0, import_jsx_runtime225.jsx)(CapturePress, {
+          cta: /* @__PURE__ */ (0, import_react197.isValidElement)(cta) ? (0, import_jsx_runtime227.jsx)(CapturePress, {
             onPress: handleClose,
             children: cta
-          }) : (0, import_jsx_runtime225.jsx)(import_react_native166.Pressable, {
+          }) : (0, import_jsx_runtime227.jsx)(import_react_native168.Pressable, {
             onPress: handleClose,
             children: cta
           }),
-          onClose: handleClose,
-          onExited: function() {
-            onExited === null || onExited === void 0 ? void 0 : onExited();
-            exit();
-          }
-        }));
-      });
-    }, [
-      overlay
-    ]);
-    var controls = (0, import_react196.useMemo)(function() {
-      return {
-        close,
-        open
-      };
-    }, [
-      close,
-      open
-    ]);
-    var _options_closeOnDestroy = options.closeOnDestroy, closeOnDestroy = _options_closeOnDestroy === void 0 ? true : _options_closeOnDestroy;
-    (0, import_react196.useEffect)(function() {
-      return function() {
-        if (closeOnDestroy) {
-          controls === null || controls === void 0 ? void 0 : controls.close();
-        }
-      };
-    }, [
-      closeOnDestroy,
-      controls
-    ]);
-    return controls;
-  }
-
-  // node_modules/@toss-design-system/react-native/dist/esm/extensions/overlay-extension/hooks/useToast.js
-  var import_jsx_runtime226 = __toESM(require_jsx_runtime());
-  var import_react197 = __toESM(require_react());
-  function useToast() {
-    var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-    var overlay = useOverlay();
-    var close = (0, import_react197.useCallback)(function() {
-      return overlay.close();
-    }, [
-      overlay
-    ]);
-    var open = (0, import_react197.useCallback)(function(message) {
-      var _param = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-      var duration = _param.duration, button = _param.button, _param_type = _param.type, type = _param_type === void 0 ? "bottom" : _param_type, lottie = _param.lottie, icon = _param.icon, iconType = _param.iconType, onExited = _param.onExited, onClose = _param.onClose, options2 = _object_without_properties(_param, [
-        "duration",
-        "button",
-        "type",
-        "lottie",
-        "icon",
-        "iconType",
-        "onExited",
-        "onClose"
-      ]);
-      return overlay.open(function(param) {
-        var isOpen = param.isOpen, exit = param.exit, close2 = param.close;
-        var handleClose = function() {
-          onClose === null || onClose === void 0 ? void 0 : onClose();
-          close2();
-        };
-        return (0, import_jsx_runtime226.jsx)(Toast, _object_spread_props(_object_spread({}, options2), {
-          text: message,
-          open: isOpen,
-          position: type,
-          button: button ? (0, import_jsx_runtime226.jsx)(Toast.Button, {
-            onPress: button.onPress,
-            children: button.text
-          }) : void 0,
-          icon: lottie ? (0, import_jsx_runtime226.jsx)(Toast.LottieIcon, {
-            src: lottie,
-            style: {
-              borderRadius: iconType === "circle" ? 9999 : void 0,
-              overflow: "hidden"
-            }
-          }) : icon ? (0, import_jsx_runtime226.jsx)(Toast.Icon, {
-            name: icon,
-            type: iconType === "circle" ? "circle" : "default"
-          }) : void 0,
           onClose: handleClose,
           onExited: function() {
             onExited === null || onExited === void 0 ? void 0 : onExited();
@@ -44987,20 +46133,105 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     return controls;
   }
 
+  // node_modules/@toss-design-system/react-native/dist/esm/extensions/overlay-extension/hooks/useToast.js
+  init_define_import_meta_env();
+  var import_jsx_runtime228 = __toESM(require_jsx_runtime());
+  var import_react198 = __toESM(require_react());
+  function useToast() {
+    var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+    var overlay = useOverlay();
+    var close = (0, import_react198.useCallback)(function() {
+      return overlay.close();
+    }, [
+      overlay
+    ]);
+    var open = (0, import_react198.useCallback)(function(message) {
+      var _param = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+      var duration = _param.duration, button = _param.button, _param_type = _param.type, type = _param_type === void 0 ? "bottom" : _param_type, lottie = _param.lottie, icon = _param.icon, iconType = _param.iconType, onExited = _param.onExited, onClose = _param.onClose, options2 = _object_without_properties(_param, [
+        "duration",
+        "button",
+        "type",
+        "lottie",
+        "icon",
+        "iconType",
+        "onExited",
+        "onClose"
+      ]);
+      return overlay.open(function(param) {
+        var isOpen = param.isOpen, exit = param.exit, close2 = param.close;
+        var handleClose = function() {
+          onClose === null || onClose === void 0 ? void 0 : onClose();
+          close2();
+        };
+        return (0, import_jsx_runtime228.jsx)(Toast, _object_spread_props(_object_spread({}, options2), {
+          text: message,
+          open: isOpen,
+          position: type,
+          button: button ? (0, import_jsx_runtime228.jsx)(Toast.Button, {
+            onPress: button.onPress,
+            children: button.text
+          }) : void 0,
+          icon: lottie ? (0, import_jsx_runtime228.jsx)(Toast.LottieIcon, {
+            src: lottie,
+            style: {
+              borderRadius: iconType === "circle" ? 9999 : void 0,
+              overflow: "hidden"
+            }
+          }) : icon ? (0, import_jsx_runtime228.jsx)(Toast.Icon, {
+            name: icon,
+            type: iconType === "circle" ? "circle" : "default"
+          }) : void 0,
+          onClose: handleClose,
+          onExited: function() {
+            onExited === null || onExited === void 0 ? void 0 : onExited();
+            exit();
+          }
+        }));
+      });
+    }, [
+      overlay
+    ]);
+    var controls = (0, import_react198.useMemo)(function() {
+      return {
+        close,
+        open
+      };
+    }, [
+      close,
+      open
+    ]);
+    var _options_closeOnDestroy = options.closeOnDestroy, closeOnDestroy = _options_closeOnDestroy === void 0 ? true : _options_closeOnDestroy;
+    (0, import_react198.useEffect)(function() {
+      return function() {
+        if (closeOnDestroy) {
+          controls === null || controls === void 0 ? void 0 : controls.close();
+        }
+      };
+    }, [
+      closeOnDestroy,
+      controls
+    ]);
+    return controls;
+  }
+
+  // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/index.js
+  init_define_import_meta_env();
+
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/BackButton.js
-  var import_jsx_runtime227 = __toESM(require_jsx_runtime());
-  var import_react_native167 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime229 = __toESM(require_jsx_runtime());
+  var import_react_native169 = __toESM(require_react_native());
   function BackButton2(param) {
     var tintColor = param.tintColor, onPress = param.onPress;
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime227.jsx)(NavbarBackButton2, {
+    return (0, import_jsx_runtime229.jsx)(NavbarBackButton2, {
       onPress,
       color: tintColor !== null && tintColor !== void 0 ? tintColor : adaptive2.grey900
     });
   }
   function NavbarBackButton2(param) {
     var onPress = param.onPress, color = param.color;
-    return (0, import_jsx_runtime227.jsx)(import_react_native167.TouchableOpacity, {
+    return (0, import_jsx_runtime229.jsx)(import_react_native169.TouchableOpacity, {
       hitSlop: {
         top: 10,
         right: 10,
@@ -45015,12 +46246,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       accessible: true,
       accessibilityLabel: "\uB4A4\uB85C\uAC00\uAE30",
       accessibilityRole: "button",
-      children: (0, import_jsx_runtime227.jsx)(import_react_native167.View, {
+      children: (0, import_jsx_runtime229.jsx)(import_react_native169.View, {
         style: {
           width: 24,
           height: 24
         },
-        children: (0, import_jsx_runtime227.jsx)(react_native_svg_exports.SvgXml, {
+        children: (0, import_jsx_runtime229.jsx)(react_native_svg_exports.SvgXml, {
           width: 24,
           height: 24,
           xml: BACK_BUTTON_XML2.replace(/fill="#[0-9a-fA-F]{6}"/g, 'fill="'.concat(color, '"')),
@@ -45033,23 +46264,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var ANDROID_BACK_BUTTON2 = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="line-icon">\n<path fill="#B0B8C1" fill-rule="evenodd" d="M20.966 10.8H6.93l5.451-5.451a1.2 1.2 0 10-1.697-1.697l-7.5 7.5c-.003.002-.004.006-.007.009a1.2 1.2 0 00-.252 1.298c.06.143.145.27.252.38l.007.01 7.5 7.5c.235.234.542.35.848.35a1.2 1.2 0 00.849-2.048L6.931 13.2h14.036a1.2 1.2 0 100-2.4"/>\n</svg>';
   var IOS_BACK_BUTTON2 = '<svg enable-background="new 0 0 24 24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\n<path d="m20.8 20.7c-.3 0-.6-.1-.8-.4l-7.5-7.5c-.5-.5-.5-1.2 0-1.7l7.5-7.5c.5-.5 1.2-.5 1.7 0s.5 1.2 0 1.7l-6.8 6.7 6.7 6.7c.5.5.5 1.2 0 1.7-.2.2-.5.3-.8.3z" fill="#b0b8c1"/>\n</svg>';
-  var BACK_BUTTON_XML2 = import_react_native167.Platform.select({
+  var BACK_BUTTON_XML2 = import_react_native169.Platform.select({
     android: ANDROID_BACK_BUTTON2,
     ios: IOS_BACK_BUTTON2,
     default: IOS_BACK_BUTTON2
   });
-  var BACK_BUTTON_MARGIN2 = import_react_native167.Platform.select({
+  var BACK_BUTTON_MARGIN2 = import_react_native169.Platform.select({
     android: 0,
     ios: -12,
     default: -12
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/Right.js
-  var import_jsx_runtime228 = __toESM(require_jsx_runtime());
-  var import_react198 = __toESM(require_react());
-  var import_react_native168 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime230 = __toESM(require_jsx_runtime());
+  var import_react199 = __toESM(require_react());
+  var import_react_native170 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/constants.js
+  init_define_import_meta_env();
   var MAX_FONT_SIZE = 20;
   var MAX_LINE_HEIGHT = fontSizeToLineHeightMap[MAX_FONT_SIZE];
   var IOS_LEFT_MARGIN = 10;
@@ -45059,19 +46292,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var ANDROID_DEFAULT_MARGIN = 16;
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/Right.js
-  var RightIconButton = /* @__PURE__ */ (0, import_react198.forwardRef)(function RightIconButton2(_param, ref) {
+  var RightIconButton = /* @__PURE__ */ (0, import_react199.forwardRef)(function RightIconButton2(_param, ref) {
     var name2 = _param.name, accessibilityLabel = _param.accessibilityLabel, type = _param.type, pressableProps = _object_without_properties(_param, [
       "name",
       "accessibilityLabel",
       "type"
     ]);
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime228.jsx)(import_react_native168.TouchableOpacity, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime230.jsx)(import_react_native170.TouchableOpacity, _object_spread_props(_object_spread({
       ref,
       style: styles52.common,
       hitSlop: HIT_SLOP
     }, pressableProps), {
-      children: (0, import_jsx_runtime228.jsx)(Icon_default, {
+      children: (0, import_jsx_runtime230.jsx)(Icon_default, {
         color: adaptive2.grey400,
         size: 24,
         name: name2,
@@ -45086,7 +46319,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
     var adaptive2 = useAdaptive();
     var typography = useTypographyTheme().typography;
-    var titleTextStyle = (0, import_react198.useMemo)(function() {
+    var titleTextStyle = (0, import_react199.useMemo)(function() {
       return {
         fontSize: Math.min(typography[TEXT_BUTTON_TYPOGRAPHY].fontSize, MAX_FONT_SIZE),
         lineHeight: Math.min(typography[TEXT_BUTTON_TYPOGRAPHY].lineHeight, MAX_LINE_HEIGHT)
@@ -45094,14 +46327,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       typography
     ]);
-    return (0, import_jsx_runtime228.jsx)(import_react_native168.TouchableOpacity, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime230.jsx)(import_react_native170.TouchableOpacity, _object_spread_props(_object_spread({
       style: [
         styles52.common,
         styles52.textButton
       ],
       hitSlop: HIT_SLOP
     }, props), {
-      children: (0, import_jsx_runtime228.jsx)(Txt_default, {
+      children: (0, import_jsx_runtime230.jsx)(Txt_default, {
         typography: TEXT_BUTTON_TYPOGRAPHY,
         color: adaptive2.grey800,
         fontWeight: "semiBold",
@@ -45111,7 +46344,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }));
   }
   var TEXT_BUTTON_TYPOGRAPHY = "st10";
-  var styles52 = import_react_native168.StyleSheet.create({
+  var styles52 = import_react_native170.StyleSheet.create({
     common: {
       marginLeft: 24
     },
@@ -45125,9 +46358,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/Title.js
-  var import_jsx_runtime229 = __toESM(require_jsx_runtime());
-  var import_react199 = __toESM(require_react());
-  var import_react_native169 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime231 = __toESM(require_jsx_runtime());
+  var import_react200 = __toESM(require_react());
+  var import_react_native171 = __toESM(require_react_native());
   function TitleTxt(_param) {
     var color = _param.color, _param_fontWeight = _param.fontWeight, fontWeight = _param_fontWeight === void 0 ? "semiBold" : _param_fontWeight, _param_preventFontScalingA11y = _param.preventFontScalingA11y, preventFontScalingA11y = _param_preventFontScalingA11y === void 0 ? false : _param_preventFontScalingA11y, props = _object_without_properties(_param, [
       "color",
@@ -45136,7 +46370,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
     var adaptive2 = useAdaptive();
     var typography = useTypographyTheme().typography;
-    var titleTextStyle = (0, import_react199.useMemo)(function() {
+    var titleTextStyle = (0, import_react200.useMemo)(function() {
       var maxFontSize = preventFontScalingA11y ? defaultTypographyMap[TITLE_TYPOGRAPHY].fontSize : MAX_FONT_SIZE;
       var maxLineHeight = preventFontScalingA11y ? defaultTypographyMap[TITLE_TYPOGRAPHY].lineHeight : MAX_LINE_HEIGHT;
       return {
@@ -45147,7 +46381,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       preventFontScalingA11y,
       typography
     ]);
-    return (0, import_jsx_runtime229.jsx)(Txt_default, _object_spread({
+    return (0, import_jsx_runtime231.jsx)(Txt_default, _object_spread({
       typography: TITLE_TYPOGRAPHY,
       color: color !== null && color !== void 0 ? color : adaptive2.grey900,
       fontWeight,
@@ -45163,7 +46397,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
     var adaptive2 = useAdaptive();
     var typography = useTypographyTheme().typography;
-    var titleTextStyle = (0, import_react199.useMemo)(function() {
+    var titleTextStyle = (0, import_react200.useMemo)(function() {
       var maxFontSize = preventFontScalingA11y ? defaultTypographyMap[SUBTITLE_TYPOGRAPHY].fontSize : MAX_FONT_SIZE;
       var maxLineHeight = preventFontScalingA11y ? defaultTypographyMap[SUBTITLE_TYPOGRAPHY].lineHeight : MAX_LINE_HEIGHT;
       return {
@@ -45174,7 +46408,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       preventFontScalingA11y,
       typography
     ]);
-    return (0, import_jsx_runtime229.jsx)(Txt_default, _object_spread({
+    return (0, import_jsx_runtime231.jsx)(Txt_default, _object_spread({
       typography: SUBTITLE_TYPOGRAPHY,
       color: color !== null && color !== void 0 ? color : adaptive2.grey600,
       fontWeight: "regular",
@@ -45185,7 +46419,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function Title(param) {
     var upper = param.upper, lower = param.lower;
-    return (0, import_jsx_runtime229.jsxs)(import_react_native169.View, {
+    return (0, import_jsx_runtime231.jsxs)(import_react_native171.View, {
       style: styles53.title,
       children: [
         upper,
@@ -45195,22 +46429,24 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   var TITLE_TYPOGRAPHY = "t5";
   var SUBTITLE_TYPOGRAPHY = "t7";
-  var styles53 = import_react_native169.StyleSheet.create({
+  var styles53 = import_react_native171.StyleSheet.create({
     title: {
       alignItems: "center"
     }
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/HeaderLeft.js
-  var import_jsx_runtime230 = __toESM(require_jsx_runtime());
-  var import_react_native171 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime232 = __toESM(require_jsx_runtime());
+  var import_react_native173 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/byPlatform.js
-  var import_react_native170 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_react_native172 = __toESM(require_react_native());
   function byPlatform(_param) {
     var props = _extends({}, _object_destructuring_empty(_param));
     var _props_Platform_OS;
-    return ((_props_Platform_OS = props[import_react_native170.Platform.OS]) !== null && _props_Platform_OS !== void 0 ? _props_Platform_OS : props.fallback)();
+    return ((_props_Platform_OS = props[import_react_native172.Platform.OS]) !== null && _props_Platform_OS !== void 0 ? _props_Platform_OS : props.fallback)();
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/HeaderLeft.js
@@ -45218,7 +46454,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var _param_marginLeft = _param.marginLeft, marginLeft = _param_marginLeft === void 0 ? IOS_LEFT_MARGIN : _param_marginLeft, props = _object_without_properties(_param, [
       "marginLeft"
     ]);
-    return (0, import_jsx_runtime230.jsx)(import_react_native171.View, _object_spread({
+    return (0, import_jsx_runtime232.jsx)(import_react_native173.View, _object_spread({
       style: [
         {
           marginLeft: -IOS_DEFAULT_MARGIN + marginLeft
@@ -45231,7 +46467,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var _param_marginLeft = _param.marginLeft, marginLeft = _param_marginLeft === void 0 ? ANDROID_LEFT_MARGIN : _param_marginLeft, props = _object_without_properties(_param, [
       "marginLeft"
     ]);
-    return (0, import_jsx_runtime230.jsx)(import_react_native171.View, _object_spread({
+    return (0, import_jsx_runtime232.jsx)(import_react_native173.View, _object_spread({
       style: [
         {
           marginLeft: -ANDROID_DEFAULT_MARGIN + marginLeft
@@ -45243,17 +46479,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function HeaderLeft(props) {
     return byPlatform({
       ios: function() {
-        return (0, import_jsx_runtime230.jsx)(IOSHeaderLeft, _object_spread({}, props));
+        return (0, import_jsx_runtime232.jsx)(IOSHeaderLeft, _object_spread({}, props));
       },
       android: function() {
-        return (0, import_jsx_runtime230.jsx)(AndroidHeaderLeft, _object_spread({}, props));
+        return (0, import_jsx_runtime232.jsx)(AndroidHeaderLeft, _object_spread({}, props));
       },
       fallback: function() {
-        return (0, import_jsx_runtime230.jsx)(IOSHeaderLeft, _object_spread({}, props));
+        return (0, import_jsx_runtime232.jsx)(IOSHeaderLeft, _object_spread({}, props));
       }
     });
   }
-  var styles54 = import_react_native171.StyleSheet.create({
+  var styles54 = import_react_native173.StyleSheet.create({
     ios: {},
     android: {
       marginRight: 32
@@ -45261,32 +46497,33 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/HeaderRight.js
-  var import_jsx_runtime231 = __toESM(require_jsx_runtime());
-  var import_react_native172 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime233 = __toESM(require_jsx_runtime());
+  var import_react_native174 = __toESM(require_react_native());
   function IOSHeaderRight(props) {
-    return (0, import_jsx_runtime231.jsx)(import_react_native172.View, _object_spread({
+    return (0, import_jsx_runtime233.jsx)(import_react_native174.View, _object_spread({
       style: styles55.ios
     }, props));
   }
   function AndroidHeaderRight(props) {
-    return (0, import_jsx_runtime231.jsx)(import_react_native172.View, _object_spread({
+    return (0, import_jsx_runtime233.jsx)(import_react_native174.View, _object_spread({
       style: styles55.android
     }, props));
   }
   function HeaderRight(props) {
     return byPlatform({
       ios: function() {
-        return (0, import_jsx_runtime231.jsx)(IOSHeaderRight, _object_spread({}, props));
+        return (0, import_jsx_runtime233.jsx)(IOSHeaderRight, _object_spread({}, props));
       },
       android: function() {
-        return (0, import_jsx_runtime231.jsx)(AndroidHeaderRight, _object_spread({}, props));
+        return (0, import_jsx_runtime233.jsx)(AndroidHeaderRight, _object_spread({}, props));
       },
       fallback: function() {
-        return (0, import_jsx_runtime231.jsx)(IOSHeaderRight, _object_spread({}, props));
+        return (0, import_jsx_runtime233.jsx)(IOSHeaderRight, _object_spread({}, props));
       }
     });
   }
-  var styles55 = import_react_native172.StyleSheet.create({
+  var styles55 = import_react_native174.StyleSheet.create({
     ios: {
       marginRight: -IOS_DEFAULT_MARGIN + RIGHT_MARGIN,
       flexDirection: "row"
@@ -45298,14 +46535,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/HeaderTitle.js
-  var import_jsx_runtime232 = __toESM(require_jsx_runtime());
-  var import_react_native173 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime234 = __toESM(require_jsx_runtime());
+  var import_react_native175 = __toESM(require_react_native());
   function IOSHeaderTitle(_param) {
     var style = _param.style, _ = _param.withHeaderLeft, props = _object_without_properties(_param, [
       "style",
       "withHeaderLeft"
     ]);
-    return (0, import_jsx_runtime232.jsx)(import_react_native173.View, _object_spread({
+    return (0, import_jsx_runtime234.jsx)(import_react_native175.View, _object_spread({
       style
     }, props));
   }
@@ -45314,7 +46552,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "style",
       "withHeaderLeft"
     ]);
-    return (0, import_jsx_runtime232.jsx)(import_react_native173.View, _object_spread({
+    return (0, import_jsx_runtime234.jsx)(import_react_native175.View, _object_spread({
       style: [
         {
           marginLeft: withHeaderLeft ? 0 : -ANDROID_DEFAULT_MARGIN + 24
@@ -45326,31 +46564,32 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function HeaderTitle(props) {
     return byPlatform({
       ios: function() {
-        return (0, import_jsx_runtime232.jsx)(IOSHeaderTitle, _object_spread({}, props));
+        return (0, import_jsx_runtime234.jsx)(IOSHeaderTitle, _object_spread({}, props));
       },
       android: function() {
-        return (0, import_jsx_runtime232.jsx)(AndroidHeaderTitle, _object_spread({}, props));
+        return (0, import_jsx_runtime234.jsx)(AndroidHeaderTitle, _object_spread({}, props));
       },
       fallback: function() {
-        return (0, import_jsx_runtime232.jsx)(IOSHeaderTitle, _object_spread({}, props));
+        return (0, import_jsx_runtime234.jsx)(IOSHeaderTitle, _object_spread({}, props));
       }
     });
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/components/navbar/ReactNavigationHelper/CloseButton.js
-  var import_jsx_runtime233 = __toESM(require_jsx_runtime());
-  var import_react_native174 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime235 = __toESM(require_jsx_runtime());
+  var import_react_native176 = __toESM(require_react_native());
   function CloseButton(param) {
     var tintColor = param.tintColor, onPress = param.onPress;
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime233.jsx)(NavbarCloseButton, {
+    return (0, import_jsx_runtime235.jsx)(NavbarCloseButton, {
       onPress,
       color: tintColor !== null && tintColor !== void 0 ? tintColor : adaptive2.grey900
     });
   }
   function NavbarCloseButton(param) {
     var onPress = param.onPress, color = param.color;
-    return (0, import_jsx_runtime233.jsx)(import_react_native174.TouchableOpacity, {
+    return (0, import_jsx_runtime235.jsx)(import_react_native176.TouchableOpacity, {
       hitSlop: {
         top: 10,
         right: 10,
@@ -45365,12 +46604,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       accessible: true,
       accessibilityLabel: "\uB2EB\uAE30",
       accessibilityRole: "button",
-      children: (0, import_jsx_runtime233.jsx)(import_react_native174.View, {
+      children: (0, import_jsx_runtime235.jsx)(import_react_native176.View, {
         style: {
           width: 24,
           height: 24
         },
-        children: (0, import_jsx_runtime233.jsx)(react_native_svg_exports.SvgXml, {
+        children: (0, import_jsx_runtime235.jsx)(react_native_svg_exports.SvgXml, {
           width: 24,
           height: 24,
           xml: CLOSE_ICON.replace(/fill="#[0-9a-fA-F]{6}"/g, 'fill="'.concat(color, '"'))
@@ -45404,15 +46643,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return import_react_native_webview.default;
     }
   });
+  init_define_import_meta_env();
   var import_react_native_webview = __toESM(require_react_native_webview());
   __reExport(react_native_webview_exports, __toESM(require_react_native_webview()));
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/navigation/Navigation.js
-  var import_jsx_runtime234 = __toESM(require_jsx_runtime());
-  var import_react200 = __toESM(require_react());
-  var import_react_native175 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime236 = __toESM(require_jsx_runtime());
+  var import_react201 = __toESM(require_react());
+  var import_react_native177 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/partner-navigation/event.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   var NavigationAccessoryEvent = /* @__PURE__ */ function(BedrockEventDefinition3) {
@@ -45447,7 +46689,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/navigation/Navigation.js
   function hasValidChild(children) {
-    return import_react200.Children.toArray(children).length > 0;
+    return import_react201.Children.toArray(children).length > 0;
   }
   function Navigation(param) {
     var children = param.children;
@@ -45455,7 +46697,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var adaptive2 = useAdaptive();
     var colorPreference = useColorPreference().colorPreference;
     var isValidChild = hasValidChild(children);
-    (0, import_react200.useLayoutEffect)(function() {
+    (0, import_react201.useLayoutEffect)(function() {
       var clearHeaderStyle = function clearHeaderStyle2() {
         navigation.setOptions({
           headerStyle: null,
@@ -45482,14 +46724,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       isValidChild,
       navigation
     ]);
-    return (0, import_jsx_runtime234.jsx)(import_jsx_runtime234.Fragment, {
+    return (0, import_jsx_runtime236.jsx)(import_jsx_runtime236.Fragment, {
       children
     });
   }
   function NavigationRight(param) {
     var children = param.children, _param_visible = param.visible, visible = _param_visible === void 0 ? true : _param_visible;
     var navigation = (0, native_exports.useNavigation)();
-    (0, import_react200.useLayoutEffect)(function() {
+    (0, import_react201.useLayoutEffect)(function() {
       if (!hasValidChild(children) || !visible) {
         navigation.setOptions({
           headerRight: null
@@ -45498,7 +46740,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
       navigation.setOptions({
         headerRight: function() {
-          return (0, import_jsx_runtime234.jsx)(import_react_native175.View, {
+          return (0, import_jsx_runtime236.jsx)(import_react_native177.View, {
             style: {
               marginRight: 4,
               flexDirection: "row",
@@ -45517,11 +46759,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     ]);
     return null;
   }
-  var DEVICE_WIDTH = import_react_native175.Dimensions.get("window").width;
+  var DEVICE_WIDTH = import_react_native177.Dimensions.get("window").width;
   function NavigationCenter(param) {
     var children = param.children, _param_visible = param.visible, visible = _param_visible === void 0 ? true : _param_visible, _param_horizontalSafeMargin = param.horizontalSafeMargin, horizontalSafeMargin = _param_horizontalSafeMargin === void 0 ? 100 : _param_horizontalSafeMargin;
     var navigation = (0, native_exports.useNavigation)();
-    (0, import_react200.useLayoutEffect)(function() {
+    (0, import_react201.useLayoutEffect)(function() {
       if (!hasValidChild(children) || !visible) {
         navigation.setOptions({
           headerBackVisible: false,
@@ -45538,7 +46780,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
          */
         headerBackVisible: false,
         headerTitle: function() {
-          return (0, import_jsx_runtime234.jsx)(import_react_native175.View, {
+          return (0, import_jsx_runtime236.jsx)(import_react_native177.View, {
             style: [
               {
                 maxWidth: DEVICE_WIDTH - horizontalSafeMargin,
@@ -45569,12 +46811,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       radius: 5
     };
     if (props.name !== void 0) {
-      return (0, import_jsx_runtime234.jsx)(Asset2.Icon, {
+      return (0, import_jsx_runtime236.jsx)(Asset2.Icon, {
         name: props.name,
         frameShape: frameShape3
       });
     }
-    return (0, import_jsx_runtime234.jsx)(import_react_native175.Image, {
+    return (0, import_jsx_runtime236.jsx)(import_react_native177.Image, {
       source: props.source,
       style: {
         overflow: "hidden",
@@ -45589,9 +46831,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "style"
     ]);
     var adaptive2 = useAdaptive();
-    return (0, import_jsx_runtime234.jsx)(PreventFontScaling, {
+    return (0, import_jsx_runtime236.jsx)(PreventFontScaling, {
       limit: 100,
-      children: (0, import_jsx_runtime234.jsx)(Txt_default, _object_spread({
+      children: (0, import_jsx_runtime236.jsx)(Txt_default, _object_spread({
         typography: "st10",
         fontWeight: "semibold",
         color: adaptive2.grey900,
@@ -45600,8 +46842,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }, restProps))
     });
   }
-  var NavigationIconButton = /* @__PURE__ */ (0, import_react200.forwardRef)(function NavigationIconButton2(props, ref) {
-    return (0, import_jsx_runtime234.jsx)(ReactNavigationNavbar.RightIconButton, _object_spread({
+  var NavigationIconButton = /* @__PURE__ */ (0, import_react201.forwardRef)(function NavigationIconButton2(props, ref) {
+    return (0, import_jsx_runtime236.jsx)(ReactNavigationNavbar.RightIconButton, _object_spread({
       ref
     }, props));
   });
@@ -45610,7 +46852,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var colorPreference = useColorPreference().colorPreference;
     var adaptive2 = useAdaptive();
     var tintColor = colorPreference === "light" ? adaptive2.greyOpacity400 : adaptive2.greyOpacity500;
-    return (0, import_jsx_runtime234.jsx)(ReactNavigationNavbar.CloseButton, {
+    return (0, import_jsx_runtime236.jsx)(ReactNavigationNavbar.CloseButton, {
       tintColor,
       onPress: function() {
         onPress === null || onPress === void 0 ? void 0 : onPress();
@@ -45626,13 +46868,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return null;
       }
       if (icon.name !== void 0) {
-        return (0, import_jsx_runtime234.jsx)(Icon_default, {
+        return (0, import_jsx_runtime236.jsx)(Icon_default, {
           name: icon.name,
           size: 20
         });
       }
       if (icon.source !== void 0) {
-        return (0, import_jsx_runtime234.jsx)(Asset2.Image, _object_spread_props(_object_spread({}, icon), {
+        return (0, import_jsx_runtime236.jsx)(Asset2.Image, _object_spread_props(_object_spread({}, icon), {
           frameShape: {
             width: 20,
             height: 20
@@ -45641,7 +46883,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
       return null;
     }();
-    return (0, import_jsx_runtime234.jsx)(PressableEffect, {
+    return (0, import_jsx_runtime236.jsx)(PressableEffect, {
       onPress: function(e4) {
         tdsEvent.emit("navigationAccessoryEvent", {
           id
@@ -45649,7 +46891,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         onPress === null || onPress === void 0 ? void 0 : onPress(e4);
       },
       disabled,
-      children: (0, import_jsx_runtime234.jsxs)(import_react_native175.View, {
+      children: (0, import_jsx_runtime236.jsxs)(import_react_native177.View, {
         style: [
           {
             flexDirection: "row",
@@ -45662,7 +46904,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           }
         ],
         children: [
-          (0, import_jsx_runtime234.jsx)(Txt_default, {
+          (0, import_jsx_runtime236.jsx)(Txt_default, {
             typography: "t5",
             color: adaptive2.grey700,
             children: title
@@ -45674,13 +46916,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function NavigationDropdownMenu(param) {
     var items = param.items;
-    return (0, import_jsx_runtime234.jsx)(Trigger, {
+    return (0, import_jsx_runtime236.jsx)(Trigger, {
       strategy: "fixed",
       placement: "bottom-end",
       defaultOpen: false,
-      dropdown: (0, import_jsx_runtime234.jsx)(Dropdown, {
+      dropdown: (0, import_jsx_runtime236.jsx)(Dropdown, {
         children: items === null || items === void 0 ? void 0 : items.map(function(item) {
-          return (0, import_jsx_runtime234.jsx)(DropdownItem2, {
+          return (0, import_jsx_runtime236.jsx)(DropdownItem2, {
             id: item.id,
             title: item.title,
             icon: item.icon,
@@ -45689,14 +46931,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           }, item.id);
         })
       }),
-      children: (0, import_jsx_runtime234.jsx)(ReactNavigationNavbar.RightIconButton, {
+      children: (0, import_jsx_runtime236.jsx)(ReactNavigationNavbar.RightIconButton, {
         name: "icon-navigation-menu-mono"
       })
     });
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/partner-navigation/PartnerNavigation.js
-  var import_jsx_runtime235 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime237 = __toESM(require_jsx_runtime());
   function PartnerNavigation(param) {
     var title = param.title, icon = param.icon, _param_rightButtons = param.rightButtons, rightButtons = _param_rightButtons === void 0 ? [] : _param_rightButtons, children = param.children;
     var renderRightButtons = function() {
@@ -45706,7 +46949,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         case 1: {
           var _rightButtons_;
           var _ref = (_rightButtons_ = rightButtons[0]) !== null && _rightButtons_ !== void 0 ? _rightButtons_ : {}, title2 = _ref.title, icon2 = _ref.icon, onPress = _ref.onPress, disabled = _ref.disabled, id = _ref.id;
-          return (0, import_jsx_runtime235.jsx)(NavigationIconButton, _object_spread_props(_object_spread({}, icon2), {
+          return (0, import_jsx_runtime237.jsx)(NavigationIconButton, _object_spread_props(_object_spread({}, icon2), {
             accessibilityLabel: title2,
             onPress: function() {
               onPress === null || onPress === void 0 ? void 0 : onPress();
@@ -45718,27 +46961,27 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           }));
         }
         default:
-          return (0, import_jsx_runtime235.jsx)(NavigationDropdownMenu, {
+          return (0, import_jsx_runtime237.jsx)(NavigationDropdownMenu, {
             items: rightButtons
           });
       }
     };
     var navigationTitleHorizontalSafeMargin = rightButtons.length > 0 ? 240 : 100;
-    return (0, import_jsx_runtime235.jsxs)(Navigation, {
+    return (0, import_jsx_runtime237.jsxs)(Navigation, {
       children: [
-        (0, import_jsx_runtime235.jsxs)(NavigationCenter, {
+        (0, import_jsx_runtime237.jsxs)(NavigationCenter, {
           horizontalSafeMargin: navigationTitleHorizontalSafeMargin,
           children: [
-            icon != null && (0, import_jsx_runtime235.jsx)(NavigationTitleIcon, _object_spread({}, icon)),
-            title != null && (0, import_jsx_runtime235.jsx)(NavigationTitleText, {
+            icon != null && (0, import_jsx_runtime237.jsx)(NavigationTitleIcon, _object_spread({}, icon)),
+            title != null && (0, import_jsx_runtime237.jsx)(NavigationTitleText, {
               children: title
             })
           ]
         }),
-        (0, import_jsx_runtime235.jsxs)(NavigationRight, {
+        (0, import_jsx_runtime237.jsxs)(NavigationRight, {
           children: [
             renderRightButtons(),
-            (0, import_jsx_runtime235.jsx)(NavigationCloseButton, {})
+            (0, import_jsx_runtime237.jsx)(NavigationCloseButton, {})
           ]
         }),
         children
@@ -45747,11 +46990,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/Bridge.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime238 = __toESM(require_jsx_runtime());
+  var import_jsx_runtime240 = __toESM(require_jsx_runtime());
 
   // node_modules/es-hangul/dist/index.mjs
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
   var _JASO_HANGUL_NFD = _to_consumable_array("\uAC01\uD7A3".normalize("NFD")).map(function(char) {
@@ -45979,25 +47224,26 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/Bridge.js
-  var import_react202 = __toESM(require_react());
-  var import_react_native178 = __toESM(require_react_native());
+  var import_react203 = __toESM(require_react());
+  var import_react_native180 = __toESM(require_react_native());
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/components/Icon.js
-  var import_jsx_runtime236 = __toESM(require_jsx_runtime());
-  var import_react201 = __toESM(require_react());
-  var import_react_native176 = __toESM(require_react_native());
-  var Icon6 = /* @__PURE__ */ (0, import_react201.forwardRef)(function Icon7(_param, ref) {
+  init_define_import_meta_env();
+  var import_jsx_runtime238 = __toESM(require_jsx_runtime());
+  var import_react202 = __toESM(require_react());
+  var import_react_native178 = __toESM(require_react_native());
+  var Icon6 = /* @__PURE__ */ (0, import_react202.forwardRef)(function Icon7(_param, ref) {
     var name2 = _param.name, source = _param.source, restProps = _object_without_properties(_param, [
       "name",
       "source"
     ]);
-    var content = name2 !== void 0 ? (0, import_jsx_runtime236.jsx)(Icon_default, {
+    var content = name2 !== void 0 ? (0, import_jsx_runtime238.jsx)(Icon_default, {
       name: name2,
       style: {
         width: "100%",
         aspectRatio: 1
       }
-    }) : (0, import_jsx_runtime236.jsx)(Image, {
+    }) : (0, import_jsx_runtime238.jsx)(Image, {
       source,
       style: {
         width: "100%",
@@ -46006,7 +47252,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       resizeMode: "contain",
       accessibilityRole: "image"
     });
-    return (0, import_jsx_runtime236.jsx)(import_react_native176.View, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime238.jsx)(import_react_native178.View, _object_spread_props(_object_spread({
       ref
     }, restProps), {
       children: content
@@ -46014,30 +47260,32 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/components/NestedShadow.js
-  var import_jsx_runtime237 = __toESM(require_jsx_runtime());
-  var import_react_native177 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime239 = __toESM(require_jsx_runtime());
+  var import_react_native179 = __toESM(require_react_native());
   function NestedShadow(_param) {
     var shadows = _param.shadows, children = _param.children, restProps = _object_without_properties(_param, [
       "shadows",
       "children"
     ]);
     if (shadows.length === 0) {
-      return (0, import_jsx_runtime237.jsx)(import_jsx_runtime237.Fragment, {
+      return (0, import_jsx_runtime239.jsx)(import_jsx_runtime239.Fragment, {
         children
       });
     }
     var nestedView = shadows.reduceRight(function(acc, shadow) {
-      return (0, import_jsx_runtime237.jsx)(import_react_native177.View, {
+      return (0, import_jsx_runtime239.jsx)(import_react_native179.View, {
         style: generateShadowStyle(shadow),
         children: acc
       });
     }, children);
-    return (0, import_jsx_runtime237.jsx)(import_react_native177.View, _object_spread_props(_object_spread({}, restProps), {
+    return (0, import_jsx_runtime239.jsx)(import_react_native179.View, _object_spread_props(_object_spread({}, restProps), {
       children: nestedView
     }));
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/utils/getCenterOffset.js
+  init_define_import_meta_env();
   function getCenterOffset(layout) {
     return {
       x: layout.x + layout.width / 2,
@@ -46064,9 +47312,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var isBasicColorMode = colorMode === "basic";
     var onClose = usePreservedCallback3(_onClose !== null && _onClose !== void 0 ? _onClose : noop4);
     var onExited = usePreservedCallback3(_onExited !== null && _onExited !== void 0 ? _onExited : noop4);
-    var _useState = _sliced_to_array((0, import_react202.useState)(false), 2), isPressable = _useState[0], setIsPressable = _useState[1];
-    var timerRef = (0, import_react202.useRef)(null);
-    var handleDelayedClose = (0, import_react202.useCallback)(function() {
+    var _useState = _sliced_to_array((0, import_react203.useState)(false), 2), isPressable = _useState[0], setIsPressable = _useState[1];
+    var timerRef = (0, import_react203.useRef)(null);
+    var handleDelayedClose = (0, import_react203.useCallback)(function() {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
@@ -46077,14 +47325,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, [
       onClose
     ]);
-    (0, import_react202.useEffect)(function() {
+    (0, import_react203.useEffect)(function() {
       return function() {
         if (timerRef.current) {
           clearTimeout(timerRef.current);
         }
       };
     }, []);
-    (0, import_react202.useEffect)(function() {
+    (0, import_react203.useEffect)(function() {
       var timer = setTimeout(function() {
         setIsPressable(true);
       }, BRIDGE_TOUCHABLE_DELAY);
@@ -46097,7 +47345,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       small: 375
     };
     var animation = useBridgeAnimation();
-    (0, import_react202.useEffect)(function() {
+    (0, import_react203.useEffect)(function() {
       if (open) {
         animation.controller.open().start();
         return function() {
@@ -46145,16 +47393,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       ];
     }();
-    var _useState1 = _sliced_to_array((0, import_react202.useState)(null), 2), contentCenterOffset = _useState1[0], setContentCenterOffset = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react202.useState)(null), 2), backgroundGroupCenterOffset = _useState2[0], setBackgroundGroupCenterOffset = _useState2[1];
-    var _useState3 = _sliced_to_array((0, import_react202.useState)(0), 2), backgroundGroupYOffset = _useState3[0], setBackgroundGroupYOffset = _useState3[1];
-    var handleContentLayout = (0, import_react202.useCallback)(function(event) {
+    var _useState1 = _sliced_to_array((0, import_react203.useState)(null), 2), contentCenterOffset = _useState1[0], setContentCenterOffset = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react203.useState)(null), 2), backgroundGroupCenterOffset = _useState2[0], setBackgroundGroupCenterOffset = _useState2[1];
+    var _useState3 = _sliced_to_array((0, import_react203.useState)(0), 2), backgroundGroupYOffset = _useState3[0], setBackgroundGroupYOffset = _useState3[1];
+    var handleContentLayout = (0, import_react203.useCallback)(function(event) {
       setContentCenterOffset(getCenterOffset(event.nativeEvent.layout));
     }, []);
-    var handleBackgroundGroupLayout = (0, import_react202.useCallback)(function(event) {
+    var handleBackgroundGroupLayout = (0, import_react203.useCallback)(function(event) {
       setBackgroundGroupCenterOffset(getCenterOffset(event.nativeEvent.layout));
     }, []);
-    (0, import_react202.useLayoutEffect)(function() {
+    (0, import_react203.useLayoutEffect)(function() {
       if (contentCenterOffset === null || backgroundGroupCenterOffset === null) {
         return;
       }
@@ -46163,7 +47411,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       backgroundGroupCenterOffset,
       contentCenterOffset
     ]);
-    return (0, import_jsx_runtime238.jsxs)(import_react_native178.Pressable, _object_spread_props(_object_spread({
+    return (0, import_jsx_runtime240.jsxs)(import_react_native180.Pressable, _object_spread_props(_object_spread({
       style: [
         styles56.fullCover,
         {
@@ -46175,18 +47423,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       onPress: handleDelayedClose
     }, restProps), {
       children: [
-        (0, import_jsx_runtime238.jsx)(import_react_native178.View, {
+        (0, import_jsx_runtime240.jsx)(import_react_native180.View, {
           style: {
             flex: 1,
             //상단 네비 거리
-            paddingTop: import_react_native178.Platform.select({
+            paddingTop: import_react_native180.Platform.select({
               ios: 103,
               android: 56,
               default: 56
             }),
             zIndex: 1
           },
-          children: (0, import_jsx_runtime238.jsxs)(Animated15.View, {
+          children: (0, import_jsx_runtime240.jsxs)(Animated15.View, {
             style: [
               {
                 flexDirection: "column",
@@ -46197,7 +47445,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ],
             onLayout: handleContentLayout,
             children: [
-              (0, import_jsx_runtime238.jsx)(NestedShadow, {
+              (0, import_jsx_runtime240.jsx)(NestedShadow, {
                 shadows: isBasicColorMode ? [
                   {
                     offset: {
@@ -46227,14 +47475,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     color: token.bridge.contentLogoShadowColor
                   }
                 ] : [],
-                children: (0, import_jsx_runtime238.jsx)(AnimatedIcon, _object_spread_props(_object_spread({}, icon), {
+                children: (0, import_jsx_runtime240.jsx)(AnimatedIcon, _object_spread_props(_object_spread({}, icon), {
                   style: [
                     styles56.iconBorder,
                     animation.style.contentLogo
                   ]
                 }))
               }),
-              (0, import_jsx_runtime238.jsx)(AnimatedText, {
+              (0, import_jsx_runtime240.jsx)(AnimatedText, {
                 style: [
                   {
                     textAlign: "center"
@@ -46243,7 +47491,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 ],
                 children: title.map(function(param, index) {
                   var type = param.type, text = param.text;
-                  return (0, import_jsx_runtime238.jsx)(Txt_default, {
+                  return (0, import_jsx_runtime240.jsx)(Txt_default, {
                     typography: "t3",
                     fontWeight: "bold",
                     color: isBasicColorMode ? type === "strong" ? token.bridge.contentTitleStrongColor : token.bridge.contentTitleDefaultColor : type === "strong" ? token.bridge.contentTitleStrongInvertedColor : token.bridge.contentTitleDefaultInvertedColor,
@@ -46255,14 +47503,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]
           })
         }),
-        (0, import_jsx_runtime238.jsx)(import_react_native178.View, {
+        (0, import_jsx_runtime240.jsx)(import_react_native180.View, {
           style: [
             styles56.fullCover,
             {
               height: DeviceHeight
             }
           ],
-          children: (0, import_jsx_runtime238.jsxs)(Animated15.View, {
+          children: (0, import_jsx_runtime240.jsxs)(Animated15.View, {
             style: [
               styles56.center,
               styles56.fullCover,
@@ -46270,9 +47518,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ],
             onLayout: handleBackgroundGroupLayout,
             children: [
-              (0, import_jsx_runtime238.jsx)(import_react_native178.View, {
+              (0, import_jsx_runtime240.jsx)(import_react_native180.View, {
                 style: styles56.fullCover,
-                children: (0, import_jsx_runtime238.jsx)(LinearGradient2, {
+                children: (0, import_jsx_runtime240.jsx)(LinearGradient2, {
                   opacity: 1,
                   degree: 180,
                   colors: isBasicColorMode ? [
@@ -46295,7 +47543,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   easing: "linear"
                 })
               }),
-              (0, import_jsx_runtime238.jsx)(import_react_native178.View, {
+              (0, import_jsx_runtime240.jsx)(import_react_native180.View, {
                 style: {
                   width: GradientCircleDiameter.large + 135,
                   height: GradientCircleDiameter.large,
@@ -46306,7 +47554,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     }
                   ]
                 },
-                children: isBasicColorMode && (0, import_jsx_runtime238.jsxs)(Animated15.View, {
+                children: isBasicColorMode && (0, import_jsx_runtime240.jsxs)(Animated15.View, {
                   style: [
                     styles56.fullCover,
                     {
@@ -46315,7 +47563,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     animation.style.radialGradientGroup
                   ],
                   children: [
-                    (0, import_jsx_runtime238.jsx)(Animated15.View, {
+                    (0, import_jsx_runtime240.jsx)(Animated15.View, {
                       style: [
                         styles56.rightCover,
                         {
@@ -46324,7 +47572,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                         },
                         animation.style.rightRadialGradient
                       ],
-                      children: (0, import_jsx_runtime238.jsx)(RadialGradient, {
+                      children: (0, import_jsx_runtime240.jsx)(RadialGradient, {
                         colors: [
                           {
                             value: token.bridge.rightRadialGradientColor,
@@ -46337,7 +47585,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                         ]
                       })
                     }),
-                    (0, import_jsx_runtime238.jsx)(Animated15.View, {
+                    (0, import_jsx_runtime240.jsx)(Animated15.View, {
                       style: [
                         styles56.leftCover,
                         {
@@ -46346,7 +47594,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                         },
                         animation.style.leftRadialGradient
                       ],
-                      children: (0, import_jsx_runtime238.jsx)(RadialGradient, {
+                      children: (0, import_jsx_runtime240.jsx)(RadialGradient, {
                         colors: [
                           {
                             value: token.bridge.leftRadialGradientColor,
@@ -46368,7 +47616,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ]
     }));
   }
-  var styles56 = import_react_native178.StyleSheet.create({
+  var styles56 = import_react_native180.StyleSheet.create({
     fullCover: {
       position: "absolute",
       top: 0,
@@ -46403,7 +47651,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     iconBorder: {
       width: 56,
       height: 56,
-      borderWidth: import_react_native178.StyleSheet.hairlineWidth,
+      borderWidth: import_react_native180.StyleSheet.hairlineWidth,
       borderRadius: 14,
       borderColor: "rgba(25, 66, 142, 0.12)",
       borderStyle: "solid",
@@ -46412,21 +47660,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   var noop4 = function() {
   };
-  var DeviceHeight = import_react_native178.Dimensions.get("window").height;
+  var DeviceHeight = import_react_native180.Dimensions.get("window").height;
   var AnimatedIcon = Animated15.createAnimatedComponent(Icon6);
   var AnimatedText = Animated15.createAnimatedComponent(Txt_default);
   function useBridgeAnimation() {
-    var backgroundGroupOpacity = (0, import_react_native178.useAnimatedValue)(0);
-    var radialGradientGroupScale = (0, import_react_native178.useAnimatedValue)(0.5);
-    var leftRadialGradientOpacity = (0, import_react_native178.useAnimatedValue)(0);
-    var rightRadialGradientOpacity = (0, import_react_native178.useAnimatedValue)(0);
-    var contentLogoOpacity = (0, import_react_native178.useAnimatedValue)(0);
-    var contentLogoScale = (0, import_react_native178.useAnimatedValue)(0.6);
-    var contentLogoTranslateY = (0, import_react_native178.useAnimatedValue)(0);
-    var contentTitleTranslateY = (0, import_react_native178.useAnimatedValue)(0);
-    var contentTitleOpacity = (0, import_react_native178.useAnimatedValue)(0);
-    var contentTitleScale = (0, import_react_native178.useAnimatedValue)(0.7);
-    var openAnimation = (0, import_react202.useCallback)(function() {
+    var backgroundGroupOpacity = (0, import_react_native180.useAnimatedValue)(0);
+    var radialGradientGroupScale = (0, import_react_native180.useAnimatedValue)(0.5);
+    var leftRadialGradientOpacity = (0, import_react_native180.useAnimatedValue)(0);
+    var rightRadialGradientOpacity = (0, import_react_native180.useAnimatedValue)(0);
+    var contentLogoOpacity = (0, import_react_native180.useAnimatedValue)(0);
+    var contentLogoScale = (0, import_react_native180.useAnimatedValue)(0.6);
+    var contentLogoTranslateY = (0, import_react_native180.useAnimatedValue)(0);
+    var contentTitleTranslateY = (0, import_react_native180.useAnimatedValue)(0);
+    var contentTitleOpacity = (0, import_react_native180.useAnimatedValue)(0);
+    var contentTitleScale = (0, import_react_native180.useAnimatedValue)(0.7);
+    var openAnimation = (0, import_react203.useCallback)(function() {
       var _Easing, _Easing1, _Easing2;
       return Animated15.parallel([
         Animated15.spring(backgroundGroupOpacity, _object_spread_props(_object_spread({
@@ -46436,7 +47684,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })),
         Animated15.timing(radialGradientGroupScale, {
           toValue: 1,
-          easing: (_Easing = import_react_native178.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
+          easing: (_Easing = import_react_native180.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
           duration: 800,
           useNativeDriver: false
         }),
@@ -46453,7 +47701,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })),
         Animated15.timing(contentLogoOpacity, {
           toValue: 1,
-          easing: (_Easing1 = import_react_native178.Easing).bezier.apply(_Easing1, _to_consumable_array(bezier.out)),
+          easing: (_Easing1 = import_react_native180.Easing).bezier.apply(_Easing1, _to_consumable_array(bezier.out)),
           duration: 600,
           useNativeDriver: false,
           delay: 40
@@ -46467,7 +47715,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }),
         Animated15.timing(contentTitleOpacity, {
           toValue: 1,
-          easing: (_Easing2 = import_react_native178.Easing).bezier.apply(_Easing2, _to_consumable_array(bezier.out)),
+          easing: (_Easing2 = import_react_native180.Easing).bezier.apply(_Easing2, _to_consumable_array(bezier.out)),
           duration: 600,
           useNativeDriver: false,
           delay: 80
@@ -46490,24 +47738,24 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       contentTitleOpacity,
       contentTitleScale
     ]);
-    var closeAnimation = (0, import_react202.useCallback)(function() {
+    var closeAnimation = (0, import_react203.useCallback)(function() {
       var _Easing, _Easing1, _Easing2;
       return Animated15.parallel([
         Animated15.timing(contentLogoOpacity, {
           toValue: 0,
-          easing: (_Easing = import_react_native178.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
+          easing: (_Easing = import_react_native180.Easing).bezier.apply(_Easing, _to_consumable_array(bezier.out)),
           duration: 500,
           useNativeDriver: false
         }),
         Animated15.timing(contentTitleOpacity, {
           toValue: 0,
-          easing: (_Easing1 = import_react_native178.Easing).bezier.apply(_Easing1, _to_consumable_array(bezier.out)),
+          easing: (_Easing1 = import_react_native180.Easing).bezier.apply(_Easing1, _to_consumable_array(bezier.out)),
           duration: 500,
           useNativeDriver: false
         }),
         Animated15.timing(backgroundGroupOpacity, {
           toValue: 0,
-          easing: (_Easing2 = import_react_native178.Easing).bezier.apply(_Easing2, _to_consumable_array(bezier.out)),
+          easing: (_Easing2 = import_react_native180.Easing).bezier.apply(_Easing2, _to_consumable_array(bezier.out)),
           duration: 500,
           useNativeDriver: false
         })
@@ -46517,7 +47765,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       contentLogoOpacity,
       contentTitleOpacity
     ]);
-    return (0, import_react202.useMemo)(function() {
+    return (0, import_react203.useMemo)(function() {
       return {
         style: {
           backgroundGroup: {
@@ -46581,18 +47829,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@toss-design-system/react-native/dist/esm/extensions/bridge/useBridge.js
-  var import_jsx_runtime239 = __toESM(require_jsx_runtime());
-  var import_react203 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_jsx_runtime241 = __toESM(require_jsx_runtime());
+  var import_react204 = __toESM(require_react());
   function useBridge() {
     var _ref = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref_closeOnDestroy = _ref.closeOnDestroy, closeOnDestroy = _ref_closeOnDestroy === void 0 ? true : _ref_closeOnDestroy;
-    var timer = (0, import_react203.useRef)();
+    var timer = (0, import_react204.useRef)();
     var overlay = useOverlay();
-    var close = (0, import_react203.useCallback)(function() {
+    var close = (0, import_react204.useCallback)(function() {
       return overlay.close();
     }, [
       overlay
     ]);
-    var open = (0, import_react203.useCallback)(function(_param) {
+    var open = (0, import_react204.useCallback)(function(_param) {
       var onExited = _param.onExited, onClose = _param.onClose, color = _param.color, options = _object_without_properties(_param, [
         "onExited",
         "onClose",
@@ -46608,13 +47857,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             onClose === null || onClose === void 0 ? void 0 : onClose();
             close2();
           };
-          return (0, import_jsx_runtime239.jsx)(ThemeProvider, {
+          return (0, import_jsx_runtime241.jsx)(ThemeProvider, {
             token: {
               color: {
                 primary: color
               }
             },
-            children: (0, import_jsx_runtime239.jsx)(Bridge, _object_spread({
+            children: (0, import_jsx_runtime241.jsx)(Bridge, _object_spread({
               open: isOpen,
               onClose: handleClose,
               onExited: function() {
@@ -46633,7 +47882,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       close,
       overlay
     ]);
-    var controls = (0, import_react203.useMemo)(function() {
+    var controls = (0, import_react204.useMemo)(function() {
       return {
         close,
         open
@@ -46642,7 +47891,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       close,
       open
     ]);
-    (0, import_react203.useEffect)(function() {
+    (0, import_react204.useEffect)(function() {
       return function() {
         if (closeOnDestroy) {
           controls === null || controls === void 0 ? void 0 : controls.close();
@@ -46656,35 +47905,43 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@apps-in-toss/framework/dist/index.js
-  var import_react204 = __toESM(require_react(), 1);
-  var import_react_native180 = __toESM(require_react_native(), 1);
-  var import_react_native181 = __toESM(require_react_native(), 1);
-  var import_react_native182 = __toESM(require_react_native(), 1);
   var import_react205 = __toESM(require_react(), 1);
-  var import_react206 = __toESM(require_react(), 1);
+  var import_react_native182 = __toESM(require_react_native(), 1);
+  var import_react_native183 = __toESM(require_react_native(), 1);
   var import_react_native184 = __toESM(require_react_native(), 1);
-  var import_jsx_runtime240 = __toESM(require_jsx_runtime(), 1);
+  var import_react206 = __toESM(require_react(), 1);
   var import_react207 = __toESM(require_react(), 1);
-  var import_react_native185 = __toESM(require_react_native(), 1);
-  var import_react208 = __toESM(require_react(), 1);
   var import_react_native186 = __toESM(require_react_native(), 1);
-  var import_react209 = __toESM(require_react(), 1);
-  var import_react_native187 = __toESM(require_react_native(), 1);
-  var import_react210 = __toESM(require_react(), 1);
-  var import_jsx_runtime241 = __toESM(require_jsx_runtime(), 1);
-  var import_react_native188 = __toESM(require_react_native(), 1);
   var import_jsx_runtime242 = __toESM(require_jsx_runtime(), 1);
+  var import_react208 = __toESM(require_react(), 1);
+  var import_react_native187 = __toESM(require_react_native(), 1);
+
+  // node_modules/react-native-bedrock/src/async-bridges.ts
+  init_define_import_meta_env();
+
+  // node_modules/react-native-bedrock/src/constant-bridges.ts
+  init_define_import_meta_env();
+
+  // node_modules/@apps-in-toss/framework/dist/index.js
+  var import_react209 = __toESM(require_react(), 1);
+  var import_react_native188 = __toESM(require_react_native(), 1);
+  var import_react210 = __toESM(require_react(), 1);
   var import_react_native189 = __toESM(require_react_native(), 1);
-  var import_react_native190 = __toESM(require_react_native(), 1);
-  var import_react_native191 = __toESM(require_react_native(), 1);
-  var import_jsx_runtime243 = __toESM(require_jsx_runtime(), 1);
-  var import_react_native192 = __toESM(require_react_native(), 1);
-  var import_jsx_runtime244 = __toESM(require_jsx_runtime(), 1);
-  var import_jsx_runtime245 = __toESM(require_jsx_runtime(), 1);
   var import_react211 = __toESM(require_react(), 1);
+  var import_jsx_runtime243 = __toESM(require_jsx_runtime(), 1);
+  var import_react_native190 = __toESM(require_react_native(), 1);
+  var import_jsx_runtime244 = __toESM(require_jsx_runtime(), 1);
+  var import_react_native191 = __toESM(require_react_native(), 1);
+  var import_react_native192 = __toESM(require_react_native(), 1);
   var import_react_native193 = __toESM(require_react_native(), 1);
-  var import_react212 = __toESM(require_react(), 1);
+  var import_jsx_runtime245 = __toESM(require_jsx_runtime(), 1);
+  var import_react_native194 = __toESM(require_react_native(), 1);
   var import_jsx_runtime246 = __toESM(require_jsx_runtime(), 1);
+  var import_jsx_runtime247 = __toESM(require_jsx_runtime(), 1);
+  var import_react212 = __toESM(require_react(), 1);
+  var import_react_native195 = __toESM(require_react_native(), 1);
+  var import_react213 = __toESM(require_react(), 1);
+  var import_jsx_runtime248 = __toESM(require_jsx_runtime(), 1);
   var __defProp2 = Object.defineProperty;
   var __export2 = function(target, all3) {
     for (var name2 in all3) __defProp2(target, name2, {
@@ -46698,7 +47955,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return false ? "local" : (_global___appsInToss = window.__appsInToss) === null || _global___appsInToss === void 0 ? void 0 : _global___appsInToss.deploymentId;
     }
   };
-  var AppsInTossModuleInstance = import_react_native181.NativeModules.AppsInTossModule;
+  var AppsInTossModuleInstance = import_react_native183.NativeModules.AppsInTossModule;
   var AppsInTossModule = AppsInTossModuleInstance;
   function getOperationalEnvironment() {
     return AppsInTossModule.operationalEnvironment;
@@ -46794,7 +48051,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return true;
     }
     var currentVersion = AppsInTossModule.tossAppVersion;
-    var isIOS = import_react_native182.Platform.OS === "ios";
+    var isIOS = import_react_native184.Platform.OS === "ios";
     var minVersion = isIOS ? minVersions.ios : minVersions.android;
     if (minVersion === void 0) {
       return false;
@@ -46807,7 +48064,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }
     return compareVersions(currentVersion, minVersion) >= 0;
   }
-  var TossCoreModule = import_react_native180.NativeModules.TossCoreModule;
+  var TossCoreModule = import_react_native182.NativeModules.TossCoreModule;
   function tossCoreEventLog(params) {
     var supported = isMinVersionSupported({
       ios: "5.210.0",
@@ -46826,7 +48083,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
   }
   function useReferrer() {
-    return (0, import_react205.useMemo)(function() {
+    return (0, import_react206.useMemo)(function() {
       try {
         return new URL(getSchemeUri()).searchParams.get("referrer");
       } catch (e4) {
@@ -46845,7 +48102,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function EntryAppEvent() {
     var _useReferrer;
     var referrer2 = (_useReferrer = useReferrer()) !== null && _useReferrer !== void 0 ? _useReferrer : "";
-    (0, import_react204.useEffect)(function() {
+    (0, import_react205.useEffect)(function() {
       tossCoreEventLog({
         log_name: "appsintoss_app_visit::impression__enter_appsintoss",
         log_type: "info",
@@ -46865,7 +48122,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function SystemAppEvent(_param) {
     var initialProps = _extends({}, _object_destructuring_empty(_param));
-    (0, import_react204.useEffect)(function() {
+    (0, import_react205.useEffect)(function() {
       tossCoreEventLog({
         log_name: "AppsInTossInitialProps",
         log_type: "debug",
@@ -46954,7 +48211,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
     return _requestPermission.apply(this, arguments);
   }
-  var nativeEventEmitter2 = new import_react_native184.NativeEventEmitter(AppsInTossModuleInstance);
+  var nativeEventEmitter2 = new import_react_native186.NativeEventEmitter(AppsInTossModuleInstance);
   var UpdateLocationEvent = /* @__PURE__ */ function(BedrockEventDefinition22) {
     "use strict";
     _inherits(UpdateLocationEvent2, BedrockEventDefinition22);
@@ -47203,7 +48460,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function useAppsInTossBridge() {
     var controller = useBridge();
     var appsInTossGlobals2 = getAppsInTossGlobals();
-    (0, import_react206.useEffect)(function() {
+    (0, import_react207.useEffect)(function() {
       var commonProps = {
         serviceName: appsInTossGlobals2.brandDisplayName,
         icon: toIcon(appsInTossGlobals2.brandIcon),
@@ -47737,19 +48994,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var children = _param.children, initialProps = _object_without_properties(_param, [
       "children"
     ]);
-    return /* @__PURE__ */ (0, import_jsx_runtime240.jsxs)(import_jsx_runtime240.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime242.jsxs)(import_jsx_runtime242.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime240.jsx)(AppEvent.Entry, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime240.jsx)(AppEvent.System, _object_spread({}, initialProps)),
-        /* @__PURE__ */ (0, import_jsx_runtime240.jsx)(Container2, _object_spread_props(_object_spread({}, initialProps), {
-          children: /* @__PURE__ */ (0, import_jsx_runtime240.jsx)(TDSProvider, {
+        /* @__PURE__ */ (0, import_jsx_runtime242.jsx)(AppEvent.Entry, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime242.jsx)(AppEvent.System, _object_spread({}, initialProps)),
+        /* @__PURE__ */ (0, import_jsx_runtime242.jsx)(Container2, _object_spread_props(_object_spread({}, initialProps), {
+          children: /* @__PURE__ */ (0, import_jsx_runtime242.jsx)(TDSProvider, {
             colorPreference: "light",
             token: {
               color: {
                 primary: getAppsInTossGlobals().brandPrimaryColor
               }
             },
-            children: /* @__PURE__ */ (0, import_jsx_runtime240.jsx)(TDSContainer, _object_spread_props(_object_spread({}, initialProps), {
+            children: /* @__PURE__ */ (0, import_jsx_runtime242.jsx)(TDSContainer, _object_spread_props(_object_spread({}, initialProps), {
               children
             }))
           })
@@ -47760,7 +49017,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function TDSContainer(param) {
     var children = param.children;
     useAppsInTossBridge();
-    return /* @__PURE__ */ (0, import_jsx_runtime240.jsx)(import_jsx_runtime240.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime242.jsx)(import_jsx_runtime242.Fragment, {
       children
     });
   }
@@ -47990,7 +49247,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
   var RIGHT_MARGIN2 = 24;
   var IOS_DEFAULT_MARGIN2 = 20;
-  var styles57 = import_react_native190.StyleSheet.create({
+  var styles57 = import_react_native192.StyleSheet.create({
     ios: {
       marginRight: -IOS_DEFAULT_MARGIN2 + RIGHT_MARGIN2,
       flexDirection: "row"
@@ -48051,6 +49308,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     Area: Analytics.Area
   };
 
+  // require.context.ts
+  init_define_import_meta_env();
+
+  // require-context:./pages
+  init_define_import_meta_env();
+
   // pages/_404.tsx
   var __exports = {};
   __export(__exports, {
@@ -48058,17 +49321,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return NotFoundPage;
     }
   });
-  var import_jsx_runtime247 = __toESM(require_jsx_runtime());
-  var import_react213 = __toESM(require_react());
-  var import_react_native194 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime249 = __toESM(require_jsx_runtime());
+  var import_react214 = __toESM(require_react());
+  var import_react_native196 = __toESM(require_react_native());
   function NotFoundPage() {
-    return /* @__PURE__ */ (0, import_jsx_runtime247.jsx)(import_react_native194.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(import_react_native196.View, {
       style: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center"
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime247.jsx)(import_react_native194.Text, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(import_react_native196.Text, {
         children: "404 Not Found"
       })
     });
@@ -48081,21 +49345,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route2;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime251 = __toESM(require_jsx_runtime());
-  var import_react216 = __toESM(require_react());
-  var import_react_native200 = __toESM(require_react_native());
+  var import_jsx_runtime253 = __toESM(require_jsx_runtime());
+  var import_react217 = __toESM(require_react());
+  var import_react_native202 = __toESM(require_react_native());
 
   // node_modules/react-native-google-places-autocomplete/GooglePlacesAutocomplete.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime248 = __toESM(require_jsx_runtime());
+  var import_jsx_runtime250 = __toESM(require_jsx_runtime());
   var import_lodash = __toESM(require_lodash());
   var import_prop_types = __toESM(require_prop_types());
   var import_qs = __toESM(require_lib2());
-  var import_react214 = __toESM(require_react());
-  var import_react_native195 = __toESM(require_react_native());
+  var import_react215 = __toESM(require_react());
+  var import_react_native197 = __toESM(require_react_native());
   var defaultStyles2 = {
     container: {
       flex: 1
@@ -48127,7 +49393,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     },
     description: {},
     separator: {
-      height: import_react_native195.StyleSheet.hairlineWidth,
+      height: import_react_native197.StyleSheet.hairlineWidth,
       backgroundColor: "#c8c7cc"
     },
     poweredContainer: {
@@ -48140,7 +49406,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     },
     powered: {}
   };
-  var GooglePlacesAutocomplete = /* @__PURE__ */ (0, import_react214.forwardRef)(function(props, ref) {
+  var GooglePlacesAutocomplete = /* @__PURE__ */ (0, import_react215.forwardRef)(function(props, ref) {
     var _results = [];
     var _requests = [];
     var hasNavigator = function() {
@@ -48178,7 +49444,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           return requestUrl.url;
         }
         if (requestUrl.useOnPlatform === "web") {
-          return import_react_native195.Platform.select({
+          return import_react_native197.Platform.select({
             web: requestUrl.url,
             default: "https://maps.googleapis.com/maps/api"
           });
@@ -48195,23 +49461,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return request2.setRequestHeader(headerKey, headers[headerKey]);
       });
     };
-    var _useState = _sliced_to_array((0, import_react214.useState)(""), 2), stateText = _useState[0], setStateText = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react214.useState)(buildRowsFromResults([])), 2), dataSource = _useState1[0], setDataSource = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react214.useState)(props.listViewDisplayed === "auto" ? false : props.listViewDisplayed), 2), listViewDisplayed = _useState2[0], setListViewDisplayed = _useState2[1];
-    var _useState3 = _sliced_to_array((0, import_react214.useState)(getRequestUrl(props.requestUrl)), 1), url = _useState3[0];
-    var inputRef = (0, import_react214.useRef)();
-    (0, import_react214.useEffect)(function() {
+    var _useState = _sliced_to_array((0, import_react215.useState)(""), 2), stateText = _useState[0], setStateText = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react215.useState)(buildRowsFromResults([])), 2), dataSource = _useState1[0], setDataSource = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react215.useState)(props.listViewDisplayed === "auto" ? false : props.listViewDisplayed), 2), listViewDisplayed = _useState2[0], setListViewDisplayed = _useState2[1];
+    var _useState3 = _sliced_to_array((0, import_react215.useState)(getRequestUrl(props.requestUrl)), 1), url = _useState3[0];
+    var inputRef = (0, import_react215.useRef)();
+    (0, import_react215.useEffect)(function() {
       _handleChangeText(stateText);
       return function() {
         _abortRequests();
       };
     }, []);
-    (0, import_react214.useEffect)(function() {
+    (0, import_react215.useEffect)(function() {
       setDataSource(buildRowsFromResults([]));
     }, [
       props.predefinedPlaces
     ]);
-    (0, import_react214.useImperativeHandle)(ref, function() {
+    (0, import_react215.useImperativeHandle)(ref, function() {
       return {
         setAddressText: function(address) {
           setStateText(address);
@@ -48244,7 +49510,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       _requests = [];
     };
     var supportedPlatform = function() {
-      if (import_react_native195.Platform.OS === "web" && !props.requestUrl) {
+      if (import_react_native197.Platform.OS === "web" && !props.requestUrl) {
         console.warn("This library cannot be used for the web unless you specify the requestUrl prop. See https://git.io/JflFv for more for details.");
         return false;
       } else {
@@ -48257,7 +49523,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         timeout: 2e4,
         maximumAge: 1e3
       };
-      if (props.enableHighAccuracyLocation && import_react_native195.Platform.OS === "android") {
+      if (props.enableHighAccuracyLocation && import_react_native197.Platform.OS === "android") {
         options = {
           enableHighAccuracy: true,
           timeout: 2e4
@@ -48290,7 +49556,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         if (rowData.isLoading === true) {
           return;
         }
-        import_react_native195.Keyboard.dismiss();
+        import_react_native197.Keyboard.dismiss();
         _abortRequests();
         _enableRowLoader(rowData);
         var request2 = new XMLHttpRequest();
@@ -48488,7 +49754,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         setDataSource(buildRowsFromResults([]));
       }
     };
-    var debounceData = (0, import_react214.useMemo)(function() {
+    var debounceData = (0, import_react215.useMemo)(function() {
       return (0, import_lodash.default)(_request, props.debounce);
     }, [
       props.query
@@ -48506,7 +49772,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     };
     var _getRowLoader = function() {
-      return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.ActivityIndicator, {
+      return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.ActivityIndicator, {
         animating: true,
         size: "small"
       });
@@ -48515,7 +49781,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       if (props.renderRow) {
         return props.renderRow(rowData, index);
       }
-      return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.Text, {
+      return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.Text, {
         style: [
           props.suppressDefaultStyles ? {} : defaultStyles2.description,
           props.styles.description,
@@ -48533,7 +49799,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var _renderLoader = function(rowData) {
       if (rowData.isLoading === true) {
-        return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.View, {
+        return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.View, {
           style: [
             props.suppressDefaultStyles ? {} : defaultStyles2.loader,
             props.styles.loader
@@ -48545,7 +49811,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var _renderRow = function() {
       var rowData = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, index = arguments.length > 1 ? arguments[1] : void 0;
-      return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.ScrollView, {
+      return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.ScrollView, {
         contentContainerStyle: props.isRowScrollable ? {
           minWidth: "100%"
         } : {
@@ -48556,7 +49822,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         horizontal: true,
         showsHorizontalScrollIndicator: false,
         showsVerticalScrollIndicator: false,
-        children: /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.TouchableHighlight, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.TouchableHighlight, {
           style: props.isRowScrollable ? {
             minWidth: "100%"
           } : {
@@ -48566,7 +49832,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             return _onPress(rowData);
           },
           underlayColor: props.listUnderlayColor || "#c8c7cc",
-          children: /* @__PURE__ */ (0, import_jsx_runtime248.jsxs)(import_react_native195.View, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime250.jsxs)(import_react_native197.View, {
             style: [
               props.suppressDefaultStyles ? {} : defaultStyles2.row,
               props.styles.row,
@@ -48584,7 +49850,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       if (rowID === dataSource.length - 1) {
         return null;
       }
-      return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.View, {
+      return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.View, {
         style: [
           props.suppressDefaultStyles ? {} : defaultStyles2.separator,
           props.styles.separator
@@ -48616,13 +49882,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       if (!_shouldShowPoweredLogo()) {
         return null;
       }
-      return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.View, {
+      return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.View, {
         style: [
           props.suppressDefaultStyles ? {} : defaultStyles2.row,
           defaultStyles2.poweredContainer,
           props.styles.poweredContainer
         ],
-        children: /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.Image, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.Image, {
           style: [
             props.suppressDefaultStyles ? {} : defaultStyles2.powered,
             props.styles.powered
@@ -48659,7 +49925,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return Math.random().toString(36).substr(2, 10);
       };
       if (supportedPlatform() && (stateText !== "" || props.predefinedPlaces.length > 0 || props.currentLocation === true) && listViewDisplayed === true) {
-        return /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(import_react_native195.FlatList, _object_spread({
+        return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(import_react_native197.FlatList, _object_spread({
           nativeID: "result-list-id",
           scrollEnabled: !props.disableScroll,
           style: [
@@ -48691,22 +49957,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "clearButtonMode",
       "InputComp"
     ]);
-    var TextInputComp = InputComp || import_react_native195.TextInput;
-    return /* @__PURE__ */ (0, import_jsx_runtime248.jsxs)(import_react_native195.View, {
+    var TextInputComp = InputComp || import_react_native197.TextInput;
+    return /* @__PURE__ */ (0, import_jsx_runtime250.jsxs)(import_react_native197.View, {
       style: [
         props.suppressDefaultStyles ? {} : defaultStyles2.container,
         props.styles.container
       ],
       pointerEvents: "box-none",
       children: [
-        !props.textInputHide && /* @__PURE__ */ (0, import_jsx_runtime248.jsxs)(import_react_native195.View, {
+        !props.textInputHide && /* @__PURE__ */ (0, import_jsx_runtime250.jsxs)(import_react_native197.View, {
           style: [
             props.suppressDefaultStyles ? {} : defaultStyles2.textInputContainer,
             props.styles.textInputContainer
           ],
           children: [
             _renderLeftButton(),
-            /* @__PURE__ */ (0, import_jsx_runtime248.jsx)(TextInputComp, _object_spread({
+            /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(TextInputComp, _object_spread({
               ref: inputRef,
               style: [
                 props.suppressDefaultStyles ? {} : defaultStyles2.textInput,
@@ -48843,12 +50109,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     timeout: 2e4
   };
 
+  // src/store.ts
+  init_define_import_meta_env();
+
   // node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_define_property();
 
+  // node_modules/@swc/helpers/esm/_get.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_super_prop_base.js
+  init_define_import_meta_env();
   function _super_prop_base(object, property) {
     while (!Object.prototype.hasOwnProperty.call(object, property)) {
       object = _get_prototype_of(object);
@@ -48879,6 +50153,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   init_type_of();
 
   // node_modules/redux/dist/redux.mjs
+  init_define_import_meta_env();
   init_define_property();
   init_instanceof();
   init_to_consumable_array();
@@ -49173,6 +50448,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/immer/dist/immer.mjs
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_define_property();
@@ -49813,6 +51089,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var finishDraft = immer.finishDraft.bind(immer);
 
   // node_modules/redux-thunk/dist/redux-thunk.mjs
+  init_define_import_meta_env();
   function createThunkMiddleware(extraArgument) {
     var middleware = function(param) {
       var dispatch = param.dispatch, getState2 = param.getState;
@@ -50930,10 +52207,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // redux/travle-slice.ts
+  init_define_import_meta_env();
   init_to_consumable_array();
   var import_moment = __toESM(require_moment());
 
+  // redux/api.ts
+  init_define_import_meta_env();
+
+  // node_modules/axios/dist/esm/axios.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_async_generator_delegate.js
+  init_define_import_meta_env();
   function _async_generator_delegate(inner, awaitWrap) {
     var iter = {}, waiting = false;
     function pump(key, value) {
@@ -50976,6 +52261,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/@swc/helpers/esm/_async_iterator.js
+  init_define_import_meta_env();
   function _async_iterator(iterable) {
     var method, async, sync, retry = 2;
     for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--; ) {
@@ -51018,7 +52304,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }, new AsyncFromSyncIterator(s);
   }
 
+  // node_modules/@swc/helpers/esm/_await_async_generator.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_await_value.js
+  init_define_import_meta_env();
   function _await_value(value) {
     this.wrapped = value;
   }
@@ -51037,7 +52327,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   init_to_consumable_array();
   init_type_of();
 
+  // node_modules/@swc/helpers/esm/_wrap_async_generator.js
+  init_define_import_meta_env();
+
   // node_modules/@swc/helpers/esm/_async_generator.js
+  init_define_import_meta_env();
   init_instanceof();
   function _async_generator(gen) {
     var front, back;
@@ -51121,6 +52415,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return new _async_generator(fn5.apply(this, arguments));
     };
   }
+
+  // node_modules/@swc/helpers/esm/_ts_values.js
+  init_define_import_meta_env();
 
   // node_modules/axios/dist/esm/axios.js
   function bind(fn5, thisArg) {
@@ -54206,7 +55503,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var mergeConfig = axios$1.mergeConfig;
 
   // redux/api.ts
-  var API_ROUTE_RELEASE = "https://danimdatabase.com";
+  var API_ROUTE = define_import_meta_env_default.API_ROUTE;
+  var API_ROUTE_RELEASE = define_import_meta_env_default.API_ROUTE_RELEASE;
   var axiosAuth = axios$1.create({
     baseURL: API_ROUTE_RELEASE,
     headers: {
@@ -54223,6 +55521,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var api_default = axiosAuth;
 
   // hooks/useDistance.ts
+  init_define_import_meta_env();
   var useDistance = function(param) {
     var departure = param.departure, arrival = param.arrival;
     var dLat = (departure.lat - arrival.lat) * (Math.PI / 180);
@@ -54919,7 +56218,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]);
             return [
               4,
-              axiosTripadvisor.get("".concat(data.id, "/details?key=", "02F5B2FD8DAD4CFBA7C2D77F11FD9BD8", "&&language=ko"))
+              axiosTripadvisor.get("".concat(data.id, "/details?key=").concat(define_import_meta_env_default.Tripadvisor_KEy, "&&language=ko"))
             ];
           case 2:
             response = _state.sent();
@@ -55126,7 +56425,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]);
             return [
               4,
-              axiosGoogle.get("/place/details/json?place_id=".concat(data.placeId, "&fields=photos%2Cname%2Crating%2Creviews%2Ceditorial_summary&language=ko&key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk"))
+              axiosGoogle.get("/place/details/json?place_id=".concat(data.placeId, "&fields=photos%2Cname%2Crating%2Creviews%2Ceditorial_summary&language=ko&key=").concat(define_import_meta_env_default.GOOGLE_API_KEY))
             ];
           case 2:
             response = _state.sent();
@@ -55152,7 +56451,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     baseURL: "https://dapi.kakao.com/v2/local/search",
     headers: {
       "content-type": "application/json",
-      Authorization: "KakaoAK 7dcbff3c20877747849dacb808c37bc2"
+      Authorization: "KakaoAK ".concat(define_import_meta_env_default.KAKAO_REST_API_KEY)
     }
   });
   var recommendApi = createAsyncThunk("/recommendApi", function() {
@@ -55217,7 +56516,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]);
             return [
               4,
-              axiosTripadvisor.get("/search?key=02F5B2FD8DAD4CFBA7C2D77F11FD9BD8&searchQuery=".concat(data.name, "&category=").concat(data.category, "&latLong=").concat(data.lat, "%2C").concat(data.lng, "&language=ko&radius=").concat(data.radius, "&radiusUnit=m"))
+              axiosTripadvisor.get("/search?key=".concat(define_import_meta_env_default.Tripadvisor_KEy, "&searchQuery=").concat(data.name, "&category=").concat(data.category, "&latLong=").concat(data.lat, "%2C").concat(data.lng, "&language=ko&radius=").concat(data.radius, "&radiusUnit=m"))
             ];
           case 2:
             response = _state.sent();
@@ -55249,6 +56548,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var travle_slice_default = travelSlice.reducer;
 
   // node_modules/react-redux/dist/react-redux.legacy-esm.js
+  init_define_import_meta_env();
   init_define_property();
   init_sliced_to_array();
   init_to_consumable_array();
@@ -55660,11 +56960,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return regionOneList;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime249 = __toESM(require_jsx_runtime());
-  var import_react215 = __toESM(require_react());
-  var import_react_native197 = __toESM(require_react_native());
+  var import_jsx_runtime251 = __toESM(require_jsx_runtime());
+  var import_react216 = __toESM(require_react());
+  var import_react_native199 = __toESM(require_react_native());
   var Route = BedrockRoute("/enroll/essential-search", {
     validateParams: function(params) {
       return params;
@@ -55672,22 +56973,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     component: EnrollEssentialSearch
   });
   function EnrollEssentialSearch() {
-    var _useState = _sliced_to_array((0, import_react215.useState)("\uC5EC\uD589\uC9C0"), 2), value = _useState[0], setValue = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react215.useState)(1), 2), hour = _useState1[0], setHour = _useState1[1];
+    var _useState = _sliced_to_array((0, import_react216.useState)("\uC5EC\uD589\uC9C0"), 2), value = _useState[0], setValue = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react216.useState)(1), 2), hour = _useState1[0], setHour = _useState1[1];
     var dispatch = useAppDispatch();
     var bottomSheet = useBottomSheet();
     var _useAppSelector = useAppSelector(function(state) {
       return state.travelSlice;
     }), Place = _useAppSelector.Place, essentialPlaces = _useAppSelector.essentialPlaces, accommodations = _useAppSelector.accommodations;
     var params = Route.useParams();
-    var autocompleteRef = (0, import_react215.useRef)();
-    var SCREEN_WIDTH = import_react_native197.Dimensions.get("window").width;
+    var autocompleteRef = (0, import_react216.useRef)();
+    var SCREEN_WIDTH = import_react_native199.Dimensions.get("window").width;
     var INPUT_WIDTH = SCREEN_WIDTH - 24 * 2;
     var navigation = useNavigation();
-    var _useState2 = _sliced_to_array((0, import_react215.useState)(), 2), placeState = _useState2[0], setPlaceState = _useState2[1];
+    var _useState2 = _sliced_to_array((0, import_react216.useState)(), 2), placeState = _useState2[0], setPlaceState = _useState2[1];
     var showHourBottomSheet = function(datas) {
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(HourBottomSheetContent, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(HourBottomSheetContent, {
           initialHour: hour,
           onConfirm: function(newHour) {
             bottomSheet.close();
@@ -55735,33 +57036,33 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     };
     var open = useToast().open;
-    return /* @__PURE__ */ (0, import_jsx_runtime249.jsxs)(import_jsx_runtime249.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(import_jsx_runtime251.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime249.jsxs)(SegmentedControl.Root, {
+        /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(SegmentedControl.Root, {
           size: "large",
           alignment: "fixed",
           name: "segmented2",
           value,
           onChange: setValue,
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(SegmentedControl.Item, {
+            /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(SegmentedControl.Item, {
               value: "\uC5EC\uD589\uC9C0",
               children: "\uC5EC\uD589\uC9C0"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(SegmentedControl.Item, {
+            /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(SegmentedControl.Item, {
               value: "\uC219\uC18C",
               children: "\uC219\uC18C"
             })
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(GooglePlacesAutocomplete, {
+        /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(GooglePlacesAutocomplete, {
           placeholder: "".concat(value, "\uB97C \uAC80\uC0C9\uD574\uBCF4\uC138\uC694"),
           disableScroll: false,
           enablePoweredByContainer: false,
           keepResultsAfterBlur: true,
           ref: autocompleteRef,
           query: {
-            key: "AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk",
+            key: define_import_meta_env_default.GOOGLE_API_KEY,
             language: "ko"
           },
           textInputProps: {
@@ -55769,7 +57070,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             allowFontScaling: false
           },
           renderLeftButton: function() {
-            return /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(Icon_default, {
+            return /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(Icon_default, {
               name: "icon-search-mono"
             });
           },
@@ -55820,7 +57121,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     if (response.payload.result.photos) {
                       ;
                       photoReference = (_response_payload_result = response.payload.result) === null || _response_payload_result === void 0 ? void 0 : (_response_payload_result_photos_ = _response_payload_result.photos[0]) === null || _response_payload_result_photos_ === void 0 ? void 0 : _response_payload_result_photos_.photo_reference;
-                      imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(photoReference, "&key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk");
+                      imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(photoReference, "&key=").concat(define_import_meta_env_default.GOOGLE_API_KEY);
                     } else {
                       imageUrl = null;
                     }
@@ -55857,16 +57158,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function HourBottomSheetContent(param) {
     var initialHour = param.initialHour, onConfirm = param.onConfirm, onCancel = param.onCancel, placeType = param.placeType, placeState = param.placeState;
-    var _useState = _sliced_to_array((0, import_react215.useState)(initialHour), 2), localHour = _useState[0], setLocalHour = _useState[1];
-    return /* @__PURE__ */ (0, import_jsx_runtime249.jsxs)(import_react_native197.View, {
+    var _useState = _sliced_to_array((0, import_react216.useState)(initialHour), 2), localHour = _useState[0], setLocalHour = _useState[1];
+    return /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(import_react_native199.View, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(ListRow3, {
-          contents: /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(ListRow3.Texts, {
+        /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3.Texts, {
             type: "2RowTypeA",
             top: placeState === null || placeState === void 0 ? void 0 : placeState.name,
             bottom: placeState === null || placeState === void 0 ? void 0 : placeState.formatted_address
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(Button2, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(Button2, {
             type: "dark",
             size: "tiny",
             style: "weak",
@@ -55874,12 +57175,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             children: "\uCDE8\uC18C"
           })
         }),
-        placeType == "\uC5EC\uD589\uC9C0" && /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(ListRow3, {
-          contents: /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(ListRow3.Texts, {
+        placeType == "\uC5EC\uD589\uC9C0" && /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: "\uBA38\uBB34\uB97C \uC2DC\uAC04"
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime249.jsx)(NumericSpinner, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(NumericSpinner, {
             size: "large",
             number: localHour,
             onNumberChange: function(e4) {
@@ -55889,7 +57190,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             minNumber: 1
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime249.jsxs)(BottomSheet.CTA, {
+        /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(BottomSheet.CTA, {
           onPress: function() {
             return onConfirm(localHour);
           },
@@ -55957,15 +57258,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // components/navigation-bar.tsx
-  var import_jsx_runtime250 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime252 = __toESM(require_jsx_runtime());
   function NavigationBar() {
     var bottomSheet = useBottomSheet();
     var navigation = useNavigation();
-    return /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(PartnerNavigation, {
-      title: "\uB2E4\uB2D8",
+    return /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(PartnerNavigation, {
+      title: "AI\uC5D0\uAC8C \uC5EC\uD589 \uCF54\uC2A4 \uCD94\uCC9C \uBC1B\uAE30",
       icon: {
         source: {
-          uri: "https://danim.me/square_logo.png"
+          uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png"
         }
       },
       rightButtons: [
@@ -55977,9 +57279,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           },
           onPress: function() {
             bottomSheet.open({
-              children: /* @__PURE__ */ (0, import_jsx_runtime250.jsxs)(import_jsx_runtime250.Fragment, {
+              children: /* @__PURE__ */ (0, import_jsx_runtime252.jsxs)(import_jsx_runtime252.Fragment, {
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(Txt_default, {
+                  /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(Txt_default, {
                     typography: "t4",
                     fontWeight: "bold",
                     color: colors.grey800,
@@ -55988,7 +57290,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     },
                     children: "\uB0B4 \uC5EC\uD589 \uBAA9\uB85D\uC73C\uB85C \uC774\uB3D9\uD558\uC2DC\uACA0\uC5B4\uC694?"
                   }),
-                  /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(Txt_default, {
+                  /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(Txt_default, {
                     typography: "t5",
                     fontWeight: "regular",
                     color: colors.grey600,
@@ -55997,8 +57299,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     },
                     children: "\uC774\uB3D9\uC2DC \uACFC\uC815\uB4E4\uC740 \uC800\uC7A5\uB418\uC9C0 \uC54A\uC544\uC694"
                   }),
-                  /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(BottomSheet.CTA.Double, {
-                    leftButton: /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(Button2, {
+                  /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(BottomSheet.CTA.Double, {
+                    leftButton: /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(Button2, {
                       type: "dark",
                       style: "weak",
                       display: "block",
@@ -56007,7 +57309,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                       },
                       children: "\uC544\uB2C8\uC624"
                     }),
-                    rightButton: /* @__PURE__ */ (0, import_jsx_runtime250.jsx)(Button2, {
+                    rightButton: /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(Button2, {
                       type: "primary",
                       style: "fill",
                       display: "block",
@@ -56046,10 +57348,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   function AddPlace() {
     var params = Route2.useParams();
-    var _useState = _sliced_to_array((0, import_react216.useState)("\uC5EC\uD589\uC9C0"), 2), value1 = _useState[0], setValue1 = _useState[1];
+    var _useState = _sliced_to_array((0, import_react217.useState)("\uC5EC\uD589\uC9C0"), 2), value1 = _useState[0], setValue1 = _useState[1];
     var navigation = useNavigation();
-    var autocompleteRef = (0, import_react216.useRef)();
-    var SCREEN_WIDTH = import_react_native200.Dimensions.get("window").width;
+    var autocompleteRef = (0, import_react217.useRef)();
+    var SCREEN_WIDTH = import_react_native202.Dimensions.get("window").width;
     var INPUT_WIDTH = SCREEN_WIDTH - 24 * 2;
     var _useAppSelector = useAppSelector(function(state) {
       return state.travelSlice;
@@ -56087,8 +57389,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return title;
     };
     var open = useToast().open;
-    var _useState1 = _sliced_to_array((0, import_react216.useState)([]), 2), recommendList = _useState1[0], setRcommendList = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react216.useState)(false), 2), loading = _useState2[0], setLoading = _useState2[1];
+    var _useState1 = _sliced_to_array((0, import_react217.useState)([]), 2), recommendList = _useState1[0], setRcommendList = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react217.useState)(false), 2), loading = _useState2[0], setLoading = _useState2[1];
     var getRecommendList = function() {
       var _ref = _async_to_generator(function() {
         var tableData, _tableData_lat, _tableData_lng, _tableData_name, _tableData_lat1, _tableData_lng1, result, _params_data_params_day_params_index, _tableData_lat2, _tableData_lng2, _params_data_params_day_params_index_name, _tableData_lat3, _tableData_lng3, err;
@@ -56219,7 +57521,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var showHourBottomSheet = function(datas) {
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(HourBottomSheetContent2, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(HourBottomSheetContent2, {
           initialHour: 1,
           onConfirm: function(newHour) {
             bottomSheet.close();
@@ -56235,27 +57537,73 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(import_react_native200.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime253.jsxs)(import_react_native202.View, {
       style: {
         flex: 1
       },
       children: [
-        loading && /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(Lottie, {
-          height: "100%",
-          src: "https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b",
-          autoPlay: true,
-          loop: true,
-          onAnimationFailure: function() {
-            console.log("Animation Failed");
-          },
-          onAnimationFinish: function() {
-            console.log("Animation Finished");
-          }
-        }),
-        /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(NavigationBar, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(FixedBottomCTAProvider, {
+        loading && /* @__PURE__ */ (0, import_jsx_runtime253.jsxs)(AnimateSkeleton_default, {
+          delay: 500,
+          withGradient: true,
+          withShimmer: true,
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(SegmentedControl.Root, {
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            })
+          ]
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(NavigationBar, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime253.jsxs)(FixedBottomCTAProvider, {
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsxs)(SegmentedControl.Root, {
               size: "large",
               name: "segmented",
               value: value1,
@@ -56264,28 +57612,28 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 setRcommendList([]);
               },
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(SegmentedControl.Item, {
+                /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(SegmentedControl.Item, {
                   value: "\uC5EC\uD589\uC9C0",
                   children: "\uC5EC\uD589\uC9C0"
                 }),
-                /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(SegmentedControl.Item, {
+                /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(SegmentedControl.Item, {
                   value: "\uC219\uC18C",
                   children: "\uC219\uC18C"
                 }),
-                /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(SegmentedControl.Item, {
+                /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(SegmentedControl.Item, {
                   value: "\uC2DD\uB2F9",
                   children: "\uC2DD\uB2F9"
                 })
               ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(GooglePlacesAutocomplete, {
+            /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(GooglePlacesAutocomplete, {
               placeholder: value1 + "\uB97C \uAC80\uC0C9\uD574\uBCF4\uC138\uC694",
               disableScroll: false,
               enablePoweredByContainer: false,
               keepResultsAfterBlur: true,
               ref: autocompleteRef,
               query: {
-                key: "AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk",
+                key: define_import_meta_env_default.GOOGLE_API_KEY,
                 language: "ko"
               },
               textInputProps: {
@@ -56293,18 +57641,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 allowFontScaling: false
               },
               renderLeftButton: function() {
-                return /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(Icon_default, {
+                return /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Icon_default, {
                   name: "icon-search-mono"
                 });
               },
               renderRightButton: function() {
-                return /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(import_react_native200.View, {
+                return /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(import_react_native202.View, {
                   style: {
                     alignItems: "center",
                     justifyContent: "center",
                     height: 44
                   },
-                  children: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(Button2, {
+                  children: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Button2, {
                     size: "medium",
                     type: "primary",
                     style: "weak",
@@ -56362,7 +57710,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                         if (response.payload.result.photos) {
                           ;
                           photoReference = (_response_payload_result = response.payload.result) === null || _response_payload_result === void 0 ? void 0 : (_response_payload_result_photos_ = _response_payload_result.photos[0]) === null || _response_payload_result_photos_ === void 0 ? void 0 : _response_payload_result_photos_.photo_reference;
-                          imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(photoReference, "&key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk");
+                          imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(photoReference, "&key=").concat(define_import_meta_env_default.GOOGLE_API_KEY);
                         } else {
                           imageUrl = null;
                         }
@@ -56396,14 +57744,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             recommendList.map(function(item, idx) {
               var _params_data_params_day_;
               var _item_place_name, _params_data_params_day__name;
-              return /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3, {
+              return /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3, {
                 onPress: function() {
                   showHourBottomSheet(item);
                 },
-                left: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3.Icon, {
+                left: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3.Icon, {
                   name: "icon-plus-circle-blue"
                 }),
-                contents: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3.Texts, {
+                contents: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3.Texts, {
                   type: "2RowTypeA",
                   top: (_item_place_name = item === null || item === void 0 ? void 0 : item.place_name) !== null && _item_place_name !== void 0 ? _item_place_name : item === null || item === void 0 ? void 0 : item.name,
                   topProps: {
@@ -56423,17 +57771,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function HourBottomSheetContent2(param) {
     var initialHour = param.initialHour, onConfirm = param.onConfirm, onCancel = param.onCancel, placeType = param.placeType, placeState = param.placeState;
-    var _useState = _sliced_to_array((0, import_react216.useState)(initialHour), 2), localHour = _useState[0], setLocalHour = _useState[1];
+    var _useState = _sliced_to_array((0, import_react217.useState)(initialHour), 2), localHour = _useState[0], setLocalHour = _useState[1];
     var _placeState_name;
-    return /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(import_react_native200.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime253.jsxs)(import_react_native202.View, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3, {
-          contents: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3.Texts, {
+        /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3.Texts, {
             type: "2RowTypeA",
             top: (_placeState_name = placeState === null || placeState === void 0 ? void 0 : placeState.name) !== null && _placeState_name !== void 0 ? _placeState_name : placeState === null || placeState === void 0 ? void 0 : placeState.place_name,
             bottom: placeState === null || placeState === void 0 ? void 0 : placeState.formatted_address
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(Button2, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Button2, {
             type: "dark",
             size: "tiny",
             style: "weak",
@@ -56441,12 +57789,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             children: "\uCDE8\uC18C"
           })
         }),
-        placeType != "\uC219\uC18C" && /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3, {
-          contents: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(ListRow3.Texts, {
+        placeType != "\uC219\uC18C" && /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: "\uBA38\uBB34\uB97C \uC2DC\uAC04"
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime251.jsx)(NumericSpinner, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(NumericSpinner, {
             size: "large",
             number: localHour,
             onNumberChange: function(e4) {
@@ -56456,7 +57804,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             minNumber: 1
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime251.jsxs)(BottomSheet.CTA, {
+        /* @__PURE__ */ (0, import_jsx_runtime253.jsxs)(BottomSheet.CTA, {
           onPress: function() {
             return onConfirm(localHour);
           },
@@ -56476,13 +57824,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Layout;
     }
   });
-  var import_jsx_runtime255 = __toESM(require_jsx_runtime());
-  var import_react217 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_jsx_runtime257 = __toESM(require_jsx_runtime());
+  var import_react218 = __toESM(require_react());
 
   // components/progress-bar.tsx
-  var import_jsx_runtime252 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime254 = __toESM(require_jsx_runtime());
 
   // utill/route-stack.ts
+  init_define_import_meta_env();
   var routeStack = {
     "/title": {
       prev: "/index",
@@ -56606,7 +57957,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return key !== "/title" && key !== "/finalCheck";
     });
     var index = stepList.indexOf((_navigation_getState = navigation.getState()) === null || _navigation_getState === void 0 ? void 0 : (_navigation_getState_routes = _navigation_getState.routes) === null || _navigation_getState_routes === void 0 ? void 0 : (_navigation_getState_routes_at = _navigation_getState_routes.at(-1)) === null || _navigation_getState_routes_at === void 0 ? void 0 : _navigation_getState_routes_at.name.split("/enroll")[1]);
-    return /* @__PURE__ */ (0, import_jsx_runtime252.jsx)(ProgressBar_default, {
+    return /* @__PURE__ */ (0, import_jsx_runtime254.jsx)(ProgressBar_default, {
       progress: (index + 1) / (Object.keys(routeStack).length - 2) * 100,
       size: "light",
       color: colors.blue500,
@@ -56618,9 +57969,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // components/route-button.tsx
-  var import_jsx_runtime253 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime255 = __toESM(require_jsx_runtime());
 
   // utill/city-list.ts
+  init_define_import_meta_env();
   var koreaCityList = [
     {
       id: 0,
@@ -59535,6 +60888,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   ];
 
   // hooks/useTendencyHandler.ts
+  init_define_import_meta_env();
   init_to_consumable_array();
   var useTendencyHandler = function() {
     var tendency = useAppSelector(function(state) {
@@ -59753,15 +61107,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         navigation.navigate((nowStep == "/distance" ? "" : "/enroll") + ((_routeStack_nowStep2 = routeStack[nowStep]) === null || _routeStack_nowStep2 === void 0 ? void 0 : _routeStack_nowStep2.next));
       }
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(FixedBottomCTA.Double, {
-      leftButton: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Button2, {
+    return /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(FixedBottomCTA.Double, {
+      leftButton: /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(Button2, {
         type: "dark",
         style: "weak",
         display: "block",
         onPress: handleBack,
         children: "\uC774\uC804\uC73C\uB85C"
       }),
-      rightButton: /* @__PURE__ */ (0, import_jsx_runtime253.jsx)(Button2, {
+      rightButton: /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(Button2, {
         display: "block",
         onPress: handleNext,
         disabled: disabled !== null && disabled !== void 0 ? disabled : false,
@@ -59771,26 +61125,27 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // pages/enroll/_layout.tsx
-  var import_react_native204 = __toESM(require_react_native());
+  var import_react_native206 = __toESM(require_react_native());
 
   // components/step-text.tsx
-  var import_jsx_runtime254 = __toESM(require_jsx_runtime());
+  init_define_import_meta_env();
+  var import_jsx_runtime256 = __toESM(require_jsx_runtime());
   var StepText = function(param) {
     var subTitle1 = param.subTitle1, subTitle2 = param.subTitle2, title = param.title;
-    return /* @__PURE__ */ (0, import_jsx_runtime254.jsx)(TopRoot, {
-      title: /* @__PURE__ */ (0, import_jsx_runtime254.jsx)(Txt_default, {
+    return /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(TopRoot, {
+      title: /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(Txt_default, {
         typography: "st5",
         fontWeight: "semibold",
         color: colors.grey900,
         children: title
       }),
-      subtitle1: /* @__PURE__ */ (0, import_jsx_runtime254.jsx)(Txt_default, {
+      subtitle1: /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(Txt_default, {
         typography: "t5",
         fontWeight: "medium",
         color: colors.grey600,
         children: subTitle1
       }),
-      subtitle2: !!subTitle2 && /* @__PURE__ */ (0, import_jsx_runtime254.jsx)(Txt_default, {
+      subtitle2: !!subTitle2 && /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(Txt_default, {
         typography: "t7",
         fontWeight: "medium",
         color: colors.grey500,
@@ -59805,23 +61160,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var _navigation_getState_routes_at, _navigation_getState_routes, _navigation_getState;
     var navigation = useNavigation();
     var textData = routeStack[(_navigation_getState = navigation.getState()) === null || _navigation_getState === void 0 ? void 0 : (_navigation_getState_routes = _navigation_getState.routes) === null || _navigation_getState_routes === void 0 ? void 0 : (_navigation_getState_routes_at = _navigation_getState_routes.at(-1)) === null || _navigation_getState_routes_at === void 0 ? void 0 : _navigation_getState_routes_at.name.split("/enroll")[1]];
-    return /* @__PURE__ */ (0, import_jsx_runtime255.jsxs)(import_react_native204.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime257.jsxs)(import_react_native206.View, {
       style: {
         flex: 1
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(NavigationBar, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(FixedBottomCTAProvider, {
-          children: (textData === null || textData === void 0 ? void 0 : textData.title) ? /* @__PURE__ */ (0, import_jsx_runtime255.jsxs)(import_jsx_runtime255.Fragment, {
+        /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(NavigationBar, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(FixedBottomCTAProvider, {
+          children: (textData === null || textData === void 0 ? void 0 : textData.title) ? /* @__PURE__ */ (0, import_jsx_runtime257.jsxs)(import_jsx_runtime257.Fragment, {
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(CustomProgressBar, {}),
-              /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(StepText, {
+              /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(CustomProgressBar, {}),
+              /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(StepText, {
                 title: textData === null || textData === void 0 ? void 0 : textData.title,
                 subTitle1: textData === null || textData === void 0 ? void 0 : textData.subTitle1,
                 subTitle2: textData === null || textData === void 0 ? void 0 : textData.subTitle2
               }),
               children,
-              (textData === null || textData === void 0 ? void 0 : textData.next) != "distance" && /* @__PURE__ */ (0, import_jsx_runtime255.jsx)(RouteButton, {})
+              (textData === null || textData === void 0 ? void 0 : textData.next) != "distance" && /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(RouteButton, {})
             ]
           }) : children
         })
@@ -59839,11 +61194,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route3;
     }
   });
-  var import_jsx_runtime256 = __toESM(require_jsx_runtime());
-  var import_react218 = __toESM(require_react());
-  var import_react_native206 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime258 = __toESM(require_jsx_runtime());
+  var import_react219 = __toESM(require_react());
+  var import_react_native208 = __toESM(require_react_native());
 
   // utill/custom-color.ts
+  init_define_import_meta_env();
   var CustomColor = {
     primary: "#C3F550",
     Gray1: "#EBECF2",
@@ -59883,7 +61240,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         image: "https://static.toss.im/2d-emojis/png/4x/u1F6B6.png"
       }
     ];
-    var styles63 = import_react_native206.StyleSheet.create({
+    var styles63 = import_react_native208.StyleSheet.create({
       buttonContainerBase: {
         alignItems: "center",
         height: 159,
@@ -59894,14 +61251,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         gap: 10
       }
     });
-    return /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(import_react_native206.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime258.jsx)(import_react_native208.View, {
       style: {
         flexDirection: "row",
         marginHorizontal: 24,
         justifyContent: "space-between",
         marginTop: 150
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(GridList_default, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime258.jsx)(GridList_default, {
         column: 2,
         style: {
           marginBottom: 16
@@ -59912,8 +61269,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             borderColor: isSelected ? CustomColor.primary : CustomColor.ButtonBackground,
             backgroundColor: isSelected ? "rgba(195,245,80,0.3)" : CustomColor.ButtonBackground
           });
-          return /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(GridList_default.Item, {
-            image: /* @__PURE__ */ (0, import_jsx_runtime256.jsx)(Image, {
+          return /* @__PURE__ */ (0, import_jsx_runtime258.jsx)(GridList_default.Item, {
+            image: /* @__PURE__ */ (0, import_jsx_runtime258.jsx)(Image, {
               style: {
                 width: 60,
                 height: 60,
@@ -59942,14 +61299,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route5;
     }
   });
-  var import_jsx_runtime259 = __toESM(require_jsx_runtime());
-  var import_react221 = __toESM(require_react());
-  var import_react_native211 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime261 = __toESM(require_jsx_runtime());
+  var import_react222 = __toESM(require_react());
+  var import_react_native213 = __toESM(require_react_native());
 
   // components/tendency-button.tsx
-  var import_jsx_runtime257 = __toESM(require_jsx_runtime());
-  var import_react219 = __toESM(require_react());
-  var import_react_native208 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime259 = __toESM(require_jsx_runtime());
+  var import_react220 = __toESM(require_react());
+  var import_react_native210 = __toESM(require_react_native());
   function TendencyButton(param) {
     var onPress = param.onPress, label = param.label, bgColor = param.bgColor, _param_divide = param.divide, divide = _param_divide === void 0 ? false : _param_divide, marginBottom = param.marginBottom, imageUrl = param.imageUrl, width = param.width, disabled = param.disabled;
     var containerStyle2 = _object_spread_props(_object_spread({}, styles58.buttonContainer), {
@@ -59962,17 +61321,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       flexDirection: "row",
       gap: 10
     });
-    return /* @__PURE__ */ (0, import_jsx_runtime257.jsxs)(import_react_native208.TouchableOpacity, {
+    return /* @__PURE__ */ (0, import_jsx_runtime259.jsxs)(import_react_native210.TouchableOpacity, {
       style: containerStyle2,
       onPress,
       disabled,
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(Txt_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime259.jsx)(Txt_default, {
           typography: "t5",
           fontWeight: "regular",
           children: label
         }),
-        (imageUrl === null || imageUrl === void 0 ? void 0 : imageUrl.includes("http")) ? /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(import_react_native208.Image, {
+        (imageUrl === null || imageUrl === void 0 ? void 0 : imageUrl.includes("http")) ? /* @__PURE__ */ (0, import_jsx_runtime259.jsx)(import_react_native210.Image, {
           style: {
             width: 24,
             height: 24
@@ -59980,13 +61339,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           source: {
             uri: imageUrl
           }
-        }) : /* @__PURE__ */ (0, import_jsx_runtime257.jsx)(Icon_default, {
+        }) : /* @__PURE__ */ (0, import_jsx_runtime259.jsx)(Icon_default, {
           name: imageUrl
         })
       ]
     });
   }
-  var styles58 = import_react_native208.StyleSheet.create({
+  var styles58 = import_react_native210.StyleSheet.create({
     buttonContainer: {
       alignItems: "center",
       height: 60,
@@ -60006,11 +61365,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return styles59;
     }
   });
-  var import_jsx_runtime258 = __toESM(require_jsx_runtime());
-  var import_react220 = __toESM(require_react());
-  var import_react_native210 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime260 = __toESM(require_jsx_runtime());
+  var import_react221 = __toESM(require_react());
+  var import_react_native212 = __toESM(require_react_native());
 
   // utill/country.ts
+  init_define_import_meta_env();
   var countryList = [
     {
       ko: "\uB300\uD55C\uBBFC\uAD6D",
@@ -60067,10 +61428,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var country = useAppSelector(function(state) {
       return state.travelSlice;
     }).country;
-    return /* @__PURE__ */ (0, import_jsx_runtime258.jsx)(import_react_native210.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime260.jsx)(import_react_native212.View, {
       style: styles59.ButtonsContainer,
       children: countryList === null || countryList === void 0 ? void 0 : countryList.map(function(item, idx) {
-        return /* @__PURE__ */ (0, import_jsx_runtime258.jsx)(TendencyButton, {
+        return /* @__PURE__ */ (0, import_jsx_runtime260.jsx)(TendencyButton, {
           marginBottom: 0,
           bgColor: idx == country,
           label: item.ko,
@@ -60083,7 +61444,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       })
     });
   }
-  var styles59 = import_react_native210.StyleSheet.create({
+  var styles59 = import_react_native212.StyleSheet.create({
     ButtonsContainer: {
       flex: 1,
       justifyContent: "center",
@@ -60108,12 +61469,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return state.travelSlice;
     }).tendency;
     var _useTendencyHandler = useTendencyHandler(), handleButtonClick = _useTendencyHandler.handleButtonClick, tendencyList2 = _useTendencyHandler.tendencyList;
-    return /* @__PURE__ */ (0, import_jsx_runtime259.jsx)(import_jsx_runtime259.Fragment, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime259.jsx)(import_react_native211.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(import_jsx_runtime261.Fragment, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(import_react_native213.View, {
         style: styles59.ButtonsContainer,
         children: (_tendencyList_ = tendencyList2[1]) === null || _tendencyList_ === void 0 ? void 0 : (_tendencyList__list = _tendencyList_.list) === null || _tendencyList__list === void 0 ? void 0 : _tendencyList__list.map(function(item, idx) {
           var _tendencyList_2;
-          return /* @__PURE__ */ (0, import_jsx_runtime259.jsx)(TendencyButton, {
+          return /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(TendencyButton, {
             marginBottom: 0,
             bgColor: tendency[1][idx] == 1,
             label: item,
@@ -60138,20 +61499,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route6;
     }
   });
+  init_define_import_meta_env();
   init_to_consumable_array();
-  var import_jsx_runtime277 = __toESM(require_jsx_runtime());
-  var import_react239 = __toESM(require_react());
-  var import_react_native231 = __toESM(require_react_native());
+  var import_jsx_runtime279 = __toESM(require_jsx_runtime());
+  var import_react240 = __toESM(require_react());
+  var import_react_native233 = __toESM(require_react_native());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/index.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_instanceof();
-  var import_jsx_runtime275 = __toESM(require_jsx_runtime());
-  var import_react237 = __toESM(require_react());
-  var import_react_native227 = __toESM(require_react_native());
+  var import_jsx_runtime277 = __toESM(require_jsx_runtime());
+  var import_react238 = __toESM(require_react());
+  var import_react_native229 = __toESM(require_react_native());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/makeStyles.js
+  init_define_import_meta_env();
   var DEFAULT_SELECTED_BACKGROUND_COLOR = "#5ce600";
   var DEFAULT_SELECTED_TEXT_COLOR = "#000000";
   var DEFAULT_TODAY_BACKGROUND_COLOR = "#CCCCCC";
@@ -60375,11 +61739,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
   }
 
+  // node_modules/react-native-calendar-picker/CalendarPicker/Utils.js
+  init_define_import_meta_env();
+
+  // node_modules/date-fns/getMonth.js
+  init_define_import_meta_env();
+
+  // node_modules/date-fns/toDate.js
+  init_define_import_meta_env();
+
   // node_modules/date-fns/constructFrom.js
+  init_define_import_meta_env();
   init_instanceof();
   init_type_of();
 
   // node_modules/date-fns/constants.js
+  init_define_import_meta_env();
   var daysInYear = 365.2425;
   var maxTime = Math.pow(10, 8) * 24 * 60 * 60 * 1e3;
   var minTime = -maxTime;
@@ -60411,14 +61786,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/date-fns/getYear.js
+  init_define_import_meta_env();
   function getYear(date, options) {
     return toDate(date, options === null || options === void 0 ? void 0 : options.in).getFullYear();
   }
 
   // node_modules/date-fns/isSameDay.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
   // node_modules/date-fns/_lib/normalizeDates.js
+  init_define_import_meta_env();
   init_type_of();
   function normalizeDates(context2) {
     for (var _len = arguments.length, dates = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -60431,6 +61809,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/date-fns/startOfDay.js
+  init_define_import_meta_env();
   function startOfDay(date, options) {
     var _date = toDate(date, options === null || options === void 0 ? void 0 : options.in);
     _date.setHours(0, 0, 0, 0);
@@ -60444,6 +61823,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/date-fns/isSameMonth.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function isSameMonth(laterDate, earlierDate, options) {
     var _normalizeDates = _sliced_to_array(normalizeDates(options === null || options === void 0 ? void 0 : options.in, laterDate, earlierDate), 2), laterDate_ = _normalizeDates[0], earlierDate_ = _normalizeDates[1];
@@ -60567,19 +61947,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/HeaderControls.js
-  var import_jsx_runtime261 = __toESM(require_jsx_runtime());
-  var import_react223 = __toESM(require_react());
-  var import_react_native213 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime263 = __toESM(require_jsx_runtime());
+  var import_react224 = __toESM(require_react());
+  var import_react_native215 = __toESM(require_react_native());
   var import_prop_types3 = __toESM(require_prop_types());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/Controls.js
-  var import_jsx_runtime260 = __toESM(require_jsx_runtime());
-  var import_react222 = __toESM(require_react());
-  var import_react_native212 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime262 = __toESM(require_jsx_runtime());
+  var import_react223 = __toESM(require_react());
+  var import_react_native214 = __toESM(require_react_native());
   var import_prop_types2 = __toESM(require_prop_types());
   function Controls(props) {
     var styles63 = props.styles, textStyles = props.textStyles, label = props.label, component = props.component, onPressControl = props.onPressControl, disabled = props.disabled;
-    return /* @__PURE__ */ (0, import_jsx_runtime260.jsx)(import_react_native212.TouchableOpacity, {
+    return /* @__PURE__ */ (0, import_jsx_runtime262.jsx)(import_react_native214.TouchableOpacity, {
       onPress: function() {
         return onPressControl();
       },
@@ -60591,11 +61973,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         left: 40,
         right: 40
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime260.jsx)(import_react_native212.View, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime262.jsx)(import_react_native214.View, {
         style: {
           opacity: disabled ? 0 : 1
         },
-        children: component || /* @__PURE__ */ (0, import_jsx_runtime260.jsx)(import_react_native212.Text, {
+        children: component || /* @__PURE__ */ (0, import_jsx_runtime262.jsx)(import_react_native214.Text, {
           style: [
             textStyles
           ],
@@ -60624,16 +62006,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var accessibilityProps = {
       accessibilityRole: "header"
     };
-    if (import_react_native213.Platform.OS === "web") {
+    if (import_react_native215.Platform.OS === "web") {
       accessibilityProps["aria-level"] = headingLevel;
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime261.jsxs)(import_react_native213.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime263.jsxs)(import_react_native215.View, {
       style: [
         styles63.headerWrapper,
         headerWrapperStyle
       ],
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(Controls, {
+        /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(Controls, {
           disabled: disablePreviousMonth,
           label: previousTitle,
           component: previousComponent,
@@ -60645,15 +62027,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             previousTitleStyle
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime261.jsxs)(import_react_native213.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime263.jsxs)(import_react_native215.View, {
           style: [
             styles63.monthYearHeaderWrapper,
             monthYearHeaderWrapperStyle
           ],
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(import_react_native213.TouchableOpacity, {
+            /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.TouchableOpacity, {
               onPress: onPressMonth,
-              children: /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(import_react_native213.Text, _object_spread_props(_object_spread({
+              children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.Text, _object_spread_props(_object_spread({
                 style: [
                   styles63.monthHeaderMainText,
                   textStyle,
@@ -60663,9 +62045,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 children: monthName
               }))
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(import_react_native213.TouchableOpacity, {
+            /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.TouchableOpacity, {
               onPress: onPressYear,
-              children: /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(import_react_native213.Text, {
+              children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.Text, {
                 style: [
                   styles63.yearHeaderMainText,
                   textStyle,
@@ -60676,7 +62058,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             })
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime261.jsx)(Controls, {
+        /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(Controls, {
           disabled: disableNextMonth,
           label: nextTitle,
           component: nextComponent,
@@ -60701,10 +62083,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/Weekdays.js
+  init_define_import_meta_env();
   init_instanceof();
-  var import_jsx_runtime262 = __toESM(require_jsx_runtime());
-  var import_react224 = __toESM(require_react());
-  var import_react_native214 = __toESM(require_react_native());
+  var import_jsx_runtime264 = __toESM(require_jsx_runtime());
+  var import_react225 = __toESM(require_react());
+  var import_react_native216 = __toESM(require_react_native());
   var import_prop_types4 = __toESM(require_prop_types());
   function Weekdays(props) {
     var styles63 = props.styles, firstDay = props.firstDay, month = props.currentMonth, year = props.currentYear, weekdays = props.weekdays, textStyle = props.textStyle, dayLabelsWrapper = props.dayLabelsWrapper, customDayHeaderStyles = props.customDayHeaderStyles;
@@ -60713,7 +62096,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     if (!wd) {
       wd = firstDay ? Utils.getWeekdays(firstDay) : Utils.WEEKDAYS;
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime262.jsx)(import_react_native214.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime264.jsx)(import_react_native216.View, {
       style: [
         styles63.dayLabelsWrapper,
         dayLabelsWrapper
@@ -60733,9 +62116,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           }) || {};
           dayOfWeekTextStyle.push(customDayOfWeekStyles.textStyle);
         }
-        return /* @__PURE__ */ (0, import_jsx_runtime262.jsx)(import_react_native214.View, {
+        return /* @__PURE__ */ (0, import_jsx_runtime264.jsx)(import_react_native216.View, {
           style: customDayOfWeekStyles.style,
-          children: /* @__PURE__ */ (0, import_jsx_runtime262.jsx)(import_react_native214.Text, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime264.jsx)(import_react_native216.Text, {
             style: dayOfWeekTextStyle,
             children: day
           })
@@ -60750,32 +62133,38 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/DaysGridView.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
   init_to_consumable_array();
-  var import_jsx_runtime265 = __toESM(require_jsx_runtime());
-  var import_react227 = __toESM(require_react());
-  var import_react_native217 = __toESM(require_react_native());
+  var import_jsx_runtime267 = __toESM(require_jsx_runtime());
+  var import_react228 = __toESM(require_react());
+  var import_react_native219 = __toESM(require_react_native());
   var import_prop_types8 = __toESM(require_prop_types());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/localPropTypes.js
+  init_define_import_meta_env();
   var import_prop_types5 = __toESM(require_prop_types());
   var stylePropType = import_prop_types5.default.any;
 
   // node_modules/react-native-calendar-picker/CalendarPicker/Day.js
+  init_define_import_meta_env();
   init_instanceof();
-  var import_jsx_runtime263 = __toESM(require_jsx_runtime());
-  var import_react225 = __toESM(require_react());
-  var import_react_native215 = __toESM(require_react_native());
+  var import_jsx_runtime265 = __toESM(require_jsx_runtime());
+  var import_react226 = __toESM(require_react());
+  var import_react_native217 = __toESM(require_react_native());
   var import_prop_types6 = __toESM(require_prop_types());
 
   // node_modules/date-fns/differenceInDays.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
   // node_modules/date-fns/differenceInCalendarDays.js
+  init_define_import_meta_env();
   init_sliced_to_array();
 
   // node_modules/date-fns/_lib/getTimezoneOffsetInMilliseconds.js
+  init_define_import_meta_env();
   function getTimezoneOffsetInMilliseconds(date) {
     var _date = toDate(date);
     var utcDate = new Date(Date.UTC(_date.getFullYear(), _date.getMonth(), _date.getDate(), _date.getHours(), _date.getMinutes(), _date.getSeconds(), _date.getMilliseconds()));
@@ -60811,16 +62200,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/date-fns/isAfter.js
+  init_define_import_meta_env();
   function isAfter(date, dateToCompare) {
     return +toDate(date) > +toDate(dateToCompare);
   }
 
   // node_modules/date-fns/isBefore.js
+  init_define_import_meta_env();
   function isBefore(date, dateToCompare) {
     return +toDate(date) < +toDate(dateToCompare);
   }
 
   // node_modules/date-fns/isWithinInterval.js
+  init_define_import_meta_env();
   init_sliced_to_array();
   function isWithinInterval(date, interval, options) {
     var time = +toDate(date, options === null || options === void 0 ? void 0 : options.in);
@@ -60994,18 +62386,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       }
       if (dateOutOfRange) {
-        return /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.View, {
+        return /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
           style: [
             styles63.dayWrapper,
             custom.containerStyle
           ],
-          children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.View, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
             style: [
               custom.style,
               computedSelectedDayStyle,
               selectedDayStyle
             ],
-            children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.Text, {
+            children: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.Text, {
               style: [
                 styles63.dayLabel,
                 textStyle,
@@ -61020,12 +62412,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           })
         });
       } else {
-        return /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.View, {
+        return /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
           style: [
             styles63.dayWrapper,
             custom.containerStyle
           ],
-          children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.TouchableOpacity, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.TouchableOpacity, {
             disabled: !enableDateChange,
             style: [
               custom.style,
@@ -61039,7 +62431,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 day
               });
             },
-            children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.Text, {
+            children: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.Text, {
               style: [
                 styles63.dayLabel,
                 textStyle,
@@ -61061,17 +62453,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         custom1.style = null;
         custom1.textStyle = null;
       }
-      return /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.View, {
+      return /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
         style: [
           styles63.dayWrapper,
           custom1.containerStyle
         ],
-        children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.View, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
           style: [
             styles63.dayButton,
             custom1.style
           ],
-          children: /* @__PURE__ */ (0, import_jsx_runtime263.jsx)(import_react_native215.Text, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.Text, {
             style: [
               textStyle,
               styles63.disabledText,
@@ -61134,15 +62526,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/EmptyDay.js
-  var import_jsx_runtime264 = __toESM(require_jsx_runtime());
-  var import_react226 = __toESM(require_react());
-  var import_react_native216 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime266 = __toESM(require_jsx_runtime());
+  var import_react227 = __toESM(require_react());
+  var import_react_native218 = __toESM(require_react_native());
   var import_prop_types7 = __toESM(require_prop_types());
   function EmptyDay(props) {
     var styles63 = props.styles;
-    return /* @__PURE__ */ (0, import_jsx_runtime264.jsx)(import_react_native216.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime266.jsx)(import_react_native218.View, {
       style: styles63.dayWrapper,
-      children: /* @__PURE__ */ (0, import_jsx_runtime264.jsx)(import_react_native216.View, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime266.jsx)(import_react_native218.View, {
         style: styles63.dayButton
       })
     });
@@ -61152,6 +62545,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/date-fns/getISODay.js
+  init_define_import_meta_env();
   function getISODay(date, options) {
     var day = toDate(date, options === null || options === void 0 ? void 0 : options.in).getDay();
     return day === 0 ? 7 : day;
@@ -61309,7 +62703,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           return {
             day,
             month: this.props.month,
-            component: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(Day, _object_spread({
+            component: /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(Day, _object_spread({
               day
             }, this.props), day)
           };
@@ -61319,7 +62713,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         key: "renderEmptyDay",
         value: function renderEmptyDay(key) {
           return {
-            component: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(EmptyDay, {
+            component: /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(EmptyDay, {
               styles: this.props.styles
             }, "empty" + key)
           };
@@ -61332,7 +62726,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           return {
             day,
             // month doesn't matter for stragglers as long as isn't set to current month
-            component: /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(Day, {
+            component: /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(Day, {
               day,
               styles: this.props.styles,
               disabledDates: function() {
@@ -61350,14 +62744,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           var styles63 = this.props.styles;
           var daysGrid = this.state.daysGrid;
           var renderedDaysGrid = daysGrid.map(function(weekRow, i) {
-            return /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
+            return /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(import_react_native219.View, {
               style: styles63.weekRow,
               children: weekRow.map(function(day) {
                 return day.component;
               })
             }, i);
           });
-          return /* @__PURE__ */ (0, import_jsx_runtime265.jsx)(import_react_native217.View, {
+          return /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(import_react_native219.View, {
             style: styles63.daysWrapper,
             children: renderedDaysGrid
           });
@@ -61365,7 +62759,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     ]);
     return DaysGridView2;
-  }(import_react227.Component);
+  }(import_react228.Component);
   DaysGridView.propTypes = {
     styles: stylePropType,
     month: import_prop_types8.default.number.isRequired,
@@ -61406,22 +62800,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/MonthSelector.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
-  var import_jsx_runtime269 = __toESM(require_jsx_runtime());
-  var import_react231 = __toESM(require_react());
-  var import_react_native221 = __toESM(require_react_native());
+  var import_jsx_runtime271 = __toESM(require_jsx_runtime());
+  var import_react232 = __toESM(require_react());
+  var import_react_native223 = __toESM(require_react_native());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/MonthsGridView.js
-  var import_jsx_runtime267 = __toESM(require_jsx_runtime());
-  var import_react229 = __toESM(require_react());
-  var import_react_native219 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime269 = __toESM(require_jsx_runtime());
+  var import_react230 = __toESM(require_react());
+  var import_react_native221 = __toESM(require_react_native());
   var import_prop_types10 = __toESM(require_prop_types());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/Month.js
-  var import_jsx_runtime266 = __toESM(require_jsx_runtime());
-  var import_react228 = __toESM(require_react());
-  var import_react_native218 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime268 = __toESM(require_jsx_runtime());
+  var import_react229 = __toESM(require_react());
+  var import_react_native220 = __toESM(require_react_native());
   var import_prop_types9 = __toESM(require_prop_types());
   function Month(props) {
     var months = props.months, month = props.currentMonth, year = props.currentYear, styles63 = props.styles, onSelectMonth = props.onSelectMonth, textStyle = props.textStyle, minDate = props.minDate, maxDate = props.maxDate;
@@ -61451,20 +62848,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         year: _year
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime266.jsx)(import_react_native218.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime268.jsx)(import_react_native220.View, {
       style: [
         styles63.monthContainer
       ],
-      children: !monthOutOfRange ? /* @__PURE__ */ (0, import_jsx_runtime266.jsx)(import_react_native218.TouchableOpacity, {
+      children: !monthOutOfRange ? /* @__PURE__ */ (0, import_jsx_runtime268.jsx)(import_react_native220.TouchableOpacity, {
         onPress: onSelect,
-        children: /* @__PURE__ */ (0, import_jsx_runtime266.jsx)(import_react_native218.Text, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime268.jsx)(import_react_native220.Text, {
           style: [
             styles63.monthText,
             textStyle
           ],
           children: monthName
         })
-      }) : /* @__PURE__ */ (0, import_jsx_runtime266.jsx)(import_react_native218.Text, {
+      }) : /* @__PURE__ */ (0, import_jsx_runtime268.jsx)(import_react_native220.Text, {
         style: [
           textStyle,
           styles63.disabledText
@@ -61498,7 +62895,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     function generateColumns() {
       var column = columnArray.map(function(index) {
         var currentMonth = _months.shift();
-        return /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(Month, {
+        return /* @__PURE__ */ (0, import_jsx_runtime269.jsx)(Month, {
           currentMonth,
           currentYear,
           months,
@@ -61511,10 +62908,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       });
       return column;
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(import_react_native219.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime269.jsx)(import_react_native221.View, {
       style: styles63.monthsWrapper,
       children: rowArray.map(function(index) {
-        return /* @__PURE__ */ (0, import_jsx_runtime267.jsx)(import_react_native219.View, {
+        return /* @__PURE__ */ (0, import_jsx_runtime269.jsx)(import_react_native221.View, {
           style: styles63.monthsRow,
           children: generateColumns()
         }, index);
@@ -61529,21 +62926,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/MonthsHeader.js
-  var import_jsx_runtime268 = __toESM(require_jsx_runtime());
-  var import_react230 = __toESM(require_react());
-  var import_react_native220 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime270 = __toESM(require_jsx_runtime());
+  var import_react231 = __toESM(require_react());
+  var import_react_native222 = __toESM(require_react_native());
   var import_prop_types11 = __toESM(require_prop_types());
   function MonthsHeader(props) {
     var styles63 = props.styles, textStyle = props.textStyle, headingLevel = props.headingLevel, title = props.title;
     var accessibilityProps = {
       accessibilityRole: "header"
     };
-    if (import_react_native220.Platform.OS === "web") {
+    if (import_react_native222.Platform.OS === "web") {
       accessibilityProps["aria-level"] = headingLevel;
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime268.jsx)(import_react_native220.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime270.jsx)(import_react_native222.View, {
       style: styles63.headerWrapper,
-      children: /* @__PURE__ */ (0, import_jsx_runtime268.jsx)(import_react_native220.Text, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime270.jsx)(import_react_native222.Text, {
         style: [
           styles63.monthsHeaderText,
           textStyle
@@ -61577,16 +62975,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         key: "render",
         value: function render() {
           var _this_props = this.props, styles63 = _this_props.styles, textStyle = _this_props.textStyle, title = _this_props.title, headingLevel = _this_props.headingLevel, currentYear = _this_props.currentYear, months = _this_props.months, minDate = _this_props.minDate, maxDate = _this_props.maxDate, onSelectMonth = _this_props.onSelectMonth;
-          return /* @__PURE__ */ (0, import_jsx_runtime269.jsxs)(import_react_native221.View, {
+          return /* @__PURE__ */ (0, import_jsx_runtime271.jsxs)(import_react_native223.View, {
             styles: styles63.calendar,
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime269.jsx)(MonthsHeader, {
+              /* @__PURE__ */ (0, import_jsx_runtime271.jsx)(MonthsHeader, {
                 styles: styles63,
                 textStyle,
                 title: title + currentYear,
                 headingLevel
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime269.jsx)(MonthsGridView, {
+              /* @__PURE__ */ (0, import_jsx_runtime271.jsx)(MonthsGridView, {
                 styles: styles63,
                 textStyle,
                 currentYear,
@@ -61601,28 +62999,32 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     ]);
     return MonthSelector2;
-  }(import_react231.Component);
+  }(import_react232.Component);
 
   // node_modules/react-native-calendar-picker/CalendarPicker/YearSelector.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
-  var import_jsx_runtime273 = __toESM(require_jsx_runtime());
-  var import_react235 = __toESM(require_react());
-  var import_react_native225 = __toESM(require_react_native());
+  var import_jsx_runtime275 = __toESM(require_jsx_runtime());
+  var import_react236 = __toESM(require_react());
+  var import_react_native227 = __toESM(require_react_native());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/YearsGridView.js
-  var import_jsx_runtime271 = __toESM(require_jsx_runtime());
-  var import_react233 = __toESM(require_react());
-  var import_react_native223 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime273 = __toESM(require_jsx_runtime());
+  var import_react234 = __toESM(require_react());
+  var import_react_native225 = __toESM(require_react_native());
   var import_prop_types13 = __toESM(require_prop_types());
 
   // node_modules/react-native-calendar-picker/CalendarPicker/Year.js
-  var import_jsx_runtime270 = __toESM(require_jsx_runtime());
-  var import_react232 = __toESM(require_react());
-  var import_react_native222 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime272 = __toESM(require_jsx_runtime());
+  var import_react233 = __toESM(require_react());
+  var import_react_native224 = __toESM(require_react_native());
   var import_prop_types12 = __toESM(require_prop_types());
 
   // node_modules/date-fns/startOfMonth.js
+  init_define_import_meta_env();
   function startOfMonth(date, options) {
     var _date = toDate(date, options === null || options === void 0 ? void 0 : options.in);
     _date.setDate(1);
@@ -61658,20 +63060,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         year
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime270.jsx)(import_react_native222.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(import_react_native224.View, {
       style: [
         styles63.yearContainer
       ],
-      children: !yearOutOfRange ? /* @__PURE__ */ (0, import_jsx_runtime270.jsx)(import_react_native222.TouchableOpacity, {
+      children: !yearOutOfRange ? /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(import_react_native224.TouchableOpacity, {
         onPress: onSelect,
-        children: /* @__PURE__ */ (0, import_jsx_runtime270.jsx)(import_react_native222.Text, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(import_react_native224.Text, {
           style: [
             styles63.yearText,
             textStyle
           ],
           children: year
         })
-      }) : /* @__PURE__ */ (0, import_jsx_runtime270.jsx)(import_react_native222.Text, {
+      }) : /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(import_react_native224.Text, {
         style: [
           textStyle,
           styles63.disabledText
@@ -61700,7 +63102,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     function generateColumns() {
       var column = guideArray.map(function() {
         year++;
-        return /* @__PURE__ */ (0, import_jsx_runtime271.jsx)(Year, {
+        return /* @__PURE__ */ (0, import_jsx_runtime273.jsx)(Year, {
           year,
           currentMonth,
           currentYear,
@@ -61713,10 +63115,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       });
       return column;
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime271.jsx)(import_react_native223.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime273.jsx)(import_react_native225.View, {
       style: styles63.yearsWrapper,
       children: guideArray.map(function(index) {
-        return /* @__PURE__ */ (0, import_jsx_runtime271.jsx)(import_react_native223.View, {
+        return /* @__PURE__ */ (0, import_jsx_runtime273.jsx)(import_react_native225.View, {
           style: styles63.yearsRow,
           children: generateColumns(index)
         }, year);
@@ -61730,9 +63132,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   };
 
   // node_modules/react-native-calendar-picker/CalendarPicker/YearsHeader.js
-  var import_jsx_runtime272 = __toESM(require_jsx_runtime());
-  var import_react234 = __toESM(require_react());
-  var import_react_native224 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime274 = __toESM(require_jsx_runtime());
+  var import_react235 = __toESM(require_react());
+  var import_react_native226 = __toESM(require_react_native());
   var import_prop_types14 = __toESM(require_prop_types());
   function YearsHeader(props) {
     var title = props.title, year = props.year, maxDate = props.maxDate, minDate = props.minDate, restrictNavigation = props.restrictNavigation, styles63 = props.styles, textStyle = props.textStyle, previousComponent = props.previousComponent, nextComponent = props.nextComponent, previousTitle = props.previousTitle, nextTitle = props.nextTitle, previousTitleStyle = props.previousTitleStyle, nextTitleStyle = props.nextTitleStyle, onYearViewPrevious = props.onYearViewPrevious, onYearViewNext = props.onYearViewNext, headingLevel = props.headingLevel;
@@ -61741,13 +63144,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var accessibilityProps = {
       accessibilityRole: "header"
     };
-    if (import_react_native224.Platform.OS === "web") {
+    if (import_react_native226.Platform.OS === "web") {
       accessibilityProps["aria-level"] = headingLevel;
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime272.jsxs)(import_react_native224.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime274.jsxs)(import_react_native226.View, {
       style: styles63.headerWrapper,
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(Controls, {
+        /* @__PURE__ */ (0, import_jsx_runtime274.jsx)(Controls, {
           disabled: disablePrevious,
           label: previousTitle,
           component: previousComponent,
@@ -61759,7 +63162,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             previousTitleStyle
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(import_react_native224.Text, _object_spread_props(_object_spread({
+        /* @__PURE__ */ (0, import_jsx_runtime274.jsx)(import_react_native226.Text, _object_spread_props(_object_spread({
           style: [
             styles63.yearsHeaderText,
             textStyle
@@ -61767,7 +63170,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }, accessibilityProps), {
           children: title
         })),
-        /* @__PURE__ */ (0, import_jsx_runtime272.jsx)(Controls, {
+        /* @__PURE__ */ (0, import_jsx_runtime274.jsx)(Controls, {
           disabled: disableNext,
           label: nextTitle,
           component: nextComponent,
@@ -61819,10 +63222,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         key: "render",
         value: function render() {
           var _this_props = this.props, styles63 = _this_props.styles, textStyle = _this_props.textStyle, title = _this_props.title, initialDate = _this_props.initialDate, currentMonth = _this_props.currentMonth, currentYear = _this_props.currentYear, minDate = _this_props.minDate, maxDate = _this_props.maxDate, restrictNavigation = _this_props.restrictNavigation, previousComponent = _this_props.previousComponent, nextComponent = _this_props.nextComponent, previousTitle = _this_props.previousTitle, nextTitle = _this_props.nextTitle, previousTitleStyle = _this_props.previousTitleStyle, nextTitleStyle = _this_props.nextTitleStyle, headingLevel = _this_props.headingLevel, onSelectYear = _this_props.onSelectYear;
-          return /* @__PURE__ */ (0, import_jsx_runtime273.jsxs)(import_react_native225.View, {
+          return /* @__PURE__ */ (0, import_jsx_runtime275.jsxs)(import_react_native227.View, {
             styles: styles63.calendar,
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime273.jsx)(YearsHeader, {
+              /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(YearsHeader, {
                 styles: styles63,
                 textStyle,
                 title,
@@ -61841,7 +63244,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 onYearViewPrevious: this.handleOnYearViewPrevious,
                 onYearViewNext: this.handleOnYearViewNext
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime273.jsx)(YearsGridView, {
+              /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(YearsGridView, {
                 intialYear: this.state.initialYear,
                 currentMonth,
                 currentYear,
@@ -61857,18 +63260,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     ]);
     return YearSelector2;
-  }(import_react235.Component);
+  }(import_react236.Component);
 
   // node_modules/react-native-calendar-picker/CalendarPicker/Scroller.js
+  init_define_import_meta_env();
   init_class_call_check();
   init_create_class();
-  var import_jsx_runtime274 = __toESM(require_jsx_runtime());
-  var import_react236 = __toESM(require_react());
-  var import_react_native226 = __toESM(require_react_native());
+  var import_jsx_runtime276 = __toESM(require_jsx_runtime());
+  var import_react237 = __toESM(require_react());
+  var import_react_native228 = __toESM(require_react_native());
   var import_prop_types15 = __toESM(require_prop_types());
   var import_recyclerlistview = __toESM(require_reactnative());
 
   // node_modules/date-fns/addMonths.js
+  init_define_import_meta_env();
   function addMonths(date, amount, options) {
     var _date = toDate(date, options === null || options === void 0 ? void 0 : options.in);
     if (isNaN(amount)) return constructFrom((options === null || options === void 0 ? void 0 : options.in) || date, NaN);
@@ -61888,11 +63293,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
 
   // node_modules/date-fns/subMonths.js
+  init_define_import_meta_env();
   function subMonths(date, amount, options) {
     return addMonths(date, -amount, options);
   }
 
   // node_modules/date-fns/endOfMonth.js
+  init_define_import_meta_env();
   function endOfMonth(date, options) {
     var _date = toDate(date, options === null || options === void 0 ? void 0 : options.in);
     var month = _date.getMonth();
@@ -62080,7 +63487,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             updateState = true;
             newState = _object_spread({}, newState, this.updateMonthsData(this.props.data));
           }
-          if (import_react_native226.Platform.OS === "android" && this.props.renderMonthParams.selectedStartDate !== prevProps.renderMonthParams.selectedStartDate) {
+          if (import_react_native228.Platform.OS === "android" && this.props.renderMonthParams.selectedStartDate !== prevProps.renderMonthParams.selectedStartDate) {
             this.goToDate(this.props.renderMonthParams.selectedStartDate, 100);
           }
           if (updateState) {
@@ -62096,13 +63503,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           if (!data || numMonths === 0 || !height) {
             return null;
           }
-          return /* @__PURE__ */ (0, import_jsx_runtime274.jsx)(import_react_native226.View, {
+          return /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(import_react_native228.View, {
             style: {
               width,
               height
             },
             onLayout: this.onLayout,
-            children: /* @__PURE__ */ (0, import_jsx_runtime274.jsx)(import_recyclerlistview.RecyclerListView, {
+            children: /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(import_recyclerlistview.RecyclerListView, {
               ref: function(rlv) {
                 return _this.rlv = rlv;
               },
@@ -62124,7 +63531,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     ]);
     return CalendarScroller2;
-  }(import_react236.Component);
+  }(import_react237.Component);
   CalendarScroller.propTypes = {
     data: import_prop_types15.default.array.isRequired,
     initialRenderIndex: import_prop_types15.default.number,
@@ -62155,8 +63562,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       _this = _super.call(this, props);
       _this.updateScaledStyles = function(props2) {
         var scaleFactor = props2.scaleFactor, selectedDayColor = props2.selectedDayColor, selectedDayTextColor = props2.selectedDayTextColor, todayBackgroundColor = props2.todayBackgroundColor, width = props2.width, height = props2.height, dayShape = props2.dayShape;
-        var containerWidth = width ? width : import_react_native227.Dimensions.get("window").width;
-        var containerHeight = height ? height : import_react_native227.Dimensions.get("window").height;
+        var containerWidth = width ? width : import_react_native229.Dimensions.get("window").width;
+        var containerHeight = height ? height : import_react_native229.Dimensions.get("window").height;
         return {
           styles: makeStyles({
             containerWidth,
@@ -62457,7 +63864,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         styles: {}
       }, _this.updateScaledStyles(props), _this.updateMonthYear(props.initialDate), _this.updateDisabledDates(props.disabledDates), _this.updateMinMaxRanges(props.minRangeDuration, props.maxRangeDuration), _this.createMonths(props, {}));
       _this.state.renderMonthParams = _this.createMonthProps(_this.state);
-      import_react_native227.Text.defaultProps = _object_spread_props(_object_spread({}, import_react_native227.Text.defaultProps), {
+      import_react_native229.Text.defaultProps = _object_spread_props(_object_spread({}, import_react_native229.Text.defaultProps), {
         allowFontScaling: props.fontScaling
       });
       return _this;
@@ -62520,7 +63927,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       {
         key: "renderMonth",
         value: function renderMonth(props) {
-          return /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(DaysGridView, _object_spread({}, props));
+          return /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(DaysGridView, _object_spread({}, props));
         }
       },
       {
@@ -62532,7 +63939,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           var content;
           switch (currentView) {
             case "months":
-              content = /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(MonthSelector, {
+              content = /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(MonthSelector, {
                 styles: styles63,
                 textStyle,
                 title: selectMonthTitle,
@@ -62545,7 +63952,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               });
               break;
             case "years":
-              content = /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(YearSelector, {
+              content = /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(YearSelector, {
                 styles: styles63,
                 textStyle,
                 title: selectYearTitle,
@@ -62566,10 +63973,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               });
               break;
             default:
-              content = /* @__PURE__ */ (0, import_jsx_runtime275.jsxs)(import_react_native227.View, {
+              content = /* @__PURE__ */ (0, import_jsx_runtime277.jsxs)(import_react_native229.View, {
                 styles: styles63.calendar,
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(HeaderControls, {
+                  /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(HeaderControls, {
                     styles: styles63,
                     currentMonth,
                     currentYear,
@@ -62595,7 +64002,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     monthYearHeaderWrapperStyle,
                     headerWrapperStyle
                   }),
-                  /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(Weekdays, {
+                  /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(Weekdays, {
                     styles: styles63,
                     firstDay: startFromMonday ? 1 : firstDay,
                     currentMonth,
@@ -62605,7 +64012,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     dayLabelsWrapper,
                     customDayHeaderStyles
                   }),
-                  scrollable ? /* @__PURE__ */ (0, import_jsx_runtime275.jsx)(CalendarScroller, {
+                  scrollable ? /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(CalendarScroller, {
                     ref: function(scroller) {
                       return _this.scroller = scroller;
                     },
@@ -62630,7 +64037,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     ]);
     return CalendarPicker2;
-  }(import_react237.Component);
+  }(import_react238.Component);
   CalendarPicker.defaultProps = {
     initialDate: /* @__PURE__ */ new Date(),
     scaleFactor: 375,
@@ -62659,17 +64066,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   var import_moment2 = __toESM(require_moment());
 
   // utill/time-picker.tsx
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime276 = __toESM(require_jsx_runtime());
-  var import_react238 = __toESM(require_react());
-  var import_react_native229 = __toESM(require_react_native());
-  var TimePickerModal = /* @__PURE__ */ (0, import_react238.forwardRef)(function(param, ref) {
+  var import_jsx_runtime278 = __toESM(require_jsx_runtime());
+  var import_react239 = __toESM(require_react());
+  var import_react_native231 = __toESM(require_react_native());
+  var TimePickerModal = /* @__PURE__ */ (0, import_react239.forwardRef)(function(param, ref) {
     var visible = param.visible, minuteDivide = param.minuteDivide, hour = param.hour, minute = param.minute;
-    var _useState = _sliced_to_array((0, import_react238.useState)(0), 2), ampmIndex = _useState[0], setAmpmIndex = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react238.useState)(8), 2), hourIndex = _useState1[0], setHourIndex = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react238.useState)(0), 2), minuteIndex = _useState2[0], setMinuteIndex = _useState2[1];
+    var _useState = _sliced_to_array((0, import_react239.useState)(0), 2), ampmIndex = _useState[0], setAmpmIndex = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react239.useState)(8), 2), hourIndex = _useState1[0], setHourIndex = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react239.useState)(0), 2), minuteIndex = _useState2[0], setMinuteIndex = _useState2[1];
     var ITEM_HEIGHT = 40;
-    (0, import_react238.useImperativeHandle)(ref, function() {
+    (0, import_react239.useImperativeHandle)(ref, function() {
       return {
         // 부모 컴포넌트에서 사용할 함수를 선언
         handleTime
@@ -62697,9 +64105,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "\uC624\uD6C4"
     ];
     var flatListRef = {
-      ampm: (0, import_react238.useRef)(null),
-      hour: (0, import_react238.useRef)(null),
-      minute: (0, import_react238.useRef)(null)
+      ampm: (0, import_react239.useRef)(null),
+      hour: (0, import_react239.useRef)(null),
+      minute: (0, import_react239.useRef)(null)
     };
     var onScrollEnd = function(type) {
       return function(e4) {
@@ -62710,7 +64118,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         if (type === "minute") setMinuteIndex(index);
       };
     };
-    (0, import_react238.useEffect)(function() {
+    (0, import_react239.useEffect)(function() {
       setAmpmIndex(Math.floor(hour / 12));
       setHourIndex(hour == 0 ? 11 : (hour - 1) % 12);
       setMinuteIndex(minuteDivide ? minute / 30 : minute);
@@ -62718,9 +64126,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       minute,
       hour
     ]);
-    (0, import_react238.useEffect)(function() {
+    (0, import_react239.useEffect)(function() {
       if (visible) {
-        import_react_native229.InteractionManager.runAfterInteractions(function() {
+        import_react_native231.InteractionManager.runAfterInteractions(function() {
           setTimeout(function() {
             var _flatListRef_hour_current, _flatListRef_minute_current, _flatListRef_ampm_current;
             (_flatListRef_hour_current = flatListRef.hour.current) === null || _flatListRef_hour_current === void 0 ? void 0 : _flatListRef_hour_current.scrollToOffset({
@@ -62745,14 +64153,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       ampmIndex
     ]);
     var renderPickerItem = function(item, index, selected) {
-      return /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(import_react_native229.Pressable, {
+      return /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(import_react_native231.Pressable, {
         style: [
           styles60.pickerItem,
           {
             height: ITEM_HEIGHT
           }
         ],
-        children: /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(Txt_default, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(Txt_default, {
           typography: "st5",
           color: selected ? colors.black : "#aaa",
           fontWeight: "medium",
@@ -62760,11 +64168,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(import_jsx_runtime276.Fragment, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime276.jsxs)(import_react_native229.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(import_jsx_runtime278.Fragment, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime278.jsxs)(import_react_native231.View, {
         style: styles60.pickerContainer,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(react_native_gesture_handler_exports.FlatList, {
+          /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(react_native_gesture_handler_exports.FlatList, {
             ref: flatListRef.ampm,
             data: ampmList,
             keyExtractor: function(item, index) {
@@ -62783,7 +64191,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               return renderPickerItem(item, index, index === ampmIndex);
             }
           }),
-          /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(react_native_gesture_handler_exports.FlatList, {
+          /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(react_native_gesture_handler_exports.FlatList, {
             ref: flatListRef.hour,
             data: hours,
             keyExtractor: function(item, index) {
@@ -62803,7 +64211,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               return renderPickerItem(item, index, index === hourIndex);
             }
           }),
-          /* @__PURE__ */ (0, import_jsx_runtime276.jsx)(react_native_gesture_handler_exports.FlatList, {
+          /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(react_native_gesture_handler_exports.FlatList, {
             ref: flatListRef.minute,
             data: minutes,
             keyExtractor: function(item, index) {
@@ -62827,7 +64235,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       })
     });
   });
-  var styles60 = import_react_native229.StyleSheet.create({
+  var styles60 = import_react_native231.StyleSheet.create({
     pickerContainer: {
       flexDirection: "row",
       justifyContent: "space-around",
@@ -62909,7 +64317,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }));
       return true;
     };
-    (0, import_react239.useLayoutEffect)(function() {
+    (0, import_react240.useLayoutEffect)(function() {
       hanldleDay();
     }, [
       selectStartDate,
@@ -62985,16 +64393,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       } else {
       }
     };
-    var timeSelectRef = (0, import_react239.useRef)(0);
+    var timeSelectRef = (0, import_react240.useRef)(0);
     var showBasicBottomSheet = function() {
       bottomSheet.open({
-        header: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(BottomSheet.Header, {
+        header: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(BottomSheet.Header, {
           children: "\uB0A0\uC9DC \uC120\uD0DD"
         }),
         // children: <BottomSheet.CTA>선택완료</BottomSheet.CTA>,
-        children: /* @__PURE__ */ (0, import_jsx_runtime277.jsxs)(import_react_native231.View, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime279.jsxs)(import_react_native233.View, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(CalendarPicker, {
+            /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(CalendarPicker, {
               width: 375,
               weekdays,
               months,
@@ -63025,7 +64433,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               allowBackwardRangeSelect: true,
               selectYearTitle: "\uB144\uB3C4 \uC120\uD0DD"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(BottomSheet.CTA, {
+            /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(BottomSheet.CTA, {
               onPress: function() {
                 bottomSheet.close();
               },
@@ -63035,23 +64443,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    var childComponentRef = (0, import_react239.useRef)();
+    var childComponentRef = (0, import_react240.useRef)();
     var showHourBottomSheet = function(e4) {
       timeSelectRef.current = e4;
       bottomSheet.open({
-        header: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(BottomSheet.Header, {
+        header: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(BottomSheet.Header, {
           children: "\uB0A0\uC9DC \uC120\uD0DD"
         }),
-        children: /* @__PURE__ */ (0, import_jsx_runtime277.jsxs)(import_react_native231.View, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime279.jsxs)(import_react_native233.View, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(time_picker_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(time_picker_default, {
               hour: timeLimitArray[e4],
               minute: minuteLimitArray[e4],
               visible: true,
               minuteDivide: false,
               ref: childComponentRef
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(BottomSheet.CTA, {
+            /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(BottomSheet.CTA, {
               onPress: function() {
                 var _childComponentRef_current;
                 bottomSheet.close();
@@ -63063,14 +64471,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime277.jsxs)(import_jsx_runtime277.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime279.jsxs)(import_jsx_runtime279.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3, {
+        /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3, {
           onPress: showBasicBottomSheet,
-          left: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3.Icon, {
+          left: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3.Icon, {
             name: "icon-calendar-check-blue-weak"
           }),
-          contents: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3.Texts, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: (0, import_moment2.default)(selectStartDate).format("YYYY-MM-DD") + " ~ " + (0, import_moment2.default)(selectEndDate !== null && selectEndDate !== void 0 ? selectEndDate : selectStartDate).format("YYYY-MM-DD"),
             topProps: {
@@ -63080,15 +64488,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3, {
+        /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3, {
           onPress: function() {
             return showHourBottomSheet(0);
           },
-          left: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3.Icon, {
+          left: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3.Icon, {
             name: "icon-clock-blue-weak",
             color: "#5350FF"
           }),
-          contents: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3.Texts, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: (timeLimitArray[0] < 12 ? "\uC624\uC804" : "\uC624\uD6C4") + " " + String(timeLimitArray[0]).padStart(2, "0") + "\uC2DC " + String(minuteLimitArray[0]).padStart(2, "0") + "\uBD84",
             topProps: {
@@ -63097,7 +64505,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               color: colors.grey800
             }
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(Badge_default, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(Badge_default, {
             size: "small",
             type: "yellow",
             badgeStyle: "weak",
@@ -63105,15 +64513,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             children: "\uCCAB\uC9F8 \uB0A0"
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3, {
+        /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3, {
           onPress: function() {
             return showHourBottomSheet(1);
           },
-          left: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3.Icon, {
+          left: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3.Icon, {
             name: "icon-clock-blue-weak",
             color: "#5350FF"
           }),
-          contents: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(ListRow3.Texts, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: (timeLimitArray[1] < 12 ? "\uC624\uC804" : "\uC624\uD6C4") + " " + String(timeLimitArray[1]).padStart(2, "0") + "\uC2DC " + String(minuteLimitArray[1]).padStart(2, "0") + "\uBD84",
             topProps: {
@@ -63122,7 +64530,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               color: colors.grey800
             }
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime277.jsx)(Badge_default, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(Badge_default, {
             size: "small",
             type: "green",
             badgeStyle: "weak",
@@ -63141,9 +64549,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route7;
     }
   });
-  var import_jsx_runtime278 = __toESM(require_jsx_runtime());
-  var import_react240 = __toESM(require_react());
-  var import_react_native233 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime280 = __toESM(require_jsx_runtime());
+  var import_react241 = __toESM(require_react());
+  var import_react_native235 = __toESM(require_react_native());
   var Route7 = BedrockRoute("/enroll/departure", {
     validateParams: function(params) {
       return params;
@@ -63223,7 +64632,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return _ref.apply(this, arguments);
       };
     }();
-    (0, import_react240.useEffect)(function() {
+    (0, import_react241.useEffect)(function() {
       handleNearBySearchApi();
     }, [
       cityIndex
@@ -63242,19 +64651,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         icon: "icon-train-mono"
       }
     ];
-    var autocompleteRef = (0, import_react240.useRef)();
-    var SCREEN_WIDTH = import_react_native233.Dimensions.get("window").width;
+    var autocompleteRef = (0, import_react241.useRef)();
+    var SCREEN_WIDTH = import_react_native235.Dimensions.get("window").width;
     var INPUT_WIDTH = SCREEN_WIDTH - 24 * 2;
-    return /* @__PURE__ */ (0, import_jsx_runtime278.jsxs)(import_jsx_runtime278.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime280.jsxs)(import_jsx_runtime280.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(GooglePlacesAutocomplete, {
+        /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(GooglePlacesAutocomplete, {
           placeholder: "\uC9C0\uC5ED\uC744 \uAC80\uC0C9\uD574\uBCF4\uC138\uC694",
           disableScroll: false,
           enablePoweredByContainer: false,
           keepResultsAfterBlur: true,
           ref: autocompleteRef,
           query: {
-            key: "AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk",
+            key: define_import_meta_env_default.GOOGLE_API_KEY,
             language: "ko"
           },
           textInputProps: {
@@ -63262,7 +64671,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             allowFontScaling: false
           },
           renderLeftButton: function() {
-            return /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(Icon_default, {
+            return /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(Icon_default, {
               name: "icon-search-mono"
             });
           },
@@ -63320,8 +64729,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             return console.log("no results");
           }
         }),
-        departure.name != "" && /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3, {
-          left: /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3.Icon, {
+        departure.name != "" && /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3, {
+          left: /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3.Icon, {
             name: "icon-search-mono",
             style: {
               backgroundColor: colors.grey100
@@ -63329,13 +64738,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             color: "#93C9FF",
             type: "border"
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(Checkbox.Line, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(Checkbox.Line, {
             checked: "departure" == departureSelected,
             onPress: function() {
               dispatch(travelSliceActions.setDepartureSelected("departure" == departureSelected ? "" : "departure"));
             }
           }),
-          contents: /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3.Texts, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: departure.name,
             topProps: {
@@ -63346,15 +64755,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           })
         }),
         moveList.map(function(item, index) {
-          return /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3, {
-            left: item.icon.includes("icon") ? /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3.Icon, {
+          return /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3, {
+            left: item.icon.includes("icon") ? /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3.Icon, {
               name: item.icon,
               style: {
                 backgroundColor: colors.grey100
               },
               color: "#93C9FF",
               type: "border"
-            }) : /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3.Image, {
+            }) : /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3.Image, {
               type: "circle",
               style: {
                 backgroundColor: colors.grey100,
@@ -63364,13 +64773,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 uri: item.icon
               }
             }),
-            right: item.text.name != "" && /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(Checkbox.Line, {
+            right: item.text.name != "" && /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(Checkbox.Line, {
               checked: item.title == departureSelected,
               onPress: function() {
                 dispatch(travelSliceActions.setDepartureSelected(departureSelected == item.title ? "" : item.title));
               }
             }),
-            contents: /* @__PURE__ */ (0, import_jsx_runtime278.jsx)(ListRow3.Texts, {
+            contents: /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(ListRow3.Texts, {
               type: "1RowTypeA",
               top: item.text.name == "" ? "\uADFC\uCC98 ".concat(item.name, "\uC744 \uCC3E\uC9C0 \uBABB\uD588\uC5B4\uC694 ") : item.text.name,
               topProps: {
@@ -63395,19 +64804,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route8;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime280 = __toESM(require_jsx_runtime());
-  var import_react242 = __toESM(require_react());
-  var import_react_native236 = __toESM(require_react_native());
+  var import_jsx_runtime282 = __toESM(require_jsx_runtime());
+  var import_react243 = __toESM(require_react());
+  var import_react_native238 = __toESM(require_react_native());
 
   // components/map-view.tsx
-  var import_jsx_runtime279 = __toESM(require_jsx_runtime());
-  var import_react241 = __toESM(require_react());
-  var import_react_native234 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime281 = __toESM(require_jsx_runtime());
+  var import_react242 = __toESM(require_react());
+  var import_react_native236 = __toESM(require_react_native());
   function CustomMapView(param) {
     var lat = param.lat, lng = param.lng, isWideZoom = param.isWideZoom, range = param.range;
-    var htmlContent = '\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <title>Map</title>\n        <meta name="viewport" content="width=device-width, initial-scale=1.0">\n        <style>\n          html, body, #map {\n            margin: 0;\n            padding: 0;\n            height: 100%;\n            width: 100%;\n          }\n        </style>\n        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk"><\/script>\n        <script>\n          function initMap() {\n            const center = { lat: '.concat(lat, ", lng: ").concat(lng, ' };\n            const map = new google.maps.Map(document.getElementById("map"), {\n              center: center,\n              zoom: ').concat(isWideZoom ? 9 : 12, ', // \uB300\uB7B5 latitudeDelta 0.8 vs 0.2\n              disableDefaultUI: true,\n            });\n\n            new google.maps.Circle({\n              strokeColor: "#2698FB",\n              strokeOpacity: 0,\n              strokeWeight: 0,\n              fillColor: "rgba(38, 152, 251, 0.3)",\n              fillOpacity: 1,\n              map: map,\n              center: center,\n              radius: ').concat(range * (isWideZoom ? 5e3 : 1500), '\n            });\n          }\n\n          window.onload = initMap;\n        <\/script>\n      </head>\n      <body>\n        <div id="map"></div>\n      </body>\n    </html>\n  ');
-    return /* @__PURE__ */ (0, import_jsx_runtime279.jsx)(import_react_native_webview.default, {
+    var htmlContent = '\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <title>Map</title>\n        <meta name="viewport" content="width=device-width, initial-scale=1.0">\n        <style>\n          html, body, #map {\n            margin: 0;\n            padding: 0;\n            height: 100%;\n            width: 100%;\n          }\n        </style>\n        <script src="https://maps.googleapis.com/maps/api/js?key='.concat(define_import_meta_env_default.GOOGLE_API_KEY, '"><\/script>\n        <script>\n          function initMap() {\n            const center = { lat: ').concat(lat, ", lng: ").concat(lng, ' };\n            const map = new google.maps.Map(document.getElementById("map"), {\n              center: center,\n              zoom: ').concat(isWideZoom ? 9 : 12, ', // \uB300\uB7B5 latitudeDelta 0.8 vs 0.2\n              disableDefaultUI: true,\n            });\n\n            new google.maps.Circle({\n              strokeColor: "#2698FB",\n              strokeOpacity: 0,\n              strokeWeight: 0,\n              fillColor: "rgba(38, 152, 251, 0.3)",\n              fillOpacity: 1,\n              map: map,\n              center: center,\n              radius: ').concat(range * (isWideZoom ? 5e3 : 1500), '\n            });\n          }\n\n          window.onload = initMap;\n        <\/script>\n      </head>\n      <body>\n        <div id="map"></div>\n      </body>\n    </html>\n  ');
+    return /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(import_react_native_webview.default, {
       originWhitelist: [
         "*"
       ],
@@ -63419,10 +64830,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       domStorageEnabled: true
     });
   }
-  var styles61 = import_react_native234.StyleSheet.create({
+  var styles61 = import_react_native236.StyleSheet.create({
     container: {
-      width: import_react_native234.Dimensions.get("window").width * 327 / 375,
-      height: import_react_native234.Dimensions.get("window").height * 240 / 812
+      width: import_react_native236.Dimensions.get("window").width * 327 / 375,
+      height: import_react_native236.Dimensions.get("window").height * 240 / 812
     },
     map: {
       flex: 1
@@ -63437,22 +64848,22 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     component: EnrollDistance
   });
   function EnrollDistance() {
-    var _useState = _sliced_to_array((0, import_react242.useState)(5), 2), value = _useState[0], setValue = _useState[1];
+    var _useState = _sliced_to_array((0, import_react243.useState)(5), 2), value = _useState[0], setValue = _useState[1];
     var _useAppSelector = useAppSelector(function(state) {
       return state.travelSlice;
     }), country = _useAppSelector.country, cityIndex = _useAppSelector.cityIndex, cityDistance = _useAppSelector.cityDistance;
-    return /* @__PURE__ */ (0, import_jsx_runtime280.jsxs)(import_react_native236.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime282.jsxs)(import_react_native238.View, {
       style: {
         marginHorizontal: 24
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(CustomMapView, {
+        /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(CustomMapView, {
           lat: cityViewList[country][cityIndex].sub[cityDistance[0]].lat,
           lng: cityViewList[country][cityIndex].sub[cityDistance[0]].lng,
           isWideZoom: cityDistance[0] == 0,
           range: value
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(Slider, {
+        /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(Slider, {
           value,
           onChange: function(e4) {
             return setValue(e4);
@@ -63462,19 +64873,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           step: 1,
           color: colors.green300
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime280.jsxs)(import_react_native236.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime282.jsxs)(import_react_native238.View, {
           style: {
             flexDirection: "row",
             justifyContent: "space-between"
           },
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(Txt_default, {
               typography: "t5",
               fontWeight: "medium",
               color: colors.grey700,
               children: "\uB0B4 \uADFC\uCC98"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime280.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(Txt_default, {
               typography: "t5",
               fontWeight: "medium",
               color: colors.grey700,
@@ -63493,10 +64904,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route9;
     }
   });
+  init_define_import_meta_env();
   init_to_consumable_array();
-  var import_jsx_runtime281 = __toESM(require_jsx_runtime());
-  var import_react243 = __toESM(require_react());
-  var import_react_native238 = __toESM(require_react_native());
+  var import_jsx_runtime283 = __toESM(require_jsx_runtime());
+  var import_react244 = __toESM(require_react());
+  var import_react_native240 = __toESM(require_react_native());
   var Route9 = BedrockRoute("/enroll/essential", {
     validateParams: function(params) {
       return params;
@@ -63518,14 +64930,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "\uD1A0"
     ];
     var open = useToast().open;
-    return /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(import_jsx_runtime281.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(import_jsx_runtime283.Fragment, {
       children: _to_consumable_array(Array(nDay + 1)).map(function(item, idx) {
         var filteredPlaces = essentialPlaces.filter(function(place) {
           return (place === null || place === void 0 ? void 0 : place.day) === idx + 1;
         });
-        return /* @__PURE__ */ (0, import_jsx_runtime281.jsxs)(import_jsx_runtime281.Fragment, {
+        return /* @__PURE__ */ (0, import_jsx_runtime283.jsxs)(import_jsx_runtime283.Fragment, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime281.jsxs)(import_react_native238.View, {
+            /* @__PURE__ */ (0, import_jsx_runtime283.jsxs)(import_react_native240.View, {
               style: {
                 flexDirection: "row",
                 alignItems: "center",
@@ -63533,13 +64945,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 marginHorizontal: 24
               },
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(Txt_default, {
+                /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Txt_default, {
                   typography: "t5",
                   fontWeight: "semibold",
                   color: colors.grey700,
                   children: "DAY" + (idx + 1)
                 }),
-                /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(Txt_default, {
+                /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Txt_default, {
                   typography: "t6",
                   fontWeight: "regular",
                   color: "#6B7684",
@@ -63549,8 +64961,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }),
             filteredPlaces.map(function(data, index) {
               var refKey = "".concat(idx, "_").concat(index, "_key");
-              return /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3, {
-                contents: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3.Texts, {
+              return /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3, {
+                contents: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3.Texts, {
                   type: "1RowTypeA",
                   top: data === null || data === void 0 ? void 0 : data.name,
                   topProps: {
@@ -63559,7 +64971,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     color: colors.grey800
                   }
                 }),
-                right: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(Badge_default, {
+                right: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Badge_default, {
                   size: "small",
                   type: "green",
                   badgeStyle: "weak",
@@ -63568,8 +64980,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 })
               }, refKey);
             }),
-            accommodations[idx + 1].name && /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3, {
-              contents: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3.Texts, {
+            accommodations[idx + 1].name && /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3.Texts, {
                 type: "1RowTypeA",
                 top: accommodations[idx + 1].name,
                 topProps: {
@@ -63578,7 +64990,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   color: colors.grey800
                 }
               }),
-              right: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(Badge_default, {
+              right: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Badge_default, {
                 size: "small",
                 type: "red",
                 badgeStyle: "weak",
@@ -63586,7 +64998,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 children: "\uC219\uC18C"
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3, {
+            /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3, {
               onPress: function() {
                 var _accommodations_;
                 if (((_accommodations_ = accommodations[idx + 1]) === null || _accommodations_ === void 0 ? void 0 : _accommodations_.name) != "" && filteredPlaces.length == 3) {
@@ -63599,7 +65011,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   });
                 }
               },
-              left: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3.Icon, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3.Icon, {
                 name: "icon-plus-mono",
                 style: {
                   backgroundColor: colors.grey100
@@ -63607,11 +65019,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 color: colors.blue500,
                 type: "border"
               }),
-              right: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3.Icon, {
+              right: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3.Icon, {
                 name: "icon-arrow-right-mono",
                 color: colors.grey400
               }),
-              contents: /* @__PURE__ */ (0, import_jsx_runtime281.jsx)(ListRow3.Texts, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(ListRow3.Texts, {
                 type: "1RowTypeA",
                 top: "\uCD94\uAC00\uD558\uAE30",
                 topProps: {
@@ -63637,9 +65049,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route10;
     }
   });
-  var import_jsx_runtime282 = __toESM(require_jsx_runtime());
-  var import_react244 = __toESM(require_react());
-  var import_react_native239 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime284 = __toESM(require_jsx_runtime());
+  var import_react245 = __toESM(require_react());
+  var import_react_native241 = __toESM(require_react_native());
   var Route10 = BedrockRoute("/enroll/play", {
     validateParams: function(params) {
       return params;
@@ -63652,12 +65065,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return state.travelSlice;
     }).tendency;
     var _useTendencyHandler = useTendencyHandler(), handleButtonClick = _useTendencyHandler.handleButtonClick, tendencyList2 = _useTendencyHandler.tendencyList;
-    return /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(import_jsx_runtime282.Fragment, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(import_react_native239.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_jsx_runtime284.Fragment, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native241.View, {
         style: styles59.ButtonsContainer,
         children: (_tendencyList_ = tendencyList2[2]) === null || _tendencyList_ === void 0 ? void 0 : (_tendencyList__list = _tendencyList_.list) === null || _tendencyList__list === void 0 ? void 0 : _tendencyList__list.map(function(item, idx) {
           var _tendencyList_2;
-          return /* @__PURE__ */ (0, import_jsx_runtime282.jsx)(TendencyButton, {
+          return /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(TendencyButton, {
             marginBottom: 0,
             bgColor: tendency[2][idx] == 1,
             label: item,
@@ -63685,10 +65098,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route11;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime283 = __toESM(require_jsx_runtime());
-  var import_react245 = __toESM(require_react());
-  var import_react_native241 = __toESM(require_react_native());
+  var import_jsx_runtime285 = __toESM(require_jsx_runtime());
+  var import_react246 = __toESM(require_react());
+  var import_react_native243 = __toESM(require_react_native());
   var Route11 = BedrockRoute("/enroll/popular", {
     validateParams: function(params) {
       return params;
@@ -63704,7 +65118,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var handlePopular = function(e4) {
       dispatch(travelSliceActions.updatePopluar(e4));
     };
-    var _useState = _sliced_to_array((0, import_react245.useState)(popular), 2), value = _useState[0], setValue = _useState[1];
+    var _useState = _sliced_to_array((0, import_react246.useState)(popular), 2), value = _useState[0], setValue = _useState[1];
     var imageList = [
       "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2Fasd.png?alt=media&token=3df1ca25-0ab7-4289-aec1-268172db19be",
       "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F2.png?alt=media&token=a99b1cc7-2885-4051-8624-228f5e374de6",
@@ -63713,12 +65127,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F5.png?alt=media&token=4952eea8-3f5c-44f6-bfca-45906ff9cc0c"
     ];
     var navigation = useNavigation();
-    return /* @__PURE__ */ (0, import_jsx_runtime283.jsxs)(import_react_native241.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime285.jsxs)(import_react_native243.View, {
       style: {
         marginHorizontal: 24
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Image, {
+        /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(Image, {
           source: {
             uri: imageList[Math.ceil(value / 2) - 1]
           },
@@ -63728,13 +65142,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             alignSelf: "center"
           }
         }, Math.ceil(value / 2)),
-        /* @__PURE__ */ (0, import_jsx_runtime283.jsxs)(Txt_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime285.jsxs)(Txt_default, {
           children: [
             "\uC778\uAE30\uB3C4: ",
             value
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Slider, {
+        /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(Slider, {
           value,
           onChange: function(e4) {
             setValue(e4);
@@ -63744,19 +65158,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           step: 1,
           color: colors.green300
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime283.jsxs)(import_react_native241.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime285.jsxs)(import_react_native243.View, {
           style: {
             flexDirection: "row",
             justifyContent: "space-between"
           },
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(Txt_default, {
               typography: "t5",
               fontWeight: "medium",
               color: colors.grey700,
               children: "\uAC00\uC7A5 \uB35C \uC54C\uB824\uC9C4"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(Txt_default, {
               typography: "t5",
               fontWeight: "medium",
               color: colors.grey700,
@@ -63764,7 +65178,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             })
           ]
         }),
-        ((_navigation_getState = navigation.getState()) === null || _navigation_getState === void 0 ? void 0 : (_navigation_getState_routes = _navigation_getState.routes) === null || _navigation_getState_routes === void 0 ? void 0 : (_navigation_getState_routes_at = _navigation_getState_routes.at(-1)) === null || _navigation_getState_routes_at === void 0 ? void 0 : _navigation_getState_routes_at.name.includes("popular")) && /* @__PURE__ */ (0, import_jsx_runtime283.jsx)(RouteButton, {
+        ((_navigation_getState = navigation.getState()) === null || _navigation_getState === void 0 ? void 0 : (_navigation_getState_routes = _navigation_getState.routes) === null || _navigation_getState_routes === void 0 ? void 0 : (_navigation_getState_routes_at = _navigation_getState_routes.at(-1)) === null || _navigation_getState_routes_at === void 0 ? void 0 : _navigation_getState_routes_at.name.includes("popular")) && /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(RouteButton, {
           onPress: function() {
             dispatch(travelSliceActions.updatePopluar(value));
           }
@@ -63780,11 +65194,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route12;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime284 = __toESM(require_jsx_runtime());
-  var import_react246 = __toESM(require_react());
-  var import_react_native243 = __toESM(require_react_native());
+  var import_jsx_runtime286 = __toESM(require_jsx_runtime());
+  var import_react247 = __toESM(require_react());
+  var import_react_native245 = __toESM(require_react_native());
   var Route12 = BedrockRoute("/enroll/region", {
     validateParams: function(params) {
       return params;
@@ -63881,16 +65296,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return item.subTitle.includes(e4);
       });
     };
-    var _useState = _sliced_to_array((0, import_react246.useState)(""), 2), value = _useState[0], setValue = _useState[1];
+    var _useState = _sliced_to_array((0, import_react247.useState)(""), 2), value = _useState[0], setValue = _useState[1];
     var dispatch = useAppDispatch();
-    var _useState1 = _sliced_to_array((0, import_react246.useState)(""), 2), regionText = _useState1[0], setRegionText = _useState1[1];
-    var _useState2 = _sliced_to_array((0, import_react246.useState)(false), 2), regionSearchState = _useState2[0], setRegionSearchState = _useState2[1];
-    var handleRegionText = (0, import_react246.useCallback)(function(e4) {
+    var _useState1 = _sliced_to_array((0, import_react247.useState)(""), 2), regionText = _useState1[0], setRegionText = _useState1[1];
+    var _useState2 = _sliced_to_array((0, import_react247.useState)(false), 2), regionSearchState = _useState2[0], setRegionSearchState = _useState2[1];
+    var handleRegionText = (0, import_react247.useCallback)(function(e4) {
       setValue(e4);
       setRegionMatchList(handleRegionSerarch(e4));
     }, []);
-    var regionSearchRef = (0, import_react246.useRef)(null);
-    var _useState3 = _sliced_to_array((0, import_react246.useState)([]), 2), regionMatchList = _useState3[0], setRegionMatchList = _useState3[1];
+    var regionSearchRef = (0, import_react247.useRef)(null);
+    var _useState3 = _sliced_to_array((0, import_react247.useState)([]), 2), regionMatchList = _useState3[0], setRegionMatchList = _useState3[1];
     var selectCity = function(e4) {
       if (region2) {
         dispatch(travelSliceActions.updateFiled({
@@ -63903,9 +65318,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         value: e4
       }));
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime284.jsxs)(import_jsx_runtime284.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime286.jsxs)(import_jsx_runtime286.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(SearchField_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(SearchField_default, {
           hasClearButton: true,
           placeholder: "\uC9C0\uC5ED\uC744 \uAC80\uC0C9\uD574\uBCF4\uC138\uC694",
           style: {
@@ -63917,16 +65332,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             handleRegionText(e4.nativeEvent.text);
           }
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native243.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.View, {
           style: {
             marginHorizontal: 24
           },
-          children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(react_native_gesture_handler_exports.ScrollView, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(react_native_gesture_handler_exports.ScrollView, {
             style: {
               zIndex: 2
             },
             children: regionSearchState && value != "" && regionMatchList.map(function(item, index) {
-              return /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native243.Pressable, {
+              return /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.Pressable, {
                 onPress: function() {
                   var _cityViewList_country_filter_, _cityViewList_country_slice_filter_, _cityViewList_country_filter_1, _regionSearchRef_current;
                   var _cityViewList_country_slice_filter__id;
@@ -63957,14 +65372,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   borderBottomWidth: 1,
                   borderBottomColor: colors.grey400
                 },
-                children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(Txt_default, {
+                children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(Txt_default, {
                   children: item.subTitle
                 })
               }, index);
             })
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(react_native_gesture_handler_exports.ScrollView, {
+        /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(react_native_gesture_handler_exports.ScrollView, {
           // ref={cityScrollRef}
           horizontal: true,
           nestedScrollEnabled: true,
@@ -63973,7 +65388,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             paddingLeft: 24
           },
           children: cityViewList[country].map(function(item, idx) {
-            return /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(react_native_gesture_handler_exports.TouchableOpacity, {
+            return /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(react_native_gesture_handler_exports.TouchableOpacity, {
               style: {
                 padding: 10,
                 backgroundColor: cityIndex == idx ? CustomColor.primary : "#FAFAFB",
@@ -63987,7 +65402,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               onPress: function() {
                 selectCity(item.id);
               },
-              children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(Txt_default, {
+              children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(Txt_default, {
                 typography: "t5",
                 fontWeight: "semibold",
                 children: item === null || item === void 0 ? void 0 : item.title
@@ -63995,20 +65410,20 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }, idx);
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(Border_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(Border_default, {
           type: "full",
           style: {
             marginVertical: 16
           }
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native243.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.View, {
           style: {
             flexDirection: "row",
             flexWrap: "wrap",
             paddingHorizontal: 24
           },
           children: cityIndex != null && ((_cityViewList_country_cityIndex_sub = cityViewList[country][cityIndex].sub) === null || _cityViewList_country_cityIndex_sub === void 0 ? void 0 : _cityViewList_country_cityIndex_sub.map(function(item, idx) {
-            return /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(react_native_gesture_handler_exports.TouchableOpacity, {
+            return /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(react_native_gesture_handler_exports.TouchableOpacity, {
               style: {
                 padding: 10,
                 backgroundColor: region2.includes(item.subTitle) ? "rgba(202, 251, 7,0.2)" : "#FAFAFB",
@@ -64026,7 +65441,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 console.log(region2);
                 cityIndex == 0 ? selectPopularity(item) : selectRegion(item);
               },
-              children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(Txt_default, {
+              children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(Txt_default, {
                 typography: "t5",
                 fontWeight: "semibold",
                 children: item === null || item === void 0 ? void 0 : item.subTitle
@@ -64034,7 +65449,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }, idx);
           }))
         }),
-        country == 0 && cityIndex == 1 && /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native243.View, {
+        country == 0 && cityIndex == 1 && /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.View, {
           style: {
             marginHorizontal: 24,
             borderRadius: 20,
@@ -64045,27 +65460,27 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             gap: 10
           },
           children: cityViewList[country][1].sub.map(function(item, idx) {
-            return idx != 0 ? /* @__PURE__ */ (0, import_jsx_runtime284.jsxs)(import_react_native243.View, {
+            return idx != 0 ? /* @__PURE__ */ (0, import_jsx_runtime286.jsxs)(import_react_native245.View, {
               style: {
                 flexDirection: "row"
               },
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native243.View, {
+                /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.View, {
                   style: {
                     width: 94
                   },
-                  children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(Txt_default, {
+                  children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(Txt_default, {
                     typography: "t7",
                     fontWeight: "regular",
                     color: colors.grey600,
                     children: item.subTitle
                   })
                 }),
-                /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(import_react_native243.View, {
+                /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.View, {
                   style: {
                     width: 164
                   },
-                  children: /* @__PURE__ */ (0, import_jsx_runtime284.jsx)(Txt_default, {
+                  children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(Txt_default, {
                     typography: "t7",
                     fontWeight: "regular",
                     color: colors.grey400,
@@ -64087,8 +65502,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route13;
     }
   });
-  var import_jsx_runtime285 = __toESM(require_jsx_runtime());
-  var import_react247 = __toESM(require_react());
+  init_define_import_meta_env();
+  var import_jsx_runtime287 = __toESM(require_jsx_runtime());
+  var import_react248 = __toESM(require_react());
   var Route13 = BedrockRoute("/enroll/title", {
     validateParams: function(params) {
       return params;
@@ -64106,8 +65522,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         value: e4
       }));
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(import_jsx_runtime285.Fragment, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime285.jsx)(TextField2, {
+    return /* @__PURE__ */ (0, import_jsx_runtime287.jsx)(import_jsx_runtime287.Fragment, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime287.jsx)(TextField2, {
         variant: "line",
         help: "15\uC790 \uC548\uC73C\uB85C \uC801\uC5B4\uC8FC\uC138\uC694",
         placeholder: "\uC608) \uC2E0\uB098\uB294 \uC5EC\uD589",
@@ -64130,9 +65546,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route14;
     }
   });
-  var import_jsx_runtime286 = __toESM(require_jsx_runtime());
-  var import_react248 = __toESM(require_react());
-  var import_react_native245 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime288 = __toESM(require_jsx_runtime());
+  var import_react249 = __toESM(require_react());
+  var import_react_native247 = __toESM(require_react_native());
   var Route14 = BedrockRoute("/enroll/tour-one", {
     validateParams: function(params) {
       return params;
@@ -64146,12 +65563,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     }).tendency;
     var _useTendencyHandler = useTendencyHandler(), handleButtonClick = _useTendencyHandler.handleButtonClick, tendencyList2 = _useTendencyHandler.tendencyList;
     var open = useToast().open;
-    return /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_jsx_runtime286.Fragment, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(import_react_native245.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(import_jsx_runtime288.Fragment, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(import_react_native247.View, {
         style: styles59.ButtonsContainer,
         children: (_tendencyList_ = tendencyList2[3]) === null || _tendencyList_ === void 0 ? void 0 : (_tendencyList__list = _tendencyList_.list) === null || _tendencyList__list === void 0 ? void 0 : _tendencyList__list.map(function(item, idx) {
           var _tendencyList_2;
-          return /* @__PURE__ */ (0, import_jsx_runtime286.jsx)(TendencyButton, {
+          return /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(TendencyButton, {
             marginBottom: 0,
             bgColor: tendency[3][idx] == 1,
             label: item,
@@ -64185,9 +65602,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route15;
     }
   });
-  var import_jsx_runtime287 = __toESM(require_jsx_runtime());
-  var import_react249 = __toESM(require_react());
-  var import_react_native247 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime289 = __toESM(require_jsx_runtime());
+  var import_react250 = __toESM(require_react());
+  var import_react_native249 = __toESM(require_react_native());
   var Route15 = BedrockRoute("/enroll/tour-two", {
     validateParams: function(params) {
       return params;
@@ -64200,12 +65618,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return state.travelSlice;
     }).tendency;
     var _useTendencyHandler = useTendencyHandler(), handleButtonClick = _useTendencyHandler.handleButtonClick, tendencyList2 = _useTendencyHandler.tendencyList;
-    return /* @__PURE__ */ (0, import_jsx_runtime287.jsx)(import_jsx_runtime287.Fragment, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime287.jsx)(import_react_native247.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime289.jsx)(import_jsx_runtime289.Fragment, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime289.jsx)(import_react_native249.View, {
         style: styles59.ButtonsContainer,
         children: (_tendencyList_ = tendencyList2[4]) === null || _tendencyList_ === void 0 ? void 0 : (_tendencyList__list = _tendencyList_.list) === null || _tendencyList__list === void 0 ? void 0 : _tendencyList__list.map(function(item, idx) {
           var _tendencyList_2;
-          return /* @__PURE__ */ (0, import_jsx_runtime287.jsx)(TendencyButton, {
+          return /* @__PURE__ */ (0, import_jsx_runtime289.jsx)(TendencyButton, {
             marginBottom: 0,
             bgColor: tendency[4][idx] == 1,
             label: item,
@@ -64233,9 +65651,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route16;
     }
   });
-  var import_jsx_runtime288 = __toESM(require_jsx_runtime());
-  var import_react250 = __toESM(require_react());
-  var import_react_native248 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime290 = __toESM(require_jsx_runtime());
+  var import_react251 = __toESM(require_react());
+  var import_react_native250 = __toESM(require_react_native());
   var Route16 = BedrockRoute("/enroll/transit", {
     validateParams: function(params) {
       return params;
@@ -64263,7 +65682,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         image: "icon-train-blue"
       }
     ];
-    var styles63 = import_react_native248.StyleSheet.create({
+    var styles63 = import_react_native250.StyleSheet.create({
       buttonContainerBase: {
         alignItems: "center",
         height: 159,
@@ -64274,14 +65693,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         gap: 10
       }
     });
-    return /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(import_react_native248.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(import_react_native250.View, {
       style: {
         flexDirection: "row",
         marginHorizontal: 24,
         justifyContent: "space-between",
         marginTop: 150
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(GridList_default, {
+      children: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(GridList_default, {
         column: 2,
         style: {
           marginBottom: 16
@@ -64292,8 +65711,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             borderColor: isSelected ? CustomColor.primary : CustomColor.ButtonBackground,
             backgroundColor: isSelected ? "rgba(195,245,80,0.3)" : CustomColor.ButtonBackground
           });
-          return /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(GridList_default.Item, {
-            image: /* @__PURE__ */ (0, import_jsx_runtime288.jsx)(Icon_default, {
+          return /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(GridList_default.Item, {
+            image: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Icon_default, {
               style: {
                 width: 60,
                 height: 60
@@ -64319,9 +65738,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route17;
     }
   });
-  var import_jsx_runtime289 = __toESM(require_jsx_runtime());
-  var import_react251 = __toESM(require_react());
-  var import_react_native250 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime291 = __toESM(require_jsx_runtime());
+  var import_react252 = __toESM(require_react());
+  var import_react_native252 = __toESM(require_react_native());
   var Route17 = BedrockRoute("/enroll/who", {
     validateParams: function(params) {
       return params;
@@ -64334,9 +65754,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return state.travelSlice;
     }).tendency;
     var _useTendencyHandler = useTendencyHandler(), handleButtonClick = _useTendencyHandler.handleButtonClick, tendencyList2 = _useTendencyHandler.tendencyList;
-    return /* @__PURE__ */ (0, import_jsx_runtime289.jsxs)(import_jsx_runtime289.Fragment, {
+    return /* @__PURE__ */ (0, import_jsx_runtime291.jsxs)(import_jsx_runtime291.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime289.jsx)(Txt_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(Txt_default, {
           typography: "t7",
           fontWeight: "medium",
           color: colors.red600,
@@ -64347,11 +65767,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           },
           children: "\uBC18\uB824\uB3D9\uBB3C\uC744 \uC120\uD0DD\uD558\uBA74 \uC2E4\uB0B4 \uC5EC\uD589\uC9C0\uB294 \uC790\uB3D9\uC73C\uB85C \uC81C\uC678\uB3FC\uC694"
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime289.jsx)(import_react_native250.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(import_react_native252.View, {
           style: styles59.ButtonsContainer,
           children: (_tendencyList_ = tendencyList2[0]) === null || _tendencyList_ === void 0 ? void 0 : (_tendencyList__list = _tendencyList_.list) === null || _tendencyList__list === void 0 ? void 0 : _tendencyList__list.map(function(item, idx) {
             var _tendencyList_2;
-            return /* @__PURE__ */ (0, import_jsx_runtime289.jsx)(TendencyButton, {
+            return /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(TendencyButton, {
               marginBottom: 0,
               bgColor: tendency[0][idx] == 1,
               label: item,
@@ -64377,11 +65797,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route18;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime290 = __toESM(require_jsx_runtime());
-  var import_react252 = __toESM(require_react());
-  var import_react_native253 = __toESM(require_react_native());
+  var import_jsx_runtime292 = __toESM(require_jsx_runtime());
+  var import_react253 = __toESM(require_react());
+  var import_react_native255 = __toESM(require_react_native());
   var Route18 = BedrockRoute("/final-check", {
     validateParams: function(params) {
       return params;
@@ -64413,7 +65834,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         svg: "https://static.toss.im/2d-emojis/png/4x/u2744.png"
       }
     ];
-    var _useState = _sliced_to_array((0, import_react252.useState)("0"), 2), value = _useState[0], setValue = _useState[1];
+    var _useState = _sliced_to_array((0, import_react253.useState)("0"), 2), value = _useState[0], setValue = _useState[1];
     var _useTendencyHandler = useTendencyHandler(), tendencyList2 = _useTendencyHandler.tendencyList, countryList2 = _useTendencyHandler.countryList;
     var weekdays = [
       "\uC77C",
@@ -64427,7 +65848,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var bottomSheet = useBottomSheet();
     var showHourBottomSheet = function(e4) {
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ModifyBottomSheetContent, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ModifyBottomSheetContent, {
           onCancel: function() {
             bottomSheet.close();
           },
@@ -64435,9 +65856,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    var _useState1 = _sliced_to_array((0, import_react252.useState)(false), 2), loading = _useState1[0], setLoading = _useState1[1];
+    var _useState1 = _sliced_to_array((0, import_react253.useState)(false), 2), loading = _useState1[0], setLoading = _useState1[1];
     var dispatch = useAppDispatch();
-    var goNext = (0, import_react252.useCallback)(/* @__PURE__ */ _async_to_generator(function() {
+    var goNext = (0, import_react253.useCallback)(/* @__PURE__ */ _async_to_generator(function() {
       var _tendencyList_2, _tendencyList_1, changeName, a, copy, result, error;
       return __generator(this, function(_state) {
         switch (_state.label) {
@@ -64551,437 +65972,497 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       essentialPlaces,
       accommodations
     ]);
-    return loading ? /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Lottie, {
-      height: "100%",
-      src: "https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b",
-      autoPlay: true,
-      loop: true,
-      onAnimationFailure: function() {
-        console.log("Animation Failed");
-      },
-      onAnimationFinish: function() {
-        console.log("Animation Finished");
-      }
-    }) : /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(FixedBottomCTAProvider, {
+    return loading ? /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(AnimateSkeleton_default, {
+      delay: 500,
+      withGradient: true,
+      withShimmer: true,
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(NavigationBar, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(import_react_native253.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
           style: {
-            marginHorizontal: 24
-          },
-          children: [
-            /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-              typography: "st8",
-              fontWeight: "bold",
-              color: colors.grey700,
-              style: {
-                alignSelf: "center"
-              },
-              children: "\uC120\uD0DD\uC0AC\uD56D \uD655\uC778"
-            }),
-            /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Border_default, {
-              type: "full",
-              style: {
-                marginVertical: 16
-              }
-            }),
-            /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(LinearGradient2, {
-              height: 200,
-              degree: 0,
-              colors: [
-                "rgba(0,0,0,0.5)",
-                "rgba(0,0,0,0.5)"
-              ],
-              easing: "easeOut",
-              onPress: function() {
-                showHourBottomSheet(0);
-              },
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Image, {
-                  source: {
-                    uri: regionInfo.photo
-                  },
-                  resizeMode: "stretch",
-                  style: {
-                    position: "absolute",
-                    width: "100%",
-                    height: 200,
-                    opacity: 0.1
-                  }
-                }),
-                /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-                  gutter: 0,
-                  style: {
-                    padding: 24
-                  },
-                  children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Horizontal, {
-                      justify: "space-between",
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                          typography: "t7",
-                          fontWeight: "medium",
-                          color: colors.white,
-                          children: day[0].format("YY.MM.DD") + " - " + day[nDay].format("YY.MM.DD")
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                          typography: "t6",
-                          fontWeight: "medium",
-                          color: colors.white,
-                          children: "\uD3B8\uC9D1"
-                        })
-                      ]
-                    }),
-                    /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                      typography: "st5",
-                      fontWeight: "semibold",
-                      color: colors.white,
-                      children: cityViewList[country][cityIndex].title + " " + region2
-                    }),
-                    /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Horizontal, {
-                      gutter: 7,
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(import_react_native253.View, {
-                          style: {
-                            borderRadius: 8,
-                            backgroundColor: "rgba(255,255,255,0.3)"
-                          },
-                          children: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Image, {
-                            style: {
-                              width: 42,
-                              height: 42
-                            },
-                            source: {
-                              uri: (_seasonList_season_findIndex = seasonList[season.findIndex(function(item) {
-                                return item == 1;
-                              })]) === null || _seasonList_season_findIndex === void 0 ? void 0 : _seasonList_season_findIndex.svg
-                            }
-                          })
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Txt_default, {
-                          typography: "st8",
-                          fontWeight: "bold",
-                          color: colors.white,
-                          style: {
-                            alignSelf: "center"
-                          },
-                          children: [
-                            (_tendencyList_ = tendencyList2[0]) === null || _tendencyList_ === void 0 ? void 0 : _tendencyList_.list[tendency[0].findIndex(function(item) {
-                              return item == 1;
-                            })],
-                            tendency[0].find(function(item) {
-                              return item == 1;
-                            }) == void 0 ? "" : tendency[0].findIndex(function(item) {
-                              return item == 1;
-                            }) == 0 || tendency[0].findIndex(function(item) {
-                              return item == 1;
-                            }) == 4 ? " " : " \uD568\uAED8\uD558\uB294 ",
-                            seasonList[season.findIndex(function(item) {
-                              return item == 1;
-                            })].title,
-                            " \uC5EC\uD589"
-                          ]
-                        })
-                      ]
-                    }),
-                    /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Horizontal, {
-                      gutter: 12,
-                      style: {
-                        marginTop: 16
-                      },
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(import_react_native253.View, {
-                          style: {
-                            borderRadius: 12,
-                            paddingHorizontal: 7,
-                            paddingVertical: 3,
-                            backgroundColor: "rgba(255,255,255,0.3)"
-                          },
-                          children: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                            typography: "t7",
-                            fontWeight: "medium",
-                            color: colors.white,
-                            style: {
-                              alignSelf: "center"
-                            },
-                            children: !transit ? "\uC790\uB3D9\uCC28\xB7\uB80C\uD2B8\uCE74" : "\uB300\uC911\uAD50\uD1B5"
-                          })
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(import_react_native253.View, {
-                          style: {
-                            borderRadius: 12,
-                            paddingHorizontal: 7,
-                            paddingVertical: 3,
-                            backgroundColor: "rgba(255,255,255,0.3)"
-                          },
-                          children: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                            typography: "t7",
-                            fontWeight: "medium",
-                            color: colors.white,
-                            style: {
-                              alignSelf: "center"
-                            },
-                            children: bandwidth ? "\uC5EC\uC720\uC788\uB294 \uC77C\uC815" : "\uC54C\uCC2C \uC77C\uC815"
-                          })
-                        })
-                      ]
-                    })
-                  ]
-                })
-              ]
-            }),
-            /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Tab, {
-              fluid: true,
-              defaultValue: "0",
-              size: "large",
-              onChange: setValue,
-              children: [
-                "\uB0B4 \uC5EC\uD589 \uC131\uD5A5"
-              ].concat(_to_consumable_array(Array.from({
-                length: nDay + 1
-              }, function(item, index) {
-                return index;
-              }))).map(function(item, idx) {
-                return /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Tab.Item, {
-                  value: String(idx),
-                  children: idx == 0 ? "\uB0B4 \uC5EC\uD589 \uC131\uD5A5" : "DAY ".concat(idx)
-                });
-              })
-            }),
-            value == "0" ? /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-              style: {
-                position: "relative",
-                borderWidth: 1,
-                borderColor: "#eeeeee",
-                borderRadius: 13,
-                paddingHorizontal: 24,
-                paddingVertical: 20,
-                marginTop: 10
-              },
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                  onPress: function() {
-                    showHourBottomSheet(3);
-                  },
-                  typography: "t5",
-                  fontWeight: "medium",
-                  color: colors.grey800,
-                  textAlign: "right",
-                  children: "\uD3B8\uC9D1"
-                }),
-                /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-                  gutter: 21,
-                  children: [
-                    tendency[1].find(function(item) {
-                      return item == 1;
-                    }) && /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-                      gutter: 13,
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                          typography: "t5",
-                          fontWeight: "medium",
-                          color: colors.grey800,
-                          children: "\uC5EC\uD589\uD14C\uB9C8"
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Stack.Horizontal, {
-                          gutter: 4,
-                          children: tendency[1].map(function(item, inx) {
-                            var _tendencyList_2;
-                            return item ? /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Badge_default, {
-                              size: "medium",
-                              type: "blue",
-                              badgeStyle: "weak",
-                              children: (_tendencyList_2 = tendencyList2[1]) === null || _tendencyList_2 === void 0 ? void 0 : _tendencyList_2.list[inx]
-                            }) : null;
-                          })
-                        })
-                      ]
-                    }),
-                    tendency[2].find(function(item) {
-                      return item == 1;
-                    }) && /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-                      gutter: 13,
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                          typography: "t5",
-                          fontWeight: "medium",
-                          color: colors.grey800,
-                          children: "\uC774\uB7F0 \uAC78 \uD558\uACE0 \uC2F6\uC5B4\uC694"
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Stack.Horizontal, {
-                          gutter: 4,
-                          children: tendency[2].map(function(item, inx) {
-                            var _tendencyList_2;
-                            return item ? /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Badge_default, {
-                              size: "medium",
-                              type: "red",
-                              badgeStyle: "weak",
-                              children: (_tendencyList_2 = tendencyList2[2]) === null || _tendencyList_2 === void 0 ? void 0 : _tendencyList_2.list[inx]
-                            }) : null;
-                          })
-                        })
-                      ]
-                    }),
-                    tendency[3].find(function(item) {
-                      return item == 1;
-                    }) && /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-                      gutter: 13,
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                          typography: "t5",
-                          fontWeight: "medium",
-                          color: colors.grey800,
-                          children: "\uC774\uB7F0 \uACF3\uC5D0 \uAC00\uACE0 \uC2F6\uC5B4\uC694"
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Stack.Horizontal, {
-                          gutter: 4,
-                          children: tendency[3].map(function(item, inx) {
-                            var _tendencyList_2;
-                            return item ? /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Badge_default, {
-                              size: "medium",
-                              type: "teal",
-                              badgeStyle: "weak",
-                              children: (_tendencyList_2 = tendencyList2[3]) === null || _tendencyList_2 === void 0 ? void 0 : _tendencyList_2.list[inx]
-                            }) : null;
-                          })
-                        })
-                      ]
-                    }),
-                    /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(Stack.Vertical, {
-                      gutter: 13,
-                      children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                          typography: "t5",
-                          fontWeight: "medium",
-                          color: colors.grey800,
-                          children: "\uC5EC\uD589\uC9C0 \uC778\uAE30\uB3C4"
-                        }),
-                        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Badge_default, {
-                          size: "medium",
-                          type: "yellow",
-                          badgeStyle: "weak",
-                          children: popular
-                        })
-                      ]
-                    })
-                  ]
-                })
-              ]
-            }) : function() {
-              var filteredPlaces = essentialPlaces.filter(function(place) {
-                return place.day === Number(value);
-              });
-              return /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(import_jsx_runtime290.Fragment, {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        })
+      ]
+    }) : (
+      // <Lottie
+      //   height={"100%"}
+      //   src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+      //   autoPlay={true}
+      //   loop={true}
+      //   onAnimationFailure={() => {
+      //     console.log("Animation Failed");
+      //   }}
+      //   onAnimationFinish={() => {
+      //     console.log("Animation Finished");
+      //   }}
+      // />
+      /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(FixedBottomCTAProvider, {
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(NavigationBar, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(import_react_native255.View, {
+            style: {
+              marginHorizontal: 24
+            },
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                typography: "st8",
+                fontWeight: "bold",
+                color: colors.grey700,
+                style: {
+                  alignSelf: "center"
+                },
+                children: "\uC120\uD0DD\uC0AC\uD56D \uD655\uC778"
+              }),
+              /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Border_default, {
+                type: "full",
+                style: {
+                  marginVertical: 16
+                }
+              }),
+              /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(LinearGradient2, {
+                height: 200,
+                degree: 0,
+                colors: [
+                  "rgba(0,0,0,0.5)",
+                  "rgba(0,0,0,0.5)"
+                ],
+                easing: "easeOut",
+                onPress: function() {
+                  showHourBottomSheet(0);
+                },
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(import_react_native253.View, {
+                  /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Image, {
+                    source: {
+                      uri: regionInfo.photo
+                    },
+                    resizeMode: "stretch",
                     style: {
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                      marginHorizontal: 24
+                      position: "absolute",
+                      width: "100%",
+                      height: 200,
+                      opacity: 0.1
+                    }
+                  }),
+                  /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                    gutter: 0,
+                    style: {
+                      padding: 24
                     },
                     children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                        typography: "t5",
-                        fontWeight: "semibold",
-                        color: colors.grey700,
-                        children: "DAY" + value
+                      /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Horizontal, {
+                        justify: "space-between",
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                            typography: "t7",
+                            fontWeight: "medium",
+                            color: colors.white,
+                            children: day[0].format("YY.MM.DD") + " - " + day[nDay].format("YY.MM.DD")
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                            typography: "t6",
+                            fontWeight: "medium",
+                            color: colors.white,
+                            children: "\uD3B8\uC9D1"
+                          })
+                        ]
                       }),
-                      /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Txt_default, {
-                        typography: "t6",
-                        fontWeight: "regular",
-                        color: "#6B7684",
-                        children: day[Number(value) - 1].format("YY.MM.DD") + " (" + weekdays[day[Number(value) - 1].days()] + ")"
+                      /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                        typography: "st5",
+                        fontWeight: "semibold",
+                        color: colors.white,
+                        children: cityViewList[country][cityIndex].title + " " + region2
+                      }),
+                      /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Horizontal, {
+                        gutter: 7,
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(import_react_native255.View, {
+                            style: {
+                              borderRadius: 8,
+                              backgroundColor: "rgba(255,255,255,0.3)"
+                            },
+                            children: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Image, {
+                              style: {
+                                width: 42,
+                                height: 42
+                              },
+                              source: {
+                                uri: (_seasonList_season_findIndex = seasonList[season.findIndex(function(item) {
+                                  return item == 1;
+                                })]) === null || _seasonList_season_findIndex === void 0 ? void 0 : _seasonList_season_findIndex.svg
+                              }
+                            })
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Txt_default, {
+                            typography: "st8",
+                            fontWeight: "bold",
+                            color: colors.white,
+                            style: {
+                              alignSelf: "center"
+                            },
+                            children: [
+                              (_tendencyList_ = tendencyList2[0]) === null || _tendencyList_ === void 0 ? void 0 : _tendencyList_.list[tendency[0].findIndex(function(item) {
+                                return item == 1;
+                              })],
+                              tendency[0].find(function(item) {
+                                return item == 1;
+                              }) == void 0 ? "" : tendency[0].findIndex(function(item) {
+                                return item == 1;
+                              }) == 0 || tendency[0].findIndex(function(item) {
+                                return item == 1;
+                              }) == 4 ? " " : " \uD568\uAED8\uD558\uB294 ",
+                              seasonList[season.findIndex(function(item) {
+                                return item == 1;
+                              })].title,
+                              " \uC5EC\uD589"
+                            ]
+                          })
+                        ]
+                      }),
+                      /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Horizontal, {
+                        gutter: 12,
+                        style: {
+                          marginTop: 16
+                        },
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(import_react_native255.View, {
+                            style: {
+                              borderRadius: 12,
+                              paddingHorizontal: 7,
+                              paddingVertical: 3,
+                              backgroundColor: "rgba(255,255,255,0.3)"
+                            },
+                            children: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                              typography: "t7",
+                              fontWeight: "medium",
+                              color: colors.white,
+                              style: {
+                                alignSelf: "center"
+                              },
+                              children: !transit ? "\uC790\uB3D9\uCC28\xB7\uB80C\uD2B8\uCE74" : "\uB300\uC911\uAD50\uD1B5"
+                            })
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(import_react_native255.View, {
+                            style: {
+                              borderRadius: 12,
+                              paddingHorizontal: 7,
+                              paddingVertical: 3,
+                              backgroundColor: "rgba(255,255,255,0.3)"
+                            },
+                            children: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                              typography: "t7",
+                              fontWeight: "medium",
+                              color: colors.white,
+                              style: {
+                                alignSelf: "center"
+                              },
+                              children: bandwidth ? "\uC5EC\uC720\uC788\uB294 \uC77C\uC815" : "\uC54C\uCC2C \uC77C\uC815"
+                            })
+                          })
+                        ]
                       })
                     ]
+                  })
+                ]
+              }),
+              /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Tab, {
+                fluid: true,
+                defaultValue: "0",
+                size: "large",
+                onChange: setValue,
+                children: [
+                  "\uB0B4 \uC5EC\uD589 \uC131\uD5A5"
+                ].concat(_to_consumable_array(Array.from({
+                  length: nDay + 1
+                }, function(item, index) {
+                  return index;
+                }))).map(function(item, idx) {
+                  return /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Tab.Item, {
+                    value: String(idx),
+                    children: idx == 0 ? "\uB0B4 \uC5EC\uD589 \uC131\uD5A5" : "DAY ".concat(idx)
+                  });
+                })
+              }),
+              value == "0" ? /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                style: {
+                  position: "relative",
+                  borderWidth: 1,
+                  borderColor: "#eeeeee",
+                  borderRadius: 13,
+                  paddingHorizontal: 24,
+                  paddingVertical: 20,
+                  marginTop: 10
+                },
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                    onPress: function() {
+                      showHourBottomSheet(3);
+                    },
+                    typography: "t5",
+                    fontWeight: "medium",
+                    color: colors.grey800,
+                    textAlign: "right",
+                    children: "\uD3B8\uC9D1"
                   }),
-                  filteredPlaces.map(function(data, index) {
-                    var refKey = "".concat(index, "_key");
-                    return /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3, {
-                      contents: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3.Texts, {
+                  /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                    gutter: 21,
+                    children: [
+                      tendency[1].find(function(item) {
+                        return item == 1;
+                      }) && /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                        gutter: 13,
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                            typography: "t5",
+                            fontWeight: "medium",
+                            color: colors.grey800,
+                            children: "\uC5EC\uD589\uD14C\uB9C8"
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Stack.Horizontal, {
+                            gutter: 4,
+                            children: tendency[1].map(function(item, inx) {
+                              var _tendencyList_2;
+                              return item ? /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
+                                size: "medium",
+                                type: "blue",
+                                badgeStyle: "weak",
+                                children: (_tendencyList_2 = tendencyList2[1]) === null || _tendencyList_2 === void 0 ? void 0 : _tendencyList_2.list[inx]
+                              }) : null;
+                            })
+                          })
+                        ]
+                      }),
+                      tendency[2].find(function(item) {
+                        return item == 1;
+                      }) && /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                        gutter: 13,
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                            typography: "t5",
+                            fontWeight: "medium",
+                            color: colors.grey800,
+                            children: "\uC774\uB7F0 \uAC78 \uD558\uACE0 \uC2F6\uC5B4\uC694"
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Stack.Horizontal, {
+                            gutter: 4,
+                            children: tendency[2].map(function(item, inx) {
+                              var _tendencyList_2;
+                              return item ? /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
+                                size: "medium",
+                                type: "red",
+                                badgeStyle: "weak",
+                                children: (_tendencyList_2 = tendencyList2[2]) === null || _tendencyList_2 === void 0 ? void 0 : _tendencyList_2.list[inx]
+                              }) : null;
+                            })
+                          })
+                        ]
+                      }),
+                      tendency[3].find(function(item) {
+                        return item == 1;
+                      }) && /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                        gutter: 13,
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                            typography: "t5",
+                            fontWeight: "medium",
+                            color: colors.grey800,
+                            children: "\uC774\uB7F0 \uACF3\uC5D0 \uAC00\uACE0 \uC2F6\uC5B4\uC694"
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Stack.Horizontal, {
+                            gutter: 4,
+                            children: tendency[3].map(function(item, inx) {
+                              var _tendencyList_2;
+                              return item ? /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
+                                size: "medium",
+                                type: "teal",
+                                badgeStyle: "weak",
+                                children: (_tendencyList_2 = tendencyList2[3]) === null || _tendencyList_2 === void 0 ? void 0 : _tendencyList_2.list[inx]
+                              }) : null;
+                            })
+                          })
+                        ]
+                      }),
+                      /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(Stack.Vertical, {
+                        gutter: 13,
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                            typography: "t5",
+                            fontWeight: "medium",
+                            color: colors.grey800,
+                            children: "\uC5EC\uD589\uC9C0 \uC778\uAE30\uB3C4"
+                          }),
+                          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
+                            size: "medium",
+                            type: "yellow",
+                            badgeStyle: "weak",
+                            children: popular
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }) : function() {
+                var filteredPlaces = essentialPlaces.filter(function(place) {
+                  return place.day === Number(value);
+                });
+                return /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(import_jsx_runtime292.Fragment, {
+                  children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(import_react_native255.View, {
+                      style: {
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
+                        marginHorizontal: 24
+                      },
+                      children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                          typography: "t5",
+                          fontWeight: "semibold",
+                          color: colors.grey700,
+                          children: "DAY" + value
+                        }),
+                        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Txt_default, {
+                          typography: "t6",
+                          fontWeight: "regular",
+                          color: "#6B7684",
+                          children: day[Number(value) - 1].format("YY.MM.DD") + " (" + weekdays[day[Number(value) - 1].days()] + ")"
+                        })
+                      ]
+                    }),
+                    filteredPlaces.map(function(data, index) {
+                      var refKey = "".concat(index, "_key");
+                      return /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3, {
+                        contents: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3.Texts, {
+                          type: "1RowTypeA",
+                          top: data === null || data === void 0 ? void 0 : data.name,
+                          topProps: {
+                            typography: "t5",
+                            fontWeight: "semibold",
+                            color: colors.grey800
+                          }
+                        }),
+                        right: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
+                          size: "small",
+                          type: "green",
+                          badgeStyle: "weak",
+                          fontWeight: "bold",
+                          children: "\uC5EC\uD589\uC9C0"
+                        })
+                      }, refKey);
+                    }),
+                    accommodations[Number(value)].name && /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3, {
+                      contents: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3.Texts, {
                         type: "1RowTypeA",
-                        top: data === null || data === void 0 ? void 0 : data.name,
+                        top: accommodations[Number(value)].name,
                         topProps: {
                           typography: "t5",
                           fontWeight: "semibold",
                           color: colors.grey800
                         }
                       }),
-                      right: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Badge_default, {
+                      right: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
                         size: "small",
-                        type: "green",
+                        type: "red",
                         badgeStyle: "weak",
                         fontWeight: "bold",
-                        children: "\uC5EC\uD589\uC9C0"
+                        children: "\uC219\uC18C"
                       })
-                    }, refKey);
-                  }),
-                  accommodations[Number(value)].name && /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3, {
-                    contents: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3.Texts, {
-                      type: "1RowTypeA",
-                      top: accommodations[Number(value)].name,
-                      topProps: {
-                        typography: "t5",
-                        fontWeight: "semibold",
-                        color: colors.grey800
-                      }
                     }),
-                    right: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Badge_default, {
-                      size: "small",
-                      type: "red",
-                      badgeStyle: "weak",
-                      fontWeight: "bold",
-                      children: "\uC219\uC18C"
-                    })
-                  }),
-                  /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3, {
-                    onPress: function() {
-                      var _accommodations_Number;
-                      if (((_accommodations_Number = accommodations[Number(value)]) === null || _accommodations_Number === void 0 ? void 0 : _accommodations_Number.name) != "" && filteredPlaces.length == 3) {
-                        open("\uC219\uC18C\uB294 1\uAC1C, \uC5EC\uD589\uC9C0\uB294 3\uAC1C\uAE4C\uC9C0 \uCD94\uAC00 \uD560 \uC218 \uC788\uC5B4\uC694.", {
-                          icon: "icon-warning-circle"
-                        });
-                      } else {
-                        navigation.navigate("/enroll/essential-search", {
-                          idx: Number(value) - 1
-                        });
-                      }
-                    },
-                    left: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3.Icon, {
-                      name: "icon-plus-mono",
-                      style: {
-                        backgroundColor: colors.grey100
+                    /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3, {
+                      onPress: function() {
+                        var _accommodations_Number;
+                        if (((_accommodations_Number = accommodations[Number(value)]) === null || _accommodations_Number === void 0 ? void 0 : _accommodations_Number.name) != "" && filteredPlaces.length == 3) {
+                          open("\uC219\uC18C\uB294 1\uAC1C, \uC5EC\uD589\uC9C0\uB294 3\uAC1C\uAE4C\uC9C0 \uCD94\uAC00 \uD560 \uC218 \uC788\uC5B4\uC694.", {
+                            icon: "icon-warning-circle"
+                          });
+                        } else {
+                          navigation.navigate("/enroll/essential-search", {
+                            idx: Number(value) - 1
+                          });
+                        }
                       },
-                      color: colors.blue500,
-                      type: "border"
-                    }),
-                    right: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3.Icon, {
-                      name: "icon-arrow-right-mono",
-                      color: colors.grey400
-                    }),
-                    contents: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(ListRow3.Texts, {
-                      type: "1RowTypeA",
-                      top: "\uCD94\uAC00\uD558\uAE30",
-                      topProps: {
-                        typography: "t5",
-                        fontWeight: "medium",
-                        color: colors.grey800
-                      }
+                      left: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3.Icon, {
+                        name: "icon-plus-mono",
+                        style: {
+                          backgroundColor: colors.grey100
+                        },
+                        color: colors.blue500,
+                        type: "border"
+                      }),
+                      right: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3.Icon, {
+                        name: "icon-arrow-right-mono",
+                        color: colors.grey400
+                      }),
+                      contents: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(ListRow3.Texts, {
+                        type: "1RowTypeA",
+                        top: "\uCD94\uAC00\uD558\uAE30",
+                        topProps: {
+                          typography: "t5",
+                          fontWeight: "medium",
+                          color: colors.grey800
+                        }
+                      })
                     })
-                  })
-                ]
-              });
-            }(),
-            /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(FixedBottomCTA, {
-              onPress: function() {
-                goNext();
-              },
-              children: "\uCD94\uCC9C \uC77C\uC815 \uC870\uD68C\uD558\uAE30"
-            })
-          ]
-        })
-      ]
-    });
+                  ]
+                });
+              }(),
+              /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(FixedBottomCTA, {
+                onPress: function() {
+                  goNext();
+                },
+                children: "\uCD94\uCC9C \uC77C\uC815 \uC870\uD68C\uD558\uAE30"
+              })
+            ]
+          })
+        ]
+      })
+    );
   }
   function ModifyBottomSheetContent(param) {
     var startIndex = param.startIndex, onCancel = param.onCancel;
@@ -64989,53 +66470,53 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var navigationStack = [
       {
         title: "who",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollWho, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollWho, {})
       },
       {
         title: "transit",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollTransit, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollTransit, {})
       },
       {
         title: "busy",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollBusy, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollBusy, {})
       },
       {
         title: "concept",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollConcept, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollConcept, {})
       },
       {
         title: "play",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollPlay, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollPlay, {})
       },
       {
         title: "tour-one",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollTourOne, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollTourOne, {})
       },
       {
         title: "tour-two",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollTourTwo, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollTourTwo, {})
       },
       {
         title: "popular",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollPopular, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollPopular, {})
       },
       {
         title: "distance",
-        component: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(EnrollDistance, {})
+        component: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(EnrollDistance, {})
       }
     ];
-    var _useState = _sliced_to_array((0, import_react252.useState)(startIndex), 2), step = _useState[0], setStep = _useState[1];
+    var _useState = _sliced_to_array((0, import_react253.useState)(startIndex), 2), step = _useState[0], setStep = _useState[1];
     var textData = routeStack["/" + ((_navigationStack_step = navigationStack[step]) === null || _navigationStack_step === void 0 ? void 0 : _navigationStack_step.title)];
-    return /* @__PURE__ */ (0, import_jsx_runtime290.jsxs)(import_react_native253.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(import_react_native255.View, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(StepText, {
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(StepText, {
           title: textData === null || textData === void 0 ? void 0 : textData.title,
           subTitle1: textData === null || textData === void 0 ? void 0 : textData.subTitle1,
           subTitle2: textData === null || textData === void 0 ? void 0 : textData.subTitle2
         }),
         (_navigationStack_step1 = navigationStack[step]) === null || _navigationStack_step1 === void 0 ? void 0 : _navigationStack_step1.component,
-        /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(BottomSheet.CTA.Double, {
-          leftButton: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Button2, {
+        /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(BottomSheet.CTA.Double, {
+          leftButton: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Button2, {
             type: "dark",
             style: "weak",
             display: "block",
@@ -65045,7 +66526,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             disabled: step == 0,
             children: "\uC774\uC804\uC73C\uB85C"
           }),
-          rightButton: /* @__PURE__ */ (0, import_jsx_runtime290.jsx)(Button2, {
+          rightButton: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Button2, {
             display: "block",
             onPress: function() {
               if (step == navigationStack.length - 1) {
@@ -65071,9 +66552,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route19;
     }
   });
-  var import_jsx_runtime291 = __toESM(require_jsx_runtime());
-  var import_react253 = __toESM(require_react());
-  var import_react_native254 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime293 = __toESM(require_jsx_runtime());
+  var import_react254 = __toESM(require_react());
+  var import_react_native256 = __toESM(require_react_native());
   var Route19 = BedrockRoute("/", {
     validateParams: function(params) {
       return params;
@@ -65098,7 +66580,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       }
     };
     var open = useToast().open;
-    var handleLogin = (0, import_react253.useCallback)(/* @__PURE__ */ _async_to_generator(function() {
+    var handleLogin = (0, import_react254.useCallback)(/* @__PURE__ */ _async_to_generator(function() {
       var _ref, authorizationCode, referrer2, userData, _userData_success;
       return __generator(this, function(_state) {
         switch (_state.label) {
@@ -65147,16 +66629,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         }
       });
     }), []);
-    return /* @__PURE__ */ (0, import_jsx_runtime291.jsxs)(import_react_native254.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime293.jsxs)(import_react_native256.View, {
       style: {
         flex: 1
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(PartnerNavigation, {
-          title: "\uB2E4\uB2D8",
+        /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(PartnerNavigation, {
+          title: "AI\uC5D0\uAC8C \uC5EC\uD589 \uCF54\uC2A4 \uCD94\uCC9C \uBC1B\uAE30",
           icon: {
             source: {
-              uri: "https://danim.me/square_logo.png"
+              uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png"
             }
           },
           rightButtons: userId != null ? [
@@ -65182,16 +66664,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }
           ] : void 0
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime291.jsxs)(FixedBottomCTAProvider, {
+        /* @__PURE__ */ (0, import_jsx_runtime293.jsxs)(FixedBottomCTAProvider, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(TopRoot, {
-              title: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(TopRoot, {
+              title: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(Txt_default, {
                 typography: "t6",
                 fontWeight: "medium",
                 color: colors.grey600,
                 children: "\uC131\uD5A5\uC744 \uD1A0\uB300\uB85C \uB2E4\uB2D8 AI\uAC00 \uCD94\uCC9C\uC744\uD574\uC918\uC694!"
               }),
-              subtitle1: /* @__PURE__ */ (0, import_jsx_runtime291.jsxs)(Txt_default, {
+              subtitle1: /* @__PURE__ */ (0, import_jsx_runtime293.jsxs)(Txt_default, {
                 typography: "t3",
                 fontWeight: "bold",
                 color: colors.grey900,
@@ -65202,14 +66684,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 ]
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3, {
-              left: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3.Image, {
+            /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3.Image, {
                 type: "3d-emoji",
                 source: {
                   uri: "https://static.toss.im/2d-emojis/png/4x/u1F31E.png"
                 }
               }),
-              contents: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3.Texts, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3.Texts, {
                 type: "2RowTypeA",
                 top: "\uC131\uD5A5\uC5D0 \uB9DE\uCD98 \uC5EC\uD589 \uC77C\uC815",
                 bottom: "\uB0B4 \uCDE8\uD5A5\uC5D0 \uAF2D \uB9DE\uB294 \uC5EC\uD589 \uC77C\uC815\uC744 \uCD94\uCC9C\uD574\uC918\uC694",
@@ -65225,14 +66707,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 }
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3, {
-              left: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3.Image, {
+            /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3.Image, {
                 type: "3d-emoji",
                 source: {
                   uri: "https://static.toss.im/2d-emojis/png/4x/u23F3.png"
                 }
               }),
-              contents: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3.Texts, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3.Texts, {
                 type: "2RowTypeA",
                 top: "\uC2DC\uAC04 \uC808\uC57D",
                 bottom: "1\uBD84 \uB9CC\uC5D0 \uC5EC\uD589 \uC77C\uC815\uC744 \uC54C\uB824\uC918\uC11C \uBE60\uB974\uAC8C \uC900\uBE44\uD560 \uC218 \uC788\uC5B4\uC694",
@@ -65248,14 +66730,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 }
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3, {
-              left: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3.Image, {
+            /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3.Image, {
                 type: "3d-emoji",
                 source: {
                   uri: "https://static.toss.im/2d-emojis/png/4x/u1F4F1.png"
                 }
               }),
-              contents: /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(ListRow3.Texts, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(ListRow3.Texts, {
                 type: "2RowTypeA",
                 top: "\uC190\uC26C\uC6B4 \uC870\uC791",
                 bottom: "\uB204\uAD6C\uB098 \uC27D\uAC8C \uC0AC\uC6A9\uD560 \uC218 \uC788\uB3C4\uB85D \uAC04\uB2E8\uD558\uACE0 \uD3B8\uB9AC\uD558\uAC8C \uB9CC\uB4E4\uC5C8\uC5B4\uC694",
@@ -65271,7 +66753,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 }
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime291.jsx)(FixedBottomCTA, {
+            /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(FixedBottomCTA, {
               onPress: handleNext,
               children: "\uC2DC\uC791\uD558\uAE30"
             })
@@ -65288,10 +66770,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route20;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
-  var import_jsx_runtime292 = __toESM(require_jsx_runtime());
-  var import_react254 = __toESM(require_react());
-  var import_react_native256 = __toESM(require_react_native());
+  var import_jsx_runtime294 = __toESM(require_jsx_runtime());
+  var import_react255 = __toESM(require_react());
+  var import_react_native258 = __toESM(require_react_native());
   var import_moment3 = __toESM(require_moment());
   var Route20 = BedrockRoute("/my-travle-list", {
     validateParams: function(params) {
@@ -65301,9 +66784,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   });
   function MyTravleList() {
     var dispatch = useAppDispatch();
-    var _useState = _sliced_to_array((0, import_react254.useState)([]), 2), list = _useState[0], setList = _useState[1];
+    var _useState = _sliced_to_array((0, import_react255.useState)([]), 2), list = _useState[0], setList = _useState[1];
     var navigation = useNavigation();
-    var _useState1 = _sliced_to_array((0, import_react254.useState)(false), 2), loading = _useState1[0], setLoading = _useState1[1];
+    var _useState1 = _sliced_to_array((0, import_react255.useState)(false), 2), loading = _useState1[0], setLoading = _useState1[1];
     var _useAppSelector = useAppSelector(function(state) {
       return state.travelSlice;
     }), userId = _useAppSelector.userId, userJwtToken = _useAppSelector.userJwtToken;
@@ -65357,7 +66840,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return _ref.apply(this, arguments);
       };
     }();
-    (0, import_react254.useEffect)(function() {
+    (0, import_react255.useEffect)(function() {
       getTravelList();
     }, []);
     var open = useToast().open;
@@ -65468,7 +66951,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return _ref.apply(this, arguments);
       };
     }();
-    var dDayCalculate = (0, import_react254.useCallback)(function(e4) {
+    var dDayCalculate = (0, import_react255.useCallback)(function(e4) {
       var startSign = Math.sign(import_moment3.default.duration((0, import_moment3.default)(e4.startDay).hours(0).diff((0, import_moment3.default)())).asDays());
       var endSign = Math.sign(import_moment3.default.duration((0, import_moment3.default)(e4.endDay).hours(0).diff((0, import_moment3.default)())).asDays());
       var result = "";
@@ -65493,39 +66976,39 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       };
       return data;
     }, []);
-    var monthRef = (0, import_react254.useRef)((0, import_moment3.default)().add(1, "month").format("MM"));
+    var monthRef = (0, import_react255.useRef)((0, import_moment3.default)().add(1, "month").format("MM"));
     var renderItem = function(item) {
       var after = monthRef.current;
       monthRef.current = (0, import_moment3.default)(item.item.day[0]).format("MM");
-      return /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(import_jsx_runtime292.Fragment, {
+      return /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(import_jsx_runtime294.Fragment, {
         children: [
-          (monthRef.current != after || item.index == 0) && /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.Root, {
-            title: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.TitleParagraph, {
+          (monthRef.current != after || item.index == 0) && /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.Root, {
+            title: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.TitleParagraph, {
               typography: "t7",
               color: colors.grey700,
               children: (0, import_moment3.default)(item.item.day[item.item.nDay - 1]).format("YYYY\uB144 MM\uC6D4")
             })
           }),
-          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(import_react_native256.Pressable, {
+          /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(import_react_native258.Pressable, {
             onPress: function() {
               goMyTravelDetail(item.item);
             },
-            children: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.Root, {
-              right: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Icon_default, {
+            children: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.Root, {
+              right: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Icon_default, {
                 name: "icon-arrow-right-mono",
                 color: colors.grey400
               }),
-              title: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.TitleParagraph, {
+              title: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.TitleParagraph, {
                 typography: "t3",
                 children: item.item.travelName
               }),
-              subtitle1: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.SubtitleParagraph, {
+              subtitle1: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.SubtitleParagraph, {
                 typography: "t7",
                 color: colors.grey700,
                 fontWeight: "regular",
                 children: (0, import_moment3.default)(item.item.day[0]).format("YYYY\uB144 MM\uC6D4 DD\uC77C") + " ~ " + (0, import_moment3.default)(item.item.day[item.item.nDay - 1]).format("MM\uC6D4 DD\uC77C")
               }),
-              subtitle2: /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(TopRoot.SubtitleParagraph, {
+              subtitle2: /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(TopRoot.SubtitleParagraph, {
                 typography: "t6",
                 color: colors.blue600,
                 fontWeight: "medium",
@@ -65535,7 +67018,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     endDay: item.item.day[item.item.nDay - 1]
                   }).result,
                   "\n",
-                  /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Badge_default, {
+                  /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Badge_default, {
                     type: "teal",
                     badgeStyle: "weak",
                     children: item.item.region[0].split("/").at(-1)
@@ -65547,77 +67030,137 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         ]
       });
     };
-    return loading ? /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Lottie, {
-      height: "100%",
-      src: "https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b",
-      autoPlay: true,
-      loop: true,
-      onAnimationFailure: function() {
-        console.log("Animation Failed");
-      },
-      onAnimationFinish: function() {
-        console.log("Animation Finished");
-      }
-    }) : /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(import_react_native256.View, {
-      children: list.length == 0 ? /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(import_react_native256.View, {
-        style: {
-          top: 240
-        },
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.Root, {
-            upper: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.UpperAssetContent, {
-              content: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Image, {
-                style: {
-                  width: 68,
-                  height: 68
-                },
-                source: {
-                  uri: "https://static.toss.im/2d-emojis/png/4x/u1F3DC.png"
-                }
+    return loading ? /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(AnimateSkeleton_default, {
+      delay: 500,
+      withGradient: true,
+      withShimmer: true,
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Skeleton_default, {
+          height: 60,
+          style: {
+            marginTop: 12
+          }
+        })
+      ]
+    }) : (
+      // <Lottie
+      //   height={"100%"}
+      //   src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
+      //   autoPlay={true}
+      //   loop={true}
+      //   onAnimationFailure={() => {
+      //     console.log("Animation Failed");
+      //   }}
+      //   onAnimationFinish={() => {
+      //     console.log("Animation Finished");
+      //   }}
+      // />
+      /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(import_react_native258.View, {
+        children: list.length == 0 ? /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(import_react_native258.View, {
+          style: {
+            top: 240
+          },
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.Root, {
+              upper: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.UpperAssetContent, {
+                content: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Image, {
+                  style: {
+                    width: 68,
+                    height: 68
+                  },
+                  source: {
+                    uri: "https://static.toss.im/2d-emojis/png/4x/u1F3DC.png"
+                  }
+                })
+              }),
+              title: /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(TopRoot.TitleParagraph, {
+                typography: "t3",
+                children: [
+                  "\uC9C0\uAE08 \uBC14\uB85C \uC5EC\uD589 \uC77C\uC815\uC744 \uCD94\uCC9C\uBC1B\uC544",
+                  "\n",
+                  "\uC2E0\uB098\uB294 \uC5EC\uD589\uC744 \uB5A0\uB098\uBCF4\uC138\uC694!"
+                ]
+              }),
+              subtitle1: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(TopRoot.SubtitleParagraph, {
+                typography: "t7",
+                color: colors.grey700,
+                fontWeight: "regular",
+                children: "\uB098\uADF8\uB124\uB2D8\uC744 \uC704\uD55C \uC77C\uC815\uC774 \uACE7 \uCC44\uC6CC\uC9C8 \uAC70\uC5D0\uC694"
               })
             }),
-            title: /* @__PURE__ */ (0, import_jsx_runtime292.jsxs)(TopRoot.TitleParagraph, {
-              typography: "t3",
-              children: [
-                "\uC9C0\uAE08 \uBC14\uB85C \uC5EC\uD589 \uC77C\uC815\uC744 \uCD94\uCC9C\uBC1B\uC544",
-                "\n",
-                "\uC2E0\uB098\uB294 \uC5EC\uD589\uC744 \uB5A0\uB098\uBCF4\uC138\uC694!"
-              ]
-            }),
-            subtitle1: /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(TopRoot.SubtitleParagraph, {
-              typography: "t7",
-              color: colors.grey700,
-              fontWeight: "regular",
-              children: "\uB098\uADF8\uB124\uB2D8\uC744 \uC704\uD55C \uC77C\uC815\uC774 \uACE7 \uCC44\uC6CC\uC9C8 \uAC70\uC5D0\uC694"
+            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Button2, {
+              viewStyle: {
+                alignSelf: "center"
+              },
+              size: "tiny",
+              style: "weak",
+              onPress: function() {
+                dispatch(travelSliceActions.reset({
+                  userId,
+                  userJwtToken
+                }));
+                navigation.replace("/enroll/title");
+              },
+              children: "\uC5EC\uD589 \uC77C\uC815 \uCD94\uCC9C \uBC1B\uC73C\uB7EC \uAC00\uAE30"
             })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(Button2, {
-            viewStyle: {
-              alignSelf: "center"
-            },
-            size: "tiny",
-            style: "weak",
-            onPress: function() {
-              dispatch(travelSliceActions.reset({
-                userId,
-                userJwtToken
-              }));
-              navigation.replace("/enroll/title");
-            },
-            children: "\uC5EC\uD589 \uC77C\uC815 \uCD94\uCC9C \uBC1B\uC73C\uB7EC \uAC00\uAE30"
-          })
-        ]
-      }) : /* @__PURE__ */ (0, import_jsx_runtime292.jsx)(react_native_gesture_handler_exports.FlatList, {
-        data: list,
-        renderItem,
-        initialNumToRender: 20,
-        showsVerticalScrollIndicator: false,
-        keyExtractor: function(item) {
-          return item === null || item === void 0 ? void 0 : item._id;
-        },
-        nestedScrollEnabled: true
+          ]
+        }) : /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(react_native_gesture_handler_exports.FlatList, {
+          data: list,
+          renderItem,
+          initialNumToRender: 20,
+          showsVerticalScrollIndicator: false,
+          keyExtractor: function(item) {
+            return item === null || item === void 0 ? void 0 : item._id;
+          },
+          nestedScrollEnabled: true
+        })
       })
-    });
+    );
   }
 
   // pages/preset-detail.tsx
@@ -65627,17 +67170,19 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route21;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime294 = __toESM(require_jsx_runtime());
+  var import_jsx_runtime296 = __toESM(require_jsx_runtime());
   var import_moment4 = __toESM(require_moment());
-  var import_react256 = __toESM(require_react());
-  var import_react_native260 = __toESM(require_react_native());
+  var import_react257 = __toESM(require_react());
+  var import_react_native262 = __toESM(require_react_native());
 
   // components/map-view-marker.tsx
-  var import_jsx_runtime293 = __toESM(require_jsx_runtime());
-  var import_react255 = __toESM(require_react());
-  var import_react_native258 = __toESM(require_react_native());
+  init_define_import_meta_env();
+  var import_jsx_runtime295 = __toESM(require_jsx_runtime());
+  var import_react256 = __toESM(require_react());
+  var import_react_native260 = __toESM(require_react_native());
   function CustomMapViewMarker(param) {
     var presetData = param.presetData, selectedIndex = param.selectedIndex, _param_isWideZoom = param.isWideZoom, isWideZoom = _param_isWideZoom === void 0 ? false : _param_isWideZoom;
     var selectedRoute = presetData[selectedIndex];
@@ -65660,8 +67205,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     });
     var centerLat = polylineCoordinates.length > 0 ? polylineCoordinates[0].lat : 37.5665;
     var centerLng = polylineCoordinates.length > 0 ? polylineCoordinates[0].lng : 126.978;
-    var htmlContent = '\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <title>Map</title>\n        <meta name="viewport" content="width=device-width, initial-scale=1.0">\n        <style>\n          html, body, #map {\n            margin: 0;\n            padding: 0;\n            height: 100%;\n            width: 100%;\n          }\n        </style>\n        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_nsvAajvyiWj-FeJO6u1-yZYsOBkoPOk"><\/script>\n        <script>\n          function initMap() {\n            const center = { lat: '.concat(centerLat, ", lng: ").concat(centerLng, ' };\n            const map = new google.maps.Map(document.getElementById("map"), {\n              center: center,\n              zoom: ').concat(isWideZoom ? 9 : 12, ",\n              disableDefaultUI: true,\n            });\n\n            // Draw polyline\n            const routePath = new google.maps.Polyline({\n              path: ").concat(JSON.stringify(polylineCoordinates), ',\n              geodesic: true,\n              strokeColor: "#3182F6",\n              strokeOpacity: 1.0,\n              strokeWeight: 3\n            });\n            routePath.setMap(map);\n\n            // Draw markers\n            const markerData = ').concat(JSON.stringify(markerCoordinates), ';\n            markerData.forEach((data, idx) => {\n              new google.maps.Marker({\n                position: { lat: data.lat, lng: data.lng },\n                map: map,\n                title: data.title,\n                label: {\n                  text: String(idx + 1),\n                  color: "white",\n                  fontSize: "12px",\n                },\n                icon: {\n                  path: google.maps.SymbolPath.CIRCLE,\n                  scale: 13,\n                  fillColor: data.category == 4 ? "#3182F6" : "#3182F6",\n                  fillOpacity: 1,\n                  strokeWeight: 0,\n                },\n              });\n            });\n\n         \n          }\n\n          window.onload = initMap;\n        <\/script>\n      </head>\n      <body>\n        <div id="map"></div>\n      </body>\n    </html>\n  ');
-    return /* @__PURE__ */ (0, import_jsx_runtime293.jsx)(import_react_native_webview.default, {
+    var htmlContent = '\n    <!DOCTYPE html>\n    <html>\n      <head>\n        <title>Map</title>\n        <meta name="viewport" content="width=device-width, initial-scale=1.0">\n        <style>\n          html, body, #map {\n            margin: 0;\n            padding: 0;\n            height: 100%;\n            width: 100%;\n          }\n        </style>\n        <script src="https://maps.googleapis.com/maps/api/js?key='.concat(define_import_meta_env_default.GOOGLE_API_KEY, '"><\/script>\n        <script>\n          function initMap() {\n            const center = { lat: ').concat(centerLat, ", lng: ").concat(centerLng, ' };\n            const map = new google.maps.Map(document.getElementById("map"), {\n              center: center,\n              zoom: ').concat(isWideZoom ? 9 : 12, ",\n              disableDefaultUI: true,\n            });\n\n            // Draw polyline\n            const routePath = new google.maps.Polyline({\n              path: ").concat(JSON.stringify(polylineCoordinates), ',\n              geodesic: true,\n              strokeColor: "#3182F6",\n              strokeOpacity: 1.0,\n              strokeWeight: 3\n            });\n            routePath.setMap(map);\n\n            // Draw markers\n            const markerData = ').concat(JSON.stringify(markerCoordinates), ';\n            markerData.forEach((data, idx) => {\n              new google.maps.Marker({\n                position: { lat: data.lat, lng: data.lng },\n                map: map,\n                title: data.title,\n                label: {\n                  text: String(idx + 1),\n                  color: "white",\n                  fontSize: "12px",\n                },\n                icon: {\n                  path: google.maps.SymbolPath.CIRCLE,\n                  scale: 13,\n                  fillColor: data.category == 4 ? "#3182F6" : "#3182F6",\n                  fillOpacity: 1,\n                  strokeWeight: 0,\n                },\n              });\n            });\n\n         \n          }\n\n          window.onload = initMap;\n        <\/script>\n      </head>\n      <body>\n        <div id="map"></div>\n      </body>\n    </html>\n  ');
+    return /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(import_react_native_webview.default, {
       originWhitelist: [
         "*"
       ],
@@ -65673,10 +67218,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       domStorageEnabled: true
     });
   }
-  var styles62 = import_react_native258.StyleSheet.create({
+  var styles62 = import_react_native260.StyleSheet.create({
     container: {
-      width: import_react_native258.Dimensions.get("window").width,
-      height: import_react_native258.Dimensions.get("window").height * 240 / 812
+      width: import_react_native260.Dimensions.get("window").width,
+      height: import_react_native260.Dimensions.get("window").height * 240 / 812
     }
   });
 
@@ -65690,11 +67235,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   function PresetDetail() {
     var _presetTendencyList_params_index;
     var params = Route21.useParams();
-    var _useState = _sliced_to_array((0, import_react256.useState)("0"), 2), tabValue = _useState[0], setTabalue = _useState[1];
+    var _useState = _sliced_to_array((0, import_react257.useState)("0"), 2), tabValue = _useState[0], setTabalue = _useState[1];
     var _useAppSelector = useAppSelector(function(state) {
       return state.travelSlice;
     }), presetDatas = _useAppSelector.presetDatas, presetTendencyList = _useAppSelector.presetTendencyList, nDay = _useAppSelector.nDay, day = _useAppSelector.day, region2 = _useAppSelector.region;
-    var scrollRef = (0, import_react256.useRef)(null);
+    var scrollRef = (0, import_react257.useRef)(null);
     var weekdays = [
       "\uC77C",
       "\uC6D4",
@@ -65912,7 +67457,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return _ref.apply(this, arguments);
       };
     }();
-    var restaurantRecommend = (0, import_react256.useCallback)(function() {
+    var restaurantRecommend = (0, import_react257.useCallback)(function() {
       var _ref = _async_to_generator(function(e4) {
         var timetable, lat, lng, radius, status, goCheck, departure, arrival, distance, _timetable_e_idx_, _timetable_e_idx_1, startNumber, count, sequentialArray, _timetable_e_idx__lat, _timetable_e_idx__lng, data, e1;
         return __generator(this, function(_state) {
@@ -66291,9 +67836,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         handleRecommend(false);
       } else {
         bottomSheet.open({
-          children: /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(import_jsx_runtime294.Fragment, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(import_jsx_runtime296.Fragment, {
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(Txt_default, {
+              /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Txt_default, {
                 typography: "t4",
                 fontWeight: "bold",
                 color: colors.grey800,
@@ -66306,7 +67851,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   "\uCD94\uCC9C\uD574\uB4DC\uB9B4\uAE4C\uC694?"
                 ]
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Txt_default, {
+              /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Txt_default, {
                 typography: "t5",
                 fontWeight: "regular",
                 color: colors.grey600,
@@ -66315,8 +67860,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uBCC4\uC810\uC774 \uB192\uC740 \uACF3\uBD80\uD130 \uCD94\uCC9C\uD574\uB4DC\uB824\uC694"
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(BottomSheet.CTA.Double, {
-                leftButton: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Button2, {
+              /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(BottomSheet.CTA.Double, {
+                leftButton: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Button2, {
                   type: "dark",
                   style: "weak",
                   display: "block",
@@ -66326,7 +67871,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   },
                   children: "\uC544\uB2C8\uC624"
                 }),
-                rightButton: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Button2, {
+                rightButton: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Button2, {
                   type: "primary",
                   style: "fill",
                   display: "block",
@@ -66344,9 +67889,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var handleRecommend = function(e4) {
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(import_jsx_runtime294.Fragment, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(import_jsx_runtime296.Fragment, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Txt_default, {
               typography: "t4",
               fontWeight: "bold",
               color: colors.grey800,
@@ -66355,17 +67900,21 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               },
               children: "\uC7A0\uAE50!"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Txt_default, {
               typography: "t5",
               fontWeight: "regular",
               color: colors.grey600,
               style: {
                 textAlign: "center"
               },
-              children: "\uC77C\uC815\uC744 \uD655\uC815\uD558\uBA74 \uBCF8 \uACB0\uACFC\uB97C \uB2E4\uC2DC \uD655\uC778\uD558\uC2E4 \uC218 \uC5C6\uC5B4\uC694"
+              children: [
+                "\uC77C\uC815\uC744 \uD655\uC815\uD558\uBA74 \uBCF8 \uACB0\uACFC\uB97C",
+                "\n",
+                "\uB2E4\uC2DC \uD655\uC778\uD558\uC2E4 \uC218 \uC5C6\uC5B4\uC694"
+              ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(BottomSheet.CTA.Double, {
-              leftButton: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Button2, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(BottomSheet.CTA.Double, {
+              leftButton: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Button2, {
                 type: "dark",
                 style: "weak",
                 display: "block",
@@ -66374,7 +67923,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uC544\uB2C8\uC624"
               }),
-              rightButton: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Button2, {
+              rightButton: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Button2, {
                 type: "primary",
                 style: "fill",
                 display: "block",
@@ -66424,7 +67973,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       var result = ((_e_tendencyNameList_minIndex = e4 === null || e4 === void 0 ? void 0 : e4.tendencyNameList[minIndex]) !== null && _e_tendencyNameList_minIndex !== void 0 ? _e_tendencyNameList_minIndex : "") + ((e4 === null || e4 === void 0 ? void 0 : e4.tendencyNameList[nextMinIndex]) ? ", " + (e4 === null || e4 === void 0 ? void 0 : e4.tendencyNameList[nextMinIndex]) : "");
       return result;
     };
-    var onViewableItemsChanged = (0, import_react256.useRef)(function(items) {
+    var onViewableItemsChanged = (0, import_react257.useRef)(function(items) {
       var _items_changed_;
       setTabalue(String(items === null || items === void 0 ? void 0 : (_items_changed_ = items.changed[0]) === null || _items_changed_ === void 0 ? void 0 : _items_changed_.index));
     });
@@ -66438,7 +67987,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var renderItem = function(param) {
       var item = param.item, index = param.index;
-      return /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(Stack.Vertical, {
+      return /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Stack.Vertical, {
         style: {
           position: "relative",
           borderWidth: 1,
@@ -66450,7 +67999,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           marginHorizontal: 24
         },
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(Txt_default, {
+          /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Txt_default, {
             typography: "t5",
             fontWeight: "medium",
             color: colors.blue700,
@@ -66461,18 +68010,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               ")"
             ]
           }),
-          /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(import_react_native260.View, {
+          /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(import_react_native262.View, {
             style: {
               height: 20
             }
           }),
           item === null || item === void 0 ? void 0 : item.map(function(value, idx) {
-            return /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(StepperRow, {
+            return /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(StepperRow, {
               hideLine: idx == item.length - 1,
-              left: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(StepperRow.NumberIcon, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(StepperRow.NumberIcon, {
                 number: idx + 1
               }),
-              center: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(StepperRow.Texts, {
+              center: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(StepperRow.Texts, {
                 type: "A",
                 title: value.name + " ",
                 description: !value.name.includes("\uCD94\uCC9C") ? Math.floor(value.takenTime / 60) != 0 && Math.floor(value.takenTime / 60) + "\uC2DC\uAC04" + (value.takenTime % 60 != 0 ? value.takenTime % 60 + "\uBD84" : "") : ""
@@ -66482,25 +68031,25 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         ]
       });
     };
-    var _useState1 = _sliced_to_array((0, import_react256.useState)({
+    var _useState1 = _sliced_to_array((0, import_react257.useState)({
       listRow: 0,
       map: 0,
       tab: 0,
       cta: 0
     }), 2), layoutHeights = _useState1[0], setLayoutHeights = _useState1[1];
     var totalFixedHeight = layoutHeights.listRow + layoutHeights.map + layoutHeights.tab + layoutHeights.cta;
-    var screenHeight = import_react_native260.Dimensions.get("window").height;
+    var screenHeight = import_react_native262.Dimensions.get("window").height;
     var flatListHeight = screenHeight - totalFixedHeight;
-    return /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(import_react_native260.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(import_react_native262.View, {
       style: {
         flex: 1
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(NavigationBar, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(FixedBottomCTAProvider, {
+        /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(NavigationBar, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(FixedBottomCTAProvider, {
           children: [
-            ((_presetTendencyList_params_index = presetTendencyList[params === null || params === void 0 ? void 0 : params.index]) === null || _presetTendencyList_params_index === void 0 ? void 0 : _presetTendencyList_params_index.tendencyNameList.length) >= 2 && /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(ListRow3, {
-              left: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(ListRow3.Image, {
+            ((_presetTendencyList_params_index = presetTendencyList[params === null || params === void 0 ? void 0 : params.index]) === null || _presetTendencyList_params_index === void 0 ? void 0 : _presetTendencyList_params_index.tendencyNameList.length) >= 2 && /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(ListRow3, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(ListRow3.Image, {
                 width: 24,
                 height: 24,
                 type: "default",
@@ -66508,16 +68057,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   uri: "https://static.toss.im/2d-emojis/png/4x/u1F31F.png"
                 }
               }),
-              contents: /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(ListRow3.Texts, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(ListRow3.Texts, {
                 type: "2RowTypeA",
                 top: (params === null || params === void 0 ? void 0 : params.index) + 1 + "\uBC88 \uC77C\uC815",
                 // bottom={calculateTendency(presetTendencyList[params.index])}
-                bottom: /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(Txt_default, {
+                bottom: /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Txt_default, {
                   typography: "t6",
                   fontWeight: "regular",
                   color: colors.grey600,
                   children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(Txt_default, {
+                    /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Txt_default, {
                       typography: "t6",
                       fontWeight: "regular",
                       color: colors.blue500,
@@ -66539,12 +68088,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 }
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(CustomMapViewMarker, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(CustomMapViewMarker, {
               presetData: presetDatas[params === null || params === void 0 ? void 0 : params.index],
               selectedIndex: tabValue,
               isWideZoom: false
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(Tab, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Tab, {
               fluid: true,
               size: "large",
               onChange: function(e4) {
@@ -66559,7 +68108,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               }, function(item, index) {
                 return index;
               })).map(function(item, idx) {
-                return /* @__PURE__ */ (0, import_jsx_runtime294.jsxs)(Tab.Item, {
+                return /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Tab.Item, {
                   value: String(idx),
                   children: [
                     "DAY ",
@@ -66568,7 +68117,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 });
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(react_native_gesture_handler_exports.FlatList, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(react_native_gesture_handler_exports.FlatList, {
               keyExtractor: function(_, index) {
                 return index.toString();
               },
@@ -66593,7 +68142,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               },
               renderItem
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime294.jsx)(FixedBottomCTA, {
+            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(FixedBottomCTA, {
               onPress: handleAccommodation,
               children: "\uC774 \uC5EC\uD589 \uC77C\uC815 \uC120\uD0DD\uD558\uAE30"
             })
@@ -66610,11 +68159,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route22;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime295 = __toESM(require_jsx_runtime());
-  var import_react257 = __toESM(require_react());
-  var import_react_native262 = __toESM(require_react_native());
+  var import_jsx_runtime297 = __toESM(require_jsx_runtime());
+  var import_react258 = __toESM(require_react());
+  var import_react_native264 = __toESM(require_react_native());
   var Route22 = BedrockRoute("/preset", {
     validateParams: function(params) {
       return params;
@@ -66626,8 +68176,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var _useAppSelector = useAppSelector(function(state) {
       return state.travelSlice;
     }), presetDatas = _useAppSelector.presetDatas, regionInfo = _useAppSelector.regionInfo, region2 = _useAppSelector.region, presetTendencyList = _useAppSelector.presetTendencyList, nDay = _useAppSelector.nDay;
-    var _useState = _sliced_to_array((0, import_react257.useState)("0"), 2), tabValue = _useState[0], setTabalue = _useState[1];
-    var scrollRef = (0, import_react257.useRef)(null);
+    var _useState = _sliced_to_array((0, import_react258.useState)("0"), 2), tabValue = _useState[0], setTabalue = _useState[1];
+    var scrollRef = (0, import_react258.useRef)(null);
     var moveScroll = function(e4) {
       var _scrollRef_current;
       (_scrollRef_current = scrollRef.current) === null || _scrollRef_current === void 0 ? void 0 : _scrollRef_current.scrollToIndex({
@@ -66638,12 +68188,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var backEvent = useBackEvent();
     var bottomSheet = useBottomSheet();
-    var _useState1 = _sliced_to_array((0, import_react257.useState)({
+    var _useState1 = _sliced_to_array((0, import_react258.useState)({
       callback: function() {
         return bottomSheet.open({
-          children: /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(import_jsx_runtime295.Fragment, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_jsx_runtime297.Fragment, {
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Txt_default, {
+              /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
                 typography: "t4",
                 fontWeight: "bold",
                 color: colors.grey800,
@@ -66652,7 +68202,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uC800\uC7A5\uC774 \uD544\uC694\uD574\uC694"
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+              /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
                 typography: "t5",
                 fontWeight: "regular",
                 color: colors.grey600,
@@ -66665,15 +68215,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   "\uC77C\uC815 \uC120\uD0DD \uD6C4\uC5D0 \uC885\uB8CC\uD574\uC57C \uC800\uC7A5 \uD560 \uC218 \uC788\uC5B4\uC694."
                 ]
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(BottomSheet.CTA.Double, {
-                leftButton: /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Button2, {
+              /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(BottomSheet.CTA.Double, {
+                leftButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
                   type: "dark",
                   style: "weak",
                   display: "block",
                   onPress: closeView,
                   children: "\uC885\uB8CC\uD558\uAE30"
                 }),
-                rightButton: /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Button2, {
+                rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
                   type: "primary",
                   style: "fill",
                   display: "block",
@@ -66688,7 +68238,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         });
       }
     }), 2), handler = _useState1[0], setHandler = _useState1[1];
-    (0, import_react257.useEffect)(function() {
+    (0, import_react258.useEffect)(function() {
       var callback = handler === null || handler === void 0 ? void 0 : handler.callback;
       if (callback != null) {
         backEvent.addEventListener(callback);
@@ -66707,7 +68257,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         index: e4
       });
     };
-    var onViewableItemsChanged = (0, import_react257.useRef)(function(items) {
+    var onViewableItemsChanged = (0, import_react258.useRef)(function(items) {
       var _items_changed_, _items_changed_1;
       console.log(items === null || items === void 0 ? void 0 : (_items_changed_ = items.changed[0]) === null || _items_changed_ === void 0 ? void 0 : _items_changed_.index);
       setTabalue(String(items === null || items === void 0 ? void 0 : (_items_changed_1 = items.changed[0]) === null || _items_changed_1 === void 0 ? void 0 : _items_changed_1.index));
@@ -66746,12 +68296,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       var result = ((_e_tendencyNameList_minIndex = e4 === null || e4 === void 0 ? void 0 : e4.tendencyNameList[minIndex]) !== null && _e_tendencyNameList_minIndex !== void 0 ? _e_tendencyNameList_minIndex : "") + ((e4 === null || e4 === void 0 ? void 0 : e4.tendencyNameList[nextMinIndex]) ? ", " + (e4 === null || e4 === void 0 ? void 0 : e4.tendencyNameList[nextMinIndex]) : "");
       return result;
     };
-    var _useState2 = _sliced_to_array((0, import_react257.useState)(Array(presetDatas.length).fill(true)), 2), tendencyViewIndex = _useState2[0], setTendencyViewIndex = _useState2[1];
+    var _useState2 = _sliced_to_array((0, import_react258.useState)(Array(presetDatas.length).fill(true)), 2), tendencyViewIndex = _useState2[0], setTendencyViewIndex = _useState2[1];
     var renderItem = function(param) {
       var item = param.item, index = param.index;
       var _presetTendencyList_index, _presetTendencyList_index1, _presetTendencyList_index2, _presetTendencyList_index3;
-      return /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(import_jsx_runtime295.Fragment, {
-        children: /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Stack.Vertical, {
+      return /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(import_jsx_runtime297.Fragment, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Stack.Vertical, {
           style: {
             position: "relative",
             borderWidth: 1,
@@ -66763,15 +68313,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             marginHorizontal: 24
           },
           children: [
-            ((_presetTendencyList_index = presetTendencyList[index]) === null || _presetTendencyList_index === void 0 ? void 0 : _presetTendencyList_index.tendencyNameList.length) >= 1 && /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(import_jsx_runtime295.Fragment, {
+            ((_presetTendencyList_index = presetTendencyList[index]) === null || _presetTendencyList_index === void 0 ? void 0 : _presetTendencyList_index.tendencyNameList.length) >= 1 && /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_jsx_runtime297.Fragment, {
               children: [
-                ((_presetTendencyList_index1 = presetTendencyList[index]) === null || _presetTendencyList_index1 === void 0 ? void 0 : _presetTendencyList_index1.tendencyNameList.length) >= 2 && presetDatas.length >= 2 && /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+                ((_presetTendencyList_index1 = presetTendencyList[index]) === null || _presetTendencyList_index1 === void 0 ? void 0 : _presetTendencyList_index1.tendencyNameList.length) >= 2 && presetDatas.length >= 2 && /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
                   typography: "t5",
                   fontWeight: "medium",
                   color: colors.grey800,
                   children: [
                     "\uB2E4\uB978 \uC77C\uC815\uC5D0 \uBE44\uD574",
-                    /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+                    /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
                       typography: "t5",
                       fontWeight: "medium",
                       color: colors.blue700,
@@ -66784,7 +68334,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     "\uC131\uD5A5\uC774 \uB354 \uB192\uC544\uC694"
                   ]
                 }),
-                /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Flex, {
+                /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Flex, {
                   direction: "row",
                   style: {
                     flexWrap: "wrap",
@@ -66793,7 +68343,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   },
                   children: (_presetTendencyList_index3 = presetTendencyList[index]) === null || _presetTendencyList_index3 === void 0 ? void 0 : _presetTendencyList_index3.tendencyNameList.slice(0, tendencyViewIndex[index] ? 4 : (_presetTendencyList_index2 = presetTendencyList[index]) === null || _presetTendencyList_index2 === void 0 ? void 0 : _presetTendencyList_index2.tendencyNameList.length).map(function(item2, index2) {
                     var _presetTendencyList_index4;
-                    return /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Badge_default, {
+                    return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Badge_default, {
                       size: "medium",
                       type: "blue",
                       badgeStyle: "weak",
@@ -66808,18 +68358,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 })
               ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(import_react_native262.View, {
+            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(import_react_native264.View, {
               style: {
                 height: 20
               }
             }),
             item === null || item === void 0 ? void 0 : item.map(function(value, idx) {
-              return /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(StepperRow, {
+              return /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(StepperRow, {
                 hideLine: idx == item.length - 1,
-                left: /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(StepperRow.NumberIcon, {
+                left: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(StepperRow.NumberIcon, {
                   number: idx + 1
                 }),
-                center: /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(StepperRow.Texts, {
+                center: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(StepperRow.Texts, {
                   type: "A",
                   title: value[value[0].category == 4 ? 1 : 0].name,
                   description: value.filter(function(itemValue) {
@@ -66830,7 +68380,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 })
               });
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Button2, {
+            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
               type: "primary",
               style: "weak",
               display: "full",
@@ -66843,17 +68393,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(import_react_native262.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_react_native264.View, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(NavigationBar, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(TopRoot, {
-          title: /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Txt_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(NavigationBar, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(TopRoot, {
+          title: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
             typography: "t6",
             fontWeight: "regular",
             color: colors.grey700,
             children: "\uC810\uC218\uAC00 \uB0AE\uC740 \uC77C\uC815\uC740 \uAC04\uB2E8\uD55C \uB3D9\uC120\uC744 \uC6B0\uC120\uC2DC\uD588\uC5B4\uC694!"
           }),
-          subtitle1: /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+          subtitle1: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
             typography: "t3",
             fontWeight: "bold",
             color: colors.grey900,
@@ -66864,11 +68414,11 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(import_react_native262.View, {
+        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(import_react_native264.View, {
           style: {
             paddingHorizontal: 24
           },
-          children: /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(LinearGradient2, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(LinearGradient2, {
             height: 103,
             degree: 0,
             colors: [
@@ -66880,7 +68430,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               borderRadius: 99
             },
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Image, {
+              /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Image, {
                 source: {
                   uri: regionInfo.photo
                 },
@@ -66892,13 +68442,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   opacity: 0.1
                 }
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Stack.Vertical, {
+              /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Stack.Vertical, {
                 gutter: 3,
                 style: {
                   padding: 20
                 },
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+                  /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
                     typography: "st5",
                     fontWeight: "semibold",
                     color: colors.white,
@@ -66907,18 +68457,18 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                       region2.length >= 2 ? " \uC678 ".concat(region2.length - 1, "\uC9C0\uC5ED") : ""
                     ]
                   }),
-                  /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Stack.Horizontal, {
+                  /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Stack.Horizontal, {
                     gutter: 12,
                     children: [
                       (_presetTendencyList_ = presetTendencyList[0]) === null || _presetTendencyList_ === void 0 ? void 0 : _presetTendencyList_.tendencyNameList.slice(0, 3).map(function(item, idx) {
-                        return /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(import_react_native262.View, {
+                        return /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(import_react_native264.View, {
                           style: {
                             borderRadius: 12,
                             paddingHorizontal: 7,
                             paddingVertical: 3,
                             backgroundColor: "rgba(255,255,255,0.3)"
                           },
-                          children: /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Txt_default, {
+                          children: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
                             typography: "t7",
                             fontWeight: "medium",
                             color: colors.white,
@@ -66929,7 +68479,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                           })
                         });
                       }),
-                      ((_presetTendencyList_1 = presetTendencyList[0]) === null || _presetTendencyList_1 === void 0 ? void 0 : _presetTendencyList_1.tendencyNameList.length) >= 4 && /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+                      ((_presetTendencyList_1 = presetTendencyList[0]) === null || _presetTendencyList_1 === void 0 ? void 0 : _presetTendencyList_1.tendencyNameList.length) >= 4 && /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
                         typography: "t7",
                         fontWeight: "medium",
                         color: colors.white,
@@ -66948,7 +68498,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             ]
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime295.jsxs)(Txt_default, {
+        /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
           typography: "t6",
           fontWeight: "medium",
           color: colors.blue700,
@@ -66961,7 +68511,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             " \uC77C\uC815\uC774\uC5D0\uC694"
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Tab, {
+        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Tab, {
           fluid: true,
           size: "large",
           onChange: function(e4) {
@@ -66977,13 +68527,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
           }, function(item, index) {
             return index;
           })).map(function(item, idx) {
-            return /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(Tab.Item, {
+            return /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Tab.Item, {
               value: String(idx),
               children: idx + 1
             });
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime295.jsx)(react_native_gesture_handler_exports.FlatList, {
+        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(react_native_gesture_handler_exports.FlatList, {
           keyExtractor: function(_, index) {
             return index.toString();
           },
@@ -67019,11 +68569,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route23;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime296 = __toESM(require_jsx_runtime());
-  var import_react258 = __toESM(require_react());
-  var import_react_native263 = __toESM(require_react_native());
+  var import_jsx_runtime298 = __toESM(require_jsx_runtime());
+  var import_react259 = __toESM(require_react());
+  var import_react_native265 = __toESM(require_react_native());
   var Route23 = BedrockRoute("/recommend-place", {
     validateParams: function(params) {
       return params;
@@ -67068,7 +68619,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var open = useToast().open;
     var navigation = useNavigation();
-    (0, import_react258.useEffect)(function() {
+    (0, import_react259.useEffect)(function() {
       getRecommendList();
     }, []);
     var handleAdd = function(e4) {
@@ -67103,8 +68654,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       });
       navigation === null || navigation === void 0 ? void 0 : navigation.goBack();
     };
-    var _useState = _sliced_to_array((0, import_react258.useState)([]), 2), recommendList = _useState[0], setRcommendList = _useState[1];
-    var _useState1 = _sliced_to_array((0, import_react258.useState)(true), 2), loading = _useState1[0], setLoading = _useState1[1];
+    var _useState = _sliced_to_array((0, import_react259.useState)([]), 2), recommendList = _useState[0], setRcommendList = _useState[1];
+    var _useState1 = _sliced_to_array((0, import_react259.useState)(true), 2), loading = _useState1[0], setLoading = _useState1[1];
     var getRecommendList = function() {
       var _ref = _async_to_generator(function() {
         var _params_data_params_day_params_index, _params_data_params_day_params_index1, tableData, _tableData_lat, _tableData_lng, _tableData_name, _tableData_lat1, _tableData_lng1, result, _params_data_params_day_params_index2, _params_data_params_day_params_index3, _params_data_params_day_params_index4, _tableData_lat2, _tableData_lng2, _params_data_params_day_params_index_name, _tableData_lat3, _tableData_lng3, err;
@@ -67196,21 +68747,23 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       var _recommendList_e, _recommendList_e1;
       var _recommendList_e_place_name;
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(import_jsx_runtime296.Fragment, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime298.jsxs)(import_jsx_runtime298.Fragment, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsxs)(Txt_default, {
               typography: "t4",
               fontWeight: "bold",
               color: colors.grey800,
               style: {
-                alignSelf: "center"
+                alignSelf: "center",
+                marginHorizontal: 40,
+                textAlign: "center"
               },
               children: [
                 (_recommendList_e_place_name = (_recommendList_e = recommendList[e4]) === null || _recommendList_e === void 0 ? void 0 : _recommendList_e.place_name) !== null && _recommendList_e_place_name !== void 0 ? _recommendList_e_place_name : (_recommendList_e1 = recommendList[e4]) === null || _recommendList_e1 === void 0 ? void 0 : _recommendList_e1.name,
                 "\uB97C \uCD94\uAC00\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?"
               ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Txt_default, {
               typography: "t5",
               fontWeight: "regular",
               color: colors.grey600,
@@ -67219,8 +68772,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               },
               children: "\uCD94\uAC00\uB41C \uD6C4 \uC218\uC815\uBAA8\uB4DC\uB85C \uBC14\uB00C\uC5B4\uC694!"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(BottomSheet.CTA.Double, {
-              leftButton: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Button2, {
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(BottomSheet.CTA.Double, {
+              leftButton: /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Button2, {
                 type: "dark",
                 style: "weak",
                 display: "block",
@@ -67229,7 +68782,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uCDE8\uC18C"
               }),
-              rightButton: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Button2, {
+              rightButton: /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Button2, {
                 type: "primary",
                 style: "fill",
                 display: "block",
@@ -67244,36 +68797,82 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime296.jsxs)(import_react_native263.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime298.jsxs)(import_react_native265.View, {
       style: {
         flex: 1
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(NavigationBar, {}),
-        loading && /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(Lottie, {
-          height: "100%",
-          src: "https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b",
-          autoPlay: true,
-          loop: true,
-          onAnimationFailure: function() {
-            console.log("Animation Failed");
-          },
-          onAnimationFinish: function() {
-            console.log("Animation Finished");
-          }
+        /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(NavigationBar, {}),
+        loading && /* @__PURE__ */ (0, import_jsx_runtime298.jsxs)(AnimateSkeleton_default, {
+          delay: 500,
+          withGradient: true,
+          withShimmer: true,
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            }),
+            /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Skeleton_default, {
+              height: 60,
+              style: {
+                marginTop: 12
+              }
+            })
+          ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(react_native_gesture_handler_exports.ScrollView, {
+        /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(react_native_gesture_handler_exports.ScrollView, {
           children: recommendList.map(function(item, idx) {
             var _params_data_params_day_;
             var _item_place_name, _params_data_params_day__name;
-            return /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(ListRow3, {
+            return /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(ListRow3, {
               onPress: function() {
                 handleCheck(idx);
               },
-              left: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(ListRow3.Icon, {
+              left: /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(ListRow3.Icon, {
                 name: "icon-plus-circle-blue"
               }),
-              contents: /* @__PURE__ */ (0, import_jsx_runtime296.jsx)(ListRow3.Texts, {
+              contents: /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(ListRow3.Texts, {
                 type: "2RowTypeA",
                 top: (_item_place_name = item === null || item === void 0 ? void 0 : item.place_name) !== null && _item_place_name !== void 0 ? _item_place_name : item === null || item === void 0 ? void 0 : item.name,
                 topProps: {
@@ -67298,12 +68897,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       return Route24;
     }
   });
+  init_define_import_meta_env();
   init_sliced_to_array();
   init_to_consumable_array();
-  var import_jsx_runtime297 = __toESM(require_jsx_runtime());
+  var import_jsx_runtime299 = __toESM(require_jsx_runtime());
   var import_moment5 = __toESM(require_moment());
-  var import_react259 = __toESM(require_react());
-  var import_react_native266 = __toESM(require_react_native());
+  var import_react260 = __toESM(require_react());
+  var import_react_native268 = __toESM(require_react_native());
   var Route24 = BedrockRoute("/timetable", {
     validateParams: function(params) {
       return params;
@@ -67336,14 +68936,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       "blue",
       "blue"
     ];
-    var _useState = _sliced_to_array((0, import_react259.useState)("0"), 2), tabValue = _useState[0], setTabalue = _useState[1];
-    var onViewableItemsChanged = (0, import_react259.useRef)(function(items) {
+    var _useState = _sliced_to_array((0, import_react260.useState)("0"), 2), tabValue = _useState[0], setTabalue = _useState[1];
+    var onViewableItemsChanged = (0, import_react260.useRef)(function(items) {
       var _items_changed_;
       setTabalue(String(items === null || items === void 0 ? void 0 : (_items_changed_ = items.changed[0]) === null || _items_changed_ === void 0 ? void 0 : _items_changed_.index));
     });
-    var scrollRef = (0, import_react259.useRef)(null);
-    var _useState1 = _sliced_to_array((0, import_react259.useState)(true), 2), timeOutVisible = _useState1[0], setTiemOutVisible = _useState1[1];
-    (0, import_react259.useEffect)(function() {
+    var scrollRef = (0, import_react260.useRef)(null);
+    var _useState1 = _sliced_to_array((0, import_react260.useState)(true), 2), timeOutVisible = _useState1[0], setTiemOutVisible = _useState1[1];
+    (0, import_react260.useEffect)(function() {
       var timer = setTimeout(function() {
         setTiemOutVisible(false);
       }, 3e3);
@@ -67351,13 +68951,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         return clearTimeout(timer);
       };
     }, []);
-    var _useState2 = _sliced_to_array((0, import_react259.useState)(false), 2), modify = _useState2[0], setModify = _useState2[1];
-    var _useState3 = _sliced_to_array((0, import_react259.useState)({
+    var _useState2 = _sliced_to_array((0, import_react260.useState)(false), 2), modify = _useState2[0], setModify = _useState2[1];
+    var _useState3 = _sliced_to_array((0, import_react260.useState)({
       day: 0,
       index: 0,
       status: false
     }), 2), tooltips = _useState3[0], setTooltips = _useState3[1];
-    var _useState4 = _sliced_to_array((0, import_react259.useState)(timetable), 2), copyTimetable = _useState4[0], setCopyTimetable = _useState4[1];
+    var _useState4 = _sliced_to_array((0, import_react260.useState)(timetable), 2), copyTimetable = _useState4[0], setCopyTimetable = _useState4[1];
     var handleRemove = function() {
       var _copy_tooltips_day;
       var copy = _to_consumable_array(copyTimetable);
@@ -67372,12 +68972,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var navigation = useNavigation();
     var bottomSheet = useBottomSheet();
     var backEvent = useBackEvent();
-    var _useState5 = _sliced_to_array((0, import_react259.useState)(((_navigation_getState = navigation.getState()) === null || _navigation_getState === void 0 ? void 0 : (_navigation_getState_routes_at = _navigation_getState.routes.at(-2)) === null || _navigation_getState_routes_at === void 0 ? void 0 : _navigation_getState_routes_at.name) == "/my-travle-list" ? void 0 : {
+    var _useState5 = _sliced_to_array((0, import_react260.useState)(((_navigation_getState = navigation.getState()) === null || _navigation_getState === void 0 ? void 0 : (_navigation_getState_routes_at = _navigation_getState.routes.at(-2)) === null || _navigation_getState_routes_at === void 0 ? void 0 : _navigation_getState_routes_at.name) == "/my-travle-list" ? void 0 : {
       callback: function() {
         return bottomSheet.open({
-          children: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_jsx_runtime297.Fragment, {
+          children: /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_jsx_runtime299.Fragment, {
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
+              /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Txt_default, {
                 typography: "t4",
                 fontWeight: "bold",
                 color: colors.grey800,
@@ -67386,7 +68986,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uC77C\uC815\uC744 \uC800\uC7A5\uD560\uAE4C\uC694?"
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
+              /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(Txt_default, {
                 typography: "t5",
                 fontWeight: "regular",
                 color: colors.grey600,
@@ -67399,15 +68999,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   "\uBE44\uD589\uAE30 \uC544\uC774\uCF58\uC5D0\uC11C \uBCFC \uC218 \uC788\uC5B4\uC694."
                 ]
               }),
-              /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(BottomSheet.CTA.Double, {
-                leftButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+              /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(BottomSheet.CTA.Double, {
+                leftButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                   type: "dark",
                   style: "weak",
                   display: "block",
                   onPress: closeView,
                   children: "\uB098\uAC00\uAE30"
                 }),
-                rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+                rightButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                   type: "primary",
                   style: "fill",
                   display: "block",
@@ -67423,7 +69023,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         });
       }
     }), 2), handler = _useState5[0], setHandler = _useState5[1];
-    (0, import_react259.useEffect)(function() {
+    (0, import_react260.useEffect)(function() {
       var callback = handler === null || handler === void 0 ? void 0 : handler.callback;
       if (callback != null) {
         backEvent.addEventListener(callback);
@@ -67483,7 +69083,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var showHourBottomSheet = function() {
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(HourBottomSheetContent3, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(HourBottomSheetContent3, {
           onConfirm: function(e4) {
             goModify(e4);
             bottomSheet.close();
@@ -67581,9 +69181,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     };
     var handleSave = function() {
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_jsx_runtime297.Fragment, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_jsx_runtime299.Fragment, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Txt_default, {
               typography: "t4",
               fontWeight: "bold",
               color: colors.grey800,
@@ -67592,7 +69192,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               },
               children: "\uC77C\uC815\uC744 \uC800\uC7A5\uD560\uAE4C\uC694?"
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(Txt_default, {
               typography: "t5",
               fontWeight: "regular",
               color: colors.grey600,
@@ -67600,13 +69200,13 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 textAlign: "center"
               },
               children: [
-                "\uC800\uC7A5\uB41C \uC77C\uC815\uC740 \uC624\uB978\uCABD \uC0C1\uB2E8 \uBE44\uD589\uAE30 \uC544\uC774\uCF58\uC5D0\uC11C",
+                "\uC800\uC7A5\uB41C \uC77C\uC815\uC740 \uC624\uB978\uCABD \uC0C1\uB2E8 ",
                 "\n",
-                " \uBCFC \uC218 \uC788\uC5B4\uC694."
+                "\uBE44\uD589\uAE30 \uC544\uC774\uCF58\uC5D0\uC11C \uBCFC \uC218 \uC788\uC5B4\uC694."
               ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(BottomSheet.CTA.Double, {
-              leftButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(BottomSheet.CTA.Double, {
+              leftButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                 type: "dark",
                 style: "weak",
                 display: "block",
@@ -67615,7 +69215,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uB2EB\uAE30"
               }),
-              rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+              rightButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                 type: "primary",
                 style: "fill",
                 display: "block",
@@ -67644,14 +69244,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
     var handleRemoveCheck = function() {
       var _copyTimetable_tooltips_day_tooltips_index;
       bottomSheet.open({
-        children: /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_jsx_runtime297.Fragment, {
+        children: /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_jsx_runtime299.Fragment, {
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(Txt_default, {
               typography: "t4",
               fontWeight: "bold",
               color: colors.grey800,
               style: {
-                alignSelf: "center"
+                alignSelf: "center",
+                marginHorizontal: 40,
+                textAlign: "center"
               },
               children: [
                 "'",
@@ -67659,7 +69261,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 "'\uC77C\uC815\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694?"
               ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Txt_default, {
               typography: "t5",
               fontWeight: "regular",
               color: colors.grey600,
@@ -67668,8 +69270,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               },
               children: "\uC0AD\uC81C\uD55C \uC77C\uC815\uC740 \uB098\uC911\uC5D0 \uC9C1\uC811 \uCD94\uAC00\uD560 \uC218 \uC788\uC5B4\uC694."
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(BottomSheet.CTA.Double, {
-              leftButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(BottomSheet.CTA.Double, {
+              leftButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                 type: "dark",
                 style: "weak",
                 display: "block",
@@ -67678,7 +69280,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uB2EB\uAE30"
               }),
-              rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+              rightButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                 type: "primary",
                 style: "fill",
                 display: "block",
@@ -67701,10 +69303,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
       });
       setTabalue(e4);
     };
-    var screenHeight = import_react_native266.Dimensions.get("window").height;
+    var screenHeight = import_react_native268.Dimensions.get("window").height;
     var renderItem = function(param) {
       var item = param.item, index = param.index;
-      return /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Stack.Vertical, {
+      return /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Stack.Vertical, {
         style: {
           position: "relative",
           borderRadius: 13,
@@ -67716,9 +69318,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         children: item === null || item === void 0 ? void 0 : item.map(function(value, idx) {
           var _value_name;
           var _value_y, _value_y1, _value_y2, _value_y3, _value_y4, _value_category, _value_category1;
-          return (0, import_jsx_runtime297.jsxs)(import_react_native266.View, {
+          return (0, import_jsx_runtime299.jsxs)(import_react_native268.View, {
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3, {
+              /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3, {
                 onPress: function() {
                   var _value_name2;
                   if (!modify && (value === null || value === void 0 ? void 0 : (_value_name2 = value.name) === null || _value_name2 === void 0 ? void 0 : _value_name2.includes("\uCD94\uCC9C"))) {
@@ -67737,17 +69339,17 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     });
                   }
                 },
-                left: !(value === null || value === void 0 ? void 0 : (_value_name = value.name) === null || _value_name === void 0 ? void 0 : _value_name.includes("\uCD94\uCC9C")) ? /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Icon, {
+                left: !(value === null || value === void 0 ? void 0 : (_value_name = value.name) === null || _value_name === void 0 ? void 0 : _value_name.includes("\uCD94\uCC9C")) ? /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Icon, {
                   name: "icon-number-".concat((item === null || item === void 0 ? void 0 : item.filter(function(filItem) {
                     var _filItem_name;
                     return !((_filItem_name = filItem.name) === null || _filItem_name === void 0 ? void 0 : _filItem_name.includes("\uCD94\uCC9C"));
                   }).findIndex(function(findItem) {
                     return findItem.name == (value === null || value === void 0 ? void 0 : value.name);
                   })) + 1, "-square")
-                }) : /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Icon, {
+                }) : /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Icon, {
                   name: "icon-number-".concat(-1, "-squar")
                 }),
-                contents: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Texts, {
+                contents: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Texts, {
                   type: "2RowTypeA",
                   top: Math.floor((((_value_y = value.y) !== null && _value_y !== void 0 ? _value_y : 0) * 30 + 360) / 60) + ":" + String((((_value_y1 = value.y) !== null && _value_y1 !== void 0 ? _value_y1 : 0) * 30 + 360) % 60).padStart(2, "0") + " ~ " + (Math.floor(((((_value_y2 = value.y) !== null && _value_y2 !== void 0 ? _value_y2 : 0) + value.takenTime / 30) * 30 + 360) / 60) < 25 ? Math.floor(((((_value_y3 = value.y) !== null && _value_y3 !== void 0 ? _value_y3 : 0) + value.takenTime / 30) * 30 + 360) / 60) + ":" + String(((((_value_y4 = value.y) !== null && _value_y4 !== void 0 ? _value_y4 : 0) + value.takenTime / 30) * 30 + 360) % 60).padStart(2, "0") : ""),
                   // bottom={calculateTendency(presetTendencyList[params.index])}
@@ -67759,16 +69361,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     color: colors.grey600
                   }
                 }),
-                right: modify ? /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Icon, {
+                right: modify ? /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Icon, {
                   name: "icon-dots-mono"
-                }) : /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Badge_default, {
+                }) : /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Badge_default, {
                   size: "small",
                   badgeStyle: "weak",
                   type: categoryColor[(_value_category = value === null || value === void 0 ? void 0 : value.category) !== null && _value_category !== void 0 ? _value_category : 0],
                   children: categoryTitle[(_value_category1 = value === null || value === void 0 ? void 0 : value.category) !== null && _value_category1 !== void 0 ? _value_category1 : 0]
                 })
               }),
-              tooltips.status && tooltips.day == index && tooltips.index == idx && /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_react_native266.View, {
+              tooltips.status && tooltips.day == index && tooltips.index == idx && /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_react_native268.View, {
                 style: {
                   position: "absolute",
                   right: 30,
@@ -67781,7 +69383,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   padding: 10
                 },
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
+                  /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Txt_default, {
                     typography: "t5",
                     fontWeight: "medium",
                     color: colors.grey700,
@@ -67790,7 +69392,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     },
                     children: "\uD3B8\uC9D1"
                   }),
-                  /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
+                  /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Txt_default, {
                     typography: "t5",
                     fontWeight: "medium",
                     color: colors.grey700,
@@ -67801,7 +69403,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                   })
                 ]
               }),
-              modify && (value === null || value === void 0 ? void 0 : value.category) != 4 && /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3, {
+              modify && (value === null || value === void 0 ? void 0 : value.category) != 4 && /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3, {
                 onPress: function() {
                   navigation.navigate("/add-place", {
                     day: index,
@@ -67810,10 +69412,10 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     setCopyTimetable
                   });
                 },
-                left: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Icon, {
+                left: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Icon, {
                   name: "icon-plus-circle-blue"
                 }),
-                contents: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Texts, {
+                contents: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Texts, {
                   type: "1RowTypeA",
                   top: "\uC77C\uC815 \uCD94\uAC00\uD558\uAE30",
                   topProps: {
@@ -67826,16 +69428,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_react_native266.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_react_native268.View, {
       style: {
         flex: 1
       },
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(PartnerNavigation, {
-          title: "\uB2E4\uB2D8",
+        /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(PartnerNavigation, {
+          title: "AI\uC5D0\uAC8C \uC5EC\uD589 \uCF54\uC2A4 \uCD94\uCC9C \uBC1B\uAE30",
           icon: {
             source: {
-              uri: "https://danim.me/square_logo.png"
+              uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png"
             }
           },
           rightButtons: [
@@ -67851,12 +69453,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             }
           ]
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(FixedBottomCTAProvider, {
+        /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(FixedBottomCTAProvider, {
           children: [
-            !modify && /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_jsx_runtime297.Fragment, {
+            !modify && /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_jsx_runtime299.Fragment, {
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3, {
-                  contents: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Texts, {
+                /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3, {
+                  contents: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Texts, {
                     type: "2RowTypeA",
                     top: (0, import_moment5.default)(day[0]).format("YYYY-MM-DD") + " ~ " + (0, import_moment5.default)(day[nDay - 1]).format("YYYY-MM-DD"),
                     // bottom={calculateTendency(presetTendencyList[params.index])}
@@ -67873,14 +69475,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                     }
                   })
                 }),
-                /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(CustomMapViewMarker, {
+                /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(CustomMapViewMarker, {
                   presetData: timetable,
                   selectedIndex: tabValue,
                   isWideZoom: false
                 })
               ]
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Tab, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Tab, {
               fluid: true,
               size: "large",
               onChange: function(e4) {
@@ -67895,7 +69497,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               }, function(item, index) {
                 return index;
               })).map(function(item, idx) {
-                return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(Tab.Item, {
+                return /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(Tab.Item, {
                   value: String(idx),
                   children: [
                     "DAY ",
@@ -67904,7 +69506,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 });
               })
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(react_native_gesture_handler_exports.FlatList, {
+            /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(react_native_gesture_handler_exports.FlatList, {
               keyExtractor: function(_, index) {
                 return index.toString();
               },
@@ -67937,7 +69539,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
               },
               renderItem
             }),
-            timeOutVisible && /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(import_react_native266.View, {
+            timeOutVisible && /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(import_react_native268.View, {
               style: {
                 position: "absolute",
                 right: 38,
@@ -67947,14 +69549,14 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 backgroundColor: colors.white,
                 elevation: 1
               },
-              children: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Txt_default, {
+              children: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Txt_default, {
                 typography: "t6",
                 fontWeight: "bold",
                 color: colors.grey800,
                 children: "\uC218\uC815\uD558\uB824\uBA74 \uD074\uB9AD\uD558\uC138\uC694"
               })
             }),
-            !modify && /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(import_react_native266.View, {
+            !modify && /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(import_react_native268.View, {
               style: {
                 position: "absolute",
                 right: 30,
@@ -67964,7 +69566,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 borderRadius: 12,
                 backgroundColor: colors.grey200
               },
-              children: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(IconButton, {
+              children: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(IconButton, {
                 name: "icon-pencil-mono",
                 variant: "clear",
                 onPress: function() {
@@ -67972,8 +69574,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 }
               })
             }),
-            modify && /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(FixedBottomCTA.Double, {
-              leftButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+            modify && /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(FixedBottomCTA.Double, {
+              leftButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                 type: "dark",
                 style: "weak",
                 display: "block",
@@ -67983,7 +69585,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
                 },
                 children: "\uC774\uC804\uC73C\uB85C"
               }),
-              rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+              rightButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
                 display: "block",
                 onPress: function() {
                   handleModifySave();
@@ -67998,16 +69600,16 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   }
   function HourBottomSheetContent3(param) {
     var onConfirm = param.onConfirm, onCancel = param.onCancel, placeState = param.placeState;
-    var _useState = _sliced_to_array((0, import_react259.useState)((placeState === null || placeState === void 0 ? void 0 : placeState.takenTime) / 60), 2), localHour = _useState[0], setLocalHour = _useState[1];
-    return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_react_native266.View, {
+    var _useState = _sliced_to_array((0, import_react260.useState)((placeState === null || placeState === void 0 ? void 0 : placeState.takenTime) / 60), 2), localHour = _useState[0], setLocalHour = _useState[1];
+    return /* @__PURE__ */ (0, import_jsx_runtime299.jsxs)(import_react_native268.View, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3, {
-          contents: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Texts, {
+        /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Texts, {
             type: "2RowTypeA",
             top: placeState === null || placeState === void 0 ? void 0 : placeState.name,
             bottom: placeState === null || placeState === void 0 ? void 0 : placeState.formatted_address
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
             type: "dark",
             size: "tiny",
             style: "weak",
@@ -68015,12 +69617,12 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             children: "\uCDE8\uC18C"
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3, {
-          contents: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(ListRow3.Texts, {
+        /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3, {
+          contents: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Texts, {
             type: "1RowTypeA",
             top: "\uBA38\uBB34\uB97C \uC2DC\uAC04"
           }),
-          right: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(NumericSpinner, {
+          right: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(NumericSpinner, {
             size: "large",
             number: localHour,
             onNumberChange: function(e4) {
@@ -68030,15 +69632,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
             minNumber: 1
           })
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(BottomSheet.CTA.Double, {
-          leftButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+        /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(BottomSheet.CTA.Double, {
+          leftButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
             type: "dark",
             style: "weak",
             display: "block",
             onPress: onCancel,
             children: "\uB2EB\uAE30"
           }),
-          rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
+          rightButton: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(Button2, {
             display: "block",
             onPress: function() {
               return onConfirm(localHour);
@@ -68092,7 +69694,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250902111536" };
   // src/_app.tsx
   function AppContainer(param) {
     var children = param.children;
-    return /* @__PURE__ */ (0, import_jsx_runtime298.jsx)(Provider_default, {
+    return /* @__PURE__ */ (0, import_jsx_runtime300.jsx)(Provider_default, {
       store,
       children
     });
