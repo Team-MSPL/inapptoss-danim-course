@@ -1,9 +1,9 @@
 window.__bedrock = window.__bedrock || {};
-window.__bedrock.app = { name: "danim-course", buildNumber: "20250903105708" };
+window.__bedrock.app = { name: "danim-course", buildNumber: "20250904140819" };
 (function(){if(typeof Symbol!=="undefined"&&!Symbol.asyncIterator){Symbol.asyncIterator=Symbol.for("@@asyncIterator")}})();
 
   (function (global) {
-    global.__appsInToss = {"deploymentId":"01990d4a-c65f-7b9a-bc87-0de4b4f9d75d","bridgeColorMode":"basic","brandDisplayName":"AI에게 여행 코스 추천 받기","brandPrimaryColor":"#3182F6","brandIcon":"https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png"};
+    global.__appsInToss = {"deploymentId":"01991320-2c6e-71b6-814b-5cd088aba178","bridgeColorMode":"basic","brandDisplayName":"AI에게 여행 코스 추천 받기","brandPrimaryColor":"#3182F6","brandIcon":"https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png"};
   })(
     typeof globalThis !== 'undefined'
       ? globalThis
@@ -68220,7 +68220,9 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250903105708" };
                   type: "dark",
                   style: "weak",
                   display: "block",
-                  onPress: closeView,
+                  onPress: function() {
+                    navigation.popToTop();
+                  },
                   children: "\uC885\uB8CC\uD558\uAE30"
                 }),
                 rightButton: /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(Button2, {
@@ -68393,7 +68395,8 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250903105708" };
         })
       });
     };
-    return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(import_react_native264.View, {
+    return /* @__PURE__ */ (0, import_jsx_runtime297.jsxs)(react_native_gesture_handler_exports.ScrollView, {
+      showsVerticalScrollIndicator: false,
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(NavigationBar, {}),
         /* @__PURE__ */ (0, import_jsx_runtime297.jsx)(TopRoot, {
@@ -69013,7 +69016,15 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250903105708" };
                   display: "block",
                   onPress: function() {
                     bottomSheet.close();
-                    closeView();
+                    firstSave();
+                    navigation.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: "/"
+                        }
+                      ]
+                    });
                   },
                   children: "\uC800\uC7A5 \uD6C4 \uB098\uAC00\uAE30"
                 })
@@ -69460,7 +69471,7 @@ window.__bedrock.app = { name: "danim-course", buildNumber: "20250903105708" };
                 /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3, {
                   contents: /* @__PURE__ */ (0, import_jsx_runtime299.jsx)(ListRow3.Texts, {
                     type: "2RowTypeA",
-                    top: (0, import_moment5.default)(day[0]).format("YYYY-MM-DD") + " ~ " + (0, import_moment5.default)(day[nDay - 1]).format("YYYY-MM-DD"),
+                    top: (0, import_moment5.default)(day[0]).format("YYYY-MM-DD") + " ~ " + (0, import_moment5.default)(day[nDay]).format("YYYY-MM-DD"),
                     // bottom={calculateTendency(presetTendencyList[params.index])}
                     bottom: travelName,
                     topProps: {

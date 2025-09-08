@@ -465,7 +465,7 @@ function PresetDetail() {
             color={colors.grey800}
             style={{ alignSelf: "center" }}
           >
-            잠깐!
+            잠깐
           </Text>
           <Text
             typography="t5"
@@ -643,7 +643,7 @@ function PresetDetail() {
                     >
                       [{calculateTendency(presetTendencyList[params.index])}]
                     </Text>{" "}
-                    성향이 높은 일정이에요!
+                    성향이 높은 일정이에요
                   </Text>
                 }
                 topProps={{ color: colors.grey800 }}

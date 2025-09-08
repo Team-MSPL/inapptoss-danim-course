@@ -185,7 +185,7 @@ function RecommendPlace() {
             color={colors.grey600}
             style={{ textAlign: "center" }}
           >
-            추가된 후 수정모드로 바뀌어요!
+            추가된 후 수정모드로 바뀌어요
           </Text>
           <BottomSheet.CTA.Double
             leftButton={
