@@ -267,12 +267,12 @@ function Region() {
                     <Text
                         typography="t5"
                         fontWeight="semibold"
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
                         style={{
                             textAlign: "center",
                             lineHeight: 22, // typography에 맞는 값으로 조정
                             includeFontPadding: false, // Android에서 글자 짤림 방지
-                            numberOfLines: 1, // 한 줄 제한
-                            ellipsizeMode: "tail", // overflow시 말줄임 처리
                         }}
                     >
                         {item?.subTitle}
