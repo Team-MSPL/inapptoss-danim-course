@@ -252,7 +252,7 @@ function Day() {
   return (
     <>
       <ListRow
-        onPress={showBasicBottomSheet()}
+        onPress={showBasicBottomSheet}
         left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
         contents={
           <ListRow.Texts
