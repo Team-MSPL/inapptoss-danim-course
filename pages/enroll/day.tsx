@@ -224,10 +224,10 @@ function Day() {
     });
   };
   const childComponentRef = useRef();
-  const showHourBottomSheet = (e: number) => {
+  const showHourBottomSheet = (e: number, header: string) => {
     timeSelectRef.current = e;
     bottomSheet.open({
-      header: <BottomSheet.Header>날짜 선택</BottomSheet.Header>,
+      header: <BottomSheet.Header>{header}</BottomSheet.Header>,
       children: (
         <View>
           <TimePickerModal
@@ -252,7 +252,7 @@ function Day() {
   return (
     <>
       <ListRow
-        onPress={showBasicBottomSheet}
+        onPress={showBasicBottomSheet()}
         left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
         contents={
           <ListRow.Texts
@@ -271,7 +271,7 @@ function Day() {
         }
       />
       <ListRow
-        onPress={() => showHourBottomSheet(0)}
+        onPress={() => showHourBottomSheet(0, '첫째 날')}
         left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
         contents={
           <ListRow.Texts
@@ -298,7 +298,7 @@ function Day() {
         }
       />
       <ListRow
-        onPress={() => showHourBottomSheet(1)}
+        onPress={() => showHourBottomSheet(1, '마지막 날')}
         left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
         contents={
           <ListRow.Texts
