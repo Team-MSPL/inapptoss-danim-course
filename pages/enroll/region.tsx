@@ -212,13 +212,17 @@ function Region() {
                 selectCity(item.id);
               }}
             >
-              <Text typography="t5" fontWeight="semibold" style={{
+              <Text
+                typography="t5"
+                fontWeight="semibold"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{
                   textAlign: "center",
                   lineHeight: 22,
                   includeFontPadding: false,
-                  numberOfLines: 1,
-                  ellipsizeMode: "tail",
-              }}>
+                }}
+              >
                 {item?.title}
               </Text>
             </TouchableOpacity>
