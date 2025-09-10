@@ -1,4 +1,7 @@
-import { FlatList } from "@react-native-bedrock/native/react-native-gesture-handler";
+import {
+  FlatList,
+  ScrollView,
+} from "@react-native-bedrock/native/react-native-gesture-handler";
 import {
   Badge,
   BottomSheet,
@@ -74,7 +77,9 @@ function Preset() {
                   type="dark"
                   style="weak"
                   display="block"
-                  onPress={closeView}
+                  onPress={() => {
+                    navigation.popToTop();
+                  }}
                 >
                   {"종료하기"}
                 </Button>
@@ -267,12 +272,12 @@ function Preset() {
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <NavigationBar />
       <Top
         title={
           <Text typography="t6" fontWeight="regular" color={colors.grey700}>
-            점수가 낮은 일정은 간단한 동선을 우선시했어요!
+            점수가 낮은 일정은 간단한 동선을 우선시했어요
             {/* 성향을 토대로 다님 AI가 추천을해줘요! */}
           </Text>
         }
@@ -371,7 +376,7 @@ function Preset() {
       </Tab>
       <FlatList
         keyExtractor={(_, index) => index.toString()}
-        style={{ height: 400 }}
+        style={{ flex: 1 }}
         ref={scrollRef}
         data={presetDatas}
         onScrollToIndexFailed={(info) => {

@@ -2,7 +2,7 @@ export const routeStack = {
   "/title": {
     prev: "/index",
     next: "/country",
-    title: "여행 이름을 정해주세요!",
+    title: "여행 이름을 정해주세요",
     subTitle1: "새 여행",
     subTitle2: null,
   },

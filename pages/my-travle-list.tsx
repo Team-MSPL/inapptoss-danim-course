@@ -135,9 +135,9 @@ function MyTravleList() {
         ) +
         "일 전";
     } else if (startSign == -1 && endSign == 1) {
-      result = "신나는 여행 중이에요!";
+      result = "신나는 여행 중이에요";
     } else if (endStatus > 0 && endStatus < 1) {
-      result = "여행의 마지막 날이에요!";
+      result = "여행의 마지막 날이에요";
     } else if (endSign == -1) {
       result =
         "여행 후" +
@@ -262,7 +262,7 @@ function MyTravleList() {
             }
             title={
               <Top.TitleParagraph typography="t3">
-                지금 바로 여행 일정을 추천받아{`\n`}신나는 여행을 떠나보세요!
+                지금 바로 여행 일정을 추천받아{`\n`}신나는 여행을 떠나보세요
               </Top.TitleParagraph>
             }
             subtitle1={

@@ -145,7 +145,12 @@ function Timetable() {
                         display="block"
                         onPress={() => {
                           bottomSheet.close();
-                          closeView();
+                          firstSave();
+                          // closeView();
+                          navigation.reset({
+                            index: 0,
+                            routes: [{ name: "/" }],
+                          });
                         }}
                       >
                         {"저장 후 나가기"}
@@ -545,7 +550,7 @@ function Timetable() {
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
-        title="AI에게 여행 코스 추천 받기"
+        title="다님"
         icon={{
           source: {
             uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png",
@@ -572,7 +577,7 @@ function Timetable() {
                   top={
                     moment(day[0]).format("YYYY-MM-DD") +
                     " ~ " +
-                    moment(day[nDay - 1]).format("YYYY-MM-DD")
+                    moment(day[nDay]).format("YYYY-MM-DD")
                   }
                   // bottom={calculateTendency(presetTendencyList[params.index])}
                   bottom={travelName}
