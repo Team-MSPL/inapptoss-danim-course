@@ -105,7 +105,7 @@ export function Index() {
           }
           subtitle1={
             <Text typography="t3" fontWeight="bold" color={colors.grey900}>
-              1분만에 다님으로{`\n`} 여행 일정을 추천받을 수 있어요
+              다님으로 1분만에{`\n`}여행 일정을 추천받을 수 있어요
             </Text>
           }
         ></Top>

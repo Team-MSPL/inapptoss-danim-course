@@ -196,21 +196,29 @@ function Region() {
             <TouchableOpacity
               key={idx}
               style={{
-                padding: 10,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
                 backgroundColor:
                   cityIndex == idx ? CustomColor.primary : "#FAFAFB",
                 borderRadius: 14,
-                minWidth: 60,
-                height: 40,
+                  minWidth: 60,
+                  minHeight: 40,
                 alignItems: "center",
                 justifyContent: "center",
                 marginRight: cityViewList[country].length - 1 == idx ? 32 : 8,
+                  flexDirection: "row",
               }}
               onPress={() => {
                 selectCity(item.id);
               }}
             >
-              <Text typography="t5" fontWeight="semibold">
+              <Text typography="t5" fontWeight="semibold" style={{
+                  textAlign: "center",
+                  lineHeight: 22,
+                  includeFontPadding: false,
+                  numberOfLines: 1,
+                  ellipsizeMode: "tail",
+              }}>
                 {item?.title}
               </Text>
             </TouchableOpacity>
@@ -228,32 +236,44 @@ function Region() {
         {cityIndex != null &&
           cityViewList[country][cityIndex].sub?.map((item, idx) => {
             return (
-              <TouchableOpacity
-                key={idx}
-                style={{
-                  padding: 10,
-                  backgroundColor: region.includes(item.subTitle)
-                    ? "rgba(202, 251, 7,0.2)"
-                    : "#FAFAFB",
-                  borderWidth: region.includes(item.subTitle) ? 1 : 0,
-                  borderColor: CustomColor.primary,
-                  borderRadius: 14,
-                  minWidth: 60,
-                  height: region.includes(item.subTitle) ? 42 : 40,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 8,
-                  marginBottom: 8,
-                }}
-                onPress={() => {
-                  console.log(region);
-                  cityIndex == 0 ? selectPopularity(item) : selectRegion(item);
-                }}
-              >
-                <Text typography="t5" fontWeight="semibold">
-                  {item?.subTitle}
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                    key={idx}
+                    style={{
+                        paddingHorizontal: 10,
+                        paddingVertical: 8,
+                        backgroundColor: region.includes(item.subTitle)
+                            ? "rgba(202, 251, 7,0.2)"
+                            : "#FAFAFB",
+                        borderWidth: region.includes(item.subTitle) ? 1 : 0,
+                        borderColor: CustomColor.primary,
+                        borderRadius: 14,
+                        minWidth: 60,
+                        minHeight: 40, // 고정 height 대신 최소 높이
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 8,
+                        marginBottom: 8,
+                        flexDirection: "row", // 혹시 아이콘이나 텍스트 여러개 넣는 경우 대비
+                    }}
+                    onPress={() => {
+                        console.log(region);
+                        cityIndex == 0 ? selectPopularity(item) : selectRegion(item);
+                    }}
+                >
+                    <Text
+                        typography="t5"
+                        fontWeight="semibold"
+                        style={{
+                            textAlign: "center",
+                            lineHeight: 22, // typography에 맞는 값으로 조정
+                            includeFontPadding: false, // Android에서 글자 짤림 방지
+                            numberOfLines: 1, // 한 줄 제한
+                            ellipsizeMode: "tail", // overflow시 말줄임 처리
+                        }}
+                    >
+                        {item?.subTitle}
+                    </Text>
+                </TouchableOpacity>
             );
           })}
       </View>
