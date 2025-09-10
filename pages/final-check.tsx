@@ -629,6 +629,7 @@ function ModifyBottomSheetContent({
       {navigationStack[step]?.component}
 
       <BottomSheet.CTA.Double
+          containerStyle={{backgroundColor: 'white'}}
         leftButton={
           <Button
             type="dark"

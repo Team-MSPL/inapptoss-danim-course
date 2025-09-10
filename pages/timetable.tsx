@@ -699,6 +699,7 @@ function Timetable() {
         )}
         {modify && (
           <FixedBottomCTA.Double
+              containerStyle={{backgroundColor: 'white'}}
             leftButton={
               <Button
                 type="dark"

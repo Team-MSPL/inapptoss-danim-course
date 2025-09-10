@@ -104,6 +104,7 @@ export const RouteButton = ({
   };
   return (
     <FixedBottomCTA.Double
+        containerStyle={{backgroundColor: 'white'}}
       leftButton={
         <Button type="dark" style="weak" display="block" onPress={handleBack}>
           이전으로
