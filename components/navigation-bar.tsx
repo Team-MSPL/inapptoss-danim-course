@@ -32,7 +32,7 @@ export default function NavigationBar() {
                     typography="t4"
                     fontWeight="bold"
                     color={colors.grey800}
-                    style={{ alignSelf: "center" }}
+                    style={{ alignSelf: "center", marginTop: 35}}
                   >
                     내 여행 목록으로 이동하시겠어요?
                   </Text>

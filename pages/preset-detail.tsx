@@ -410,7 +410,7 @@ function PresetDetail() {
               typography="t4"
               fontWeight="bold"
               color={colors.grey800}
-              style={{ alignSelf: "center" }}
+              style={{ alignSelf: "center", marginTop: 35}}
             >
               식당과 숙소까지 한번에{`\n`}추천해드릴까요?
             </Text>
@@ -463,7 +463,7 @@ function PresetDetail() {
             typography="t4"
             fontWeight="bold"
             color={colors.grey800}
-            style={{ alignSelf: "center" }}
+            style={{ alignSelf: "center", marginTop:35 }}
           >
             잠깐
           </Text>
