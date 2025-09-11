@@ -3,11 +3,11 @@ import React from "react";
 import { View, Dimensions, StyleSheet } from "react-native";
 
 export default function CustomMapView({
-  lat,
-  lng,
-  isWideZoom,
-  range, // range 값은 숫자
-}) {
+                                        lat,
+                                        lng,
+                                        zoom = 12, // 기본값
+                                        range, // range 값은 숫자
+                                      }) {
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -28,7 +28,7 @@ export default function CustomMapView({
             const center = { lat: ${lat}, lng: ${lng} };
             const map = new google.maps.Map(document.getElementById("map"), {
               center: center,
-              zoom: ${isWideZoom ? 9 : 12}, // 대략 latitudeDelta 0.8 vs 0.2
+              zoom: ${zoom},
               disableDefaultUI: true,
             });
 
@@ -40,7 +40,7 @@ export default function CustomMapView({
               fillOpacity: 1,
               map: map,
               center: center,
-              radius: ${range * (isWideZoom ? 5000 : 1500)}
+              radius: ${range * 1500}
             });
           }
 
@@ -54,13 +54,13 @@ export default function CustomMapView({
   `;
 
   return (
-    <WebView
-      originWhitelist={["*"]}
-      source={{ html: htmlContent }}
-      style={styles.container}
-      javaScriptEnabled
-      domStorageEnabled
-    />
+      <WebView
+          originWhitelist={["*"]}
+          source={{ html: htmlContent }}
+          style={styles.container}
+          javaScriptEnabled
+          domStorageEnabled
+      />
   );
 }
 
