@@ -367,17 +367,17 @@ function FinalCheck() {
               marginTop: 10,
             }}
           >
-            <Text
-              onPress={() => {
-                showHourBottomSheet(3);
-              }}
-              typography="t5"
-              fontWeight="medium"
-              color={colors.grey800}
-              textAlign="right"
-            >
-              편집
-            </Text>
+            {/*<Text*/}
+            {/*  onPress={() => {*/}
+            {/*    showHourBottomSheet(3);*/}
+            {/*  }}*/}
+            {/*  typography="t5"*/}
+            {/*  fontWeight="medium"*/}
+            {/*  color={colors.grey800}*/}
+            {/*  textAlign="right"*/}
+            {/*>*/}
+            {/*  편집*/}
+            {/*</Text>*/}
             <Stack.Vertical gutter={21}>
               {tendency[1].find((item) => item == 1) && (
                 <Stack.Vertical gutter={13}>

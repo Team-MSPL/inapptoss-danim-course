@@ -378,7 +378,7 @@ function PresetDetail() {
         ))}
       </Stack.Vertical>
   );
-  
+
   return (
       <View style={{ flex: 1 }}>
         <NavigationBar />
