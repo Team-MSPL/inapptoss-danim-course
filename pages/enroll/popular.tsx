@@ -2,10 +2,10 @@ import { colors, Slider, Text } from "@toss-design-system/react-native";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { BedrockRoute, useNavigation } from "react-native-bedrock";
+import FastImage from 'react-native-fast-image'
 import { useAppDispatch, useAppSelector } from "store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { RouteButton } from "../../components/route-button";
-import FastImage from 'react-native-fast-image'
 
 export const Route = BedrockRoute("/enroll/popular", {
     validateParams: (params) => params,
