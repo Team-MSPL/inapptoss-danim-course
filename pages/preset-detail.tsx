@@ -28,14 +28,12 @@ import { useDistance } from "../hooks/useDistance";
 import { CommonActions } from "@react-native-bedrock/native/@react-navigation/native";
 import NavigationBar from "../components/navigation-bar";
 
-// --- CONSTANTS & ROUTE ---
 export const Route = BedrockRoute("/preset-detail", {
   validateParams: (params) => params,
   component: PresetDetail,
 });
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-// --- MAIN COMPONENT ---
 function PresetDetail() {
   const params = Route.useParams();
   const {
@@ -51,14 +49,11 @@ function PresetDetail() {
   const bottomSheet = useBottomSheet();
   const { open: openToast } = useToast();
 
-  // UI State
   const [tabValue, setTabValue] = useState("0");
   const scrollRef = useRef(null);
 
-  // --- 추천 API ---
   const getRecommendList = async (opts) => {
     try {
-      // 기본 추천
       let result = await dispatch(
           region[0].startsWith("해외")
               ? recommendTripadvisor({ ...opts, category: opts.apiCategory, name: opts.status.name })
@@ -66,7 +61,6 @@ function PresetDetail() {
       ).unwrap();
       result = region[0].startsWith("해외") ? result.data : result;
 
-      // 결과 없을 때 재시도(반경 확장)
       if (result.length === 0) {
         result = await dispatch(
             region[0].startsWith("해외")
@@ -80,7 +74,6 @@ function PresetDetail() {
         }
       }
 
-      // 해외일 때 상세정보 조회
       if (region[0].startsWith("해외")) {
         const copy = await dispatch(detailTripadvisor({ id: result[0].location_id })).unwrap();
         result = [{
@@ -98,7 +91,6 @@ function PresetDetail() {
     }
   };
 
-  // --- 숙소 추천 ---
   const accommodationRecommend = async ({ value, index, idx }) => {
     const timetable = presetDatas[params?.index];
     if (timetable[idx].length < 2) return;
@@ -138,7 +130,6 @@ function PresetDetail() {
     });
   };
 
-  // --- 식당 추천 ---
   const restaurantRecommend = useCallback(async ({ value, index, idx }) => {
     const timetable = presetDatas[params?.index];
     if (timetable[idx].length === 1) return;
@@ -194,7 +185,6 @@ function PresetDetail() {
     });
   }, [presetDatas, region]);
 
-  // --- DAY별 추천 자동완성 ---
   const handleAutoRecommend = async ({ item, copy, idx }) => {
     try {
       let updated = [...item];
@@ -251,7 +241,6 @@ function PresetDetail() {
     } catch (e) {}
   };
 
-  // --- 일정 확정/추천 CTA ---
   const goNext = async (autoRecommendFlag) => {
     try {
       let copy = [...presetDatas[params.index]];
@@ -275,7 +264,6 @@ function PresetDetail() {
     }
   };
 
-  // --- BottomSheet 핸들러들 ---
   const confirmRecommend = (autoRecommendFlag) => bottomSheet.open({
     children: (
         <>
@@ -321,7 +309,6 @@ function PresetDetail() {
     }
   };
 
-  // --- 성향 텍스트 계산 ---
   const calculateTendency = (tendencyObj) => {
     const { tendencyNameList, tendencyRanking } = tendencyObj || {};
     const filteredNames = [], filteredRanks = [];
@@ -344,7 +331,6 @@ function PresetDetail() {
         (tendencyNameList[nextMinIdx] ? ", " + tendencyNameList[nextMinIdx] : "");
   };
 
-  // --- 탭 이동/스크롤 핸들러 ---
   const onViewableItemsChanged = useRef((items) => {
     setTabValue(String(items?.changed[0]?.index));
   });
@@ -353,7 +339,6 @@ function PresetDetail() {
     setTabValue(e);
   };
 
-  // --- 렌더 함수 ---
   const renderItem = ({ item, index }) => (
       <Stack.Vertical
           style={{
@@ -393,8 +378,7 @@ function PresetDetail() {
         ))}
       </Stack.Vertical>
   );
-
-  // --- MAIN RENDER ---
+  
   return (
       <View style={{ flex: 1 }}>
         <NavigationBar />
