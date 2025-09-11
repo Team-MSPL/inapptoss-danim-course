@@ -16,7 +16,7 @@ import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
 } from "react-native-google-places-autocomplete";
-import { Dimensions } from "react-native";
+import {Dimensions, TouchableOpacity} from "react-native";
 
 export const Route = BedrockRoute("/enroll/departure", {
   validateParams: (params) => params,
@@ -204,58 +204,60 @@ onPress={() => {
 
       {moveList.map((item, index) => {
         return (
-          <ListRow
-            left={
-              item.icon.includes("icon") ? (
-                <ListRow.Icon
-                  name={item.icon}
-                  style={{
-                    backgroundColor: colors.grey100,
-                  }}
-                  color="#93C9FF"
-                  type="border"
-                />
-              ) : (
-                <ListRow.Image
-                  type="circle"
-                  style={{
-                    backgroundColor: colors.grey100,
-                    padding: 8,
-                  }}
-                  source={{ uri: item.icon }}
-                />
-              )
-            }
-            right={
-              item.text.name != "" && (
-                <Checkbox.Line
-                  checked={item.title == departureSelected}
-                  onPress={() => {
-                    dispatch(
+            <TouchableOpacity
+                onPress={() => {
+                  dispatch(
                       travelSliceActions.setDepartureSelected(
-                        departureSelected == item.title ? "" : item.title
+                          departureSelected == item.title ? "" : item.title
                       )
-                    );
-                  }}
-                />
-              )
-            }
-            contents={
-              <ListRow.Texts
-                type="1RowTypeA"
-                top={
-                  item.text.name == ""
-                    ? `근처 ${item.name}을 찾지 못했어요 `
-                    : item.text.name
-                }
-                topProps={{
-                  typography: "t5",
-                  fontWeight: "medium",
-                  color: item.text.name == "" ? colors.grey600 : colors.grey800,
-                }}
+                  );
+                }}>
+              <ListRow
+                  left={
+                    item.icon.includes("icon") ? (
+                        <ListRow.Icon
+                            name={item.icon}
+                            style={{
+                              backgroundColor: colors.grey100,
+                            }}
+                            color="#93C9FF"
+                            type="border"
+                        />
+                    ) : (
+                        <ListRow.Image
+                            type="circle"
+                            style={{
+                              backgroundColor: colors.grey100,
+                              padding: 8,
+                            }}
+                            source={{ uri: item.icon }}
+                        />
+                    )
+                  }
+                  right={
+                      item.text.name != "" && (
+                          <Checkbox.Line
+                              checked={item.title == departureSelected}
+                          />
+                      )
+                  }
+                  contents={
+                    <ListRow.Texts
+                        type="1RowTypeA"
+                        top={
+                          item.text.name == ""
+                              ? `근처 ${item.name}을 찾지 못했어요 `
+                              : item.text.name
+                        }
+                        topProps={{
+                          typography: "t5",
+                          fontWeight: "medium",
+                          color: item.text.name == "" ? colors.grey600 : colors.grey800,
+                        }}
+                    />
+                  }
               />
-            }
-          />
+            </TouchableOpacity>
         );
       })}
     </>
