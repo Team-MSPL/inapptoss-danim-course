@@ -232,40 +232,28 @@ function Day() {
 
   const [selectedTime, setSelectedTime] = React.useState({ hour: 7, ampm: "오후", minute: "00" });
 
-  const openTimePickerModal = (index) => {
-    const hourInRedux = timeLimitArray[index]; // redux에서 값 가져오기
-    let ampmStr, hour12;
-    if (hourInRedux === 0) {
-      ampmStr = "오전";
-      hour12 = 12;
-    } else if (hourInRedux < 12) {
-      ampmStr = "오전";
-      hour12 = hourInRedux;
-    } else if (hourInRedux === 12) {
-      ampmStr = "오후";
-      hour12 = 12;
-    } else {
-      ampmStr = "오후";
-      hour12 = hourInRedux - 12;
-    }
+  const openTimePickerModal = (index: number) => {
+    const hourInRedux = timeLimitArray[index]; // 0~23
     const minuteInRedux = minuteLimitArray[index];
 
+    const ampmStr = hourInRedux < 12 ? "오전" : "오후";
+
     setSelectedTime({
-      hour: String(hour12),
+      hour: String(hourInRedux).padStart(2, "0"),
       ampm: ampmStr,
-      minute: String(minuteInRedux),
+      minute: String(minuteInRedux).padStart(2, "0"),
     });
     setModalType(index);
     setModalVisible(true);
   };
 
-  const handleTimePickerConfirm = (timeData) => {
-    // redux에 반영
+  const handleTimePickerConfirm = (timeData: { hour: string, ampm: string, minute: string }) => {
     let timeCopy = [...timeLimitArray];
-    let ampmCheck = timeData.ampm == "오후" ? 12 : 0;
-    timeCopy[modalType] = parseInt(timeData.hour) + ampmCheck;
+    timeCopy[modalType] = parseInt(timeData.hour, 10);
+
     let minuteCopy = [...minuteLimitArray];
-    minuteCopy[modalType] = parseInt(timeData.minute);
+    minuteCopy[modalType] = parseInt(timeData.minute, 10);
+
     dispatch(
         travelSliceActions.setTimeAndMinute({
           time: timeCopy,
