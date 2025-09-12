@@ -5,15 +5,11 @@ import { BottomSheet, colors } from "@toss-design-system/react-native";
 const ITEM_HEIGHT = 40;
 const VISIBLE_ITEMS = 5;
 
-function CustomWheelPicker({ data, selectedIndex, onSelect }: {
-    data: string[];
-    selectedIndex: number;
-    onSelect: (index: number) => void;
-}) {
-    const listRef = useRef<any>(null);
+function CustomWheelPicker({ data, selectedIndex, onSelect }) {
+    const listRef = useRef(null);
     const [scrollingIndex, setScrollingIndex] = useState(selectedIndex);
 
-    const handleScroll = (e: any) => {
+    const handleScroll = (e) => {
         const y = e.nativeEvent.contentOffset.y;
         let index = Math.round(y / ITEM_HEIGHT);
         if (index < 0) index = 0;
@@ -21,12 +17,11 @@ function CustomWheelPicker({ data, selectedIndex, onSelect }: {
         setScrollingIndex(index);
     };
 
-    const handleScrollEnd = (e: any) => {
+    const handleScrollEnd = (e) => {
         const y = e.nativeEvent.contentOffset.y;
         let index = Math.round(y / ITEM_HEIGHT);
         if (index < 0) index = 0;
         if (index >= data.length) index = data.length - 1;
-        console.log('handleScrollEnd HOURS index:', index, 'value:', data[index]);
         onSelect(index);
         setScrollingIndex(index);
     };
@@ -82,37 +77,56 @@ function CustomWheelPicker({ data, selectedIndex, onSelect }: {
 }
 
 const AMPM = ["오전", "오후"];
-const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
-const MINUTES = Array.from({ length: 60 }, (_, i) => String(i));
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
+
+function getHourOptions(ampm) {
+    return ampm === "오전"
+        ? Array.from({ length: 12 }, (_, i) => String(i).padStart(2, "0"))    // ["00", ..., "11"]
+        : Array.from({ length: 12 }, (_, i) => String(i + 12)); // ["12", ..., "23"]
+}
 
 export default function DatePickerModal({
                                             visible,
                                             onClose,
                                             header = "",
-                                            hour = "7",
+                                            hour = "07",
                                             ampm = "오후",
                                             minute = "00",
                                             onConfirm,
                                         }) {
     const ampmIdx = AMPM.findIndex(v => v === ampm);
-    const hourIdx = HOURS.findIndex(v => v === String(hour));
-    const minuteIdx = MINUTES.findIndex(v => v === String(minute));
+    const [selectedAmpmIdx, setSelectedAmpmIdx] = useState(ampmIdx);
+    const [selectedHourIdx, setSelectedHourIdx] = useState(0);
+    const [selectedMinuteIdx, setSelectedMinuteIdx] = useState(0);
 
-    const [selectedAmpmIdx, setSelectedAmpmIdx] = React.useState(ampmIdx);
-    const [selectedHourIdx, setSelectedHourIdx] = React.useState(hourIdx);
-    const [selectedMinuteIdx, setSelectedMinuteIdx] = React.useState(minuteIdx);
+    // 오전/오후에 따라 시간 옵션 생성
+    const hourOptions = getHourOptions(AMPM[selectedAmpmIdx]);
 
-    React.useEffect(() => {
+    // visible이 바뀔 때, 초기 상태 설정
+    useEffect(() => {
         setSelectedAmpmIdx(ampmIdx);
-        setSelectedHourIdx(hourIdx);
-        setSelectedMinuteIdx(minuteIdx);
-    }, [visible, ampmIdx, hourIdx, minuteIdx]);
+        // hour가 새 hourOptions에 있으면 그 인덱스, 아니면 0
+        const hourIdx = hourOptions.findIndex(v => v === String(hour).padStart(2, "0"));
+        setSelectedHourIdx(hourIdx !== -1 ? hourIdx : 0);
+
+        const minuteIdx = MINUTES.findIndex(v => v === String(minute).padStart(2, "0"));
+        setSelectedMinuteIdx(minuteIdx !== -1 ? minuteIdx : 0);
+    }, [visible, ampmIdx, hour, minute]); // visible 바뀔 때만 초기화
+
+    // 오전/오후 바뀔 때 시간 인덱스 변환(예: 09시→21시)
+    useEffect(() => {
+        // 현재 선택된 시간값
+        const prevHour = getHourOptions(AMPM[selectedAmpmIdx === 0 ? 1 : 0])[selectedHourIdx];
+        // 새 옵션에 동일한 값이 있으면 매핑, 없으면 0
+        const newHourIdx = hourOptions.findIndex(v => v === prevHour);
+        setSelectedHourIdx(newHourIdx !== -1 ? newHourIdx : 0);
+    }, [selectedAmpmIdx]); // 오전/오후만 바뀔 때 실행
 
     const handleConfirm = () => {
         if (onConfirm) {
             onConfirm({
                 ampm: AMPM[selectedAmpmIdx],
-                hour: HOURS[selectedHourIdx],
+                hour: hourOptions[selectedHourIdx],
                 minute: MINUTES[selectedMinuteIdx],
             });
         }
@@ -132,7 +146,7 @@ export default function DatePickerModal({
                             onSelect={setSelectedAmpmIdx}
                         />
                         <CustomWheelPicker
-                            data={HOURS}
+                            data={hourOptions}
                             selectedIndex={selectedHourIdx}
                             onSelect={setSelectedHourIdx}
                         />
