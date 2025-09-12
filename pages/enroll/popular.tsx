@@ -7,12 +7,16 @@ import { useAppDispatch, useAppSelector } from "store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { RouteButton } from "../../components/route-button";
 
+type EnrollPopularProps = {
+    contentRatio?: number;
+};
+
 export const Route = BedrockRoute("/enroll/popular", {
     validateParams: (params) => params,
     component: EnrollPopular,
 });
 
-export function EnrollPopular() {
+export function EnrollPopular({ contentRatio = 1 }: EnrollPopularProps) {
     const { popular } = useAppSelector((state) => state.travelSlice);
     const dispatch = useAppDispatch();
     const [value, setValue] = useState(popular);
@@ -34,15 +38,15 @@ export function EnrollPopular() {
 
     return (
         <View style={{ marginHorizontal: 24 }}>
-            <View style={{ position: "relative", width: 300, height: 300, alignSelf: "center" }}>
+            <View style={{ position: "relative", width: 300*contentRatio, height: 300*contentRatio, alignSelf: "center", justifyContent: 'center' }}>
                 {imageList.map((uri, idx) => (
                     <FastImage
                         key={idx}
                         source={{ uri }}
                         style={{
                             position: "absolute",
-                            width: 300,
-                            height: 300,
+                            width: 300*contentRatio,
+                            height: 300*contentRatio,
                             opacity: idx === currentIdx ? 1 : 0,
                         }}
                         resizeMode={FastImage.resizeMode.contain}

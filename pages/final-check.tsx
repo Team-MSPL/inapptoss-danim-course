@@ -606,15 +606,15 @@ function ModifyBottomSheetContent({
   onCancel,
 }: ModifyBottomSheetContentProps) {
   const navigationStack = [
-    { title: "who", component: <EnrollWho /> },
-    { title: "transit", component: <EnrollTransit /> },
-    { title: "busy", component: <EnrollBusy /> },
-    { title: "concept", component: <EnrollConcept /> },
-    { title: "play", component: <EnrollPlay /> },
-    { title: "tour-one", component: <EnrollTourOne /> },
-    { title: "tour-two", component: <EnrollTourTwo /> },
-    { title: "popular", component: <EnrollPopular /> },
-    { title: "distance", component: <EnrollDistance /> },
+    { title: "who", component: <EnrollWho marginTop={0} /> },
+    { title: "transit", component: <EnrollTransit marginTop={0} /> },
+    { title: "busy", component: <EnrollBusy marginTop={0} /> },
+    { title: "concept", component: <EnrollConcept marginTop={0} /> },
+    { title: "play", component: <EnrollPlay marginTop={0} /> },
+    { title: "tour-one", component: <EnrollTourOne marginTop={0} /> },
+    { title: "tour-two", component: <EnrollTourTwo marginTop={0} /> },
+    { title: "popular", component: <EnrollPopular contentRatio={0.8}/> },
+    { title: "distance", component: <EnrollDistance contentRatio={0.88} /> },
   ];
   const [step, setStep] = useState(startIndex);
   const textData = routeStack["/" + navigationStack[step]?.title];

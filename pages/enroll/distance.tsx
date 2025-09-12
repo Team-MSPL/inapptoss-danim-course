@@ -6,6 +6,10 @@ import CustomMapView from "../../components/map-view";
 import { cityViewList } from "../../utill/city-list";
 import { useAppSelector } from "store";
 
+type EnrollDistanceProps = {
+    contentRatio?: number;
+};
+
 export const Route = BedrockRoute("/enroll/distance", {
     validateParams: (params) => params,
     component: EnrollDistance,
@@ -17,7 +21,7 @@ function getZoomByValue(value) {
     return 12.5 - (value - 1) * ZOOM_STEP;
 }
 
-export function EnrollDistance() {
+export function EnrollDistance({ contentRatio = 1 }: EnrollDistanceProps) {
     const [value, setValue] = useState(5);
     const { country, cityIndex, cityDistance } = useAppSelector(
         (state) => state.travelSlice
@@ -27,12 +31,13 @@ export function EnrollDistance() {
     const lng = cityViewList[country][cityIndex].sub[cityDistance[0]].lng;
 
     return (
-        <View style={{ marginHorizontal: 24 }}>
+        <View style={{ marginHorizontal: 24, justifyContent: 'center' }}>
             <CustomMapView
                 lat={lat}
                 lng={lng}
                 zoom={getZoomByValue(value)} // zoom 계산해서 전달!
                 range={value}
+                contentRatio={contentRatio}
             />
             <Slider
                 value={value}

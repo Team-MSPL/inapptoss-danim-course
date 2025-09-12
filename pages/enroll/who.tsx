@@ -7,12 +7,16 @@ import { useAppSelector } from "store";
 import { useTendencyHandler } from "../../hooks/useTendencyHandler";
 import { colors, Text } from "@toss-design-system/react-native";
 
+type EnrollWhoProps = {
+    marginTop?: number;
+};
+
 export const Route = BedrockRoute("/enroll/who", {
   validateParams: (params) => params,
   component: EnrollWho,
 });
 
-export function EnrollWho() {
+export function EnrollWho({ marginTop = 74 }: EnrollWhoProps) {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();
@@ -30,7 +34,7 @@ export function EnrollWho() {
       >
         반려동물을 선택하면 실내 여행지는 자동으로 제외돼요
       </Text>
-      <View style={styles.ButtonsContainer}>
+      <View style={{marginTop, ...styles.ButtonsContainer}}>
         {tendencyList[0]?.list?.map((item, idx) => (
           <TendencyButton
             marginBottom={0}

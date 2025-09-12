@@ -7,19 +7,23 @@ import { styles } from "./country";
 import TendencyButton from "../../components/tendency-button";
 import { colors, Text, useToast } from "@toss-design-system/react-native";
 
+type EnrollTourOneProps = {
+    marginTop?: number;
+};
+
 export const Route = BedrockRoute("/enroll/tour-one", {
   validateParams: (params) => params,
   component: EnrollTourOne,
 });
 
-export function EnrollTourOne() {
+export function EnrollTourOne({ marginTop = 74 }: EnrollTourOneProps) {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();
   const { open } = useToast();
   return (
     <>
-      <View style={styles.ButtonsContainer}>
+      <View style={{marginTop: marginTop, ...styles.ButtonsContainer}}>
         {tendencyList[3]?.list?.map((item, idx) => (
           <TendencyButton
             marginBottom={0}

@@ -6,18 +6,22 @@ import { useTendencyHandler } from "../../hooks/useTendencyHandler";
 import { styles } from "./country";
 import TendencyButton from "../../components/tendency-button";
 
+type EnrollTourTwoProps = {
+    marginTop?: number;
+};
+
 export const Route = BedrockRoute("/enroll/tour-two", {
   validateParams: (params) => params,
   component: EnrollTourTwo,
 });
 
-export function EnrollTourTwo() {
+export function EnrollTourTwo({ marginTop = 74 }: EnrollTourTwoProps) {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();
   return (
     <>
-      <View style={styles.ButtonsContainer}>
+      <View style={{marginTop: marginTop, ...styles.ButtonsContainer}}>
         {tendencyList[4]?.list?.map((item, idx) => (
           <TendencyButton
             marginBottom={0}

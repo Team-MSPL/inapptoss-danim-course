@@ -7,6 +7,7 @@ export default function CustomMapView({
                                         lng,
                                         zoom = 12, // 기본값
                                         range, // range 값은 숫자
+    contentRatio = 1,
                                       }) {
   const htmlContent = `
     <!DOCTYPE html>
@@ -57,19 +58,12 @@ export default function CustomMapView({
       <WebView
           originWhitelist={["*"]}
           source={{ html: htmlContent }}
-          style={styles.container}
+          style={{
+              width: ((Dimensions.get("window").width * 327) / 375),
+              height: ((Dimensions.get("window").height * 240) / 812) * contentRatio,
+          }}
           javaScriptEnabled
           domStorageEnabled
       />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: (Dimensions.get("window").width * 327) / 375,
-    height: (Dimensions.get("window").height * 240) / 812,
-  },
-  map: {
-    flex: 1,
-  },
-});
