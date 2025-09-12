@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     appsInToss({
       brand: {
-        displayName: "다님", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
+        displayName: "가고싶은 여행코스 AI 추천", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
         primaryColor: "#3182F6", // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
         icon: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
         bridgeColorMode: "basic",
