@@ -26,6 +26,7 @@ function CustomWheelPicker({ data, selectedIndex, onSelect }: {
         let index = Math.round(y / ITEM_HEIGHT);
         if (index < 0) index = 0;
         if (index >= data.length) index = data.length - 1;
+        console.log('handleScrollEnd HOURS index:', index, 'value:', data[index]);
         onSelect(index);
         setScrollingIndex(index);
     };
@@ -82,44 +83,44 @@ function CustomWheelPicker({ data, selectedIndex, onSelect }: {
 
 const AMPM = ["오전", "오후"];
 const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
-const MINUTES = Array.from({ length: 60 }, (_, i) => String(i + 1));
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i));
 
 export default function DatePickerModal({
                                             visible,
                                             onClose,
                                             header = "",
                                             hour = "7",
-                                            minute = "00",
                                             ampm = "오후",
+                                            minute = "00",
                                             onConfirm,
                                         }) {
-    const [ampmIdx, setAmpmIdx] = useState(AMPM.findIndex(v => v === ampm));
-    const [hourIdx, setHourIdx] = useState(HOURS.findIndex(v => v === hour));
-    const [minuteIdx, setMinuteIdx] = useState(MINUTES.findIndex(v => v === minute));
+    const ampmIdx = AMPM.findIndex(v => v === ampm);
+    const hourIdx = HOURS.findIndex(v => v === String(hour));
+    const minuteIdx = MINUTES.findIndex(v => v === String(minute));
 
-    useEffect(() => {
-        setAmpmIdx(AMPM.findIndex(v => v === ampm));
-        setHourIdx(HOURS.findIndex(v => v === hour));
-        setMinuteIdx(MINUTES.findIndex(v => v === minute));
-    }, [visible, ampm, hour, minute]);
+    const [selectedAmpmIdx, setSelectedAmpmIdx] = React.useState(ampmIdx);
+    const [selectedHourIdx, setSelectedHourIdx] = React.useState(hourIdx);
+    const [selectedMinuteIdx, setSelectedMinuteIdx] = React.useState(minuteIdx);
+
+    React.useEffect(() => {
+        setSelectedAmpmIdx(ampmIdx);
+        setSelectedHourIdx(hourIdx);
+        setSelectedMinuteIdx(minuteIdx);
+    }, [visible, ampmIdx, hourIdx, minuteIdx]);
 
     const handleConfirm = () => {
-        if (onConfirm)
+        if (onConfirm) {
             onConfirm({
-                ampm: AMPM[ampmIdx] || "오전",
-                hour: HOURS[hourIdx] || "7",
-                minute: MINUTES[minuteIdx] || "00",
+                ampm: AMPM[selectedAmpmIdx],
+                hour: HOURS[selectedHourIdx],
+                minute: MINUTES[selectedMinuteIdx],
             });
+        }
         onClose();
     };
 
     return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="fade"
-            onRequestClose={onClose}
-        >
+        <Modal visible={visible} onRequestClose={onClose} transparent>
             <View style={styles.modalBg}>
                 <View style={styles.container}>
                     <BottomSheet.Header>{header}</BottomSheet.Header>
@@ -127,18 +128,18 @@ export default function DatePickerModal({
                         <View style={styles.centerGuideBox} pointerEvents="none" />
                         <CustomWheelPicker
                             data={AMPM}
-                            selectedIndex={ampmIdx}
-                            onSelect={setAmpmIdx}
+                            selectedIndex={selectedAmpmIdx}
+                            onSelect={setSelectedAmpmIdx}
                         />
                         <CustomWheelPicker
                             data={HOURS}
-                            selectedIndex={hourIdx}
-                            onSelect={setHourIdx}
+                            selectedIndex={selectedHourIdx}
+                            onSelect={setSelectedHourIdx}
                         />
                         <CustomWheelPicker
                             data={MINUTES}
-                            selectedIndex={minuteIdx}
-                            onSelect={setMinuteIdx}
+                            selectedIndex={selectedMinuteIdx}
+                            onSelect={setSelectedMinuteIdx}
                         />
                     </View>
                     <BottomSheet.CTA onPress={handleConfirm}>선택완료</BottomSheet.CTA>

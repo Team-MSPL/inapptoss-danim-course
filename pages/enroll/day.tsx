@@ -230,18 +230,32 @@ function Day() {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalType, setModalType] = React.useState(0);
 
-  const [selectedTime, setSelectedTime] = React.useState({ hour: 9, ampm: "오전", minute: "00" });
+  const [selectedTime, setSelectedTime] = React.useState({ hour: 7, ampm: "오후", minute: "00" });
 
-  const openTimePickerModal = (index, header) => {
-    setModalType(index);
-    const hourRedux = timeLimitArray[index];
-    const ampmRedux = hourRedux < 12 ? "오전" : "오후";
-    const hour12 = hourRedux < 12 ? hourRedux : hourRedux - 12;
+  const openTimePickerModal = (index) => {
+    const hourInRedux = timeLimitArray[index]; // redux에서 값 가져오기
+    let ampmStr, hour12;
+    if (hourInRedux === 0) {
+      ampmStr = "오전";
+      hour12 = 12;
+    } else if (hourInRedux < 12) {
+      ampmStr = "오전";
+      hour12 = hourInRedux;
+    } else if (hourInRedux === 12) {
+      ampmStr = "오후";
+      hour12 = 12;
+    } else {
+      ampmStr = "오후";
+      hour12 = hourInRedux - 12;
+    }
+    const minuteInRedux = minuteLimitArray[index];
+
     setSelectedTime({
-      hour: hour12 === 0 ? 12 : hour12, // 0시는 12로
-      ampm: ampmRedux,
-      minute: String(minuteLimitArray[index]),
+      hour: String(hour12),
+      ampm: ampmStr,
+      minute: String(minuteInRedux),
     });
+    setModalType(index);
     setModalVisible(true);
   };
 
@@ -261,81 +275,81 @@ function Day() {
     setModalVisible(false);
   };
 
-  return (
-    <>
-      <ListRow
-        onPress={showBasicBottomSheet}
-        left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
-        contents={
-          <ListRow.Texts
-            type="1RowTypeA"
-            top={
-              moment(selectStartDate).format("YYYY-MM-DD") +
-              " ~ " +
-              moment(selectEndDate ?? selectStartDate).format("YYYY-MM-DD")
-            }
-            topProps={{
-              typography: "t5",
-              fontWeight: "medium",
-              color: colors.grey800,
-            }}
-          />
-        }
-      />
-      <ListRow
-        onPress={() => openTimePickerModal(0, '첫째 날')}
-        left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
-        contents={
-          <ListRow.Texts
-            type="1RowTypeA"
-            top={
-              (timeLimitArray[0] < 12 ? "오전" : "오후") +
-              " " +
-              String(timeLimitArray[0]).padStart(2, "0") +
-              "시 " +
-              String(minuteLimitArray[0]).padStart(2, "0") +
-              "분"
-            }
-            topProps={{
-              typography: "t5",
-              fontWeight: "medium",
-              color: colors.grey800,
-            }}
-          />
-        }
-        right={
-          <Badge size="small" type="yellow" badgeStyle="weak" fontWeight="bold">
-            첫째 날
-          </Badge>
-        }
-      />
-      <ListRow
-        onPress={() => openTimePickerModal(1, '마지막 날')}
-        left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
-        contents={
-          <ListRow.Texts
-            type="1RowTypeA"
-            top={
-              (timeLimitArray[1] < 12 ? "오전" : "오후") +
-              " " +
-              String(timeLimitArray[1]).padStart(2, "0") +
-              "시 " +
-              String(minuteLimitArray[1]).padStart(2, "0") +
-              "분"
-            }
-            topProps={{
-              typography: "t5",
-              fontWeight: "medium",
-              color: colors.grey800,
-            }}
-          />
-        }
-        right={
-          <Badge size="small" type="green" badgeStyle="weak" fontWeight="bold">
-            마지막 날
-          </Badge>
-        }
-      />
+    return (
+      <>
+        <ListRow
+          onPress={showBasicBottomSheet}
+          left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
+          contents={
+            <ListRow.Texts
+              type="1RowTypeA"
+              top={
+                moment(selectStartDate).format("YYYY-MM-DD") +
+                " ~ " +
+                moment(selectEndDate ?? selectStartDate).format("YYYY-MM-DD")
+              }
+              topProps={{
+                typography: "t5",
+                fontWeight: "medium",
+                color: colors.grey800,
+              }}
+            />
+          }
+        />
+        <ListRow
+          onPress={() => openTimePickerModal(0, '첫째 날')}
+          left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
+          contents={
+            <ListRow.Texts
+              type="1RowTypeA"
+              top={
+                (timeLimitArray[0] < 12 ? "오전" : "오후") +
+                " " +
+                String(timeLimitArray[0]).padStart(2, "0") +
+                "시 " +
+                String(minuteLimitArray[0]).padStart(2, "0") +
+                "분"
+              }
+              topProps={{
+                typography: "t5",
+                fontWeight: "medium",
+                color: colors.grey800,
+              }}
+            />
+          }
+          right={
+            <Badge size="small" type="yellow" badgeStyle="weak" fontWeight="bold">
+              첫째 날
+            </Badge>
+          }
+        />
+        <ListRow
+          onPress={() => openTimePickerModal(1, '마지막 날')}
+          left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
+          contents={
+            <ListRow.Texts
+              type="1RowTypeA"
+              top={
+                (timeLimitArray[1] < 12 ? "오전" : "오후") +
+                " " +
+                String(timeLimitArray[1]).padStart(2, "0") +
+                "시 " +
+                String(minuteLimitArray[1]).padStart(2, "0") +
+                "분"
+              }
+              topProps={{
+                typography: "t5",
+                fontWeight: "medium",
+                color: colors.grey800,
+              }}
+            />
+          }
+          right={
+            <Badge size="small" type="green" badgeStyle="weak" fontWeight="bold">
+              마지막 날
+            </Badge>
+          }
+        />
 
       <DatePickerModal
           visible={modalVisible}
