@@ -14,6 +14,8 @@ import CalendarPicker from "react-native-calendar-picker";
 import { travelSliceActions } from "../../redux/travle-slice";
 import moment from "moment";
 import TimePickerModal from "../../utill/time-picker";
+import CustomDatePickerModal from "../../components/DatePickerModal";
+import DatePickerModal from "../../components/DatePickerModal";
 export const Route = BedrockRoute("/enroll/day", {
   validateParams: (params) => params,
   component: Day,
@@ -224,31 +226,41 @@ function Day() {
     });
   };
   const childComponentRef = useRef();
-  const showHourBottomSheet = (e: number, header: string) => {
-    timeSelectRef.current = e;
-    bottomSheet.open({
-      header: <BottomSheet.Header>{header}</BottomSheet.Header>,
-      children: (
-        <View>
-          <TimePickerModal
-            hour={timeLimitArray[e]}
-            minute={minuteLimitArray[e]}
-            visible={true}
-            minuteDivide={false}
-            ref={childComponentRef}
-          />
-          <BottomSheet.CTA
-            onPress={() => {
-              bottomSheet.close();
-              handleConfirm(childComponentRef.current?.handleTime());
-            }}
-          >
-            선택완료
-          </BottomSheet.CTA>
-        </View>
-      ),
+
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalType, setModalType] = React.useState(0);
+
+  const [selectedTime, setSelectedTime] = React.useState({ hour: 9, ampm: "오전", minute: "00" });
+
+  const openTimePickerModal = (index, header) => {
+    setModalType(index);
+    const hourRedux = timeLimitArray[index];
+    const ampmRedux = hourRedux < 12 ? "오전" : "오후";
+    const hour12 = hourRedux < 12 ? hourRedux : hourRedux - 12;
+    setSelectedTime({
+      hour: hour12 === 0 ? 12 : hour12, // 0시는 12로
+      ampm: ampmRedux,
+      minute: String(minuteLimitArray[index]),
     });
+    setModalVisible(true);
   };
+
+  const handleTimePickerConfirm = (timeData) => {
+    // redux에 반영
+    let timeCopy = [...timeLimitArray];
+    let ampmCheck = timeData.ampm == "오후" ? 12 : 0;
+    timeCopy[modalType] = parseInt(timeData.hour) + ampmCheck;
+    let minuteCopy = [...minuteLimitArray];
+    minuteCopy[modalType] = parseInt(timeData.minute);
+    dispatch(
+        travelSliceActions.setTimeAndMinute({
+          time: timeCopy,
+          minute: minuteCopy,
+        })
+    );
+    setModalVisible(false);
+  };
+
   return (
     <>
       <ListRow
@@ -271,7 +283,7 @@ function Day() {
         }
       />
       <ListRow
-        onPress={() => showHourBottomSheet(0, '첫째 날')}
+        onPress={() => openTimePickerModal(0, '첫째 날')}
         left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
         contents={
           <ListRow.Texts
@@ -298,7 +310,7 @@ function Day() {
         }
       />
       <ListRow
-        onPress={() => showHourBottomSheet(1, '마지막 날')}
+        onPress={() => openTimePickerModal(1, '마지막 날')}
         left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
         contents={
           <ListRow.Texts
@@ -323,6 +335,16 @@ function Day() {
             마지막 날
           </Badge>
         }
+      />
+
+      <DatePickerModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          header={modalType === 0 ? "첫째 날" : "마지막 날"}
+          hour={selectedTime.hour}
+          ampm={selectedTime.ampm}
+          minute={selectedTime.minute}
+          onConfirm={handleTimePickerConfirm}
       />
     </>
   );
