@@ -78,23 +78,23 @@ export function Index() {
             uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png",
           },
         }}
-        rightButtons={
-          userId != null
-            ? [
-                {
-                  title: "내여행",
-                  id: "travle-list",
-                  icon: { name: "icon-plane-mono" },
-                  onPress: () => {
-                    navigation.reset({
-                      index: 1,
-                      routes: [{ name: "/" }, { name: "/my-travle-list" }],
-                    });
-                  },
-                },
-              ]
-            : undefined
-        }
+        // rightButtons={
+        //   userId != null
+        //     ? [
+        //         {
+        //           title: "내여행",
+        //           id: "travle-list",
+        //           icon: { name: "icon-plane-mono" },
+        //           onPress: () => {
+        //             navigation.reset({
+        //               index: 1,
+        //               routes: [{ name: "/" }, { name: "/my-travle-list" }],
+        //             });
+        //           },
+        //         },
+        //       ]
+        //     : undefined
+        // }
       ></PartnerNavigation>
       <FixedBottomCTAProvider>
         <Top
