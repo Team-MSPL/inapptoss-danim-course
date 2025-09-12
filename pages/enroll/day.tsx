@@ -14,6 +14,8 @@ import CalendarPicker from "react-native-calendar-picker";
 import { travelSliceActions } from "../../redux/travle-slice";
 import moment from "moment";
 import TimePickerModal from "../../utill/time-picker";
+import CustomDatePickerModal from "../../components/DatePickerModal";
+import DatePickerModal from "../../components/DatePickerModal";
 export const Route = BedrockRoute("/enroll/day", {
   validateParams: (params) => params,
   component: Day,
@@ -224,105 +226,139 @@ function Day() {
     });
   };
   const childComponentRef = useRef();
-  const showHourBottomSheet = (e: number) => {
-    timeSelectRef.current = e;
-    bottomSheet.open({
-      header: <BottomSheet.Header>날짜 선택</BottomSheet.Header>,
-      children: (
-        <View>
-          <TimePickerModal
-            hour={timeLimitArray[e]}
-            minute={minuteLimitArray[e]}
-            visible={true}
-            minuteDivide={false}
-            ref={childComponentRef}
-          />
-          <BottomSheet.CTA
-            onPress={() => {
-              bottomSheet.close();
-              handleConfirm(childComponentRef.current?.handleTime());
-            }}
-          >
-            선택완료
-          </BottomSheet.CTA>
-        </View>
-      ),
+
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalType, setModalType] = React.useState(0);
+
+  const [selectedTime, setSelectedTime] = React.useState({ hour: 7, ampm: "오후", minute: "00" });
+
+  const openTimePickerModal = (index) => {
+    const hourInRedux = timeLimitArray[index]; // redux에서 값 가져오기
+    let ampmStr, hour12;
+    if (hourInRedux === 0) {
+      ampmStr = "오전";
+      hour12 = 12;
+    } else if (hourInRedux < 12) {
+      ampmStr = "오전";
+      hour12 = hourInRedux;
+    } else if (hourInRedux === 12) {
+      ampmStr = "오후";
+      hour12 = 12;
+    } else {
+      ampmStr = "오후";
+      hour12 = hourInRedux - 12;
+    }
+    const minuteInRedux = minuteLimitArray[index];
+
+    setSelectedTime({
+      hour: String(hour12),
+      ampm: ampmStr,
+      minute: String(minuteInRedux),
     });
+    setModalType(index);
+    setModalVisible(true);
   };
-  return (
-    <>
-      <ListRow
-        onPress={showBasicBottomSheet}
-        left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
-        contents={
-          <ListRow.Texts
-            type="1RowTypeA"
-            top={
-              moment(selectStartDate).format("YYYY-MM-DD") +
-              " ~ " +
-              moment(selectEndDate ?? selectStartDate).format("YYYY-MM-DD")
-            }
-            topProps={{
-              typography: "t5",
-              fontWeight: "medium",
-              color: colors.grey800,
-            }}
-          />
-        }
-      />
-      <ListRow
-        onPress={() => showHourBottomSheet(0)}
-        left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
-        contents={
-          <ListRow.Texts
-            type="1RowTypeA"
-            top={
-              (timeLimitArray[0] < 12 ? "오전" : "오후") +
-              " " +
-              String(timeLimitArray[0]).padStart(2, "0") +
-              "시 " +
-              String(minuteLimitArray[0]).padStart(2, "0") +
-              "분"
-            }
-            topProps={{
-              typography: "t5",
-              fontWeight: "medium",
-              color: colors.grey800,
-            }}
-          />
-        }
-        right={
-          <Badge size="small" type="yellow" badgeStyle="weak" fontWeight="bold">
-            첫째 날
-          </Badge>
-        }
-      />
-      <ListRow
-        onPress={() => showHourBottomSheet(1)}
-        left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
-        contents={
-          <ListRow.Texts
-            type="1RowTypeA"
-            top={
-              (timeLimitArray[1] < 12 ? "오전" : "오후") +
-              " " +
-              String(timeLimitArray[1]).padStart(2, "0") +
-              "시 " +
-              String(minuteLimitArray[1]).padStart(2, "0") +
-              "분"
-            }
-            topProps={{
-              typography: "t5",
-              fontWeight: "medium",
-              color: colors.grey800,
-            }}
-          />
-        }
-        right={
-          <Badge size="small" type="green" badgeStyle="weak" fontWeight="bold">
-            마지막 날
-          </Badge>
-        }
+
+  const handleTimePickerConfirm = (timeData) => {
+    // redux에 반영
+    let timeCopy = [...timeLimitArray];
+    let ampmCheck = timeData.ampm == "오후" ? 12 : 0;
+    timeCopy[modalType] = parseInt(timeData.hour) + ampmCheck;
+    let minuteCopy = [...minuteLimitArray];
+    minuteCopy[modalType] = parseInt(timeData.minute);
+    dispatch(
+        travelSliceActions.setTimeAndMinute({
+          time: timeCopy,
+          minute: minuteCopy,
+        })
+    );
+    setModalVisible(false);
+  };
+
+    return (
+      <>
+        <ListRow
+          onPress={showBasicBottomSheet}
+          left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
+          contents={
+            <ListRow.Texts
+              type="1RowTypeA"
+              top={
+                moment(selectStartDate).format("YYYY-MM-DD") +
+                " ~ " +
+                moment(selectEndDate ?? selectStartDate).format("YYYY-MM-DD")
+              }
+              topProps={{
+                typography: "t5",
+                fontWeight: "medium",
+                color: colors.grey800,
+              }}
+            />
+          }
+        />
+        <ListRow
+          onPress={() => openTimePickerModal(0, '첫째 날')}
+          left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
+          contents={
+            <ListRow.Texts
+              type="1RowTypeA"
+              top={
+                (timeLimitArray[0] < 12 ? "오전" : "오후") +
+                " " +
+                String(timeLimitArray[0]).padStart(2, "0") +
+                "시 " +
+                String(minuteLimitArray[0]).padStart(2, "0") +
+                "분"
+              }
+              topProps={{
+                typography: "t5",
+                fontWeight: "medium",
+                color: colors.grey800,
+              }}
+            />
+          }
+          right={
+            <Badge size="small" type="yellow" badgeStyle="weak" fontWeight="bold">
+              첫째 날
+            </Badge>
+          }
+        />
+        <ListRow
+          onPress={() => openTimePickerModal(1, '마지막 날')}
+          left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
+          contents={
+            <ListRow.Texts
+              type="1RowTypeA"
+              top={
+                (timeLimitArray[1] < 12 ? "오전" : "오후") +
+                " " +
+                String(timeLimitArray[1]).padStart(2, "0") +
+                "시 " +
+                String(minuteLimitArray[1]).padStart(2, "0") +
+                "분"
+              }
+              topProps={{
+                typography: "t5",
+                fontWeight: "medium",
+                color: colors.grey800,
+              }}
+            />
+          }
+          right={
+            <Badge size="small" type="green" badgeStyle="weak" fontWeight="bold">
+              마지막 날
+            </Badge>
+          }
+        />
+
+      <DatePickerModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          header={modalType === 0 ? "첫째 날" : "마지막 날"}
+          hour={selectedTime.hour}
+          ampm={selectedTime.ampm}
+          minute={selectedTime.minute}
+          onConfirm={handleTimePickerConfirm}
       />
     </>
   );

@@ -22,7 +22,7 @@ function Country() {
   };
   const { country } = useAppSelector((state) => state.travelSlice);
   return (
-    <View style={styles.ButtonsContainer}>
+    <View style={{marginTop: 74, ...styles.ButtonsContainer}}>
       {countryList?.map((item, idx) => (
         <TendencyButton
           marginBottom={0}
@@ -46,7 +46,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-    marginTop: 74,
     gap: 8,
   },
 });

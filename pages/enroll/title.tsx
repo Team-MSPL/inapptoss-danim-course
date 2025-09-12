@@ -32,6 +32,7 @@ function EnrollTitle() {
         value={travelName}
         autoFocus
         onChangeText={(e) => handleChange(e)}
+        maxLength={15}
       />
     </>
   );

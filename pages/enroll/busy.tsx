@@ -6,12 +6,16 @@ import { travelSliceActions } from "../../redux/travle-slice";
 import { GridList, Icon } from "@toss-design-system/react-native";
 import { CustomColor } from "../../utill/custom-color";
 
+type EnrollBusyProps = {
+  marginTop?: number;
+};
+
 export const Route = BedrockRoute("/enroll/busy", {
   validateParams: (params) => params,
   component: EnrollBusy,
 });
 
-export function EnrollBusy() {
+export function EnrollBusy({ marginTop = 150 }: EnrollBusyProps) {
   const dispatch = useAppDispatch();
   const { bandwidth } = useAppSelector((state) => state.travelSlice);
   const moveList = [
@@ -43,7 +47,7 @@ export function EnrollBusy() {
         flexDirection: "row",
         marginHorizontal: 24,
         justifyContent: "space-between",
-        marginTop: 150,
+        marginTop: marginTop,
       }}
     >
       <GridList column={2} style={{ marginBottom: 16 }}>

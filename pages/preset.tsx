@@ -58,7 +58,7 @@ function Preset() {
               typography="t4"
               fontWeight="bold"
               color={colors.grey800}
-              style={{ alignSelf: "center" }}
+              style={{ alignSelf: "center", marginTop: 35 }}
             >
               저장이 필요해요
             </Text>

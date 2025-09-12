@@ -7,12 +7,16 @@ import { TouchableOpacity } from "@react-native-bedrock/native/react-native-gest
 import { CustomColor } from "../../utill/custom-color";
 import { GridList, Icon, Text } from "@toss-design-system/react-native";
 
+type EnrollTransitProps = {
+  marginTop?: number;
+};
+
 export const Route = BedrockRoute("/enroll/transit", {
   validateParams: (params) => params,
   component: EnrollTransit,
 });
 
-export function EnrollTransit() {
+export function EnrollTransit({ marginTop = 150 }: EnrollTransitProps) {
   const dispatch = useAppDispatch();
   const { transit } = useAppSelector((state) => state.travelSlice);
   const moveList = [
@@ -44,7 +48,7 @@ export function EnrollTransit() {
         flexDirection: "row",
         marginHorizontal: 24,
         justifyContent: "space-between",
-        marginTop: 150,
+        marginTop: marginTop,
       }}
     >
       <GridList column={2} style={{ marginBottom: 16 }}>

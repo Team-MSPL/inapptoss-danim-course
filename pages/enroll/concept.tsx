@@ -6,18 +6,22 @@ import { View } from "react-native";
 import TendencyButton from "../../components/tendency-button";
 import { styles } from "./country";
 
+type EnrollConceptProps = {
+    marginTop?: number;
+};
+
 export const Route = BedrockRoute("/enroll/concept", {
   validateParams: (params) => params,
   component: EnrollConcept,
 });
 
-export function EnrollConcept() {
+export function EnrollConcept({ marginTop = 74 }: EnrollConceptProps) {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();
   return (
     <>
-      <View style={styles.ButtonsContainer}>
+      <View style={{marginTop: marginTop, ...styles.ButtonsContainer}}>
         {tendencyList[1]?.list?.map((item, idx) => (
           <TendencyButton
             marginBottom={0}
