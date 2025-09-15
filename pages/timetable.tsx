@@ -6,12 +6,13 @@ import {
     ListRow,
     PartnerNavigation,
     Tab,
+    Tooltip,
     useBottomSheet,
     useToast,
 } from "@toss-design-system/react-native";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, View } from "react-native";
+import {Dimensions, TouchableOpacity, View} from "react-native";
 import {
     BedrockRoute,
     useBackEvent,
@@ -31,6 +32,7 @@ import {EditButton} from "../components/timetable/EditButton";
 import {DayList} from "../components/timetable/DayList";
 import {RemoveBottomSheet} from "../components/timetable/RemoveBottomSheet";
 import {HourBottomSheetContent} from "../components/timetable/HourBottomSheet";
+import GuideModal from "../components/timetable/GuideModal";
 
 export const Route = BedrockRoute("/timetable", {
     validateParams: (params) => params,
@@ -77,6 +79,22 @@ function Timetable() {
         const timer = setTimeout(() => setShowTooltip(false), 3000);
         return () => clearTimeout(timer);
     }, []);
+
+    const [showGuideModal, setShowGuideModal] = useState(false); // 가이드 모달
+    const [showGuideTooltip, setShowGuideTooltip] = useState(false); // 모달 위 툴팁
+
+    useEffect(() => {
+        if (!showTooltip) {
+            setShowGuideModal(true);
+            setShowGuideTooltip(true);
+            // 가이드 툴팁은 3초 후 자동 off
+            const timer = setTimeout(() => {
+                setShowGuideTooltip(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+        return;
+    }, [showTooltip]);
 
     const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
         if (viewableItems?.length > 0) {
@@ -255,6 +273,26 @@ function Timetable() {
                                 bottomProps={{ color: colors.grey600, typography: "t5", fontWeight: "bold" }}
                             />
                         }
+                        right={
+                            <View style={{zIndex: 1000}}>
+                                <Tooltip
+                                    open={true}
+                                    size={187}
+                                    placement="bottom"
+                                    offset={10}
+                                    messageAlign="center"
+                                    message={'안녕하세요. 김토스입니다.'}
+                                    motion={'weak'}
+                                    onPressOutside={() => {
+                                        console.log('Controlled PressOutside');
+                                    }}
+                                >
+                                    <TouchableOpacity onPress={() => {}} style={{alignItems: 'center', justifyContent: 'center'}}>
+                                        <ListRow.Icon name={"icon-share-dots-mono"} />
+                                    </TouchableOpacity>
+                                </Tooltip>
+                            </View>
+                        }
                     />
                     <CustomMapViewMarker
                         presetData={timetable}
@@ -334,6 +372,11 @@ function Timetable() {
                         }
                     />
                 )}
+                <GuideModal
+                    visible={showGuideModal}
+                    showGuideTooltip={showGuideTooltip}
+                    onClose={() => setShowGuideModal(false)}
+                />
             </FixedBottomCTAProvider>
         </View>
     );
