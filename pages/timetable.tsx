@@ -52,7 +52,6 @@ function Timetable() {
 
     //Local
     const [tabValue, setTabValue] = useState<string>("0");
-    const [timeOutVisible, setTimeOutVisible] = useState<boolean>(true);
     const [modify, setModify] = useState<boolean>(false);
     const [tooltips, setTooltips] = useState<{ day: number; index: number; status: boolean }>({ day: 0, index: 0, status: false });
     const [copyTimetable, setCopyTimetable] = useState<TimetableState>(timetable);
@@ -64,7 +63,7 @@ function Timetable() {
     useEffect(() => {
         if (showSaveSheet) {
             const handler = () => bottomSheet.open({
-                children: <SaveBottomSheet onSave={firstSave} navigation={navigation} bottomSheet={bottomSheet} />,
+                children: <SaveBottomSheet onSave={firstSave} navigation={navigation} bottomSheet={bottomSheet} isBack={true}/>,
             });
             backEvent.addEventListener(handler);
             return () => backEvent.removeEventListener(handler);
@@ -169,6 +168,9 @@ function Timetable() {
     const handleModifySave = () => {
         dispatch(travelSliceActions.enrollTimetable(copyTimetable));
         setModify(false);
+        bottomSheet.open({
+            children: <SaveBottomSheet onSave={firstSave} navigation={navigation} bottomSheet={bottomSheet} isBack={false} />,
+        });
     };
 
     const handleRemoveCheck = () => {
@@ -242,26 +244,24 @@ function Timetable() {
                 }}
             />
             <FixedBottomCTAProvider>
-                {!modify && (
-                    <>
-                        <ListRow
-                            contents={
-                                <ListRow.Texts
-                                    type="2RowTypeA"
-                                    top={`${moment(day[0]).format("YYYY-MM-DD")} ~ ${moment(day[nDay]).format("YYYY-MM-DD")}`}
-                                    bottom={travelName}
-                                    topProps={{ color: colors.grey800, typography: "t7", fontWeight: "regular" }}
-                                    bottomProps={{ color: colors.grey600, typography: "t5", fontWeight: "bold" }}
-                                />
-                            }
-                        />
-                        <CustomMapViewMarker
-                            presetData={timetable}
-                            selectedIndex={tabValue}
-                            isWideZoom={false}
-                        />
-                    </>
-                )}
+                <>
+                    <ListRow
+                        contents={
+                            <ListRow.Texts
+                                type="2RowTypeA"
+                                top={`${moment(day[0]).format("YYYY-MM-DD")} ~ ${moment(day[nDay]).format("YYYY-MM-DD")}`}
+                                bottom={travelName}
+                                topProps={{ color: colors.grey800, typography: "t7", fontWeight: "regular" }}
+                                bottomProps={{ color: colors.grey600, typography: "t5", fontWeight: "bold" }}
+                            />
+                        }
+                    />
+                    <CustomMapViewMarker
+                        presetData={timetable}
+                        selectedIndex={tabValue}
+                        isWideZoom={false}
+                    />
+                </>
                 <Tab
                     fluid
                     size="large"
@@ -329,7 +329,7 @@ function Timetable() {
                         }
                         rightButton={
                             <Button display="block" onPress={handleModifySave}>
-                                수정완료
+                                저장하기
                             </Button>
                         }
                     />

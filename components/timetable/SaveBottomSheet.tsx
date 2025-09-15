@@ -5,9 +5,10 @@ type SaveBottomSheetProps = {
     onSave: () => void;
     navigation: any;
     bottomSheet: any;
+    isBack: boolean;
 };
 
-export function SaveBottomSheet({ onSave, navigation, bottomSheet }: SaveBottomSheetProps) {
+export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: SaveBottomSheetProps) {
     return (
         <>
             <Text
@@ -16,7 +17,7 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet }: SaveBottomS
                 color={colors.grey800}
                 style={{ alignSelf: "center", marginTop: 35 }}
             >
-                일정을 저장할까요?
+                {isBack? '나가기 전에 일정을 저장할까요?' : '일정을 저장할까요?'}
             </Text>
             <Text
                 typography="t5"
@@ -24,7 +25,7 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet }: SaveBottomS
                 color={colors.grey600}
                 style={{ textAlign: "center" }}
             >
-                저장된 일정은 오른쪽 상단 {"\n"}비행기 아이콘에서 볼 수 있어요.
+                저장된 일정은 '내 여행'에서 볼 수 있어요.
             </Text>
             <BottomSheet.CTA.Double
                 leftButton={
@@ -40,7 +41,10 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet }: SaveBottomS
                         onPress={() => {
                             bottomSheet.close();
                             onSave();
-                            navigation.reset({ index: 0, routes: [{ name: "/" }] });
+                            {isBack ? navigation.reset({ index: 0, routes: [{ name: "/" }] }) : navigation.reset({
+                                index: 1,
+                                routes: [{ name: "/" }, { name: "/MainScreen" }],
+                            })}
                         }}
                     >
                         저장 후 나가기
