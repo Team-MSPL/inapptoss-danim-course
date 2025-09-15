@@ -73,8 +73,10 @@ function Timetable() {
         return;
     }, [backEvent, showSaveSheet, bottomSheet, navigation]);
 
+    const [showTooltip, setShowTooltip] = useState(true);
+
     useEffect(() => {
-        const timer = setTimeout(() => setTimeOutVisible(false), 3000);
+        const timer = setTimeout(() => setShowTooltip(false), 3000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -215,6 +217,7 @@ function Timetable() {
             return copy;
         });
     };
+
     const handleScroll = (event: any) => {
         const offsetY = event.nativeEvent.contentOffset.y;
         let sum = 0;
@@ -310,7 +313,7 @@ function Timetable() {
                     <TooltipMessage />
                 )}
                 {!modify && (
-                    <EditButton onPress={() => setModify(true)} />
+                    <EditButton onPress={() => setModify(true)} showTooltip={showTooltip}/>
                 )}
                 {modify && (
                     <FixedBottomCTA.Double
