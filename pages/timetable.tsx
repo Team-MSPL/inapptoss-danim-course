@@ -27,7 +27,6 @@ import {
 } from "../redux/travle-slice";
 import {defaultTimetableItem, TimetableDay, TimetableState} from "../components/timetable/type";
 import {SaveBottomSheet} from "../components/timetable/SaveBottomSheet";
-import {TooltipMessage} from "../components/timetable/TooltipMessage";
 import {EditButton} from "../components/timetable/EditButton";
 import {DayList} from "../components/timetable/DayList";
 import {RemoveBottomSheet} from "../components/timetable/RemoveBottomSheet";
@@ -309,9 +308,6 @@ function Timetable() {
                         />
                     )}
                 />
-                {timeOutVisible && (
-                    <TooltipMessage />
-                )}
                 {!modify && (
                     <EditButton onPress={() => setModify(true)} showTooltip={showTooltip}/>
                 )}

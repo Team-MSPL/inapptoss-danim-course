@@ -1,7 +1,7 @@
 import { Stack } from "react-native-bedrock";
 import { TimetableDay, TimetableState } from "./type";
-import { View } from "react-native";
-import { Badge, colors, ListRow } from "@toss-design-system/react-native";
+import { View, Text } from "react-native";
+import { Badge, colors, ListRow, Icon } from "@toss-design-system/react-native";
 import { categoryColor, categoryTitle } from "./constants";
 import { EditTooltip } from "./EditTooltip";
 
@@ -19,6 +19,20 @@ type DayListProps = {
     setModify: React.Dispatch<React.SetStateAction<boolean>>;
     onLayout?: (e: any) => void;
 };
+
+// 시간 차이 계산 함수 (분 단위 → "X시간 XX분" 문자열)
+function getTimeDiffText(prev, next) {
+    // 시작/끝 시간 추출 (실제 데이터 구조에 맞게 수정)
+    // 예시: value.y(시작), value.takenTime(소요)
+    const prevEndMinutes = ((prev.y ?? 0) + prev.takenTime / 30) * 30 + 360;
+    const nextStartMinutes = (next.y ?? 0) * 30 + 360;
+    let diff = nextStartMinutes - prevEndMinutes;
+    if (diff <= 0) return ""; // 이동시간이 음수면 표시 안 함
+
+    const hour = Math.floor(diff / 60);
+    const min = diff % 60;
+    return `${hour > 0 ? `${hour}시간` : ""}${min > 0 ? ` ${min}분` : ""}`.trim();
+}
 
 export function DayList({
                             dayItems, dayIndex, modify, tooltips, setTooltips,
@@ -64,7 +78,7 @@ export function DayList({
                         }
                         contents={
                             <ListRow.Texts
-                                type="2RowTypeA"
+                                type="2RowTypeD"
                                 top={
                                     `${Math.floor(((value.y ?? 0) * 30 + 360) / 60)}:` +
                                     `${String(((value.y ?? 0) * 30 + 360) % 60).padStart(2, "0")}` +
@@ -98,6 +112,31 @@ export function DayList({
                             showHourBottomSheet={showHourBottomSheet}
                             handleRemoveCheck={handleRemoveCheck}
                         />
+                    )}
+                    {/* 일정과 일정 사이에 이동시간 표시 */}
+                    {!modify && idx < dayItems.length - 1 && (
+                        (() => {
+                            const moveText = getTimeDiffText(dayItems[idx], dayItems[idx + 1]);
+                            if (!moveText) return null;
+                            return (
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    paddingVertical: 10,
+                                    paddingLeft: 30,
+                                }}>
+                                    <Icon name="icon-car-mono" color={colors.grey500} size={16} />
+                                    <Text style={{
+                                        marginLeft: 15,
+                                        color: colors.grey500,
+                                        fontSize: 16,
+                                        fontWeight: "400",
+                                    }}>
+                                        {moveText}
+                                    </Text>
+                                </View>
+                            );
+                        })()
                     )}
                     {modify && value?.category !== 4 && (
                         <ListRow

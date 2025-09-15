@@ -12,7 +12,7 @@ export function EditButton({ onPress, showTooltip }: EditButtonProps) {
             style={{
                 position: "absolute",
                 right: 30,
-                bottom: 150,
+                bottom: 100,
                 width: 48,
                 height: 48,
                 borderRadius: 12,
