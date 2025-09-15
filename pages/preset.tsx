@@ -34,17 +34,42 @@ export const Route = BedrockRoute("/preset", {
 });
 
 function Preset() {
-  const { presetDatas, regionInfo, region, presetTendencyList, nDay } =
+    const { presetDatas, regionInfo, region, presetTendencyList, nDay } =
     useAppSelector((state) => state.travelSlice);
-  const [tabValue, setTabalue] = useState("0");
-  const scrollRef = useRef(null);
-  const moveScroll = (e) => {
-    scrollRef.current?.scrollToIndex({
-      index: Number(e),
-      animated: true,
-    });
-    setTabalue(e);
-  };
+    const [tabValue, setTabalue] = useState("0");
+    const [itemLayouts, setItemLayouts] = useState<number[]>([]);
+    const scrollRef = useRef(null);
+
+    const handleItemLayout = (event, idx) => {
+        const { height } = event.nativeEvent.layout;
+        setItemLayouts(prev => {
+            const copy = [...prev];
+            copy[idx] = height;
+            return copy;
+        });
+    };
+
+    const handleScroll = event => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        let sum = 0;
+        let index = 0;
+        for (let i = 0; i < itemLayouts.length; i++) {
+            sum += itemLayouts[i] || 0;
+            if (offsetY < sum) {
+                index = i;
+                break;
+            }
+        }
+        setTabalue(String(index));
+    };
+
+    const moveScroll = (e) => {
+        scrollRef.current?.scrollToIndex({
+            index: Number(e),
+            animated: true,
+        });
+        setTabalue(e);
+    };
 
   const backEvent = useBackEvent();
 
@@ -171,6 +196,7 @@ function Preset() {
             marginTop: 10,
             marginHorizontal: 24,
           }}
+          onLayout={e => handleItemLayout(e, index)}
         >
           {presetTendencyList[index]?.tendencyNameList.length >= 1 && (
             <>
@@ -363,7 +389,6 @@ function Preset() {
         size="large"
         onChange={(e) => {
           moveScroll(e);
-          console.log(tabValue);
         }}
         value={tabValue}
         style={{ marginTop: 5 }}
@@ -379,6 +404,8 @@ function Preset() {
         style={{ flex: 1 }}
         ref={scrollRef}
         data={presetDatas}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         onScrollToIndexFailed={(info) => {
           setTimeout(() => {
             scrollRef.current?.scrollToIndex({

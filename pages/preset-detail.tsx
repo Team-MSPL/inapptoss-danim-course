@@ -50,6 +50,7 @@ function PresetDetail() {
   const { open: openToast } = useToast();
 
   const [tabValue, setTabValue] = useState("0");
+  const [itemLayouts, setItemLayouts] = useState<number[]>([]);
   const scrollRef = useRef(null);
 
   const getRecommendList = async (opts) => {
@@ -334,11 +335,33 @@ function PresetDetail() {
   const onViewableItemsChanged = useRef((items) => {
     setTabValue(String(items?.changed[0]?.index));
   });
+  const handleItemLayout = (event, idx) => {
+    const { height } = event.nativeEvent.layout;
+    setItemLayouts(prev => {
+      const copy = [...prev];
+      copy[idx] = height;
+      return copy;
+    });
+  };
+
+  const handleScroll = event => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    let sum = 0;
+    let index = 0;
+    for (let i = 0; i < itemLayouts.length; i++) {
+      sum += itemLayouts[i] || 0;
+      if (offsetY < sum) {
+        index = i;
+        break;
+      }
+    }
+    setTabValue(String(index));
+  };
+
   const moveScroll = (e) => {
     scrollRef.current?.scrollToIndex({ index: Number(e), animated: false });
     setTabValue(e);
   };
-
   const renderItem = ({ item, index }) => (
       <Stack.Vertical
           style={{
@@ -351,6 +374,7 @@ function PresetDetail() {
             marginTop: 10,
             marginHorizontal: 24,
           }}
+          onLayout={e => handleItemLayout(e, index)}
       >
         <Text typography="t5" fontWeight="medium" color={colors.blue700}>
           {moment(day[index]).format("YY-MM-DD") + " "}({WEEKDAYS[moment(day[index]).days()]})
@@ -435,6 +459,8 @@ function PresetDetail() {
               showsVerticalScrollIndicator={false}
               onViewableItemsChanged={onViewableItemsChanged.current}
               viewabilityConfig={{ itemVisiblePercentThreshold: 80 }}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
               renderItem={renderItem}
           />
 
