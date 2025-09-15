@@ -78,8 +78,10 @@ function Timetable() {
         return () => clearTimeout(timer);
     }, []);
 
-    const onViewableItemsChanged = useRef(({ changed }: any) => {
-        if (changed?.[0]?.index !== undefined) setTabValue(String(changed[0].index));
+    const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+        if (viewableItems?.length > 0) {
+            setTabValue(String(viewableItems[0].index));
+        }
     });
 
     const handleRemove = () => {
@@ -204,6 +206,29 @@ function Timetable() {
 
     const screenHeight = Dimensions.get("window").height;
 
+    const [itemLayouts, setItemLayouts] = useState<number[]>([]);
+    const handleItemLayout = (event: any, idx: number) => {
+        const { height } = event.nativeEvent.layout;
+        setItemLayouts(prev => {
+            const copy = [...prev];
+            copy[idx] = height;
+            return copy;
+        });
+    };
+    const handleScroll = (event: any) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        let sum = 0;
+        let index = 0;
+        for (let i = 0; i < itemLayouts.length; i++) {
+            sum += itemLayouts[i] || 0;
+            if (offsetY < sum) {
+                index = i;
+                break;
+            }
+        }
+        setTabValue(String(index));
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <PartnerNavigation
@@ -253,12 +278,14 @@ function Timetable() {
                     style={{ height: screenHeight * (modify ? 0.8 : 0.4) }}
                     ref={scrollRef}
                     onScrollBeginDrag={() => tooltips.status && setTooltips(prev => ({ ...prev, status: false }))}
+                    onScroll={handleScroll}
                     data={modify ? copyTimetable : timetable}
                     onScrollToIndexFailed={info => {
                         setTimeout(() => {
                             scrollRef.current?.scrollToIndex({ index: info.index, animated: true });
                         }, 500);
                     }}
+                    scrollEventThrottle={16}
                     showsVerticalScrollIndicator={false}
                     onViewableItemsChanged={onViewableItemsChanged.current}
                     viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
@@ -275,6 +302,7 @@ function Timetable() {
                             handleRemoveCheck={handleRemoveCheck}
                             setCopyTimetable={setCopyTimetable}
                             setModify={setModify}
+                            onLayout={e => handleItemLayout(e, index)}
                         />
                     )}
                 />

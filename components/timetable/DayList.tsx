@@ -17,13 +17,13 @@ type DayListProps = {
     handleRemoveCheck: () => void;
     setCopyTimetable: React.Dispatch<React.SetStateAction<TimetableState>>;
     setModify: React.Dispatch<React.SetStateAction<boolean>>;
-    showTooltip?: boolean;
+    onLayout?: (e: any) => void;
 };
 
 export function DayList({
                             dayItems, dayIndex, modify, tooltips, setTooltips,
                             copyTimetable, navigation, showHourBottomSheet, handleRemoveCheck,
-                            setCopyTimetable, setModify
+                            setCopyTimetable, setModify, onLayout
                         }: DayListProps) {
     return (
         <Stack.Vertical
@@ -35,6 +35,7 @@ export function DayList({
                 borderBottomWidth: 1,
                 borderBottomColor: colors.grey200,
             }}
+            onLayout={onLayout}
         >
             {dayItems.map((value, idx) => (
                 <View key={idx} style={{ position: "relative" }}>
