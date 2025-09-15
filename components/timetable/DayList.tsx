@@ -1,9 +1,9 @@
 import { Stack } from "react-native-bedrock";
-import {TimetableDay, TimetableState} from "./type";
+import { TimetableDay, TimetableState } from "./type";
 import { View } from "react-native";
-import {Badge, colors, ListRow} from "@toss-design-system/react-native";
-import {categoryColor, categoryTitle} from "./constants";
-import {EditTooltip} from "./EditTooltip";
+import { Badge, colors, ListRow } from "@toss-design-system/react-native";
+import { categoryColor, categoryTitle } from "./constants";
+import { EditTooltip } from "./EditTooltip";
 
 type DayListProps = {
     dayItems: TimetableDay;
@@ -17,13 +17,14 @@ type DayListProps = {
     handleRemoveCheck: () => void;
     setCopyTimetable: React.Dispatch<React.SetStateAction<TimetableState>>;
     setModify: React.Dispatch<React.SetStateAction<boolean>>;
+    showTooltip?: boolean;
 };
 
 export function DayList({
-                     dayItems, dayIndex, modify, tooltips, setTooltips,
-                     copyTimetable, navigation, showHourBottomSheet, handleRemoveCheck,
-                     setCopyTimetable, setModify,
-                 }: DayListProps) {
+                            dayItems, dayIndex, modify, tooltips, setTooltips,
+                            copyTimetable, navigation, showHourBottomSheet, handleRemoveCheck,
+                            setCopyTimetable, setModify
+                        }: DayListProps) {
     return (
         <Stack.Vertical
             style={{
@@ -36,7 +37,7 @@ export function DayList({
             }}
         >
             {dayItems.map((value, idx) => (
-                <View key={idx}>
+                <View key={idx} style={{ position: "relative" }}>
                     <ListRow
                         onPress={() => {
                             if (!modify && value?.name?.includes("추천")) {
@@ -91,14 +92,12 @@ export function DayList({
                             )
                         }
                     />
-
                     {tooltips.status && tooltips.day === dayIndex && tooltips.index === idx && (
                         <EditTooltip
                             showHourBottomSheet={showHourBottomSheet}
                             handleRemoveCheck={handleRemoveCheck}
                         />
                     )}
-
                     {modify && value?.category !== 4 && (
                         <ListRow
                             onPress={() => {
