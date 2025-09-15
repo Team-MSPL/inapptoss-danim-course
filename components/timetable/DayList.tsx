@@ -78,7 +78,7 @@ export function DayList({
                         }
                         contents={
                             <ListRow.Texts
-                                type="2RowTypeD"
+                                type="2RowTypeF"
                                 top={
                                     `${Math.floor(((value.y ?? 0) * 30 + 360) / 60)}:` +
                                     `${String(((value.y ?? 0) * 30 + 360) % 60).padStart(2, "0")}` +
@@ -89,21 +89,25 @@ export function DayList({
                                         : "")
                                 }
                                 bottom={value?.name}
-                                topProps={{ color: colors.grey800 }}
-                                bottomProps={{ color: colors.grey600 }}
+                                topProps={{ color: colors.grey500 }}
+                                bottomProps={{ color: colors.grey800 }}
                             />
                         }
                         right={
                             modify ? (
-                                <ListRow.Icon name="icon-dots-mono" />
+                                    <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                                        <ListRow.Icon name="icon-dots-mono" />
+                                    </View>
                             ) : (
-                                <Badge
-                                    size="small"
-                                    badgeStyle="weak"
-                                    type={categoryColor[value?.category ?? 0]}
-                                >
-                                    {categoryTitle[value?.category ?? 0] ?? ""}
-                                </Badge>
+                                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                                    <Badge
+                                        size="small"
+                                        badgeStyle="weak"
+                                        type={categoryColor[value?.category ?? 0]}
+                                    >
+                                        {categoryTitle[value?.category ?? 0] ?? ""}
+                                    </Badge>
+                                </View>
                             )
                         }
                     />
@@ -122,7 +126,7 @@ export function DayList({
                                 <View style={{
                                     flexDirection: "row",
                                     alignItems: "center",
-                                    paddingVertical: 10,
+                                    paddingVertical: 20,
                                     paddingLeft: 30,
                                 }}>
                                     <Icon name="icon-car-mono" color={colors.grey500} size={16} />
