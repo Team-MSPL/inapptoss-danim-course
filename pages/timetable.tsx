@@ -278,11 +278,9 @@ function Timetable() {
                     />
                 </Animated.View>
                 <View>
-                    <TouchableOpacity
+                    <View
                         onPress={handleToggleMapHeight}
                         activeOpacity={1}
-                        onPressIn={() => setPressed(true)}
-                        onPressOut={() => setPressed(false)}
                         style={{
                             width: Dimensions.get("window").width,
                             height: 40,
@@ -292,7 +290,7 @@ function Timetable() {
                         }}
                     >
                         <ArrowToggleButton expanded={isMapOpen} onPress={handleToggleMapHeight} />
-                    </TouchableOpacity>
+                    </View>
                     <Tab
                         fluid
                         size="large"
