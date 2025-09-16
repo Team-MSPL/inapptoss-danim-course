@@ -194,6 +194,7 @@ function Preset() {
             paddingHorizontal: 24,
             paddingVertical: 20,
             marginTop: 10,
+              marginBottom: 30,
             marginHorizontal: 24,
           }}
           onLayout={e => handleItemLayout(e, index)}
