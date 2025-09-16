@@ -1,5 +1,5 @@
 import React from "react";
-import {Dimensions, TouchableOpacity, View} from "react-native";
+import { Dimensions, TouchableOpacity, View, Image } from "react-native";
 import {
     colors,
     FixedBottomCTAProvider,
@@ -37,24 +37,46 @@ export default function MainScreen() {
                     <TouchableOpacity
                         onPress={() => {}}
                         style={{
-                            backgroundColor: 'yellow',
                             width: Dimensions.get('window').width - 48,
                             alignSelf: 'center',
                             height: 165,
-                            borderRadius: 20}}
+                            borderRadius: 20,
+                            overflow: 'hidden', // 이미지가 둥글게 잘리도록
+                        }}
+                        activeOpacity={0.8}
                     >
-
+                        <Image
+                            source={{
+                                uri: "https://firebasestorage.googleapis.com/v0/b/danim-image/o/appintoss_main%2Fappintoss-main2.png?alt=media&token=a2875a2d-2f7f-4218-bd13-1254198cea3c",
+                            }}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                resizeMode: "cover",
+                            }}
+                        />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {}}
                         style={{
-                            backgroundColor: 'purple',
                             width: Dimensions.get('window').width - 48,
                             alignSelf: 'center',
                             height: 165,
-                            borderRadius: 20}}
+                            borderRadius: 20,
+                            overflow: 'hidden', // 이미지가 둥글게 잘리도록
+                        }}
+                        activeOpacity={0.8}
                     >
-
+                        <Image
+                            source={{
+                                uri: "https://firebasestorage.googleapis.com/v0/b/danim-image/o/appintoss_main%2Fappintoss-main1.png?alt=media&token=6932a5ba-3506-4c2b-a2bb-9ea2cd5aff66",
+                            }}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                resizeMode: "cover",
+                            }}
+                        />
                     </TouchableOpacity>
                 </View>
             </FixedBottomCTAProvider>

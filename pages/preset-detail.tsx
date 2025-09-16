@@ -11,7 +11,7 @@ import {
   useToast,
 } from "@toss-design-system/react-native";
 import React, { useCallback, useRef, useState } from "react";
-import { View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { View, NativeSyntheticEvent, NativeScrollEvent, Animated, Dimensions } from "react-native";
 import { BedrockRoute, useNavigation } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import CustomMapViewMarker from "../components/map-view-marker";
@@ -26,6 +26,7 @@ import { CommonActions } from "@react-native-bedrock/native/@react-navigation/na
 import NavigationBar from "../components/navigation-bar";
 import { PresetTendencyHeader } from "../components/preset-detail/PresetTendencyHeader";
 import { PresetDayCard } from "../components/preset-detail/PresetDayCard";
+import ArrowToggleButton from "../components/timetable/ArrowToggleButton";
 
 interface RecommendOptions {
   value: any;
@@ -67,6 +68,21 @@ function PresetDetail() {
   const [tabValue, setTabValue] = useState<string>("0");
   const [itemLayouts, setItemLayouts] = useState<number[]>([]);
   const scrollRef = useRef<FlatList<any>>(null);
+
+  // 지도 높이 애니메이션 관련
+  const defaultHeight = (Dimensions.get("window").height * 240) / 812;
+  const [isMapOpen, setIsMapOpen] = useState(true);
+  const animatedHeight = useRef(new Animated.Value(defaultHeight)).current;
+
+  const handleToggleMapHeight = () => {
+    const toValue = isMapOpen ? 0 : defaultHeight;
+    Animated.timing(animatedHeight, {
+      toValue,
+      duration: 350,
+      useNativeDriver: false,
+    }).start();
+    setIsMapOpen(!isMapOpen);
+  };
 
   // ----------------------
   // 추천 관련 핸들러
@@ -158,7 +174,6 @@ function PresetDetail() {
     let status = timetable[idx][index - 1];
     let goCheck = true;
 
-    // 위치/반경 설정
     if (index === timetable[idx].length - 1) {
       if (timetable[idx][timetable[idx].length - 2].name.includes("추천")) goCheck = false;
       else {
@@ -291,14 +306,21 @@ function PresetDetail() {
     setTabValue(String(index));
   };
 
+  const [tabPressed, setTabPressed] = useState(false);
+
   const moveScroll = (e: string) => {
+    setTabPressed(true);
     scrollRef.current?.scrollToIndex({ index: Number(e), animated: false });
     setTabValue(e);
   };
 
-  const onViewableItemsChanged = useRef(({ changed }: { changed: Array<{ index: number }> }) => {
-    if (changed?.length > 0 && changed[0]?.index !== undefined) {
-      setTabValue(String(changed[0].index));
+  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+    if (tabPressed) {
+      setTabPressed(false);
+      return;
+    }
+    if (viewableItems?.length > 0) {
+      setTabValue(String(viewableItems[0].index));
     }
   });
 
@@ -414,11 +436,26 @@ function PresetDetail() {
               tendencyList={presetTendencyList}
               calculateTendency={calculateTendency}
           />
-          <CustomMapViewMarker
-              presetData={presetDatas[params?.index]}
-              selectedIndex={tabValue}
-              isWideZoom={false}
-          />
+          <Animated.View style={{ height: animatedHeight, overflow: "hidden" }}>
+            <CustomMapViewMarker
+                presetData={presetDatas[params?.index]}
+                selectedIndex={tabValue}
+                isWideZoom={false}
+                height={null}
+            />
+          </Animated.View>
+          <View
+              onTouchEnd={handleToggleMapHeight}
+              style={{
+                width: Dimensions.get("window").width,
+                height: 40,
+                backgroundColor: 'white',
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+          >
+            <ArrowToggleButton expanded={isMapOpen} onPress={handleToggleMapHeight} />
+          </View>
           <Tab
               fluid
               size="large"
@@ -432,8 +469,10 @@ function PresetDetail() {
           </Tab>
           <FlatList
               keyExtractor={(_, index) => index.toString()}
-              style={{ height: 400 }}
               ref={scrollRef}
+              style={
+                isMapOpen ? { flex: 1, height: 400 } : { flex: 1 }
+              }
               data={presetDatas[params?.index]}
               onScrollToIndexFailed={info => setTimeout(() => {
                 scrollRef.current?.scrollToIndex({ index: info.index, animated: true });

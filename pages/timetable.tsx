@@ -81,7 +81,19 @@ function Timetable() {
         return () => clearTimeout(timer);
     }, []);
 
+    const [tabPressed, setTabPressed] = useState(false);
+
+    const moveScroll = (e: string) => {
+        setTabPressed(true);
+        flatListRef.current?.scrollToIndex({ index: Number(e), animated: false });
+        setTabValue(e);
+    };
+
     const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+        if (tabPressed) {
+            setTabPressed(false);
+            return;
+        }
         if (viewableItems?.length > 0) {
             setTabValue(String(viewableItems[0].index));
         }
@@ -204,11 +216,6 @@ function Timetable() {
         });
     };
 
-    const moveScroll = (e: string) => {
-        flatListRef.current?.scrollToIndex({ index: Number(e), animated: false });
-        setTabValue(e);
-    };
-
     const [itemLayouts, setItemLayouts] = useState<number[]>([]);
     const handleItemLayout = (event: any, idx: number) => {
         const { height } = event.nativeEvent.layout;
@@ -307,6 +314,9 @@ function Timetable() {
                     <View style={{ flex: 1 }}>
                         <FlatList
                             ref={flatListRef}
+                            style={
+                                isMapOpen ? { flex: 1, height: 400 } : { flex: 1 }
+                            }
                             keyExtractor={(_, index) => index.toString()}
                             onScrollBeginDrag={() => tooltips.status && setTooltips(prev => ({ ...prev, status: false }))}
                             onScroll={handleScroll}
