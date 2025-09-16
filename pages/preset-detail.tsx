@@ -5,17 +5,14 @@ import {
   colors,
   FixedBottomCTA,
   FixedBottomCTAProvider,
-  ListRow,
-  StepperRow,
   Tab,
   Text,
   useBottomSheet,
   useToast,
 } from "@toss-design-system/react-native";
-import moment from "moment";
 import React, { useCallback, useRef, useState } from "react";
-import { Dimensions, View } from "react-native";
-import { BedrockRoute, Stack, useNavigation } from "react-native-bedrock";
+import { View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { BedrockRoute, useNavigation } from "react-native-bedrock";
 import { useAppDispatch, useAppSelector } from "store";
 import CustomMapViewMarker from "../components/map-view-marker";
 import {
@@ -27,15 +24,33 @@ import {
 import { useDistance } from "../hooks/useDistance";
 import { CommonActions } from "@react-native-bedrock/native/@react-navigation/native";
 import NavigationBar from "../components/navigation-bar";
+import { PresetTendencyHeader } from "../components/preset-detail/PresetTendencyHeader";
+import { PresetDayCard } from "../components/preset-detail/PresetDayCard";
+
+interface RecommendOptions {
+  value: any;
+  index: number;
+  idx: number;
+}
+
+interface HandleAutoRecommendOptions {
+  item: any[];
+  copy: any[];
+  idx: number;
+}
+
+interface TendencyObj {
+  tendencyNameList: string[];
+  tendencyRanking: number[];
+}
 
 export const Route = BedrockRoute("/preset-detail", {
-  validateParams: (params) => params,
+  validateParams: (params: any) => params,
   component: PresetDetail,
 });
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 function PresetDetail() {
-  const params = Route.useParams();
+  const params = Route.useParams() as { index: number };
   const {
     presetDatas,
     presetTendencyList,
@@ -49,33 +64,36 @@ function PresetDetail() {
   const bottomSheet = useBottomSheet();
   const { open: openToast } = useToast();
 
-  const [tabValue, setTabValue] = useState("0");
+  const [tabValue, setTabValue] = useState<string>("0");
   const [itemLayouts, setItemLayouts] = useState<number[]>([]);
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<FlatList<any>>(null);
 
-  const getRecommendList = async (opts) => {
+  // ----------------------
+  // 추천 관련 핸들러
+  // ----------------------
+
+  const getRecommendList = async (opts: any): Promise<any[]> => {
     try {
+      const isOverseas = region[0].startsWith("해외");
       let result = await dispatch(
-          region[0].startsWith("해외")
+          isOverseas
               ? recommendTripadvisor({ ...opts, category: opts.apiCategory, name: opts.status.name })
-              : recommendApi({ ...opts, category: opts.apiCategory })
+              : recommendApi({ ...opts, category: opts.apiCategory }),
       ).unwrap();
-      result = region[0].startsWith("해외") ? result.data : result;
-
-      if (result.length === 0) {
+      result = isOverseas ? result.data : result;
+      if (!result.length) {
         result = await dispatch(
-            region[0].startsWith("해외")
+            isOverseas
                 ? recommendTripadvisor({ ...opts, category: opts.apiCategory, radius: Number(opts.radius) * 1.5, name: opts.status.name })
-                : recommendApi({ ...opts, category: opts.apiCategory, radius: Number(opts.radius) * 1.5 })
+                : recommendApi({ ...opts, category: opts.apiCategory, radius: Number(opts.radius) * 1.5 }),
         ).unwrap();
-        result = region[0].startsWith("해외") ? result.data : result;
-        if (result.length === 0) {
+        result = isOverseas ? result.data : result;
+        if (!result.length) {
           openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
           return [];
         }
       }
-
-      if (region[0].startsWith("해외")) {
+      if (isOverseas) {
         const copy = await dispatch(detailTripadvisor({ id: result[0].location_id })).unwrap();
         result = [{
           ...result,
@@ -92,7 +110,7 @@ function PresetDetail() {
     }
   };
 
-  const accommodationRecommend = async ({ value, index, idx }) => {
+  const accommodationRecommend = async ({ value, index, idx }: RecommendOptions): Promise<any> => {
     const timetable = presetDatas[params?.index];
     if (timetable[idx].length < 2) return;
 
@@ -116,13 +134,14 @@ function PresetDetail() {
     const count = value.takenTime / 30;
     const sequentialArray = Array.from({ length: count }, (_, i) => startNumber + i);
 
-    return await getRecommendList({
+    return getRecommendList({
       name: "숙소 추천",
       x: value.x,
       index,
       y: sequentialArray,
       category: value.category,
-      lat, lng,
+      lat,
+      lng,
       apiCategory: region[0].startsWith("해외") ? "hotels" : "AD5",
       radius: 2000,
       backupLat: index !== 0 ? timetable[idx][index - 1].lat : timetable[idx][index + 1].lat,
@@ -131,7 +150,7 @@ function PresetDetail() {
     });
   };
 
-  const restaurantRecommend = useCallback(async ({ value, index, idx }) => {
+  const restaurantRecommend = useCallback(async ({ value, index, idx }: RecommendOptions): Promise<any> => {
     const timetable = presetDatas[params?.index];
     if (timetable[idx].length === 1) return;
 
@@ -171,22 +190,23 @@ function PresetDetail() {
     const count = value.takenTime / 30;
     const sequentialArray = Array.from({ length: count }, (_, i) => startNumber + i);
 
-    return await getRecommendList({
+    return getRecommendList({
       name: "식당 추천",
       x: value.x,
       index,
       y: sequentialArray,
       category: value.category,
-      lat, lng,
+      lat,
+      lng,
       apiCategory: region[0].startsWith("해외") ? "restaurants" : "FD6",
       radius,
       backupLat: timetable[idx][index - 1]?.lat ?? 0,
       backupLng: timetable[idx][index - 1]?.lng ?? 0,
       status,
     });
-  }, [presetDatas, region]);
+  }, [presetDatas, region, params?.index]);
 
-  const handleAutoRecommend = async ({ item, copy, idx }) => {
+  const handleAutoRecommend = async ({ item, copy, idx }: HandleAutoRecommendOptions): Promise<any[]> => {
     try {
       let updated = [...item];
       const handleItems = item.map(async (value, index) => {
@@ -239,10 +259,83 @@ function PresetDetail() {
       });
       await Promise.all(handleItems);
       return updated;
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+      return item;
+    }
   };
 
-  const goNext = async (autoRecommendFlag) => {
+  // ----------------------
+  // 기타 핸들러
+  // ----------------------
+
+  const handleItemLayout = (event: { nativeEvent: { layout: { height: number } } }, idx: number) => {
+    const { height } = event.nativeEvent.layout;
+    setItemLayouts(prev => {
+      const copy = [...prev];
+      copy[idx] = height;
+      return copy;
+    });
+  };
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    let sum = 0, index = 0;
+    for (let i = 0; i < itemLayouts.length; i++) {
+      sum += itemLayouts[i] || 0;
+      if (offsetY < sum) {
+        index = i;
+        break;
+      }
+    }
+    setTabValue(String(index));
+  };
+
+  const moveScroll = (e: string) => {
+    scrollRef.current?.scrollToIndex({ index: Number(e), animated: false });
+    setTabValue(e);
+  };
+
+  const onViewableItemsChanged = useRef(({ changed }: { changed: Array<{ index: number }> }) => {
+    if (changed?.length > 0 && changed[0]?.index !== undefined) {
+      setTabValue(String(changed[0].index));
+    }
+  });
+
+  // ----------------------
+  // 성향 계산 함수
+  // ----------------------
+
+  const calculateTendency = (tendencyObj: TendencyObj): string => {
+    const { tendencyNameList, tendencyRanking } = tendencyObj || {};
+    const filteredNames: string[] = [], filteredRanks: number[] = [];
+    tendencyNameList?.forEach((item, idx) => {
+      if (!["봄", "여름", "가을", "겨울"].includes(item)) {
+        filteredNames.push(item);
+        filteredRanks.push(tendencyRanking[idx]);
+      }
+    });
+    let min = 100, minIdx = -1, nextMin = 100, nextMinIdx = -1;
+    filteredRanks.forEach((item, idx) => {
+      if (item <= min) {
+        nextMin = min; nextMinIdx = minIdx;
+        min = item; minIdx = idx;
+      } else if (item <= nextMin) {
+        nextMin = item; nextMinIdx = idx;
+      }
+    });
+    return (tendencyNameList[minIdx] ?? "") +
+        (tendencyNameList[nextMinIdx] ? ", " + tendencyNameList[nextMinIdx] : "");
+  };
+
+  // ----------------------
+  // CTA/BottomSheet 로직
+  // ----------------------
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const goNext = async (autoRecommendFlag: boolean) => {
+    setIsLoading(true);
     try {
       let copy = [...presetDatas[params.index]];
       if (copy.length !== nDay + 1) {
@@ -261,11 +354,13 @@ function PresetDetail() {
         routes: [{ name: "/timetable" }],
       }));
     } catch (err) {
-      console.log(err, "에러");
+      console.error(err, "에러");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const confirmRecommend = (autoRecommendFlag) => bottomSheet.open({
+  const confirmRecommend = (autoRecommendFlag: boolean) => bottomSheet.open({
     children: (
         <>
           <Text typography="t4" fontWeight="bold" color={colors.grey800} style={{ alignSelf: "center", marginTop: 35 }}>잠깐</Text>
@@ -310,148 +405,31 @@ function PresetDetail() {
     }
   };
 
-  const calculateTendency = (tendencyObj) => {
-    const { tendencyNameList, tendencyRanking } = tendencyObj || {};
-    const filteredNames = [], filteredRanks = [];
-    tendencyNameList?.forEach((item, idx) => {
-      if (!["봄", "여름", "가을", "겨울"].includes(item)) {
-        filteredNames.push(item);
-        filteredRanks.push(tendencyRanking[idx]);
-      }
-    });
-    let min = 100, minIdx = -1, nextMin = 100, nextMinIdx = -1;
-    filteredRanks.forEach((item, idx) => {
-      if (item <= min) {
-        nextMin = min; nextMinIdx = minIdx;
-        min = item; minIdx = idx;
-      } else if (item <= nextMin) {
-        nextMin = item; nextMinIdx = idx;
-      }
-    });
-    return (tendencyNameList[minIdx] ?? "") +
-        (tendencyNameList[nextMinIdx] ? ", " + tendencyNameList[nextMinIdx] : "");
-  };
-
-  const onViewableItemsChanged = useRef((items) => {
-    setTabValue(String(items?.changed[0]?.index));
-  });
-  const handleItemLayout = (event, idx) => {
-    const { height } = event.nativeEvent.layout;
-    setItemLayouts(prev => {
-      const copy = [...prev];
-      copy[idx] = height;
-      return copy;
-    });
-  };
-
-  const handleScroll = event => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    let sum = 0;
-    let index = 0;
-    for (let i = 0; i < itemLayouts.length; i++) {
-      sum += itemLayouts[i] || 0;
-      if (offsetY < sum) {
-        index = i;
-        break;
-      }
-    }
-    setTabValue(String(index));
-  };
-
-  const moveScroll = (e) => {
-    scrollRef.current?.scrollToIndex({ index: Number(e), animated: false });
-    setTabValue(e);
-  };
-  const renderItem = ({ item, index }) => {
-    const isLast = index === presetDatas[params?.index].length - 1;
-    return (
-        <Stack.Vertical
-            style={{
-              position: "relative",
-              borderWidth: 1,
-              borderColor: "#eeeeee",
-              borderRadius: 13,
-              paddingHorizontal: 24,
-              paddingVertical: 20,
-              marginTop: 10,
-              marginBottom: isLast ? 155 : 20,
-              marginHorizontal: 24,
-            }}
-            onLayout={e => handleItemLayout(e, index)}
-        >
-          <Text typography="t5" fontWeight="medium" color={colors.blue700}>
-            {moment(day[index]).format("YY-MM-DD") + " "}({WEEKDAYS[moment(day[index]).days()]})
-          </Text>
-          <View style={{height: 20}}/>
-          {item?.map((value, idx) => (
-              <StepperRow
-                  key={idx}
-                  hideLine={idx === item.length - 1}
-                  left={<StepperRow.NumberIcon number={idx + 1}/>}
-                  center={
-                    <StepperRow.Texts
-                        type="A"
-                        title={value.name + " "}
-                        description={
-                          !value.name.includes("추천")
-                              ? Math.floor(value.takenTime / 60) !== 0
-                                  ? `${Math.floor(value.takenTime / 60)}시간${value.takenTime % 60 !== 0 ? `${value.takenTime % 60}분` : ""}`
-                                  : ""
-                              : ""
-                        }
-                    />
-                  }
-              />
-          ))}
-        </Stack.Vertical>
-    );
-  };
-
   return (
       <View style={{ flex: 1 }}>
         <NavigationBar />
         <FixedBottomCTAProvider>
-          {presetTendencyList[params?.index]?.tendencyNameList.length >= 2 && (
-              <ListRow
-                  left={
-                    <ListRow.Image
-                        width={24}
-                        height={24}
-                        type="default"
-                        source={{ uri: "https://static.toss.im/2d-emojis/png/4x/u1F31F.png" }}
-                    />
-                  }
-                  contents={
-                    <ListRow.Texts
-                        type="2RowTypeA"
-                        top={`${params?.index + 1}번 일정`}
-                        bottom={
-                          <Text typography="t6" fontWeight="regular" color={colors.grey600}>
-                            <Text typography="t6" fontWeight="regular" color={colors.blue500}>
-                              [{calculateTendency(presetTendencyList[params.index])}]
-                            </Text>{" "}
-                            성향이 높은 일정이에요
-                          </Text>
-                        }
-                        topProps={{ color: colors.grey800 }}
-                        bottomProps={{ color: colors.grey600 }}
-                    />
-                  }
-              />
-          )}
-
+          <PresetTendencyHeader
+              index={params?.index}
+              tendencyList={presetTendencyList}
+              calculateTendency={calculateTendency}
+          />
           <CustomMapViewMarker
               presetData={presetDatas[params?.index]}
               selectedIndex={tabValue}
               isWideZoom={false}
           />
-
-          <Tab fluid size="large" onChange={moveScroll} value={tabValue} style={{ marginTop: 5 }}>
+          <Tab
+              fluid
+              size="large"
+              onChange={moveScroll}
+              value={tabValue}
+              style={{ marginTop: 5 }}
+          >
             {Array.from({ length: presetDatas[params?.index].length }, (_, idx) =>
                 <Tab.Item key={idx} value={String(idx)}>DAY {idx + 1}</Tab.Item>
             )}
           </Tab>
-
           <FlatList
               keyExtractor={(_, index) => index.toString()}
               style={{ height: 400 }}
@@ -465,13 +443,24 @@ function PresetDetail() {
               viewabilityConfig={{ itemVisiblePercentThreshold: 80 }}
               onScroll={handleScroll}
               scrollEventThrottle={16}
-              renderItem={renderItem}
+              renderItem={({ item, index }) => (
+                  <PresetDayCard
+                      item={item}
+                      index={index}
+                      day={day}
+                      handleItemLayout={handleItemLayout}
+                  />
+              )}
           />
-
-          <FixedBottomCTA onPress={handleAccommodation}>
-            이 여행 일정 선택하기
+          <FixedBottomCTA
+              onPress={handleAccommodation}
+              disabled={isLoading}
+          >
+            {isLoading ? "잠시만 기다려주세요..." : "이 여행 일정 선택하기"}
           </FixedBottomCTA>
         </FixedBottomCTAProvider>
       </View>
   );
 }
+
+export default PresetDetail;
