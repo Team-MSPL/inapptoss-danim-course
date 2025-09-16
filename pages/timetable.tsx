@@ -6,13 +6,12 @@ import {
     ListRow,
     PartnerNavigation,
     Tab,
-    Tooltip,
     useBottomSheet,
     useToast,
 } from "@toss-design-system/react-native";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
-import {Dimensions, TouchableOpacity, View} from "react-native";
+import {Animated, Dimensions, TouchableOpacity, View} from "react-native";
 import {
     BedrockRoute,
     useBackEvent,
@@ -26,13 +25,13 @@ import {
     travelSliceActions,
     updateTravelCourse,
 } from "../redux/travle-slice";
-import {defaultTimetableItem, TimetableDay, TimetableState} from "../components/timetable/type";
-import {SaveBottomSheet} from "../components/timetable/SaveBottomSheet";
-import {EditButton} from "../components/timetable/EditButton";
-import {DayList} from "../components/timetable/DayList";
-import {RemoveBottomSheet} from "../components/timetable/RemoveBottomSheet";
-import {HourBottomSheetContent} from "../components/timetable/HourBottomSheet";
-import GuideModal from "../components/timetable/GuideModal";
+import { defaultTimetableItem, TimetableDay, TimetableState } from "../components/timetable/type";
+import { SaveBottomSheet } from "../components/timetable/SaveBottomSheet";
+import { EditButton } from "../components/timetable/EditButton";
+import { DayList } from "../components/timetable/DayList";
+import { RemoveBottomSheet } from "../components/timetable/RemoveBottomSheet";
+import { HourBottomSheetContent } from "../components/timetable/HourBottomSheet";
+import ArrowToggleButton from "../components/timetable/ArrowToggleButton";
 
 export const Route = BedrockRoute("/timetable", {
     validateParams: (params) => params,
@@ -40,7 +39,6 @@ export const Route = BedrockRoute("/timetable", {
 });
 
 function Timetable() {
-    //Redux
     const {
         nDay, day, travelName, timetable, userId, region,
         transit, tendency, travelId,
@@ -52,20 +50,24 @@ function Timetable() {
     const backEvent = useBackEvent();
     const openToast = useToast().open;
 
-    //Local
     const [tabValue, setTabValue] = useState<string>("0");
     const [modify, setModify] = useState<boolean>(false);
     const [tooltips, setTooltips] = useState<{ day: number; index: number; status: boolean }>({ day: 0, index: 0, status: false });
     const [copyTimetable, setCopyTimetable] = useState<TimetableState>(timetable);
+    const [showTooltip, setShowTooltip] = useState(true);
 
-    const scrollRef = useRef<FlatList<any>>(null);
+    const flatListRef = useRef<FlatList<any>>(null);
 
     const showSaveSheet = navigation.getState()?.routes.at(-2)?.name !== "/my-travle-list";
+
+    const defaultHeight = (Dimensions.get("window").height * 240) / 812;
+    const [isMapOpen, setIsMapOpen] = useState(true);
+    const animatedHeight = useRef(new Animated.Value(defaultHeight)).current;
 
     useEffect(() => {
         if (showSaveSheet) {
             const handler = () => bottomSheet.open({
-                children: <SaveBottomSheet onSave={firstSave} navigation={navigation} bottomSheet={bottomSheet} isBack={true}/>,
+                children: <SaveBottomSheet onSave={firstSave} navigation={navigation} bottomSheet={bottomSheet} isBack={true} />,
             });
             backEvent.addEventListener(handler);
             return () => backEvent.removeEventListener(handler);
@@ -73,28 +75,11 @@ function Timetable() {
         return;
     }, [backEvent, showSaveSheet, bottomSheet, navigation]);
 
-    const [showTooltip, setShowTooltip] = useState(true);
-
     useEffect(() => {
+        setShowTooltip(true);
         const timer = setTimeout(() => setShowTooltip(false), 3000);
         return () => clearTimeout(timer);
     }, []);
-
-    const [showGuideModal, setShowGuideModal] = useState(false); // 가이드 모달
-    const [showGuideTooltip, setShowGuideTooltip] = useState(false); // 모달 위 툴팁
-
-    useEffect(() => {
-        if (!showTooltip) {
-            setShowGuideModal(true);
-            setShowGuideTooltip(true);
-            // 가이드 툴팁은 3초 후 자동 off
-            const timer = setTimeout(() => {
-                setShowGuideTooltip(false);
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-        return;
-    }, [showTooltip]);
 
     const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
         if (viewableItems?.length > 0) {
@@ -112,11 +97,11 @@ function Timetable() {
 
     const goModify = (newHour: number) => {
         const dayArr = copyTimetable[tooltips.day];
-        if (!dayArr) return; // dayArr이 없으면 종료
+        if (!dayArr) return;
 
         const changeCopy = [...copyTimetable];
         const originalItem = dayArr[tooltips.index];
-        if (!originalItem) return; // originalItem이 없으면 종료
+        if (!originalItem) return;
 
         const originalTakenTime = originalItem.takenTime;
         const newTakenTime = newHour * 60;
@@ -157,16 +142,15 @@ function Timetable() {
 
     const firstSave = async () => {
         try {
-            // 아래 safeTimetable 등은 타입이 명확해야 함!
             const safeTimetable: TimetableDay[] = timetable ?? [];
             if (travelId !== "") {
-                // @ts-ignore -> Redux 타입선언 필요
+                // @ts-ignore
                 await dispatch(updateTravelCourse({
                     travelId: travelId ?? "",
                     timetable: safeTimetable
                 }));
             } else {
-                // @ts-ignore -> Redux 타입선언 필요
+                // @ts-ignore
                 await dispatch(saveTravel({
                     userId: userId ?? "",
                     region: region ?? [],
@@ -221,11 +205,9 @@ function Timetable() {
     };
 
     const moveScroll = (e: string) => {
-        scrollRef.current?.scrollToIndex({ index: Number(e), animated: false });
+        flatListRef.current?.scrollToIndex({ index: Number(e), animated: false });
         setTabValue(e);
     };
-
-    const screenHeight = Dimensions.get("window").height;
 
     const [itemLayouts, setItemLayouts] = useState<number[]>([]);
     const handleItemLayout = (event: any, idx: number) => {
@@ -251,6 +233,18 @@ function Timetable() {
         setTabValue(String(index));
     };
 
+    const handleToggleMapHeight = () => {
+        const toValue = isMapOpen ? 0 : defaultHeight;
+        Animated.timing(animatedHeight, {
+            toValue,
+            duration: 350,
+            useNativeDriver: false,
+        }).start();
+        setIsMapOpen(!isMapOpen);
+    };
+
+    const [setPressed] = useState(false);
+
     return (
         <View style={{ flex: 1 }}>
             <PartnerNavigation
@@ -269,115 +263,119 @@ function Timetable() {
                                 type="2RowTypeA"
                                 top={`${moment(day[0]).format("YYYY-MM-DD")} ~ ${moment(day[nDay]).format("YYYY-MM-DD")}`}
                                 bottom={travelName}
-                                topProps={{ color: colors.grey800, typography: "t7", fontWeight: "regular" }}
-                                bottomProps={{ color: colors.grey600, typography: "t5", fontWeight: "bold" }}
+                                topProps={{ color: colors.grey500, typography: "t7", fontWeight: "regular" }}
+                                bottomProps={{ color: colors.grey900, typography: "t5", fontWeight: "bold" }}
                             />
                         }
-                        right={
-                            <View style={{zIndex: 1000}}>
-                                <Tooltip
-                                    open={true}
-                                    size={187}
-                                    placement="bottom"
-                                    offset={10}
-                                    messageAlign="center"
-                                    message={'안녕하세요. 김토스입니다.'}
-                                    motion={'weak'}
-                                    onPressOutside={() => {
-                                        console.log('Controlled PressOutside');
-                                    }}
-                                >
-                                    <TouchableOpacity onPress={() => {}} style={{alignItems: 'center', justifyContent: 'center'}}>
-                                        <ListRow.Icon name={"icon-share-dots-mono"} />
-                                    </TouchableOpacity>
-                                </Tooltip>
-                            </View>
-                        }
                     />
+                </>
+                <Animated.View style={{ height: animatedHeight, overflow: "hidden" }}>
                     <CustomMapViewMarker
                         presetData={timetable}
                         selectedIndex={tabValue}
                         isWideZoom={false}
+                        height={null}
                     />
-                </>
-                <Tab
-                    fluid
-                    size="large"
-                    onChange={moveScroll}
-                    value={tabValue}
-                    style={{ marginTop: 5 }}
-                >
-                    {timetable.map((_, idx) => (
-                        <Tab.Item key={idx} value={String(idx)}>
-                            DAY {idx + 1}
-                        </Tab.Item>
-                    ))}
-                </Tab>
-                <FlatList
-                    keyExtractor={(_, index) => index.toString()}
-                    style={{ height: screenHeight * (modify ? 0.8 : 0.4) }}
-                    ref={scrollRef}
-                    onScrollBeginDrag={() => tooltips.status && setTooltips(prev => ({ ...prev, status: false }))}
-                    onScroll={handleScroll}
-                    data={modify ? copyTimetable : timetable}
-                    onScrollToIndexFailed={info => {
-                        setTimeout(() => {
-                            scrollRef.current?.scrollToIndex({ index: info.index, animated: true });
-                        }, 500);
-                    }}
-                    scrollEventThrottle={16}
-                    showsVerticalScrollIndicator={false}
-                    onViewableItemsChanged={onViewableItemsChanged.current}
-                    viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
-                    renderItem={({ item, index }) => (
-                        <DayList
-                            dayItems={item}
-                            dayIndex={index}
-                            modify={modify}
-                            tooltips={tooltips}
-                            setTooltips={setTooltips}
-                            copyTimetable={copyTimetable}
-                            navigation={navigation}
-                            showHourBottomSheet={showHourBottomSheet}
-                            handleRemoveCheck={handleRemoveCheck}
-                            setCopyTimetable={setCopyTimetable}
-                            setModify={setModify}
-                            onLayout={e => handleItemLayout(e, index)}
+                </Animated.View>
+                <View>
+                    <TouchableOpacity
+                        onPress={handleToggleMapHeight}
+                        activeOpacity={1}
+                        onPressIn={() => setPressed(true)}
+                        onPressOut={() => setPressed(false)}
+                        style={{
+                            width: Dimensions.get("window").width,
+                            height: 40,
+                            backgroundColor: 'white',
+                            alignItems: "center",
+                            justifyContent: "center"
+                        }}
+                    >
+                        <ArrowToggleButton expanded={isMapOpen} onPress={handleToggleMapHeight} />
+                    </TouchableOpacity>
+                    <Tab
+                        fluid
+                        size="large"
+                        onChange={moveScroll}
+                        value={tabValue}
+                        style={{ marginTop: 5 }}
+                    >
+                        {timetable.map((_, idx) => (
+                            <Tab.Item key={idx} value={String(idx)}>
+                                DAY {idx + 1}
+                            </Tab.Item>
+                        ))}
+                    </Tab>
+                    <View style={{ flex: 1 }}>
+                        <FlatList
+                            ref={flatListRef}
+                            keyExtractor={(_, index) => index.toString()}
+                            onScrollBeginDrag={() => tooltips.status && setTooltips(prev => ({ ...prev, status: false }))}
+                            onScroll={handleScroll}
+                            data={modify ? copyTimetable : timetable}
+                            onScrollToIndexFailed={info => {
+                                setTimeout(() => {
+                                    flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                                }, 500);
+                            }}
+                            scrollEventThrottle={16}
+                            showsVerticalScrollIndicator={false}
+                            onViewableItemsChanged={onViewableItemsChanged.current}
+                            viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
+                            renderItem={({ item, index }) => (
+                                <DayList
+                                    dayItems={item}
+                                    dayIndex={index}
+                                    modify={modify}
+                                    tooltips={tooltips}
+                                    setTooltips={setTooltips}
+                                    copyTimetable={copyTimetable}
+                                    navigation={navigation}
+                                    showHourBottomSheet={showHourBottomSheet}
+                                    handleRemoveCheck={handleRemoveCheck}
+                                    setCopyTimetable={setCopyTimetable}
+                                    setModify={setModify}
+                                    onLayout={e => handleItemLayout(e, index)}
+                                />
+                            )}
+                        />
+                    </View>
+                    {modify && (
+                        <FixedBottomCTA.Double
+                            containerStyle={{ backgroundColor: "white" }}
+                            leftButton={
+                                <Button
+                                    type="dark"
+                                    style="weak"
+                                    display="block"
+                                    onPress={() => {
+                                        setCopyTimetable(timetable);
+                                        setModify(false);
+                                    }}
+                                >
+                                    이전으로
+                                </Button>
+                            }
+                            rightButton={
+                                <Button display="block" onPress={handleModifySave}>
+                                    저장하기
+                                </Button>
+                            }
                         />
                     )}
-                />
-                {!modify && (
-                    <EditButton onPress={() => setModify(true)} showTooltip={showTooltip}/>
-                )}
-                {modify && (
-                    <FixedBottomCTA.Double
-                        containerStyle={{ backgroundColor: "white" }}
-                        leftButton={
-                            <Button
-                                type="dark"
-                                style="weak"
-                                display="block"
-                                onPress={() => {
-                                    setCopyTimetable(timetable);
-                                    setModify(false);
-                                }}
-                            >
-                                이전으로
-                            </Button>
-                        }
-                        rightButton={
-                            <Button display="block" onPress={handleModifySave}>
-                                저장하기
-                            </Button>
-                        }
-                    />
-                )}
-                <GuideModal
-                    visible={showGuideModal}
-                    showGuideTooltip={showGuideTooltip}
-                    onClose={() => setShowGuideModal(false)}
-                />
+                </View>
             </FixedBottomCTAProvider>
+            {!modify && (
+                <EditButton
+                    onPress={() => {
+                        setShowTooltip(false);
+                        setModify(true);
+                    }}
+                    showTooltip={showTooltip}
+                />
+            )}
         </View>
     );
 }
+
+export default Timetable;

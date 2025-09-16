@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import {Button, colors, IconButton, Tooltip } from "@toss-design-system/react-native";
+import {colors, IconButton, Tooltip } from "@toss-design-system/react-native";
 
 type EditButtonProps = {
     onPress: () => void;
