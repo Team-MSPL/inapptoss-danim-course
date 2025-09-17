@@ -1,8 +1,11 @@
 import React from 'react';
 import {Dimensions, Image, TouchableOpacity, View} from "react-native";
 import {Badge, colors, FixedBottomCTAProvider, PartnerNavigation, Text, Top} from "@toss-design-system/react-native";
+import {useNavigation} from "react-native-bedrock";
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
@@ -108,7 +111,7 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => navigation.navigate('/enroll/title')}
             style={{
               width: Dimensions.get('window').width - 48,
               alignSelf: 'center',
@@ -142,7 +145,7 @@ export default function HomeScreen() {
                 zIndex: 2,
               }}
             >
-              여행 지역 추천
+              여행 일정 추천
             </Badge>
             <View
               style={{
