@@ -1,15 +1,10 @@
-import {
-  AnyAction,
-  combineReducers,
-  configureStore,
-  Reducer,
-} from "@reduxjs/toolkit";
-import travelSliceReducer from "../redux/travle-slice";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import AsyncStorage from "@react-native-bedrock/native/@react-native-async-storage/async-storage";
+import { AnyAction, combineReducers, configureStore, Reducer } from '@reduxjs/toolkit';
+import travelSliceReducer from '../redux/travle-slice';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-bedrock/native/@react-native-async-storage/async-storage';
 
 const persistConfig = {
-  key: "root",
+  key: 'root',
   // version: 1,
   storage: AsyncStorage,
 };
@@ -39,7 +34,7 @@ export const store = configureStore({
       serializableCheck: false,
       immutableCheck: false,
     }),
-  devTools: process.env.NODE_ENV !== "production",
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export type RootState = ReturnType<typeof appReducer>;

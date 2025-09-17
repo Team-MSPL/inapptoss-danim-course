@@ -1,16 +1,14 @@
-import { colors, ProgressBar } from "@toss-design-system/react-native";
-import { CustomColor } from "../utill/custom-color";
-import { routeStack } from "../utill/route-stack";
-import { useNavigation } from "react-native-bedrock";
+import { colors, ProgressBar } from '@toss-design-system/react-native';
+import { CustomColor } from '../utill/custom-color';
+import { routeStack } from '../utill/route-stack';
+import { useNavigation } from 'react-native-bedrock';
 
 export const CustomProgressBar = () => {
   const navigation = useNavigation();
   const stepList = Object.keys(routeStack).filter(
-    (key) => key !== "/title" && key !== "/finalCheck"
+    (key) => key !== '/title' && key !== '/finalCheck',
   );
-  const index = stepList.indexOf(
-    navigation.getState()?.routes?.at(-1)?.name.split("/enroll")[1]
-  );
+  const index = stepList.indexOf(navigation.getState()?.routes?.at(-1)?.name.split('/enroll')[1]);
 
   return (
     <ProgressBar

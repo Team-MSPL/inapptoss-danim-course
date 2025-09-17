@@ -1,5 +1,5 @@
-import axios from "axios";
-import { useState } from "react";
+import axios from 'axios';
+import { useState } from 'react';
 // import { store } from "../src/store";
 
 const API_ROUTE = import.meta.env.API_ROUTE;
@@ -8,7 +8,7 @@ const API_ROUTE_RELEASE = import.meta.env.API_ROUTE_RELEASE;
 const axiosAuth = axios.create({
   baseURL: API_ROUTE_RELEASE,
   headers: {
-    "content-type": "application/json",
+    'content-type': 'application/json',
     withCredentials: true,
   },
   timeout: 5000,
@@ -27,6 +27,6 @@ axiosAuth.interceptors.response.use(
     // 	store.dispatch(networkSliceActions.setServerConn(true));
     // }
     throw error;
-  }
+  },
 );
 export default axiosAuth;

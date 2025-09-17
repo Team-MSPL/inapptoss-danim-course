@@ -5,8 +5,8 @@ import {
   PartnerNavigation,
   Text,
   useBottomSheet,
-} from "@toss-design-system/react-native";
-import { useNavigation } from "react-native-bedrock";
+} from '@toss-design-system/react-native';
+import { useNavigation } from 'react-native-bedrock';
 
 export default function NavigationBar() {
   const bottomSheet = useBottomSheet();
@@ -16,7 +16,7 @@ export default function NavigationBar() {
       title="가고싶은 여행코스 AI 추천"
       icon={{
         source: {
-          uri: "https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png",
+          uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
         },
       }}
       // rightButtons={[
