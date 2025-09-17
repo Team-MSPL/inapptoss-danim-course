@@ -1,8 +1,7 @@
 import { colors, Slider, Text } from "@toss-design-system/react-native";
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { View, Image } from "react-native";
 import { BedrockRoute, useNavigation } from "react-native-bedrock";
-import FastImage from 'react-native-fast-image'
 import { useAppDispatch, useAppSelector } from "store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { RouteButton } from "../../components/route-button";
@@ -29,29 +28,26 @@ export function EnrollPopular({ contentRatio = 1 }: EnrollPopularProps) {
         "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2F5.png?alt=media&token=4952eea8-3f5c-44f6-bfca-45906ff9cc0c",
     ];
 
-    useEffect(() => {
-        imageList.forEach(uri => FastImage.preload([{ uri }]));
-    }, []);
-
     const currentIdx = Math.ceil(value / 2) - 1;
     const navigation = useNavigation();
 
     return (
         <View style={{ marginHorizontal: 24 }}>
-            <View style={{ position: "relative", width: 300*contentRatio, height: 300*contentRatio, alignSelf: "center", justifyContent: 'center' }}>
-                {imageList.map((uri, idx) => (
-                    <FastImage
-                        key={idx}
-                        source={{ uri }}
-                        style={{
-                            position: "absolute",
-                            width: 300*contentRatio,
-                            height: 300*contentRatio,
-                            opacity: idx === currentIdx ? 1 : 0,
-                        }}
-                        resizeMode={FastImage.resizeMode.contain}
-                    />
-                ))}
+            <View style={{
+                position: "relative",
+                width: 300 * contentRatio,
+                height: 300 * contentRatio,
+                alignSelf: "center",
+                justifyContent: 'center'
+            }}>
+                <Image
+                    source={{ uri: imageList[currentIdx] }}
+                    style={{
+                        width: 300 * contentRatio,
+                        height: 300 * contentRatio,
+                    }}
+                    resizeMode="contain"
+                />
             </View>
             <Text>인기도: {value}</Text>
             <Slider
