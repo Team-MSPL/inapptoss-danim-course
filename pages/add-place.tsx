@@ -124,12 +124,12 @@ function AddPlace() {
         result = country != 0 ? result.data : result;
         result.length == 0 &&
           (open("동선에는 딱 맞는 추천 장소가 아직 없어요"),
-          navigation.goBack());
+              navigation.reset({ index: 0, routes: [{ name: "/" }] }));
       }
       setRcommendList(result);
     } catch (err) {
       open("동선에는 딱 맞는 추천 장소가 아직 없어요");
-      navigation.goBack();
+      navigation.reset({ index: 0, routes: [{ name: "/" }] })
     } finally {
       setLoading(false);
       //   dispatch(LoadingSliceActions.offLoading());

@@ -106,6 +106,7 @@ function PresetDetail() {
         result = isOverseas ? result.data : result;
         if (!result.length) {
           openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
+          navigation.reset({ index: 0, routes: [{ name: "/" }] });
           return [];
         }
       }
@@ -121,7 +122,7 @@ function PresetDetail() {
       return result;
     } catch (err) {
       openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
-      navigation.goBack();
+      navigation.reset({ index: 0, routes: [{ name: "/" }] })
       return [];
     }
   };
