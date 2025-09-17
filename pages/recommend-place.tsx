@@ -121,8 +121,7 @@ function RecommendPlace() {
       const result = await fetchRecommendList();
       if (!result || result.length === 0) {
         open('동선에는 딱 맞는 추천 장소가 아직 없어요');
-        console.log(5);
-        navigation.reset({ index: 0, routes: [{ name: '/' }] });
+        navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

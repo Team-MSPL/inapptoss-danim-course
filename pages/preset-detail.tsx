@@ -414,8 +414,7 @@ function PresetDetail() {
       }
       if (autoRecommendFlag && !atLeastOneRecommended) {
         openToast('동선에는 딱 맞는 추천 장소가 아직 없어요');
-        console.log(4); // 여기에서만 한 번!
-        navigation.reset({ index: 0, routes: [{ name: '/' }] });
+        navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] });
         return;
       }
       dispatch(travelSliceActions.enrollTimetable(copy));
@@ -427,8 +426,7 @@ function PresetDetail() {
       );
     } catch (err) {
       openToast('동선에는 딱 맞는 추천 장소가 아직 없어요');
-      console.log(4); // 여기에서만 한 번!
-      navigation.reset({ index: 0, routes: [{ name: '/' }] });
+      navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] });
     } finally {
       setIsLoading(false);
     }
