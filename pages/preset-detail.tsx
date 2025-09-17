@@ -88,6 +88,7 @@ function PresetDetail() {
   // 추천 관련 핸들러
   // ----------------------
 
+  // getRecommendList는 실패시 빈 배열만 반환, 화면 이동은 goNext에서만!
   const getRecommendList = async (opts: any): Promise<any[]> => {
     try {
       const isOverseas = region[0].startsWith("해외");
@@ -104,11 +105,7 @@ function PresetDetail() {
                 : recommendApi({ ...opts, category: opts.apiCategory, radius: Number(opts.radius) * 1.5 }),
         ).unwrap();
         result = isOverseas ? result.data : result;
-        if (!result.length) {
-          openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
-          navigation.reset({ index: 0, routes: [{ name: "/" }] });
-          return [];
-        }
+        return result ?? [];
       }
       if (isOverseas) {
         const copy = await dispatch(detailTripadvisor({ id: result[0].location_id })).unwrap();
@@ -121,8 +118,6 @@ function PresetDetail() {
       }
       return result;
     } catch (err) {
-      openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
-      navigation.reset({ index: 0, routes: [{ name: "/" }] })
       return [];
     }
   };
@@ -241,7 +236,7 @@ function PresetDetail() {
               y: value.y,
               id: Number(itemData.y) + updated[index]?.name,
             };
-          } else openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
+          }
         } else if (value.name === "숙소 추천" && index !== 0) {
           const items = await accommodationRecommend({ value, index, idx });
           if (items?.length) {
@@ -256,7 +251,7 @@ function PresetDetail() {
               y: value.y,
               id: Number(itemData.y) + updated[index]?.name,
             };
-          } else openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
+          }
         } else if (index === 0 && value.name === "숙소 추천") {
           const lastDay = copy[idx - 1]?.[copy[idx - 1].length - 1];
           if (lastDay?.category === value.category && lastDay?.name !== "숙소 추천") {
@@ -359,6 +354,7 @@ function PresetDetail() {
 
   const goNext = async (autoRecommendFlag: boolean) => {
     setIsLoading(true);
+    let atLeastOneRecommended = false;
     try {
       let copy = [...presetDatas[params.index]];
       if (copy.length !== nDay + 1) {
@@ -368,8 +364,18 @@ function PresetDetail() {
       if (autoRecommendFlag) {
         await copy.reduce(async (prev, item, idx) => {
           await prev;
-          copy[idx] = await handleAutoRecommend({ item, copy, idx });
+          const updated = await handleAutoRecommend({ item, copy, idx });
+          if (updated && updated.some(x => x && x.name && !x.name.includes("추천"))) {
+            atLeastOneRecommended = true;
+          }
+          copy[idx] = updated;
         }, Promise.resolve());
+      }
+      if (autoRecommendFlag && !atLeastOneRecommended) {
+        openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
+        console.log(4); // 여기에서만 한 번!
+        navigation.reset({ index: 0, routes: [{ name: "/" }] });
+        return;
       }
       dispatch(travelSliceActions.enrollTimetable(copy));
       navigation.dispatch(CommonActions.reset({
@@ -377,7 +383,9 @@ function PresetDetail() {
         routes: [{ name: "/timetable" }],
       }));
     } catch (err) {
-      console.error(err, "에러");
+      openToast("동선에는 딱 맞는 추천 장소가 아직 없어요");
+      console.log(4); // 여기에서만 한 번!
+      navigation.reset({ index: 0, routes: [{ name: "/" }] });
     } finally {
       setIsLoading(false);
     }
