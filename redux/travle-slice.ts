@@ -580,6 +580,19 @@ export const recommendTripadvisor = createAsyncThunk(
   },
 );
 
+// productSlice.ts
+export const getProductList = createAsyncThunk(
+  '/sellingProduct/list',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuth.get('/sellingProduct/list', { params });
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 export const axiosGoogle = axios.create({
   baseURL: 'https://maps.googleapis.com/maps/api',
   headers: { 'content-type': 'application/json' },
