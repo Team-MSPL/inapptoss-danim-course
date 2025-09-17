@@ -3,15 +3,16 @@ import React from "react";
 import { View, Dimensions, StyleSheet } from "react-native";
 
 export default function CustomMapViewMarker({
-  presetData,
-  selectedIndex,
-  isWideZoom = false,
-}) {
+                                              presetData,
+                                              selectedIndex,
+                                              isWideZoom = false,
+                                              height, // height prop (optional)
+                                            }) {
   const selectedRoute = presetData[selectedIndex];
 
   const filteredMarkers = selectedRoute.filter(
-    (v) =>
-      v.name !== "점심 추천" && v.name !== "저녁 추천" && v.name !== "숙소 추천"
+      (v) =>
+          v.name !== "점심 추천" && v.name !== "저녁 추천" && v.name !== "숙소 추천"
   );
 
   const markerCoordinates = filteredMarkers.map((v, idx) => ({
@@ -27,9 +28,9 @@ export default function CustomMapViewMarker({
   }));
 
   const centerLat =
-    polylineCoordinates.length > 0 ? polylineCoordinates[0].lat : 37.5665;
+      polylineCoordinates.length > 0 ? polylineCoordinates[0].lat : 37.5665;
   const centerLng =
-    polylineCoordinates.length > 0 ? polylineCoordinates[0].lng : 126.978;
+      polylineCoordinates.length > 0 ? polylineCoordinates[0].lng : 126.978;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -87,7 +88,6 @@ export default function CustomMapViewMarker({
               });
             });
 
-         
           }
 
           window.onload = initMap;
@@ -99,20 +99,26 @@ export default function CustomMapViewMarker({
     </html>
   `;
 
+  // height prop이 undefined/null이면 기본값으로
+  const defaultHeight = (Dimensions.get("window").height * 240) / 812;
+  const mapHeight =
+      typeof height === "number" && !isNaN(height) && height > 0
+          ? height
+          : defaultHeight;
+
   return (
-    <WebView
-      originWhitelist={["*"]}
-      source={{ html: htmlContent }}
-      style={styles.container}
-      javaScriptEnabled
-      domStorageEnabled
-    />
+      <WebView
+          originWhitelist={["*"]}
+          source={{ html: htmlContent }}
+          style={[styles.container, { height: mapHeight }]}
+          javaScriptEnabled
+          domStorageEnabled
+      />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     width: Dimensions.get("window").width,
-    height: (Dimensions.get("window").height * 240) / 812,
   },
 });
