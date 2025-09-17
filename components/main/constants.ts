@@ -1,3 +1,6 @@
+import {Icon} from "@toss-design-system/react-native";
+import React from "react";
+
 export const TAB_ITEMS = [
   { label: '홈', icon: 'icon-home-mono' },
   { label: '내 여행', icon: 'icon-plane-mono' },
@@ -52,4 +55,31 @@ export const DUMMY_PRODUCTS = [
     matchCount: 1,
     similarity: 0.7
   }
+];
+
+export const INFO_MENU = [
+  {
+    key: 'reservation',
+    label: '내 예약',
+    icon: "icon-order-paper",
+    onPressNav: 'ReservationScreen',
+  },
+  {
+    key: 'wishlist',
+    label: '관심 상품',
+    icon: "icon-heart-red",
+    onPressNav: 'WishlistScreen',
+  },
+  {
+    key: 'inquiry',
+    label: '문의하기',
+    icon: "icon-user-two-blue-tab",
+    onPressNav: 'InquiryScreen',
+  },
+  {
+    key: 'guide',
+    label: '이용 안내',
+    icon: "icon-pencil",
+    onPressNav: 'GuideScreen',
+  },
 ];
