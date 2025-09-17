@@ -43,7 +43,7 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: Sav
                             onSave();
                             {isBack ? navigation.reset({ index: 0, routes: [{ name: "/" }] }) : navigation.reset({
                                 index: 1,
-                                routes: [{ name: "/" }, { name: "/MainScreen" }],
+                                routes: [{ name: "/" }, { name: "/my-travle-list" }],
                             })}
                         }}
                     >
