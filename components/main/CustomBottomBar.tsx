@@ -1,15 +1,14 @@
 import { Icon } from '@toss-design-system/react-native';
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {TAB_ITEMS} from "./constants";
 
-const TAB_ITEMS = [
-  { label: '홈', icon: 'icon-home-mono' },
-  { label: '내 여행', icon: 'icon-plane-mono' },
-  { label: '여행 상품', icon: 'icon-shopping-bag-mono' },
-  { label: '내 정보', icon: 'icon-user-mono' },
-];
+type CustomBottomBarProps = {
+  currentIndex: number;
+  onTabPress: (idx: number) => void;
+};
 
-export default function CustomBottomBar({ currentIndex, onTabPress }) {
+export default function CustomBottomBar({ currentIndex, onTabPress }: CustomBottomBarProps) {
   return (
     <View style={styles.container}>
       {TAB_ITEMS.map((item, idx) => (
@@ -21,7 +20,7 @@ export default function CustomBottomBar({ currentIndex, onTabPress }) {
         >
           <Icon
             name={item.icon}
-            size={28}
+            size={24}
             color={currentIndex === idx ? "#222" : "#bbb"}
           />
           <Text style={[styles.tabLabel, currentIndex === idx && { color: "#222", fontWeight: "bold" }]}>
@@ -57,8 +56,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#bbb',
+    fontWeight: "500",
     marginTop: 4,
   },
 });

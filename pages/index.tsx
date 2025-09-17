@@ -32,7 +32,7 @@ export function Index() {
     if (loading) return; // prevent double tap
     if (userId != null) {
       dispatch(travelSliceActions.reset({ userId: userId, userJwtToken: userJwtToken }));
-      navigation.reset({ index: 0, routes: [{ name: '/' }] });
+      navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] });
     } else {
       setLoading(true);
       try {
