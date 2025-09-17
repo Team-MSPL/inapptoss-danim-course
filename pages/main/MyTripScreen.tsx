@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import {Dimensions, Pressable, View} from 'react-native';
 import { Flex, Image, useNavigation } from 'react-native-bedrock';
 import { useAppDispatch, useAppSelector } from 'store';
 import {
@@ -127,44 +127,77 @@ export default function MyTripScreen() {
   // 여행 리스트 렌더 아이템
   const renderItem = ({ item, index }: { item: any; index: number }) => {
     let after = monthRef.current;
-    monthRef.current = moment(item.day[0]).format('MM');
+    monthRef.current = Array.isArray(item.day) && item.day.length > 0 ? moment(item.day[0]).format('MM') : '';
+    const travelEndDay = Array.isArray(item.day) && item.day.length > 0
+        ? ((typeof item.nDay === 'number' && item.nDay > 0 && item.nDay <= item.day.length)
+            ? item.day[item.nDay - 1]
+            : item.day[item.day.length - 1])
+        : '';
+    const travelStartDay = Array.isArray(item.day) && item.day.length > 0 ? item.day[0] : '';
+    const regionLabel = Array.isArray(item.region) && item.region.length > 0
+        ? item.region[0].split('/').at(-1)
+        : '';
+
+    // 썸네일 예시 (item.thumbnail이 있으면 그걸 사용)
+    const DEFAULT_THUMBNAIL =
+        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80';
+    const thumbnail = item.thumbnail || DEFAULT_THUMBNAIL;
+
     return (
-      <>
-        {(monthRef.current !== after || index === 0) && (
-          <Top.Root
-            title={
-              <Top.TitleParagraph typography="t7" color={colors.grey700}>
-                {moment(item.day[item.nDay - 1]).format('YYYY년 MM월')}
-              </Top.TitleParagraph>
-            }
-          />
-        )}
-        <Pressable onPress={() => goMyTravelDetail(item)}>
-          <Top.Root
-            right={<Icon name="icon-arrow-right-mono" color={colors.grey400} />}
-            title={<Top.TitleParagraph typography="t3">{item.travelName}</Top.TitleParagraph>}
-            subtitle1={
-              <Top.SubtitleParagraph typography="t7" color={colors.grey700} fontWeight="regular">
-                {moment(item.day[0]).format('YYYY년 MM월 DD일') +
-                  ' ~ ' +
-                  moment(item.day[item.nDay - 1]).format('MM월 DD일')}
-              </Top.SubtitleParagraph>
-            }
-            subtitle2={
-              <Top.SubtitleParagraph typography="t6" color={colors.blue600} fontWeight="medium">
-                {dDayCalculate({
-                  startDay: item.day[0],
-                  endDay: item.day[item.nDay - 1],
-                }).result}
-                {'\n'}
-                <Badge type="teal" badgeStyle="weak">
-                  {item.region[0].split('/').at(-1)}
-                </Badge>
-              </Top.SubtitleParagraph>
-            }
-          />
-        </Pressable>
-      </>
+        <>
+          {(monthRef.current !== after || index === 0) && (
+              <Top.Root
+                  title={
+                    <Top.TitleParagraph typography="t7" color={colors.grey700}>
+                      {travelEndDay ? moment(travelEndDay).format('YYYY년 MM월') : ''}
+                    </Top.TitleParagraph>
+                  }
+              />
+          )}
+          <Pressable onPress={() => goMyTravelDetail(item)}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 8 }}>
+              <Image
+                  source={{ uri: thumbnail }}
+                  style={{
+                    width: 105,
+                    height: 105,
+                    borderRadius: 10,
+                    marginRight: 4,
+                    marginLeft: 24,
+                    backgroundColor: '#eee',
+                  }}
+                  resizeMode="cover"
+              />
+              <View style={{ flex: 1 }}>
+                <Top.Root
+                    right={<Icon name="icon-arrow-right-mono" color={colors.grey400} />}
+                    title={<Top.TitleParagraph typography="t3">{item.travelName}</Top.TitleParagraph>}
+                    subtitle1={
+                      <Top.SubtitleParagraph typography="t7" color={colors.grey700} fontWeight="regular">
+                        {travelStartDay && travelEndDay
+                            ? `${moment(travelStartDay).format('YYYY년 MM월 DD일')} ~ ${moment(travelEndDay).format('MM월 DD일')}`
+                            : ''}
+                      </Top.SubtitleParagraph>
+                    }
+                    subtitle2={
+                      <Top.SubtitleParagraph typography="t7" color={colors.blue600} fontWeight="medium">
+                        {travelStartDay && travelEndDay
+                            ? dDayCalculate({
+                              startDay: travelStartDay,
+                              endDay: travelEndDay,
+                            }).result
+                            : ''}
+                        {'\n'}
+                        <Badge type="teal" badgeStyle="weak">
+                          {regionLabel}
+                        </Badge>
+                      </Top.SubtitleParagraph>
+                    }
+                />
+              </View>
+            </View>
+          </Pressable>
+        </>
     );
   };
 
@@ -181,7 +214,7 @@ export default function MyTripScreen() {
 
   if (list.length === 0) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginBottom: 100}}>
         <Top.Root
           upper={
             <Top.UpperAssetContent
@@ -205,10 +238,11 @@ export default function MyTripScreen() {
               나그네님을 위한 일정이 곧 채워질 거에요
             </Top.SubtitleParagraph>
           }
+          style={{width: Dimensions.get('window').width - 20}}
         />
         <Button
           viewStyle={{ alignSelf: 'center', marginTop: 24 }}
-          size="tiny"
+          size="medium"
           style="weak"
           onPress={() => {
             dispatch(
@@ -228,13 +262,23 @@ export default function MyTripScreen() {
 
   // 여행 리스트 있을 때
   return (
-    <FlatList
-      data={list}
-      renderItem={renderItem}
-      initialNumToRender={20}
-      showsVerticalScrollIndicator={false}
-      keyExtractor={(item) => item?._id}
-      nestedScrollEnabled
-    />
+      <View>
+        <Top.Root
+            title={
+              <Top.TitleParagraph typography="t3" color={colors.grey900}>
+                내 여행
+              </Top.TitleParagraph>
+            }
+        />
+        <FlatList
+            data={list}
+            style={{marginBottom: 100}}
+            renderItem={renderItem}
+            initialNumToRender={20}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item?._id}
+            nestedScrollEnabled
+        />
+      </View>
   );
 }
