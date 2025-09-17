@@ -3,10 +3,10 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 const TAB_ITEMS = [
-  { label: '홈', icon: 'home-outline' },
-  { label: '내 여행', icon: 'airplane-outline' },
-  { label: '여행 상품', icon: 'shopping-outline' },
-  { label: '내 정보', icon: 'account-outline' },
+  { label: '홈', icon: 'icon-home-mono' },
+  { label: '내 여행', icon: 'icon-plane-mono' },
+  { label: '여행 상품', icon: 'icon-shopping-bag-mono' },
+  { label: '내 정보', icon: 'icon-user-mono' },
 ];
 
 export default function CustomBottomBar({ currentIndex, onTabPress }) {
@@ -38,10 +38,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     right: 20,
-    bottom: 24,
-    height: 70,
+    bottom: 36,
+    height: 60,
     backgroundColor: '#fff',
-    borderRadius: 24,
+    borderRadius: 30,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 10,
+    paddingHorizontal: 20,
   },
   tabItem: {
     flex: 1,
