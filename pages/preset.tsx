@@ -1,7 +1,4 @@
-import {
-  FlatList,
-  ScrollView,
-} from "@react-native-bedrock/native/react-native-gesture-handler";
+import { FlatList, ScrollView } from '@react-native-bedrock/native/react-native-gesture-handler';
 import {
   Badge,
   BottomSheet,
@@ -13,9 +10,9 @@ import {
   Text,
   Top,
   useBottomSheet,
-} from "@toss-design-system/react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { Platform, View } from "react-native";
+} from '@toss-design-system/react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Platform, View } from 'react-native';
 import {
   BedrockRoute,
   closeView,
@@ -24,52 +21,53 @@ import {
   Stack,
   useBackEvent,
   useNavigation,
-} from "react-native-bedrock";
-import { useAppSelector } from "store";
-import NavigationBar from "../components/navigation-bar";
+} from 'react-native-bedrock';
+import { useAppSelector } from 'store';
+import NavigationBar from '../components/navigation-bar';
 
-export const Route = BedrockRoute("/preset", {
+export const Route = BedrockRoute('/preset', {
   validateParams: (params) => params,
   component: Preset,
 });
 
 function Preset() {
-    const { presetDatas, regionInfo, region, presetTendencyList, nDay } =
-    useAppSelector((state) => state.travelSlice);
-    const [tabValue, setTabalue] = useState("0");
-    const [itemLayouts, setItemLayouts] = useState<number[]>([]);
-    const scrollRef = useRef(null);
+  const { presetDatas, regionInfo, region, presetTendencyList, nDay } = useAppSelector(
+    (state) => state.travelSlice,
+  );
+  const [tabValue, setTabalue] = useState('0');
+  const [itemLayouts, setItemLayouts] = useState<number[]>([]);
+  const scrollRef = useRef(null);
 
-    const handleItemLayout = (event, idx) => {
-        const { height } = event.nativeEvent.layout;
-        setItemLayouts(prev => {
-            const copy = [...prev];
-            copy[idx] = height;
-            return copy;
-        });
-    };
+  const handleItemLayout = (event, idx) => {
+    const { height } = event.nativeEvent.layout;
+    setItemLayouts((prev) => {
+      const copy = [...prev];
+      copy[idx] = height;
+      return copy;
+    });
+  };
 
-    const handleScroll = event => {
-        const offsetY = event.nativeEvent.contentOffset.y;
-        let sum = 0;
-        let index = 0;
-        for (let i = 0; i < itemLayouts.length; i++) {
-            sum += itemLayouts[i] || 0;
-            if (offsetY < sum) {
-                index = i;
-                break;
-            }
-        }
-        setTabalue(String(index));
-    };
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    let sum = 0;
+    let index = 0;
+    for (let i = 0; i < itemLayouts.length; i++) {
+      sum += itemLayouts[i] || 0;
+      if (offsetY < sum) {
+        index = i;
+        break;
+      }
+    }
+    setTabalue(String(index));
+  };
 
-    const moveScroll = (e) => {
-        scrollRef.current?.scrollToIndex({
-            index: Number(e),
-            animated: true,
-        });
-        setTabalue(e);
-    };
+  const moveScroll = (e) => {
+    scrollRef.current?.scrollToIndex({
+      index: Number(e),
+      animated: true,
+    });
+    setTabalue(e);
+  };
 
   const backEvent = useBackEvent();
 
@@ -83,7 +81,7 @@ function Preset() {
               typography="t4"
               fontWeight="bold"
               color={colors.grey800}
-              style={{ alignSelf: "center", marginTop: 35 }}
+              style={{ alignSelf: 'center', marginTop: 35 }}
             >
               저장이 필요해요
             </Text>
@@ -91,10 +89,9 @@ function Preset() {
               typography="t5"
               fontWeight="regular"
               color={colors.grey600}
-              style={{ textAlign: "center" }}
+              style={{ textAlign: 'center' }}
             >
-              홈으로 이동시 지역 추천이 끝나요.{`\n`}일정 선택 후에 종료해야
-              저장 할 수 있어요.
+              홈으로 이동시 지역 추천이 끝나요.{`\n`}일정 선택 후에 종료해야 저장 할 수 있어요.
             </Text>
             <BottomSheet.CTA.Double
               leftButton={
@@ -106,7 +103,7 @@ function Preset() {
                     navigation.popToTop();
                   }}
                 >
-                  {"종료하기"}
+                  {'종료하기'}
                 </Button>
               }
               rightButton={
@@ -118,7 +115,7 @@ function Preset() {
                     bottomSheet.close();
                   }}
                 >
-                  {"선택하러 가기"}
+                  {'선택하러 가기'}
                 </Button>
               }
             ></BottomSheet.CTA.Double>
@@ -142,7 +139,7 @@ function Preset() {
   }, [backEvent, handler]);
   const navigation = useNavigation();
   const goDetail = (e: number) => {
-    navigation.navigate("/preset-detail", { index: e });
+    navigation.navigate('/preset-detail', { index: e });
   };
   const onViewableItemsChanged = useRef((items) => {
     console.log(items?.changed[0]?.index);
@@ -152,7 +149,7 @@ function Preset() {
     let copy = [];
     let copy2 = [];
     e?.tendencyNameList?.forEach((item, idx) => {
-      if (!["봄", "여름", "가을", "겨울"].includes(item)) {
+      if (!['봄', '여름', '가을', '겨울'].includes(item)) {
         copy.push(item);
         copy2.push(e.tendencyRanking[idx]);
       }
@@ -173,68 +170,54 @@ function Preset() {
       }
     });
     let result =
-      (e?.tendencyNameList[minIndex] ?? "") +
-      (e?.tendencyNameList[nextMinIndex]
-        ? ", " + e?.tendencyNameList[nextMinIndex]
-        : "");
+      (e?.tendencyNameList[minIndex] ?? '') +
+      (e?.tendencyNameList[nextMinIndex] ? ', ' + e?.tendencyNameList[nextMinIndex] : '');
     return result;
   };
   const [tendencyViewIndex, setTendencyViewIndex] = useState<boolean[]>(
-    Array(presetDatas.length).fill(true)
+    Array(presetDatas.length).fill(true),
   );
   const renderItem = ({ item, index }) => {
     return (
       <>
         <Stack.Vertical
           style={{
-            position: "relative", // ← 이걸 추가
+            position: 'relative', // ← 이걸 추가
             borderWidth: 1,
-            borderColor: "#eeeeee",
+            borderColor: '#eeeeee',
             borderRadius: 13,
             paddingHorizontal: 24,
             paddingVertical: 20,
             marginTop: 10,
-              marginBottom: 30,
+            marginBottom: 30,
             marginHorizontal: 24,
           }}
-          onLayout={e => handleItemLayout(e, index)}
+          onLayout={(e) => handleItemLayout(e, index)}
         >
           {presetTendencyList[index]?.tendencyNameList.length >= 1 && (
             <>
               {presetTendencyList[index]?.tendencyNameList.length >= 2 &&
                 presetDatas.length >= 2 && (
-                  <Text
-                    typography="t5"
-                    fontWeight="medium"
-                    color={colors.grey800}
-                  >
+                  <Text typography="t5" fontWeight="medium" color={colors.grey800}>
                     다른 일정에 비해
-                    <Text
-                      typography="t5"
-                      fontWeight="medium"
-                      color={colors.blue700}
-                    >
+                    <Text typography="t5" fontWeight="medium" color={colors.blue700}>
                       [{calculateTendency(presetTendencyList[index])}]
                     </Text>
                     성향이 더 높아요
                   </Text>
                 )}
-              <Flex
-                direction="row"
-                style={{ flexWrap: "wrap", gap: 8, marginTop: 8 }}
-              >
+              <Flex direction="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
                 {presetTendencyList[index]?.tendencyNameList
                   .slice(
                     0,
                     tendencyViewIndex[index]
                       ? 4
-                      : presetTendencyList[index]?.tendencyNameList.length
+                      : presetTendencyList[index]?.tendencyNameList.length,
                   )
                   .map((item, index) => {
                     return (
                       <Badge size="medium" type="blue" badgeStyle="weak">
-                        {item + " "}{" "}
-                        {presetTendencyList[index]?.tendencyPointList[index]}점
+                        {item + ' '} {presetTendencyList[index]?.tendencyPointList[index]}점
                       </Badge>
                     );
                   })}
@@ -251,17 +234,11 @@ function Preset() {
                   type="A"
                   title={value[value[0].category == 4 ? 1 : 0].name}
                   description={
-                    value.filter(
-                      (itemValue) => !itemValue.name.includes("추천")
-                    ).length -
-                      1 >=
-                    1
+                    value.filter((itemValue) => !itemValue.name.includes('추천')).length - 1 >= 1
                       ? `+${
-                          value.filter(
-                            (itemValue) => !itemValue.name.includes("추천")
-                          ).length - 1
+                          value.filter((itemValue) => !itemValue.name.includes('추천')).length - 1
                         }개 장소`
-                      : ""
+                      : ''
                   }
                 />
               }
@@ -316,68 +293,66 @@ function Preset() {
         }
       ></Top>
       <View style={{ paddingHorizontal: 24 }}>
-          <View style={{ borderRadius: 14, overflow: 'hidden' }}>
-              <LinearGradient
-                  height={103}
-                  degree={0}
-                  colors={["rgba(0,0,0,0.5)", "rgba(0,0,0,0.5)"]}
-                  easing={"easeOut"}
-                  style={{ borderRadius: 99 }}
-              >
-                  <Image
-                      source={{ uri: regionInfo.photo }}
-                      resizeMode="stretch"
-                      style={{
-                          position: "absolute",
-                          width: "100%",
-                          height: 103,
-                          opacity: 0.1,
-                      }}
-                  ></Image>
-                  <Stack.Vertical gutter={3} style={{ padding: 20 }}>
-                      <Text typography="st5" fontWeight="semibold" color={colors.white}>
-                          {region[0].split("/").at(-1)}
-                          {region.length >= 2 ? ` 외 ${region.length - 1}지역` : ""}
-                      </Text>
+        <View style={{ borderRadius: 14, overflow: 'hidden' }}>
+          <LinearGradient
+            height={103}
+            degree={0}
+            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
+            easing={'easeOut'}
+            style={{ borderRadius: 99 }}
+          >
+            <Image
+              source={{ uri: regionInfo.photo }}
+              resizeMode="stretch"
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: 103,
+                opacity: 0.1,
+              }}
+            ></Image>
+            <Stack.Vertical gutter={3} style={{ padding: 20 }}>
+              <Text typography="st5" fontWeight="semibold" color={colors.white}>
+                {region[0].split('/').at(-1)}
+                {region.length >= 2 ? ` 외 ${region.length - 1}지역` : ''}
+              </Text>
 
-                      <Stack.Horizontal gutter={12}>
-                          {presetTendencyList[0]?.tendencyNameList
-                              .slice(0, 3)
-                              .map((item, idx) => {
-                                  return (
-                                      <View
-                                          style={{
-                                              borderRadius: 12,
-                                              paddingHorizontal: 7,
-                                              paddingVertical: 3,
-                                              backgroundColor: "rgba(255,255,255,0.3)",
-                                          }}
-                                      >
-                                          <Text
-                                              typography="t7"
-                                              fontWeight="medium"
-                                              color={colors.white}
-                                              style={{ alignSelf: "center" }}
-                                          >
-                                              {item}
-                                          </Text>
-                                      </View>
-                                  );
-                              })}
-                          {presetTendencyList[0]?.tendencyNameList.length >= 4 && (
-                              <Text
-                                  typography="t7"
-                                  fontWeight="medium"
-                                  color={colors.white}
-                                  style={{ alignSelf: "center" }}
-                              >
-                                  +{presetTendencyList[0]?.tendencyNameList.length - 3}
-                              </Text>
-                          )}
-                      </Stack.Horizontal>
-                  </Stack.Vertical>
-              </LinearGradient>
-          </View>
+              <Stack.Horizontal gutter={12}>
+                {presetTendencyList[0]?.tendencyNameList.slice(0, 3).map((item, idx) => {
+                  return (
+                    <View
+                      style={{
+                        borderRadius: 12,
+                        paddingHorizontal: 7,
+                        paddingVertical: 3,
+                        backgroundColor: 'rgba(255,255,255,0.3)',
+                      }}
+                    >
+                      <Text
+                        typography="t7"
+                        fontWeight="medium"
+                        color={colors.white}
+                        style={{ alignSelf: 'center' }}
+                      >
+                        {item}
+                      </Text>
+                    </View>
+                  );
+                })}
+                {presetTendencyList[0]?.tendencyNameList.length >= 4 && (
+                  <Text
+                    typography="t7"
+                    fontWeight="medium"
+                    color={colors.white}
+                    style={{ alignSelf: 'center' }}
+                  >
+                    +{presetTendencyList[0]?.tendencyNameList.length - 3}
+                  </Text>
+                )}
+              </Stack.Horizontal>
+            </Stack.Vertical>
+          </LinearGradient>
+        </View>
       </View>
       <Text
         typography="t6"
@@ -385,7 +360,7 @@ function Preset() {
         color={colors.blue700}
         style={{ marginHorizontal: 24, marginTop: 16 }}
       >
-        * {nDay == 0 ? "당일치기" : nDay + "박 " + (nDay + 1) + "일"} 일정이에요
+        * {nDay == 0 ? '당일치기' : nDay + '박 ' + (nDay + 1) + '일'} 일정이에요
       </Text>
       <Tab
         fluid
@@ -396,11 +371,11 @@ function Preset() {
         value={tabValue}
         style={{ marginTop: 5 }}
       >
-        {[
-          ...Array.from({ length: presetDatas.length }, (item, index) => index),
-        ].map((item, idx) => {
-          return <Tab.Item value={String(idx)}>{idx + 1}</Tab.Item>;
-        })}
+        {[...Array.from({ length: presetDatas.length }, (item, index) => index)].map(
+          (item, idx) => {
+            return <Tab.Item value={String(idx)}>{idx + 1}</Tab.Item>;
+          },
+        )}
       </Tab>
       <FlatList
         keyExtractor={(_, index) => index.toString()}

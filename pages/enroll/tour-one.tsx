@@ -1,17 +1,17 @@
-import React from "react";
-import { View } from "react-native";
-import { BedrockRoute } from "react-native-bedrock";
-import { useAppSelector } from "store";
-import { useTendencyHandler } from "../../hooks/useTendencyHandler";
-import { styles } from "./country";
-import TendencyButton from "../../components/tendency-button";
-import { colors, Text, useToast } from "@toss-design-system/react-native";
+import React from 'react';
+import { View } from 'react-native';
+import { BedrockRoute } from 'react-native-bedrock';
+import { useAppSelector } from 'store';
+import { useTendencyHandler } from '../../hooks/useTendencyHandler';
+import { styles } from './country';
+import TendencyButton from '../../components/tendency-button';
+import { colors, Text, useToast } from '@toss-design-system/react-native';
 
 type EnrollTourOneProps = {
-    marginTop?: number;
+  marginTop?: number;
 };
 
-export const Route = BedrockRoute("/enroll/tour-one", {
+export const Route = BedrockRoute('/enroll/tour-one', {
   validateParams: (params) => params,
   component: EnrollTourOne,
 });
@@ -23,7 +23,7 @@ export function EnrollTourOne({ marginTop = 74 }: EnrollTourOneProps) {
   const { open } = useToast();
   return (
     <>
-      <View style={{marginTop: marginTop, ...styles.ButtonsContainer}}>
+      <View style={{ marginTop: marginTop, ...styles.ButtonsContainer }}>
         {tendencyList[3]?.list?.map((item, idx) => (
           <TendencyButton
             marginBottom={0}
@@ -34,8 +34,8 @@ export function EnrollTourOne({ marginTop = 74 }: EnrollTourOneProps) {
             imageUrl={tendencyList[3]?.photo[idx]}
             onPress={() => {
               if (tendency[0][6] == 1 && idx == 4) {
-                open("반려동물과 실내 여행지는 함께 선택할 수 없어요", {
-                  icon: "icon-warning-circle",
+                open('반려동물과 실내 여행지는 함께 선택할 수 없어요', {
+                  icon: 'icon-warning-circle',
                 });
               } else {
                 handleButtonClick({ index: 3, item: idx });

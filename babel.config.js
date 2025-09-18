@@ -6,7 +6,10 @@ module.exports = (api) => {
   const isTest = api?.env('test');
 
   const baseConfig = {
-    presets: [[resolve('@babel/preset-typescript')], [resolve('@babel/preset-react'), { runtime: 'automatic' }]],
+    presets: [
+      [resolve('@babel/preset-typescript')],
+      [resolve('@babel/preset-react'), { runtime: 'automatic' }],
+    ],
     plugins: [
       [resolve('@babel/plugin-transform-flow-strip-types')],
       [resolve('@babel/plugin-proposal-class-properties'), { loose: true }],

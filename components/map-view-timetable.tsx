@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Dimensions, StyleSheet } from "react-native";
-import WebView from "@react-native-bedrock/native/react-native-webview";
-import { cityViewList } from "../utill/city-list";
-import { useAppSelector } from "store";
+import React from 'react';
+import { View, Dimensions, StyleSheet } from 'react-native';
+import WebView from '@react-native-bedrock/native/react-native-webview';
+import { cityViewList } from '../utill/city-list';
+import { useAppSelector } from 'store';
 
 interface CustomMapViewProps {
   select: number;
@@ -15,14 +15,11 @@ export default function CustomMapViewTimetable({
   onTouchStart,
   onTouchEnd,
 }: CustomMapViewProps) {
-  const { timetable, country, cityIndex } = useAppSelector(
-    (state) => state.travelSlice
-  );
+  const { timetable, country, cityIndex } = useAppSelector((state) => state.travelSlice);
   const selectedRoute = timetable[select] || [];
 
   const filteredMarkers = selectedRoute.filter(
-    (v) =>
-      v.name !== "점심 추천" && v.name !== "저녁 추천" && v.name !== "숙소 추천"
+    (v) => v.name !== '점심 추천' && v.name !== '저녁 추천' && v.name !== '숙소 추천',
   );
 
   const markerCoordinates = filteredMarkers.map((v, idx) => ({
@@ -40,10 +37,8 @@ export default function CustomMapViewTimetable({
   const fallbackLat = cityViewList[country]?.sub?.[cityIndex]?.lat ?? 37.5665;
   const fallbackLng = cityViewList[country]?.sub?.[cityIndex]?.lng ?? 126.978;
 
-  const centerLat =
-    markerCoordinates.length > 0 ? markerCoordinates[0].lat : fallbackLat;
-  const centerLng =
-    markerCoordinates.length > 0 ? markerCoordinates[0].lng : fallbackLng;
+  const centerLat = markerCoordinates.length > 0 ? markerCoordinates[0].lat : fallbackLat;
+  const centerLng = markerCoordinates.length > 0 ? markerCoordinates[0].lng : fallbackLng;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -124,13 +119,9 @@ export default function CustomMapViewTimetable({
   `;
 
   return (
-    <View
-      style={styles.wrapper}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-    >
+    <View style={styles.wrapper} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <WebView
-        originWhitelist={["*"]}
+        originWhitelist={['*']}
         source={{ html: htmlContent }}
         style={styles.container}
         javaScriptEnabled
@@ -142,11 +133,11 @@ export default function CustomMapViewTimetable({
 
 const styles = StyleSheet.create({
   wrapper: {
-    width: "100%",
+    width: '100%',
     flex: 1,
   },
   container: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height * 0.42,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height * 0.42,
   },
 });

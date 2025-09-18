@@ -1,4 +1,4 @@
-import { colors, Text, Top } from "@toss-design-system/react-native";
+import { colors, Text, Top } from '@toss-design-system/react-native';
 
 export const StepText = ({
   subTitle1,

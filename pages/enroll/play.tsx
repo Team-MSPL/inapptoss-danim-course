@@ -1,16 +1,16 @@
-import React from "react";
-import { Text, View } from "react-native";
-import { BedrockRoute } from "react-native-bedrock";
-import { useAppSelector } from "store";
-import { useTendencyHandler } from "../../hooks/useTendencyHandler";
-import { styles } from "./country";
-import TendencyButton from "../../components/tendency-button";
+import React from 'react';
+import { Text, View } from 'react-native';
+import { BedrockRoute } from 'react-native-bedrock';
+import { useAppSelector } from 'store';
+import { useTendencyHandler } from '../../hooks/useTendencyHandler';
+import { styles } from './country';
+import TendencyButton from '../../components/tendency-button';
 
 type EnrollPlayProps = {
-    marginTop?: number;
+  marginTop?: number;
 };
 
-export const Route = BedrockRoute("/enroll/play", {
+export const Route = BedrockRoute('/enroll/play', {
   validateParams: (params) => params,
   component: EnrollPlay,
 });
@@ -21,7 +21,7 @@ export function EnrollPlay({ marginTop = 74 }: EnrollPlayProps) {
   const { handleButtonClick, tendencyList } = useTendencyHandler();
   return (
     <>
-      <View style={{marginTop: marginTop, ...styles.ButtonsContainer}}>
+      <View style={{ marginTop: marginTop, ...styles.ButtonsContainer }}>
         {tendencyList[2]?.list?.map((item, idx) => (
           <TendencyButton
             marginBottom={0}

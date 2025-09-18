@@ -5,6 +5,7 @@
     "dev": "bedrock dev",
     "build": "bedrock build",
     "test": "jest --passWithNoTests",
+    "prettier": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -38,13 +39,22 @@
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
     "@babel/runtime": "7.18.9",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.35.0",
+    "@react-native-community/eslint-config": "^3.2.0",
     "@testing-library/react-native": "^12.9.0",
     "@types/babel__core": "^7.20.5",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.2",
     "@types/react": "18.3.3",
     "@types/react-native-calendar-picker": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "jest": "^29.7.0",
+    "prettier": "^3.6.2",
     "react-test-renderer": "18.2.0",
     "typescript": "^5.8.3"
   }

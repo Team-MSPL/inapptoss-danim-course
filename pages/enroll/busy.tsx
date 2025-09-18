@@ -1,16 +1,16 @@
-import React from "react";
-import { StyleSheet, Text, View, ViewStyle } from "react-native";
-import { BedrockRoute, Image } from "react-native-bedrock";
-import { useAppDispatch, useAppSelector } from "store";
-import { travelSliceActions } from "../../redux/travle-slice";
-import { GridList, Icon } from "@toss-design-system/react-native";
-import { CustomColor } from "../../utill/custom-color";
+import React from 'react';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { BedrockRoute, Image } from 'react-native-bedrock';
+import { useAppDispatch, useAppSelector } from 'store';
+import { travelSliceActions } from '../../redux/travle-slice';
+import { GridList, Icon } from '@toss-design-system/react-native';
+import { CustomColor } from '../../utill/custom-color';
 
 type EnrollBusyProps = {
   marginTop?: number;
 };
 
-export const Route = BedrockRoute("/enroll/busy", {
+export const Route = BedrockRoute('/enroll/busy', {
   validateParams: (params) => params,
   component: EnrollBusy,
 });
@@ -20,33 +20,33 @@ export function EnrollBusy({ marginTop = 150 }: EnrollBusyProps) {
   const { bandwidth } = useAppSelector((state) => state.travelSlice);
   const moveList = [
     {
-      name: "알찬 일정",
+      name: '알찬 일정',
       function: () => dispatch(travelSliceActions.enrollBandwidth(false)),
-      image: "https://static.toss.im/2d-emojis/png/4x/u1F3C3.png",
+      image: 'https://static.toss.im/2d-emojis/png/4x/u1F3C3.png',
     },
     {
-      name: "여유있는 일정",
+      name: '여유있는 일정',
       function: () => dispatch(travelSliceActions.enrollBandwidth(true)),
-      image: "https://static.toss.im/2d-emojis/png/4x/u1F6B6.png",
+      image: 'https://static.toss.im/2d-emojis/png/4x/u1F6B6.png',
     },
   ];
   const styles = StyleSheet.create({
     buttonContainerBase: {
-      alignItems: "center",
+      alignItems: 'center',
       height: 159,
-      justifyContent: "center",
+      justifyContent: 'center',
       borderRadius: 8,
       borderWidth: 1,
-      flexDirection: "row",
+      flexDirection: 'row',
       gap: 10,
     },
   });
   return (
     <View
       style={{
-        flexDirection: "row",
+        flexDirection: 'row',
         marginHorizontal: 24,
-        justifyContent: "space-between",
+        justifyContent: 'space-between',
         marginTop: marginTop,
       }}
     >
@@ -56,12 +56,8 @@ export function EnrollBusy({ marginTop = 150 }: EnrollBusyProps) {
 
           const containerStyle: ViewStyle = {
             ...styles.buttonContainerBase,
-            borderColor: isSelected
-              ? CustomColor.primary
-              : CustomColor.ButtonBackground,
-            backgroundColor: isSelected
-              ? "rgba(195,245,80,0.3)"
-              : CustomColor.ButtonBackground,
+            borderColor: isSelected ? CustomColor.primary : CustomColor.ButtonBackground,
+            backgroundColor: isSelected ? 'rgba(195,245,80,0.3)' : CustomColor.ButtonBackground,
           };
 
           return (

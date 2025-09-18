@@ -5,18 +5,18 @@ import {
   ListRow,
   useBottomSheet,
   useToast,
-} from "@toss-design-system/react-native";
-import React, { useLayoutEffect, useRef } from "react";
-import { View } from "react-native";
-import { BedrockRoute } from "react-native-bedrock";
-import { useAppDispatch, useAppSelector } from "store";
-import CalendarPicker from "react-native-calendar-picker";
-import { travelSliceActions } from "../../redux/travle-slice";
-import moment from "moment";
-import TimePickerModal from "../../utill/time-picker";
-import CustomDatePickerModal from "../../components/DatePickerModal";
-import DatePickerModal from "../../components/DatePickerModal";
-export const Route = BedrockRoute("/enroll/day", {
+} from '@toss-design-system/react-native';
+import React, { useLayoutEffect, useRef } from 'react';
+import { View } from 'react-native';
+import { BedrockRoute } from 'react-native-bedrock';
+import { useAppDispatch, useAppSelector } from 'store';
+import CalendarPicker from 'react-native-calendar-picker';
+import { travelSliceActions } from '../../redux/travle-slice';
+import moment from 'moment';
+import TimePickerModal from '../../utill/time-picker';
+import CustomDatePickerModal from '../../components/date-picker-modal';
+import DatePickerModal from '../../components/date-picker-modal';
+export const Route = BedrockRoute('/enroll/day', {
   validateParams: (params) => params,
   component: Day,
 });
@@ -24,20 +24,20 @@ export const Route = BedrockRoute("/enroll/day", {
 function Day() {
   const bottomSheet = useBottomSheet();
 
-  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
   const months = [
-    "1월",
-    "2월",
-    "3월",
-    "4월",
-    "5월",
-    "6월",
-    "7월",
-    "8월",
-    "9월",
-    "10월",
-    "11월",
-    "12월",
+    '1월',
+    '2월',
+    '3월',
+    '4월',
+    '5월',
+    '6월',
+    '7월',
+    '8월',
+    '9월',
+    '10월',
+    '11월',
+    '12월',
   ];
   const {
     selectStartDate,
@@ -49,42 +49,32 @@ function Day() {
   } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const onDateChange = (date: any, type: string) => {
-    if (type == "END_DATE") {
-      dispatch(
-        travelSliceActions.updateFiled({ field: "selectEndDate", value: date })
-      );
+    if (type == 'END_DATE') {
+      dispatch(travelSliceActions.updateFiled({ field: 'selectEndDate', value: date }));
     } else {
       selectEndDate &&
         moment(selectEndDate).diff(date) <= 0 &&
         dispatch(
           travelSliceActions.updateFiled({
-            field: "selectEndDate",
+            field: 'selectEndDate',
             value: date,
-          })
+          }),
         );
       dispatch(
         travelSliceActions.updateFiled({
-          field: "selectStartDate",
+          field: 'selectStartDate',
           value: date,
-        })
+        }),
       );
     }
   };
-  const handleConfirm = (timeData: {
-    hour: number;
-    ampm: string;
-    minute: string;
-  }) => {
+  const handleConfirm = (timeData: { hour: number; ampm: string; minute: string }) => {
     goConfirm(timeData);
   };
 
-  const goConfirm = (timeData: {
-    hour: number;
-    ampm: string;
-    minute: string;
-  }) => {
+  const goConfirm = (timeData: { hour: number; ampm: string; minute: string }) => {
     let timeCopy = [...timeLimitArray];
-    let ampmCheck = timeData.ampm == "오후" ? 12 : 0;
+    let ampmCheck = timeData.ampm == '오후' ? 12 : 0;
     timeCopy[timeSelectRef.current] = parseInt(timeData.hour) + ampmCheck;
     let minuteCopy = [...minuteLimitArray];
     minuteCopy[timeSelectRef.current] = parseInt(timeData.minute);
@@ -92,7 +82,7 @@ function Day() {
       travelSliceActions.setTimeAndMinute({
         time: timeCopy,
         minute: minuteCopy,
-      })
+      }),
     );
     return true;
   };
@@ -114,24 +104,17 @@ function Day() {
     if (Object.keys(accommodations).length) {
       let copy = [...accommodations];
       if (checkDays + 2 < Object.keys(accommodations).length) {
-        copy.splice(
-          checkDays + 2,
-          Object.keys(accommodations).length - checkDays
-        );
+        copy.splice(checkDays + 2, Object.keys(accommodations).length - checkDays);
         data = copy;
       } else if (checkDays + 2 > Object.keys(accommodations).length) {
-        for (
-          let i = 0;
-          i < checkDays + 2 - Object.keys(accommodations).length;
-          i++
-        ) {
+        for (let i = 0; i < checkDays + 2 - Object.keys(accommodations).length; i++) {
           copy.push({
-            name: "",
+            name: '',
             lat: 0,
             lng: 0,
             category: 4,
             takenTime: 30,
-            photo: "",
+            photo: '',
           });
         }
         data = copy;
@@ -149,13 +132,9 @@ function Day() {
     let count = 0;
     let copySelectedStartDate = moment(selectStartDate);
     console.log(copySelectedStartDate, selectStartDate);
-    while (
-      checkDays > 4
-        ? copySelectedStartDate.isSameOrBefore(selectEndDate)
-        : count < 5
-    ) {
+    while (checkDays > 4 ? copySelectedStartDate.isSameOrBefore(selectEndDate) : count < 5) {
       dateArray.push(copySelectedStartDate.clone());
-      copySelectedStartDate.add(1, "day");
+      copySelectedStartDate.add(1, 'day');
       count += 1;
     }
     dispatch(
@@ -164,7 +143,7 @@ function Day() {
         nDay: checkDays,
         accommodations: data.length == 0 ? accommodations : data,
         season: season,
-      })
+      }),
     );
   };
 
@@ -174,13 +153,13 @@ function Day() {
   };
   const goNext = () => {
     if (timeLimitArray[0] < 6) {
-      handleToast("시작 시간은 06시 이후로만 가능해요");
+      handleToast('시작 시간은 06시 이후로만 가능해요');
     } else if (timeLimitArray[0] > 19) {
-      handleToast("시작 시간은 20시 전으로만 가능해요");
+      handleToast('시작 시간은 20시 전으로만 가능해요');
     } else if (timeLimitArray[1] < 12) {
-      handleToast("종료 시간은 오후로만 가능해요");
+      handleToast('종료 시간은 오후로만 가능해요');
     } else if (timeLimitArray[0] >= timeLimitArray[1]) {
-      handleToast("종료 시간은 시작 시간이후로만 가능해요.");
+      handleToast('종료 시간은 시작 시간이후로만 가능해요.');
     } else {
       // navigation.navigate("SelectDeparture");
     }
@@ -230,24 +209,24 @@ function Day() {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalType, setModalType] = React.useState(0);
 
-  const [selectedTime, setSelectedTime] = React.useState({ hour: 7, ampm: "오후", minute: "00" });
+  const [selectedTime, setSelectedTime] = React.useState({ hour: 7, ampm: '오후', minute: '00' });
 
   const openTimePickerModal = (index: number) => {
     const hourInRedux = timeLimitArray[index]; // 0~23
     const minuteInRedux = minuteLimitArray[index];
 
-    const ampmStr = hourInRedux < 12 ? "오전" : "오후";
+    const ampmStr = hourInRedux < 12 ? '오전' : '오후';
 
     setSelectedTime({
-      hour: String(hourInRedux).padStart(2, "0"),
+      hour: String(hourInRedux).padStart(2, '0'),
       ampm: ampmStr,
-      minute: String(minuteInRedux).padStart(2, "0"),
+      minute: String(minuteInRedux).padStart(2, '0'),
     });
     setModalType(index);
     setModalVisible(true);
   };
 
-  const handleTimePickerConfirm = (timeData: { hour: string, ampm: string, minute: string }) => {
+  const handleTimePickerConfirm = (timeData: { hour: string; ampm: string; minute: string }) => {
     let timeCopy = [...timeLimitArray];
     timeCopy[modalType] = parseInt(timeData.hour, 10);
 
@@ -255,98 +234,98 @@ function Day() {
     minuteCopy[modalType] = parseInt(timeData.minute, 10);
 
     dispatch(
-        travelSliceActions.setTimeAndMinute({
-          time: timeCopy,
-          minute: minuteCopy,
-        })
+      travelSliceActions.setTimeAndMinute({
+        time: timeCopy,
+        minute: minuteCopy,
+      }),
     );
     setModalVisible(false);
   };
 
-    return (
-      <>
-        <ListRow
-          onPress={showBasicBottomSheet}
-          left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
-          contents={
-            <ListRow.Texts
-              type="1RowTypeA"
-              top={
-                moment(selectStartDate).format("YYYY-MM-DD") +
-                " ~ " +
-                moment(selectEndDate ?? selectStartDate).format("YYYY-MM-DD")
-              }
-              topProps={{
-                typography: "t5",
-                fontWeight: "medium",
-                color: colors.grey800,
-              }}
-            />
-          }
-        />
-        <ListRow
-          onPress={() => openTimePickerModal(0, '첫째 날')}
-          left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
-          contents={
-            <ListRow.Texts
-              type="1RowTypeA"
-              top={
-                (timeLimitArray[0] < 12 ? "오전" : "오후") +
-                " " +
-                String(timeLimitArray[0]).padStart(2, "0") +
-                "시 " +
-                String(minuteLimitArray[0]).padStart(2, "0") +
-                "분"
-              }
-              topProps={{
-                typography: "t5",
-                fontWeight: "medium",
-                color: colors.grey800,
-              }}
-            />
-          }
-          right={
-            <Badge size="small" type="yellow" badgeStyle="weak" fontWeight="bold">
-              첫째 날
-            </Badge>
-          }
-        />
-        <ListRow
-          onPress={() => openTimePickerModal(1, '마지막 날')}
-          left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
-          contents={
-            <ListRow.Texts
-              type="1RowTypeA"
-              top={
-                (timeLimitArray[1] < 12 ? "오전" : "오후") +
-                " " +
-                String(timeLimitArray[1]).padStart(2, "0") +
-                "시 " +
-                String(minuteLimitArray[1]).padStart(2, "0") +
-                "분"
-              }
-              topProps={{
-                typography: "t5",
-                fontWeight: "medium",
-                color: colors.grey800,
-              }}
-            />
-          }
-          right={
-            <Badge size="small" type="green" badgeStyle="weak" fontWeight="bold">
-              마지막 날
-            </Badge>
-          }
-        />
+  return (
+    <>
+      <ListRow
+        onPress={showBasicBottomSheet}
+        left={<ListRow.Icon name="icon-calendar-check-blue-weak" />}
+        contents={
+          <ListRow.Texts
+            type="1RowTypeA"
+            top={
+              moment(selectStartDate).format('YYYY-MM-DD') +
+              ' ~ ' +
+              moment(selectEndDate ?? selectStartDate).format('YYYY-MM-DD')
+            }
+            topProps={{
+              typography: 't5',
+              fontWeight: 'medium',
+              color: colors.grey800,
+            }}
+          />
+        }
+      />
+      <ListRow
+        onPress={() => openTimePickerModal(0, '첫째 날')}
+        left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
+        contents={
+          <ListRow.Texts
+            type="1RowTypeA"
+            top={
+              (timeLimitArray[0] < 12 ? '오전' : '오후') +
+              ' ' +
+              String(timeLimitArray[0]).padStart(2, '0') +
+              '시 ' +
+              String(minuteLimitArray[0]).padStart(2, '0') +
+              '분'
+            }
+            topProps={{
+              typography: 't5',
+              fontWeight: 'medium',
+              color: colors.grey800,
+            }}
+          />
+        }
+        right={
+          <Badge size="small" type="yellow" badgeStyle="weak" fontWeight="bold">
+            첫째 날
+          </Badge>
+        }
+      />
+      <ListRow
+        onPress={() => openTimePickerModal(1, '마지막 날')}
+        left={<ListRow.Icon name="icon-clock-blue-weak" color="#5350FF" />}
+        contents={
+          <ListRow.Texts
+            type="1RowTypeA"
+            top={
+              (timeLimitArray[1] < 12 ? '오전' : '오후') +
+              ' ' +
+              String(timeLimitArray[1]).padStart(2, '0') +
+              '시 ' +
+              String(minuteLimitArray[1]).padStart(2, '0') +
+              '분'
+            }
+            topProps={{
+              typography: 't5',
+              fontWeight: 'medium',
+              color: colors.grey800,
+            }}
+          />
+        }
+        right={
+          <Badge size="small" type="green" badgeStyle="weak" fontWeight="bold">
+            마지막 날
+          </Badge>
+        }
+      />
 
       <DatePickerModal
-          visible={modalVisible}
-          onClose={() => setModalVisible(false)}
-          header={modalType === 0 ? "첫째 날" : "마지막 날"}
-          hour={selectedTime.hour}
-          ampm={selectedTime.ampm}
-          minute={selectedTime.minute}
-          onConfirm={handleTimePickerConfirm}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        header={modalType === 0 ? '첫째 날' : '마지막 날'}
+        hour={selectedTime.hour}
+        ampm={selectedTime.ampm}
+        minute={selectedTime.minute}
+        onConfirm={handleTimePickerConfirm}
       />
     </>
   );

@@ -1,14 +1,14 @@
-import WebView from "@react-native-bedrock/native/react-native-webview";
-import React from "react";
-import { View, Dimensions, StyleSheet } from "react-native";
+import WebView from '@react-native-bedrock/native/react-native-webview';
+import React from 'react';
+import { View, Dimensions, StyleSheet } from 'react-native';
 
 export default function CustomMapView({
-                                        lat,
-                                        lng,
-                                        zoom = 12, // 기본값
-                                        range, // range 값은 숫자
-    contentRatio = 1,
-                                      }) {
+  lat,
+  lng,
+  zoom = 12, // 기본값
+  range, // range 값은 숫자
+  contentRatio = 1,
+}) {
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -55,15 +55,15 @@ export default function CustomMapView({
   `;
 
   return (
-      <WebView
-          originWhitelist={["*"]}
-          source={{ html: htmlContent }}
-          style={{
-              width: ((Dimensions.get("window").width * 327) / 375),
-              height: ((Dimensions.get("window").height * 240) / 812) * contentRatio,
-          }}
-          javaScriptEnabled
-          domStorageEnabled
-      />
+    <WebView
+      originWhitelist={['*']}
+      source={{ html: htmlContent }}
+      style={{
+        width: (Dimensions.get('window').width * 327) / 375,
+        height: ((Dimensions.get('window').height * 240) / 812) * contentRatio,
+      }}
+      javaScriptEnabled
+      domStorageEnabled
+    />
   );
 }

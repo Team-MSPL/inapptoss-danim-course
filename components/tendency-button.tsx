@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 import {
   TouchableOpacity,
   Image,
   StyleSheet,
   GestureResponderEvent,
   ViewStyle,
-} from "react-native";
-import { CustomColor } from "../utill/custom-color";
-import { Icon, Text } from "@toss-design-system/react-native";
+} from 'react-native';
+import { CustomColor } from '../utill/custom-color';
+import { Icon, Text } from '@toss-design-system/react-native';
 
 export default function TendencyButton({
   onPress,
@@ -21,28 +21,22 @@ export default function TendencyButton({
 }: CustomButtonProps) {
   const containerStyle: ViewStyle = {
     ...styles.buttonContainer,
-    width: divide ? width ?? 159 : 327,
+    width: divide ? (width ?? 159) : 327,
     paddingVertical: divide ? 10 : 0,
     paddingHorizontal: divide ? 13 : 0,
     borderColor: bgColor ? CustomColor.primary : CustomColor.ButtonBackground,
-    backgroundColor: bgColor
-      ? "rgba(195,245,80,0.3)"
-      : CustomColor.ButtonBackground,
+    backgroundColor: bgColor ? 'rgba(195,245,80,0.3)' : CustomColor.ButtonBackground,
     marginBottom: marginBottom ?? 10,
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
   };
 
   return (
-    <TouchableOpacity
-      style={containerStyle}
-      onPress={onPress}
-      disabled={disabled}
-    >
+    <TouchableOpacity style={containerStyle} onPress={onPress} disabled={disabled}>
       <Text typography="t5" fontWeight="regular">
         {label}
       </Text>
-      {imageUrl?.includes("http") ? (
+      {imageUrl?.includes('http') ? (
         <Image style={{ width: 24, height: 24 }} source={{ uri: imageUrl }} />
       ) : (
         <Icon name={imageUrl}></Icon>
@@ -66,9 +60,9 @@ type CustomButtonProps = {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     height: 60,
-    justifyContent: "center",
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
   },

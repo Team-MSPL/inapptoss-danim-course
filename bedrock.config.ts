@@ -25,7 +25,7 @@ export default defineConfig({
 
       // Google Signin 키
       Google_Signin_Key:
-        "70367155908-li7to5i4bq75mpog69prtpmo7t7hnq5e.apps.googleusercontent.com",
+          "70367155908-li7to5i4bq75mpog69prtpmo7t7hnq5e.apps.googleusercontent.com",
 
       // 네이버 api 키
       NAVER_API_KEY: "Xxpwy1KKSKJ1CmgX7iKDUdWrwUmXMxuMdHAHSb4v",
@@ -44,7 +44,7 @@ export default defineConfig({
 
       // 투어 api 키
       Tour_API_KEY:
-        "J7laKTTThB5SZdBdab6YA4Nam%2BgRrYc%2FXdqAzSQ%2FDUhLxMWFSUxBVbrn6WDpvTauz4oW2phb3ojdk9YmlZMPww%3D%3D",
+          "J7laKTTThB5SZdBdab6YA4Nam%2BgRrYc%2FXdqAzSQ%2FDUhLxMWFSUxBVbrn6WDpvTauz4oW2phb3ojdk9YmlZMPww%3D%3D",
 
       // ios 쿠폰을 위한 userId 암호화 크립토 키
       CRYPTO_KEY: "danimaabcdadanimacbdaadanimadacb",

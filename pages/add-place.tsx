@@ -14,51 +14,49 @@ import {
   Text,
   useBottomSheet,
   useToast,
-} from "@toss-design-system/react-native";
-import React, { MutableRefObject, useRef, useState } from "react";
-import { Dimensions, View } from "react-native";
-import { BedrockRoute, Lottie, useNavigation } from "react-native-bedrock";
+} from '@toss-design-system/react-native';
+import React, { MutableRefObject, useRef, useState } from 'react';
+import { Dimensions, View } from 'react-native';
+import { BedrockRoute, Lottie, useNavigation } from 'react-native-bedrock';
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
-} from "react-native-google-places-autocomplete";
-import { useAppDispatch, useAppSelector } from "store";
+} from 'react-native-google-places-autocomplete';
+import { useAppDispatch, useAppSelector } from 'store';
 import {
   googleDetailApi,
   recommendApi,
   recommendTripadvisor,
   travelSliceActions,
-} from "../redux/travle-slice";
-import { cityList, regionList, regionOneList } from "./enroll/essential-search";
-import NavigationBar from "../components/navigation-bar";
-export const Route = BedrockRoute("/add-place", {
+} from '../redux/travle-slice';
+import { cityList, regionList, regionOneList } from './enroll/essential-search';
+import NavigationBar from '../components/navigation-bar';
+export const Route = BedrockRoute('/add-place', {
   validateParams: (params) => params,
   component: AddPlace,
 });
 
 function AddPlace() {
   const params = Route.useParams();
-  const [value1, setValue1] = useState("여행지");
+  const [value1, setValue1] = useState('여행지');
   const navigation = useNavigation();
   const autocompleteRef = useRef<GooglePlacesAutocompleteRef | null>();
-  const SCREEN_WIDTH = Dimensions.get("window").width;
+  const SCREEN_WIDTH = Dimensions.get('window').width;
   const INPUT_WIDTH = SCREEN_WIDTH - 24 * 2; // 양쪽 여백 24씩
-  const { Place, country, regionInfo, region } = useAppSelector(
-      (state) => state.travelSlice
-  );
+  const { Place, country, regionInfo, region } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const bottomSheet = useBottomSheet();
   const handleCategory = (e: string) => {
-    let title = "";
+    let title = '';
     switch (e) {
-      case "여행지":
-        title = country != 0 ? "attractions" : "AT4";
+      case '여행지':
+        title = country != 0 ? 'attractions' : 'AT4';
         break;
-      case "숙소":
-        title = country != 0 ? "hotels" : "AD5";
+      case '숙소':
+        title = country != 0 ? 'hotels' : 'AD5';
         break;
-      case "식당":
-        title = country != 0 ? "restaurants" : "FD6";
+      case '식당':
+        title = country != 0 ? 'restaurants' : 'FD6';
         break;
     }
     return title;
@@ -66,13 +64,13 @@ function AddPlace() {
   const handleCategoryIndex = (e: string) => {
     let title = 0;
     switch (e) {
-      case "여행지":
+      case '여행지':
         title = 0;
         break;
-      case "숙소":
+      case '숙소':
         title = 4;
         break;
-      case "식당":
+      case '식당':
         title = 1;
         break;
     }
@@ -88,38 +86,38 @@ function AddPlace() {
       setLoading(true);
       const tableData = params?.data[params?.day][params?.index - 1];
       let result = await dispatch(
-          country != 0
-              ? recommendTripadvisor({
-                category: handleCategory(value1),
-                lat: tableData?.lat ?? regionInfo.lat,
-                lng: tableData?.lng ?? regionInfo.lng,
-                radius: 10000,
-                name: tableData?.name ?? region[0].split("/").at(-1),
-              })
-              : recommendApi({
-                category: handleCategory(value1),
-                lat: tableData?.lat ?? regionInfo.lat,
-                lng: tableData?.lng ?? regionInfo.lng,
-                radius: 1000,
-              })
+        country != 0
+          ? recommendTripadvisor({
+              category: handleCategory(value1),
+              lat: tableData?.lat ?? regionInfo.lat,
+              lng: tableData?.lng ?? regionInfo.lng,
+              radius: 10000,
+              name: tableData?.name ?? region[0].split('/').at(-1),
+            })
+          : recommendApi({
+              category: handleCategory(value1),
+              lat: tableData?.lat ?? regionInfo.lat,
+              lng: tableData?.lng ?? regionInfo.lng,
+              radius: 1000,
+            }),
       ).unwrap();
       result = country != 0 ? result.data : result;
       if (result.length === 0) {
         result = await dispatch(
-            country != 0
-                ? recommendTripadvisor({
-                  category: handleCategory(value1),
-                  lat: tableData?.lat ?? regionInfo.lat,
-                  lng: tableData?.lng ?? regionInfo.lng,
-                  radius: 20000,
-                  name: params?.data[params?.day][params?.index]?.name ?? "",
-                })
-                : recommendApi({
-                  category: handleCategory(value1),
-                  lat: tableData?.lat ?? regionInfo.lat,
-                  lng: tableData?.lng ?? regionInfo.lng,
-                  radius: 20000,
-                })
+          country != 0
+            ? recommendTripadvisor({
+                category: handleCategory(value1),
+                lat: tableData?.lat ?? regionInfo.lat,
+                lng: tableData?.lng ?? regionInfo.lng,
+                radius: 20000,
+                name: params?.data[params?.day][params?.index]?.name ?? '',
+              })
+            : recommendApi({
+                category: handleCategory(value1),
+                lat: tableData?.lat ?? regionInfo.lat,
+                lng: tableData?.lng ?? regionInfo.lng,
+                radius: 20000,
+              }),
         ).unwrap();
         result = country != 0 ? result.data : result;
       }
@@ -137,9 +135,8 @@ function AddPlace() {
   const handleAIRecommend = async () => {
     const result = await fetchRecommendList();
     if (!result || result.length === 0) {
-      open("동선에는 딱 맞는 추천 장소가 아직 없어요");
-      console.log(1);
-      navigation.reset({ index: 0, routes: [{ name: "/" }] });
+      open('동선에는 딱 맞는 추천 장소가 아직 없어요');
+      navigation.reset({ index: 0, routes: [{ name: '/Main' }] });
     }
   };
 
@@ -148,17 +145,17 @@ function AddPlace() {
     let copy2 = [...params?.data[params?.day]];
     let changeFlag = null;
     const newY =
-        isNaN(copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30) ||
-        copy2[params?.index]?.y == 36
-            ? 6
-            : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30;
+      isNaN(copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30) ||
+      copy2[params?.index]?.y == 36
+        ? 6
+        : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30;
     const newEnd = newY + time * 2;
     for (let i = 0; i < copy2.length; i++) {
       if (
-          ((newY <= copy2[i]?.y && newEnd > copy2[i]?.y) ||
-              (newY <= copy2[i]?.y + copy2[i].takenTime / 30 - 1 &&
-                  newEnd > copy2[i]?.y + copy2[i].takenTime / 30 - 1)) &&
-          copy2[i].id != params?.data[params?.day][params?.index]?.id
+        ((newY <= copy2[i]?.y && newEnd > copy2[i]?.y) ||
+          (newY <= copy2[i]?.y + copy2[i].takenTime / 30 - 1 &&
+            newEnd > copy2[i]?.y + copy2[i].takenTime / 30 - 1)) &&
+        copy2[i].id != params?.data[params?.day][params?.index]?.id
       ) {
         changeFlag = copy2[i];
         break;
@@ -166,7 +163,7 @@ function AddPlace() {
     }
     if (changeFlag) {
       open(`${changeFlag.name}과 시간이 겹쳐요`, {
-        icon: "icon-warning-circle",
+        icon: 'icon-warning-circle',
       });
     } else {
       copy2.push({
@@ -174,11 +171,10 @@ function AddPlace() {
         category: handleCategoryIndex(value1),
         x: params?.day,
         y:
-            isNaN(
-                copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30
-            ) || copy2[params?.index]?.y == 36
-                ? 6
-                : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30,
+          isNaN(copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30) ||
+          copy2[params?.index]?.y == 36
+            ? 6
+            : copy2[params?.index]?.y + copy2[params?.index]?.takenTime / 30,
         id: (e?.name ?? e?.place_name) + e?.lat,
         takenTime: time * 60,
         lat: Number(e?.lat ?? e.y),
@@ -189,7 +185,7 @@ function AddPlace() {
       copy[params?.day] = copy2;
       params?.setCopyTimetable(copy);
       open(`${value1}를 추가했어요`, {
-        icon: "icon-check-circle-green",
+        icon: 'icon-check-circle-green',
       });
       navigation.goBack();
     }
@@ -198,177 +194,161 @@ function AddPlace() {
   const showHourBottomSheet = (datas: any) => {
     bottomSheet.open({
       children: (
-          <HourBottomSheetContent
-              initialHour={1}
-              onConfirm={(newHour) => {
-                bottomSheet.close();
-                handleAdd(datas, newHour);
-              }}
-              onCancel={() => {
-                bottomSheet.close();
-                autocompleteRef.current?.setAddressText("");
-              }}
-              placeType={value1}
-              placeState={datas}
-          />
+        <HourBottomSheetContent
+          initialHour={1}
+          onConfirm={(newHour) => {
+            bottomSheet.close();
+            handleAdd(datas, newHour);
+          }}
+          onCancel={() => {
+            bottomSheet.close();
+            autocompleteRef.current?.setAddressText('');
+          }}
+          placeType={value1}
+          placeState={datas}
+        />
       ),
     });
   };
 
   return (
-      <View style={{ flex: 1 }}>
-        {loading && (
-            <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
-              <Skeleton height={60} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-              <Skeleton height={60} style={{ marginTop: 12 }} />
-            </AnimateSkeleton>
-        )}
-        <NavigationBar />
-        <FixedBottomCTAProvider>
-          <SegmentedControl.Root
-              size={"large"}
-              name="segmented"
-              value={value1}
-              onChange={(e) => {
-                setValue1(e);
-                setRcommendList([]);
+    <View style={{ flex: 1 }}>
+      {loading && (
+        <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
+          <Skeleton height={60} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+          <Skeleton height={60} style={{ marginTop: 12 }} />
+        </AnimateSkeleton>
+      )}
+      <NavigationBar />
+      <FixedBottomCTAProvider>
+        <SegmentedControl.Root
+          size={'large'}
+          name="segmented"
+          value={value1}
+          onChange={(e) => {
+            setValue1(e);
+            setRcommendList([]);
+          }}
+        >
+          <SegmentedControl.Item value="여행지">여행지</SegmentedControl.Item>
+          <SegmentedControl.Item value="숙소">숙소</SegmentedControl.Item>
+          <SegmentedControl.Item value="식당">식당</SegmentedControl.Item>
+        </SegmentedControl.Root>
+        <GooglePlacesAutocomplete
+          placeholder={value1 + '를 검색해보세요'}
+          disableScroll={false}
+          enablePoweredByContainer={false}
+          keepResultsAfterBlur={true}
+          ref={autocompleteRef as MutableRefObject<GooglePlacesAutocompleteRef | null>}
+          query={{
+            key: import.meta.env.GOOGLE_API_KEY,
+            language: 'ko',
+          }}
+          textInputProps={{
+            placeholderTextColor: colors.grey500,
+            allowFontScaling: false,
+          }}
+          renderLeftButton={() => <Icon name="icon-search-mono" />}
+          renderRightButton={() => (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 44,
               }}
-          >
-            <SegmentedControl.Item value="여행지">여행지</SegmentedControl.Item>
-            <SegmentedControl.Item value="숙소">숙소</SegmentedControl.Item>
-            <SegmentedControl.Item value="식당">식당</SegmentedControl.Item>
-          </SegmentedControl.Root>
-          <GooglePlacesAutocomplete
-              placeholder={value1 + "를 검색해보세요"}
-              disableScroll={false}
-              enablePoweredByContainer={false}
-              keepResultsAfterBlur={true}
-              ref={
-                autocompleteRef as MutableRefObject<GooglePlacesAutocompleteRef | null>
-              }
-              query={{
-                key: import.meta.env.GOOGLE_API_KEY,
-                language: "ko",
-              }}
-              textInputProps={{
-                placeholderTextColor: colors.grey500,
-                allowFontScaling: false,
-              }}
-              renderLeftButton={() => <Icon name="icon-search-mono" />}
-              renderRightButton={() => (
-                  <View
-                      style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: 44,
-                      }}
-                  >
-                    <Button
-                        size="medium"
-                        type="primary"
-                        style="weak"
-                        onPress={handleAIRecommend}
-                    >
-                      AI추천
-                    </Button>
-                  </View>
-              )}
-              styles={{
-                container: { alignItems: "center" },
-                textInputContainer: {
-                  width: INPUT_WIDTH,
-                  height: 44,
-                  borderRadius: 12,
-                  backgroundColor: colors.grey100,
-                  alignItems: "center",
-                  paddingLeft: 20,
-                  marginTop: 20,
-                },
-                listView: { width: INPUT_WIDTH, maxHeight: 250, zIndex: 1000 },
-                textInput: {
-                  color: colors.grey500,
-                  backgroundColor: "transparent",
-                  flex: 0.9,
-                  fontSize: 16,
-                },
-                description: { color: "black" },
-              }}
-              fetchDetails={true}
-              onPress={async (data, details) => {
-                const placeId = details?.place_id;
-                const response = await dispatch(
-                    googleDetailApi({ placeId: placeId })
-                );
-                let imageUrl;
-                if (response.payload.result.photos) {
-                  const photoReference =
-                      response.payload.result?.photos[0]?.photo_reference;
-                  imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${
-                      import.meta.env.GOOGLE_API_KEY
-                  }`;
-                } else {
-                  imageUrl = null;
-                }
-                const datas = {
-                  ...Place,
-                  name: details?.name,
-                  lat: details?.geometry.location.lat,
-                  lng: details?.geometry.location.lng,
-                  formatted_address: details?.formatted_address.replace(
-                      "대한민국 ",
-                      ""
-                  ),
-                  photo: imageUrl,
-                  region:
-                      regionOneList[details?.formatted_address.split(" ")[1]] +
-                      " " +
-                      (regionList[details?.formatted_address.split(" ")[1]] ??
-                          cityList[details?.formatted_address.split(" ")[2]]),
-                };
-                dispatch(travelSliceActions.enrollPlace(datas));
+            >
+              <Button size="medium" type="primary" style="weak" onPress={handleAIRecommend}>
+                AI추천
+              </Button>
+            </View>
+          )}
+          styles={{
+            container: { alignItems: 'center' },
+            textInputContainer: {
+              width: INPUT_WIDTH,
+              height: 44,
+              borderRadius: 12,
+              backgroundColor: colors.grey100,
+              alignItems: 'center',
+              paddingLeft: 20,
+              marginTop: 20,
+            },
+            listView: { width: INPUT_WIDTH, maxHeight: 250, zIndex: 1000 },
+            textInput: {
+              color: colors.grey500,
+              backgroundColor: 'transparent',
+              flex: 0.9,
+              fontSize: 16,
+            },
+            description: { color: 'black' },
+          }}
+          fetchDetails={true}
+          onPress={async (data, details) => {
+            const placeId = details?.place_id;
+            const response = await dispatch(googleDetailApi({ placeId: placeId }));
+            let imageUrl;
+            if (response.payload.result.photos) {
+              const photoReference = response.payload.result?.photos[0]?.photo_reference;
+              imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${
+                import.meta.env.GOOGLE_API_KEY
+              }`;
+            } else {
+              imageUrl = null;
+            }
+            const datas = {
+              ...Place,
+              name: details?.name,
+              lat: details?.geometry.location.lat,
+              lng: details?.geometry.location.lng,
+              formatted_address: details?.formatted_address.replace('대한민국 ', ''),
+              photo: imageUrl,
+              region:
+                regionOneList[details?.formatted_address.split(' ')[1]] +
+                ' ' +
+                (regionList[details?.formatted_address.split(' ')[1]] ??
+                  cityList[details?.formatted_address.split(' ')[2]]),
+            };
+            dispatch(travelSliceActions.enrollPlace(datas));
 
-                showHourBottomSheet(datas);
+            showHourBottomSheet(datas);
+          }}
+          onFail={(error) => console.log(error)}
+          onNotFound={() => console.log('no results')}
+        ></GooglePlacesAutocomplete>
+        {recommendList.map((item, idx) => {
+          return (
+            <ListRow
+              onPress={() => {
+                showHourBottomSheet(item);
               }}
-              onFail={(error) => console.log(error)}
-              onNotFound={() => console.log("no results")}
-          ></GooglePlacesAutocomplete>
-          {recommendList.map((item, idx) => {
-            return (
-                <ListRow
-                    onPress={() => {
-                      showHourBottomSheet(item);
-                    }}
-                    left={
-                      <ListRow.Icon name={`icon-plus-circle-blue`}></ListRow.Icon>
-                    }
-                    contents={
-                      <ListRow.Texts
-                          type="2RowTypeA"
-                          top={item?.place_name ?? item?.name}
-                          topProps={{ color: colors.grey800 }}
-                          bottom={
-                              (params?.data[params?.day][params?.index - 1]?.name ??
-                                  "중심지") +
-                              "로 부터 " +
-                              (country != 0
-                                  ? Math.floor(Number(item?.distance) * 1000)
-                                  : item?.distance + "m")
-                          }
-                          bottomProps={{ color: colors.grey600 }}
-                      />
-                    }
+              left={<ListRow.Icon name={`icon-plus-circle-blue`}></ListRow.Icon>}
+              contents={
+                <ListRow.Texts
+                  type="2RowTypeA"
+                  top={item?.place_name ?? item?.name}
+                  topProps={{ color: colors.grey800 }}
+                  bottom={
+                    (params?.data[params?.day][params?.index - 1]?.name ?? '중심지') +
+                    '로 부터 ' +
+                    (country != 0
+                      ? Math.floor(Number(item?.distance) * 1000)
+                      : item?.distance + 'm')
+                  }
+                  bottomProps={{ color: colors.grey600 }}
                 />
-            );
-          })}
-        </FixedBottomCTAProvider>
-      </View>
+              }
+            />
+          );
+        })}
+      </FixedBottomCTAProvider>
+    </View>
   );
 }
 
@@ -381,51 +361,49 @@ type HourBottomSheetContentProps = {
 };
 
 function HourBottomSheetContent({
-                                  initialHour,
-                                  onConfirm,
-                                  onCancel,
-                                  placeType,
-                                  placeState,
-                                }: HourBottomSheetContentProps) {
+  initialHour,
+  onConfirm,
+  onCancel,
+  placeType,
+  placeState,
+}: HourBottomSheetContentProps) {
   const [localHour, setLocalHour] = useState(initialHour);
 
   return (
-      <View>
+    <View>
+      <ListRow
+        contents={
+          <ListRow.Texts
+            type="2RowTypeA"
+            top={placeState?.name ?? placeState?.place_name}
+            bottom={placeState?.formatted_address}
+          />
+        }
+        right={
+          <Button type="dark" size="tiny" style="weak" onPress={onCancel}>
+            취소
+          </Button>
+        }
+      />
+      {placeType != '숙소' && (
         <ListRow
-            contents={
-              <ListRow.Texts
-                  type="2RowTypeA"
-                  top={placeState?.name ?? placeState?.place_name}
-                  bottom={placeState?.formatted_address}
-              />
-            }
-            right={
-              <Button type="dark" size="tiny" style="weak" onPress={onCancel}>
-                취소
-              </Button>
-            }
-        />
-        {placeType != "숙소" && (
-            <ListRow
-                contents={<ListRow.Texts type="1RowTypeA" top="머무를 시간" />}
-                right={
-                  <NumericSpinner
-                      size="large"
-                      number={localHour}
-                      onNumberChange={(e) => {
-                        setLocalHour(e);
-                      }}
-                      maxNumber={3}
-                      minNumber={1}
-                  />
-                }
+          contents={<ListRow.Texts type="1RowTypeA" top="머무를 시간" />}
+          right={
+            <NumericSpinner
+              size="large"
+              number={localHour}
+              onNumberChange={(e) => {
+                setLocalHour(e);
+              }}
+              maxNumber={3}
+              minNumber={1}
             />
-        )}
+          }
+        />
+      )}
 
-        <BottomSheet.CTA onPress={() => onConfirm(localHour)}>
-          {placeType} 추가하기
-        </BottomSheet.CTA>
-      </View>
+      <BottomSheet.CTA onPress={() => onConfirm(localHour)}>{placeType} 추가하기</BottomSheet.CTA>
+    </View>
   );
 }
 
