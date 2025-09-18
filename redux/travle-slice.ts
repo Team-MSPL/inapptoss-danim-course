@@ -580,7 +580,7 @@ export const recommendTripadvisor = createAsyncThunk(
   },
 );
 
-// productSlice.ts
+// 상품 목록 받아오기
 export const getProductList = createAsyncThunk(
   '/sellingProduct/list',
   async (params, { rejectWithValue }) => {

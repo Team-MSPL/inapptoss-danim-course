@@ -1,6 +1,7 @@
 import { AnyAction, combineReducers, configureStore, Reducer } from '@reduxjs/toolkit';
 import travelSliceReducer from '../redux/travle-slice';
 import productReducer from '../redux/productSlice';
+import inquiryReducer from '../redux/inquirySlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-bedrock/native/@react-native-async-storage/async-storage';
 
@@ -12,6 +13,7 @@ const persistConfig = {
 const appReducer = combineReducers({
   travelSlice: travelSliceReducer,
   product: productReducer,
+  inquirySlice: inquiryReducer,
 });
 
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
