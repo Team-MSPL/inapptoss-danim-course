@@ -9,7 +9,7 @@ export default function MainHome() {
   return (
     <View style={{ flex: 1 }}>
       <PartnerNavigation
-        title="가고싶은 여행코스 AI 추천"
+        title="다님"
         icon={{
           source: {
             uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
