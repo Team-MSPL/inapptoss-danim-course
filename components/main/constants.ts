@@ -83,3 +83,18 @@ export const INFO_MENU = [
     onPressNav: '/info/my-guide',
   },
 ];
+
+export const INQUIRY_MENU = [
+  {
+    key: 'one-on-one',
+    label: '1:1 문의하기',
+    icon: "icon-open-chat-bubble-question",
+    onPressNav: '/info/one-on-one-inquiry',
+  },
+  {
+    key: 'my-inquiry-list',
+    label: '내 문의',
+    icon: "icon-document-my",
+    onPressNav: '/info/my-inquiry-list',
+  },
+];
