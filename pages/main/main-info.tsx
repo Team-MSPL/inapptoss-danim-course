@@ -36,7 +36,7 @@ export default function MainInfo() {
                         }
                         onPress={() => {
                             if (item.onPressNav) {
-                                // navigation.navigate(item.onPressNav);
+                                navigation.navigate(item.onPressNav);
                             }
                         }}
                     />

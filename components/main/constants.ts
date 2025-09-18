@@ -62,24 +62,24 @@ export const INFO_MENU = [
     key: 'reservation',
     label: '내 예약',
     icon: "icon-order-paper",
-    onPressNav: 'ReservationScreen',
+    onPressNav: '/info/my-reservation',
   },
   {
     key: 'wishlist',
     label: '관심 상품',
     icon: "icon-heart-red",
-    onPressNav: 'WishlistScreen',
+    onPressNav: '/info/my-wishlist',
   },
   {
     key: 'inquiry',
     label: '문의하기',
     icon: "icon-user-two-blue-tab",
-    onPressNav: 'InquiryScreen',
+    onPressNav: '/info/my-inquiry',
   },
   {
     key: 'guide',
     label: '이용 안내',
     icon: "icon-pencil",
-    onPressNav: 'GuideScreen',
+    onPressNav: '/info/my-guide',
   },
 ];
