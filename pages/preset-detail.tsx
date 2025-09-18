@@ -24,9 +24,9 @@ import {
 import { useDistance } from '../hooks/useDistance';
 import { CommonActions } from '@react-native-bedrock/native/@react-navigation/native';
 import NavigationBar from '../components/navigation-bar';
-import { PresetTendencyHeader } from '../components/preset-detail/PresetTendencyHeader';
-import { PresetDayCard } from '../components/preset-detail/PresetDayCard';
-import ArrowToggleButton from '../components/timetable/ArrowToggleButton';
+import { PresetTendencyHeader } from '../components/preset-detail/preset-tendency-header';
+import { PresetDayCard } from '../components/preset-detail/preset-day-card';
+import ArrowToggleButton from '../components/timetable/arrow-toggle-button';
 
 interface RecommendOptions {
   value: any;
@@ -414,7 +414,7 @@ function PresetDetail() {
       }
       if (autoRecommendFlag && !atLeastOneRecommended) {
         openToast('동선에는 딱 맞는 추천 장소가 아직 없어요');
-        navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] });
+        navigation.reset({ index: 0, routes: [{ name: '/Main' }] });
         return;
       }
       dispatch(travelSliceActions.enrollTimetable(copy));
@@ -426,7 +426,7 @@ function PresetDetail() {
       );
     } catch (err) {
       openToast('동선에는 딱 맞는 추천 장소가 아직 없어요');
-      navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] });
+      navigation.reset({ index: 0, routes: [{ name: '/Main' }] });
     } finally {
       setIsLoading(false);
     }

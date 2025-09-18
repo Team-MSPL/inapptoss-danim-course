@@ -14,8 +14,8 @@ import CalendarPicker from 'react-native-calendar-picker';
 import { travelSliceActions } from '../../redux/travle-slice';
 import moment from 'moment';
 import TimePickerModal from '../../utill/time-picker';
-import CustomDatePickerModal from '../../components/DatePickerModal';
-import DatePickerModal from '../../components/DatePickerModal';
+import CustomDatePickerModal from '../../components/date-picker-modal';
+import DatePickerModal from '../../components/date-picker-modal';
 export const Route = BedrockRoute('/enroll/day', {
   validateParams: (params) => params,
   component: Day,

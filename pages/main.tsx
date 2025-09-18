@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import {Dimensions, TouchableOpacity, View, Image, StyleSheet} from 'react-native';
-import HomeScreen from './main/HomeScreen';
-import MyTripScreen from './main/MyTripScreen';
-import TravelShopScreen from './main/TravelShopScreen';
-import MyInfoScreen from './main/MyInfoScreen';
-import CustomBottomBar from '../components/main/CustomBottomBar';
+import MainHome from './main/main-home';
+import MainTrip from './main/main-trip';
+import MainTravelShop from './main/main-travel-shop';
+import MainInfo from './main/main-info';
+import CustomBottomBar from '../components/main/custom-bottom-bar';
 
-export default function MainScreen() {
+export default function Main() {
   const [tab, setTab] = useState(0);
 
   const renderScreen = () => {
     switch (tab) {
       case 0:
-        return <HomeScreen />;
+        return <MainHome />;
       case 1:
-        return <MyTripScreen />;
+        return <MainTrip />;
       case 2:
-        return <TravelShopScreen />;
+        return <MainTravelShop />;
       case 3:
-        return <MyInfoScreen />;
+        return <MainInfo />;
       default:
         return null;
     }

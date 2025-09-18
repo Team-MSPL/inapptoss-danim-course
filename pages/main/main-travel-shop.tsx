@@ -12,11 +12,11 @@ import {
     Skeleton,
     AnimateSkeleton,
 } from "@toss-design-system/react-native";
-import ProductCard from "../../components/main/ProductCard";
+import ProductCard from "../../components/main/product-card";
 import { getProductList } from "../../redux/travle-slice";
 import {DUMMY_PRODUCTS} from "../../components/main/constants";
 
-export default function TravelShopScreen() {
+export default function MainTravelShop() {
     const dispatch = useAppDispatch();
     const navigation = useNavigation();
     const { productList, total, loading, error, sortType } = useAppSelector((state) => state.product);
@@ -43,22 +43,7 @@ export default function TravelShopScreen() {
 
     const renderHeader = () => (
         <View style={{ backgroundColor: "#fff", paddingHorizontal: 20, paddingTop: 16 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <Pressable onPress={() => navigation.goBack()}>
-                    <Icon name="icon-arrow-left-mono" color={colors.grey700} size={28} />
-                </Pressable>
-                <Text
-                    typography="t4"
-                    fontWeight="bold"
-                    style={{ flex: 1, textAlign: "center" }}
-                    numberOfLines={1}
-                >
-                    다님
-                </Text>
-                <Pressable onPress={() => navigation.goBack()}>
-                    <Icon name="icon-close-mono" color={colors.grey700} size={24} />
-                </Pressable>
-            </View>
+
             <Text typography="t7" color={colors.grey500} style={{ marginBottom: 6 }}>
                 상품 추천
             </Text>
@@ -83,32 +68,32 @@ export default function TravelShopScreen() {
                     최저가로 즐기는 특별한 여행!
                 </Text>
             </View>
-            <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 8,
-                }}
-            >
-                <Text typography="t7" color={colors.grey700}>
-                    총 {total}개
-                </Text>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Icon name="icon-filter-mono" color={colors.blue500} size={18} />
-                    <Pressable
-                        style={{ flexDirection: "row", alignItems: "center", marginLeft: 6 }}
-                        onPress={() => {
-                            // TODO: 정렬 팝업/액션시트 구현
-                        }}
-                    >
-                        <Text typography="t7" color={colors.blue500} style={{ marginRight: 2 }}>
-                            추천순
-                        </Text>
-                        <Icon name="icon-chevron-down-mono" color={colors.blue500} size={16} />
-                    </Pressable>
-                </View>
-            </View>
+            {/*<View*/}
+            {/*    style={{*/}
+            {/*        flexDirection: "row",*/}
+            {/*        alignItems: "center",*/}
+            {/*        justifyContent: "space-between",*/}
+            {/*        marginBottom: 8,*/}
+            {/*    }}*/}
+            {/*>*/}
+            {/*    <Text typography="t7" color={colors.grey700}>*/}
+            {/*        총 {total}개*/}
+            {/*    </Text>*/}
+            {/*    <View style={{ flexDirection: "row", alignItems: "center" }}>*/}
+            {/*        <Icon name="icon-filter-mono" color={colors.blue500} size={18} />*/}
+            {/*        <Pressable*/}
+            {/*            style={{ flexDirection: "row", alignItems: "center", marginLeft: 6 }}*/}
+            {/*            onPress={() => {*/}
+            {/*                // TODO: 정렬 팝업/액션시트 구현*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            <Text typography="t7" color={colors.blue500} style={{ marginRight: 2 }}>*/}
+            {/*                추천순*/}
+            {/*            </Text>*/}
+            {/*            <Icon name="icon-chevron-down-mono" color={colors.blue500} size={16} />*/}
+            {/*        </Pressable>*/}
+            {/*    </View>*/}
+            {/*</View>*/}
         </View>
     );
 
@@ -181,12 +166,12 @@ export default function TravelShopScreen() {
                     ) : null
                 }
             />
-            {/* 조건에 맞는 상품이 없을 때 별도 안내문구 (더미 상품 아래에 표시) */}
-            {isNoProduct && (
-                <View style={{ position: "absolute", top: 180, left: 0, right: 0, alignItems: "center" }}>
-                    <Text typography="t4" color={colors.grey500}>조건에 맞는 상품이 없습니다. (더미 상품이 표시됩니다)</Text>
-                </View>
-            )}
+            {/*/!* 조건에 맞는 상품이 없을 때 별도 안내문구 (더미 상품 아래에 표시) *!/*/}
+            {/*{isNoProduct && (*/}
+            {/*    <View style={{ position: "absolute", top: 180, left: 0, right: 0, alignItems: "center" }}>*/}
+            {/*        <Text typography="t4" color={colors.grey500}>조건에 맞는 상품이 없습니다. (더미 상품이 표시됩니다)</Text>*/}
+            {/*    </View>*/}
+            {/*)}*/}
         </View>
     );
 }

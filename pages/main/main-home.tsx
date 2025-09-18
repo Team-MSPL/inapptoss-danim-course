@@ -3,7 +3,7 @@ import {Dimensions, Image, TouchableOpacity, View} from "react-native";
 import {Badge, colors, FixedBottomCTAProvider, PartnerNavigation, Text, Top} from "@toss-design-system/react-native";
 import {useNavigation} from "react-native-bedrock";
 
-export default function HomeScreen() {
+export default function MainHome() {
   const navigation = useNavigation();
 
   return (

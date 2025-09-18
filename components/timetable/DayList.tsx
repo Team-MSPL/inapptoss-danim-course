@@ -4,8 +4,8 @@ import { TimetableDay, TimetableState } from './type';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Badge, colors, ListRow, Icon } from '@toss-design-system/react-native';
 import { categoryColor, categoryTitle } from './constants';
-import { EditTooltip } from './EditTooltip';
-import { MoveTooltip } from './MoveTooltip';
+import { EditToolTip } from './edit-tool-tip';
+import { MoveToolTip } from './move-tool-tip';
 
 type DayListProps = {
   dayItems: TimetableDay;
@@ -86,7 +86,7 @@ export function DayList({
 }: DayListProps) {
   // 전체 순서수정모드
   const [isReorderMode, setIsReorderMode] = useState(false);
-  // MoveTooltip 활성 인덱스
+  // MoveToolTip 활성 인덱스
   const [moveTooltipIdx, setMoveTooltipIdx] = useState<number | null>(null);
 
   return (
@@ -186,9 +186,9 @@ export function DayList({
               }
             />
           </TouchableOpacity>
-          {/* MoveTooltip: 순서수정모드+해당 요소 누르면 노출 */}
+          {/* MoveToolTip: 순서수정모드+해당 요소 누르면 노출 */}
           {modify && isReorderMode && moveTooltipIdx === idx && (
-            <MoveTooltip
+            <MoveToolTip
               onMoveUp={() => {
                 setCopyTimetable((prev) => {
                   const newCopy = [...prev];
@@ -209,13 +209,13 @@ export function DayList({
               disableDown={idx === dayItems.length - 1}
             />
           )}
-          {/* 일정수정모드: EditTooltip */}
+          {/* 일정수정모드: EditToolTip */}
           {modify &&
             !isReorderMode &&
             tooltips.status &&
             tooltips.day === dayIndex &&
             tooltips.index === idx && (
-              <EditTooltip
+              <EditToolTip
                 showHourBottomSheet={showHourBottomSheet}
                 handleRemoveCheck={handleRemoveCheck}
               />

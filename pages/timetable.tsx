@@ -18,12 +18,12 @@ import CustomMapViewMarker from '../components/map-view-marker';
 import { FlatList } from '@react-native-bedrock/native/react-native-gesture-handler';
 import { saveTravel, travelSliceActions, updateTravelCourse } from '../redux/travle-slice';
 import { defaultTimetableItem, TimetableDay, TimetableState } from '../components/timetable/type';
-import { SaveBottomSheet } from '../components/timetable/SaveBottomSheet';
-import { EditButton } from '../components/timetable/EditButton';
+import { SaveBottomSheet } from '../components/timetable/save-bottom-sheet';
+import { EditButton } from '../components/timetable/edit-button';
 import { DayList } from '../components/timetable/DayList';
-import { RemoveBottomSheet } from '../components/timetable/RemoveBottomSheet';
-import { HourBottomSheetContent } from '../components/timetable/HourBottomSheet';
-import ArrowToggleButton from '../components/timetable/ArrowToggleButton';
+import { RemoveBottomSheet } from '../components/timetable/remove-bottom-sheet';
+import { HourBottomSheetContent } from '../components/timetable/hour-bottom-sheet';
+import ArrowToggleButton from '../components/timetable/arrow-toggle-button';
 
 export const Route = BedrockRoute('/timetable', {
   validateParams: (params) => params,

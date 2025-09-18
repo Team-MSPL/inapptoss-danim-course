@@ -6,7 +6,7 @@ type EditTooltipProps = {
   handleRemoveCheck: () => void;
 };
 
-export function EditTooltip({ showHourBottomSheet, handleRemoveCheck }: EditTooltipProps) {
+export function EditToolTip({ showHourBottomSheet, handleRemoveCheck }: EditTooltipProps) {
   return (
     <View
       style={{

@@ -8,7 +8,7 @@ type MoveTooltipProps = {
   disableDown?: boolean;
 };
 
-export function MoveTooltip({ onMoveUp, onMoveDown, disableUp, disableDown }: MoveTooltipProps) {
+export function MoveToolTip({ onMoveUp, onMoveDown, disableUp, disableDown }: MoveTooltipProps) {
   return (
     <View
       style={{

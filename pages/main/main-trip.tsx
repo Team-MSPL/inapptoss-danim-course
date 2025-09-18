@@ -23,7 +23,7 @@ import { FlatList } from '@react-native-bedrock/native/react-native-gesture-hand
 import moment from 'moment';
 import { cityViewList} from "../../utill/city-list";
 
-export default function MyTripScreen() {
+export default function MainTrip() {
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const { userId, userJwtToken } = useAppSelector((state) => state.travelSlice);

@@ -4,7 +4,7 @@ import { useNavigation } from 'react-native-bedrock';
 import {colors, Icon, ListRow } from '@toss-design-system/react-native';
 import { INFO_MENU } from "../../components/main/constants";
 
-export default function MyInfoScreen() {
+export default function MainInfo() {
     const navigation = useNavigation();
 
     return (

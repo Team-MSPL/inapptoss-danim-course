@@ -43,10 +43,10 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: Sav
               onSave();
               {
                 isBack
-                  ? navigation.reset({ index: 0, routes: [{ name: '/MainScreen' }] })
+                  ? navigation.reset({ index: 0, routes: [{ name: '/Main' }] })
                   : navigation.reset({
                       index: 0,
-                      routes: [{ name: '/' }, { name: '/MainScreen' }],
+                      routes: [{ name: '/' }, { name: '/Main' }],
                     });
               }
             }}
