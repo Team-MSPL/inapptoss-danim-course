@@ -293,65 +293,88 @@ function Preset() {
         }
       ></Top>
       <View style={{ paddingHorizontal: 24 }}>
-        <View style={{ borderRadius: 14, overflow: 'hidden' }}>
-          <LinearGradient
-            height={103}
-            degree={0}
-            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
-            easing={'easeOut'}
-            style={{ borderRadius: 99 }}
-          >
-            <Image
-              source={{ uri: regionInfo.photo }}
-              resizeMode="stretch"
-              style={{
-                position: 'absolute',
-                width: '100%',
-                height: 103,
-                opacity: 0.1,
-              }}
-            ></Image>
-            <Stack.Vertical gutter={3} style={{ padding: 20 }}>
-              <Text typography="st5" fontWeight="semibold" color={colors.white}>
-                {region[0].split('/').at(-1)}
-                {region.length >= 2 ? ` 외 ${region.length - 1}지역` : ''}
-              </Text>
+        <View
+          style={{
+            height: 103,
+            borderRadius: 8,
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          <Image
+            source={{ uri: regionInfo.photo }}
+            resizeMode="cover"
+            style={{
+              width: '100%',
+              height: 103,
+              position: 'absolute',
+              left: 0,
+              top: 0,
+            }}
+          />
 
-              <Stack.Horizontal gutter={12}>
-                {presetTendencyList[0]?.tendencyNameList.slice(0, 3).map((item, idx) => {
-                  return (
-                    <View
-                      style={{
-                        borderRadius: 12,
-                        paddingHorizontal: 7,
-                        paddingVertical: 3,
-                        backgroundColor: 'rgba(255,255,255,0.3)',
-                      }}
-                    >
-                      <Text
-                        typography="t7"
-                        fontWeight="medium"
-                        color={colors.white}
-                        style={{ alignSelf: 'center' }}
-                      >
-                        {item}
-                      </Text>
-                    </View>
-                  );
-                })}
-                {presetTendencyList[0]?.tendencyNameList.length >= 4 && (
+          {/* 검정색 오버레이 (반투명) */}
+          <LinearGradient
+            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              width: '100%',
+              height: 103,
+              borderRadius: 16,
+            }}
+          />
+
+          {/* 텍스트 및 뱃지 등 컨텐츠 */}
+          <View
+            style={{
+              height: 103,
+              width: '100%',
+              padding: 20,
+              justifyContent: 'center',
+              position: 'relative', // absolute 아니어야 함!
+            }}
+          >
+            <Text typography="st5" fontWeight="semibold" color={colors.white}>
+              {region[0].split('/').at(-1)}
+              {region.length >= 2 ? ` 외 ${region.length - 1}지역` : ''}
+            </Text>
+            <View style={{ flexDirection: 'row', marginTop: 8, gap: 8 }}>
+              {presetTendencyList[0]?.tendencyNameList.slice(0, 3).map((item, idx) => (
+                <View
+                  key={item}
+                  style={{
+                    borderRadius: 12,
+                    paddingHorizontal: 7,
+                    paddingVertical: 3,
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                  }}
+                >
                   <Text
                     typography="t7"
                     fontWeight="medium"
                     color={colors.white}
                     style={{ alignSelf: 'center' }}
                   >
-                    +{presetTendencyList[0]?.tendencyNameList.length - 3}
+                    {item}
                   </Text>
-                )}
-              </Stack.Horizontal>
-            </Stack.Vertical>
-          </LinearGradient>
+                </View>
+              ))}
+              {presetTendencyList[0]?.tendencyNameList.length >= 4 && (
+                <Text
+                  typography="t7"
+                  fontWeight="medium"
+                  color={colors.white}
+                  style={{ alignSelf: 'center' }}
+                >
+                  +{presetTendencyList[0]?.tendencyNameList.length - 3}
+                </Text>
+              )}
+            </View>
+          </View>
         </View>
       </View>
       <Text

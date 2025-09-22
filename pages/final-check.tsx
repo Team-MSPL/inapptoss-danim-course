@@ -220,106 +220,123 @@ function FinalCheck() {
         </Text>
         <Border type="full" style={{ marginVertical: 16 }} />
 
-        <View style={{ borderRadius: 8, overflow: 'hidden', marginHorizontal: 24 }}>
-          <LinearGradient
-            height={200}
-            degree={0}
-            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
-            easing={'easeOut'}
-            onPress={() => {
-              showHourBottomSheet(0, []);
+        <View
+          style={{
+            borderRadius: 8,
+            overflow: 'hidden',
+            marginHorizontal: 24,
+            height: 200, // 반드시 height 지정!
+            position: 'relative',
+          }}
+        >
+          {/* 배경 이미지 */}
+          <Image
+            source={{ uri: regionInfo.photo }}
+            resizeMode="cover"
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: 200,
+              left: 0,
+              top: 0,
             }}
-          >
-            <Image
-              source={{ uri: regionInfo.photo }}
-              resizeMode="stretch"
-              style={{
-                position: 'absolute',
-                width: '100%',
-                height: 200,
-                opacity: 0.1,
-              }}
-            ></Image>
-            <Stack.Vertical gutter={0} style={{ padding: 24 }}>
-              <Stack.Horizontal justify="space-between">
-                <Text typography="t7" fontWeight="medium" color={colors.white}>
-                  {day[0].format('YY.MM.DD') + ' - ' + day[nDay].format('YY.MM.DD')}
-                </Text>
-                <Text typography="t6" fontWeight="medium" color={colors.white}>
-                  편집
-                </Text>
-              </Stack.Horizontal>
-              <Text typography="st5" fontWeight="semibold" color={colors.white}>
-                {cityViewList[country][cityIndex].title + ' ' + region}
+          />
+
+          {/* 검정색 오버레이 */}
+          <LinearGradient
+            colors={['rgba(0,0,0,0.45)', 'rgba(0,0,0,0.45)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: 200,
+              left: 0,
+              top: 0,
+              borderRadius: 8,
+            }}
+          />
+
+          {/* 컨텐츠 */}
+          <Stack.Vertical gutter={0} style={{ padding: 24, position: 'relative', height: 200 }}>
+            <Stack.Horizontal justify="space-between">
+              <Text typography="t7" fontWeight="medium" color={colors.white}>
+                {day[0].format('YY.MM.DD') + ' - ' + day[nDay].format('YY.MM.DD')}
               </Text>
-              <Stack.Horizontal gutter={7} style={{ marginTop: 12 }}>
-                <View
-                  style={{
-                    borderRadius: 8,
-                    backgroundColor: 'rgba(255,255,255,0.3)',
+              <Text typography="t6" fontWeight="medium" color={colors.white}>
+                편집
+              </Text>
+            </Stack.Horizontal>
+            <Text typography="st5" fontWeight="semibold" color={colors.white}>
+              {cityViewList[country][cityIndex].title + ' ' + region}
+            </Text>
+            <Stack.Horizontal gutter={7} style={{ marginTop: 12 }}>
+              <View
+                style={{
+                  borderRadius: 8,
+                  backgroundColor: 'rgba(255,255,255,0.3)',
+                }}
+              >
+                <Image
+                  style={{ width: 42, height: 42 }}
+                  source={{
+                    uri: seasonList[season.findIndex((item) => item == 1)]?.svg,
                   }}
-                >
-                  <Image
-                    style={{ width: 42, height: 42 }}
-                    source={{
-                      uri: seasonList[season.findIndex((item) => item == 1)]?.svg,
-                    }}
-                  />
-                </View>
+                />
+              </View>
+              <Text
+                typography="st8"
+                fontWeight="bold"
+                color={colors.white}
+                style={{ alignSelf: 'center' }}
+              >
+                {tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]}
+                {tendency[0].find((item) => item == 1) == undefined
+                  ? ''
+                  : tendency[0].findIndex((item) => item == 1) == 0 ||
+                  tendency[0].findIndex((item) => item == 1) == 4
+                    ? ' '
+                    : ' 함께하는 '}
+                {seasonList[season.findIndex((item) => item == 1)].title} 여행
+              </Text>
+            </Stack.Horizontal>
+            <Stack.Horizontal gutter={12} style={{ marginTop: 16 }}>
+              <View
+                style={{
+                  borderRadius: 12,
+                  paddingHorizontal: 7,
+                  paddingVertical: 3,
+                  backgroundColor: 'rgba(255,255,255,0.3)',
+                }}
+              >
                 <Text
-                  typography="st8"
-                  fontWeight="bold"
+                  typography="t7"
+                  fontWeight="medium"
                   color={colors.white}
                   style={{ alignSelf: 'center' }}
                 >
-                  {tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]}
-                  {tendency[0].find((item) => item == 1) == undefined
-                    ? ''
-                    : tendency[0].findIndex((item) => item == 1) == 0 ||
-                        tendency[0].findIndex((item) => item == 1) == 4
-                      ? ' '
-                      : ' 함께하는 '}
-                  {seasonList[season.findIndex((item) => item == 1)].title} 여행
+                  {!transit ? '자동차·렌트카' : '대중교통'}
                 </Text>
-              </Stack.Horizontal>
-              <Stack.Horizontal gutter={12} style={{ marginTop: 16 }}>
-                <View
-                  style={{
-                    borderRadius: 12,
-                    paddingHorizontal: 7,
-                    paddingVertical: 3,
-                    backgroundColor: 'rgba(255,255,255,0.3)',
-                  }}
+              </View>
+              <View
+                style={{
+                  borderRadius: 12,
+                  paddingHorizontal: 7,
+                  paddingVertical: 3,
+                  backgroundColor: 'rgba(255,255,255,0.3)',
+                }}
+              >
+                <Text
+                  typography="t7"
+                  fontWeight="medium"
+                  color={colors.white}
+                  style={{ alignSelf: 'center' }}
                 >
-                  <Text
-                    typography="t7"
-                    fontWeight="medium"
-                    color={colors.white}
-                    style={{ alignSelf: 'center' }}
-                  >
-                    {!transit ? '자동차·렌트카' : '대중교통'}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    borderRadius: 12,
-                    paddingHorizontal: 7,
-                    paddingVertical: 3,
-                    backgroundColor: 'rgba(255,255,255,0.3)',
-                  }}
-                >
-                  <Text
-                    typography="t7"
-                    fontWeight="medium"
-                    color={colors.white}
-                    style={{ alignSelf: 'center' }}
-                  >
-                    {bandwidth ? '여유있는 일정' : '알찬 일정'}
-                  </Text>
-                </View>
-              </Stack.Horizontal>
-            </Stack.Vertical>
-          </LinearGradient>
+                  {bandwidth ? '여유있는 일정' : '알찬 일정'}
+                </Text>
+              </View>
+            </Stack.Horizontal>
+          </Stack.Vertical>
         </View>
         <Tab fluid defaultValue={'0'} size="large" onChange={setValue} style={{ marginTop: 8 }}>
           {['내 여행 성향', ...Array.from({ length: nDay + 1 }, (item, index) => index)].map(
