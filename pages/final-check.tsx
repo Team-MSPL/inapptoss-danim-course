@@ -334,7 +334,7 @@ function FinalCheck() {
           {value == '0' ? (
             <Stack.Vertical
               style={{
-                position: 'relative', // ← 이걸 추가
+                position: 'relative',
                 borderWidth: 1,
                 borderColor: '#eeeeee',
                 borderRadius: 13,
@@ -544,7 +544,7 @@ type ModifyBottomSheetContentProps = {
 function ModifyBottomSheetContent({ startIndex, onCancel, allowedSteps }: ModifyBottomSheetContentProps) {
   // 전체 네비게이션 스택
   const navigationStack = [
-    { title: 'who', component: <EnrollWho marginTop={0} /> },
+    { title: 'who', component: <EnrollWho marginTop={0} contentRatio={0.8} /> },
     { title: 'transit', component: <EnrollTransit marginTop={0} /> },
     { title: 'busy', component: <EnrollBusy marginTop={0} /> },
     { title: 'concept', component: <EnrollConcept marginTop={0} /> },
@@ -571,7 +571,6 @@ function ModifyBottomSheetContent({ startIndex, onCancel, allowedSteps }: Modify
     <View>
       <StepText
         title={textData?.title}
-        subTitle1={textData?.subTitle1}
         subTitle2={textData?.subTitle2}
       />
       {navigationStack[currentStackIndex]?.component}
