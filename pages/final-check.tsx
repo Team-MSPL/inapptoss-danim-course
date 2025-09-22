@@ -78,7 +78,7 @@ function FinalCheck() {
 
   const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
   const bottomSheet = useBottomSheet();
-  const showHourBottomSheet = (e: number) => {
+  const showHourBottomSheet = (e: number, num: number[]) => {
     bottomSheet.open({
       children: (
         <ModifyBottomSheetContent
@@ -86,6 +86,7 @@ function FinalCheck() {
             bottomSheet.close();
           }}
           startIndex={e}
+          allowedSteps={num}
         />
       ),
     });
@@ -208,7 +209,7 @@ function FinalCheck() {
     <FixedBottomCTAProvider>
       <NavigationBar />
 
-      <View style={{ marginHorizontal: 24 }}>
+      <View style={{ marginHorizontal: 0 }}>
         <Text
           typography="st8"
           fontWeight="bold"
@@ -219,14 +220,14 @@ function FinalCheck() {
         </Text>
         <Border type="full" style={{ marginVertical: 16 }} />
 
-        <View style={{ borderRadius: 14, overflow: 'hidden' }}>
+        <View style={{ borderRadius: 8, overflow: 'hidden', marginHorizontal: 24 }}>
           <LinearGradient
             height={200}
             degree={0}
             colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
             easing={'easeOut'}
             onPress={() => {
-              showHourBottomSheet(0);
+              showHourBottomSheet(0, []);
             }}
           >
             <Image
@@ -329,122 +330,145 @@ function FinalCheck() {
             },
           )}
         </Tab>
-        {value == '0' ? (
-          <Stack.Vertical
-            style={{
-              position: 'relative', // ← 이걸 추가
-              borderWidth: 1,
-              borderColor: '#eeeeee',
-              borderRadius: 13,
-              paddingHorizontal: 24,
-              paddingVertical: 20,
-              marginTop: 10,
-            }}
-          >
-            {/*<Text*/}
-            {/*  onPress={() => {*/}
-            {/*    showHourBottomSheet(3);*/}
-            {/*  }}*/}
-            {/*  typography="t5"*/}
-            {/*  fontWeight="medium"*/}
-            {/*  color={colors.grey800}*/}
-            {/*  textAlign="right"*/}
-            {/*>*/}
-            {/*  편집*/}
-            {/*</Text>*/}
-            <Stack.Vertical gutter={21}>
-              {tendency[1].find((item) => item == 1) && (
+        <View style={{paddingHorizontal: 24}}>
+          {value == '0' ? (
+            <Stack.Vertical
+              style={{
+                position: 'relative', // ← 이걸 추가
+                borderWidth: 1,
+                borderColor: '#eeeeee',
+                borderRadius: 13,
+                paddingHorizontal: 24,
+                paddingVertical: 20,
+                marginTop: 10,
+              }}
+            >
+              <Text
+                style={{position: 'absolute', right: 20, top: 20}}
+                onPress={() => {
+                  showHourBottomSheet(3, [1,2]);
+                }}
+                typography="t5"
+                fontWeight="medium"
+                color={colors.grey800}
+                textAlign="right"
+              >
+                편집
+              </Text>
+              <Stack.Vertical gutter={21}>
+                {tendency[1].find((item) => item == 1) && (
+                  <Stack.Vertical gutter={13}>
+                    <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                      여행테마
+                    </Text>
+                    <Stack.Horizontal gutter={4}>
+                      {tendency[1].map((item, inx) => {
+                        return item ? (
+                          <Badge size="medium" type="blue" badgeStyle="weak">
+                            {tendencyList[1]?.list[inx]}
+                          </Badge>
+                        ) : null;
+                      })}
+                    </Stack.Horizontal>
+                  </Stack.Vertical>
+                )}
+                {tendency[2].find((item) => item == 1) && (
+                  <Stack.Vertical gutter={13}>
+                    <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                      이런 걸 하고 싶어요
+                    </Text>
+                    <Stack.Horizontal gutter={4}>
+                      {tendency[2].map((item, inx) => {
+                        return item ? (
+                          <Badge size="medium" type="red" badgeStyle="weak">
+                            {tendencyList[2]?.list[inx]}
+                          </Badge>
+                        ) : null;
+                      })}
+                    </Stack.Horizontal>
+                  </Stack.Vertical>
+                )}
+                {tendency[3].find((item) => item == 1) && (
+                  <Stack.Vertical gutter={13}>
+                    <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                      이런 곳에 가고 싶어요
+                    </Text>
+                    <Stack.Horizontal gutter={4}>
+                      {tendency[3].map((item, inx) => {
+                        return item ? (
+                          <Badge size="medium" type="teal" badgeStyle="weak">
+                            {tendencyList[3]?.list[inx]}
+                          </Badge>
+                        ) : null;
+                      })}
+                    </Stack.Horizontal>
+                  </Stack.Vertical>
+                )}
                 <Stack.Vertical gutter={13}>
                   <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                    여행테마
+                    여행지 인기도
                   </Text>
-                  <Stack.Horizontal gutter={4}>
-                    {tendency[1].map((item, inx) => {
-                      return item ? (
-                        <Badge size="medium" type="blue" badgeStyle="weak">
-                          {tendencyList[1]?.list[inx]}
-                        </Badge>
-                      ) : null;
-                    })}
-                  </Stack.Horizontal>
+                  <Badge size="medium" type="yellow" badgeStyle="weak">
+                    {popular}
+                  </Badge>
                 </Stack.Vertical>
-              )}
-              {tendency[2].find((item) => item == 1) && (
-                <Stack.Vertical gutter={13}>
-                  <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                    이런 걸 하고 싶어요
-                  </Text>
-                  <Stack.Horizontal gutter={4}>
-                    {tendency[2].map((item, inx) => {
-                      return item ? (
-                        <Badge size="medium" type="red" badgeStyle="weak">
-                          {tendencyList[2]?.list[inx]}
-                        </Badge>
-                      ) : null;
-                    })}
-                  </Stack.Horizontal>
-                </Stack.Vertical>
-              )}
-              {tendency[3].find((item) => item == 1) && (
-                <Stack.Vertical gutter={13}>
-                  <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                    이런 곳에 가고 싶어요
-                  </Text>
-                  <Stack.Horizontal gutter={4}>
-                    {tendency[3].map((item, inx) => {
-                      return item ? (
-                        <Badge size="medium" type="teal" badgeStyle="weak">
-                          {tendencyList[3]?.list[inx]}
-                        </Badge>
-                      ) : null;
-                    })}
-                  </Stack.Horizontal>
-                </Stack.Vertical>
-              )}
-              <Stack.Vertical gutter={13}>
-                <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                  여행지 인기도
-                </Text>
-                <Badge size="medium" type="yellow" badgeStyle="weak">
-                  {popular}
-                </Badge>
               </Stack.Vertical>
             </Stack.Vertical>
-          </Stack.Vertical>
-        ) : (
-          (() => {
-            const filteredPlaces = essentialPlaces.filter((place) => place.day === Number(value));
-            return (
-              <>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 10,
-                    marginHorizontal: 24,
-                    marginTop: 20,
-                  }}
-                >
-                  <Text typography="t5" fontWeight="semibold" color={colors.grey700}>
-                    {'DAY' + value}
-                  </Text>
-                  <Text typography="t6" fontWeight="regular" color="#6B7684">
-                    {day[Number(value) - 1].format('YY.MM.DD') +
-                      ' (' +
-                      weekdays[day[Number(value) - 1].days()] +
-                      ')'}
-                  </Text>
-                </View>
+          ) : (
+            (() => {
+              const filteredPlaces = essentialPlaces.filter((place) => place.day === Number(value));
+              return (
+                <>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 10,
+                      marginHorizontal: 24,
+                      marginTop: 20,
+                    }}
+                  >
+                    <Text typography="t5" fontWeight="semibold" color={colors.grey700}>
+                      {'DAY' + value}
+                    </Text>
+                    <Text typography="t6" fontWeight="regular" color="#6B7684">
+                      {day[Number(value) - 1].format('YY.MM.DD') +
+                        ' (' +
+                        weekdays[day[Number(value) - 1].days()] +
+                        ')'}
+                    </Text>
+                  </View>
 
-                {filteredPlaces.map((data, index) => {
-                  const refKey = `${index}_key`;
-                  return (
+                  {filteredPlaces.map((data, index) => {
+                    const refKey = `${index}_key`;
+                    return (
+                      <ListRow
+                        key={refKey}
+                        contents={
+                          <ListRow.Texts
+                            type="1RowTypeA"
+                            top={data?.name}
+                            topProps={{
+                              typography: 't5',
+                              fontWeight: 'semibold',
+                              color: colors.grey800,
+                            }}
+                          />
+                        }
+                        right={
+                          <Badge size="small" type={'green'} badgeStyle="weak" fontWeight="bold">
+                            {'여행지'}
+                          </Badge>
+                        }
+                      />
+                    );
+                  })}
+                  {accommodations[Number(value)].name && (
                     <ListRow
-                      key={refKey}
                       contents={
                         <ListRow.Texts
                           type="1RowTypeA"
-                          top={data?.name}
+                          top={accommodations[Number(value)].name}
                           topProps={{
                             typography: 't5',
                             fontWeight: 'semibold',
@@ -453,79 +477,59 @@ function FinalCheck() {
                         />
                       }
                       right={
-                        <Badge size="small" type={'green'} badgeStyle="weak" fontWeight="bold">
-                          {'여행지'}
+                        <Badge size="small" type={'red'} badgeStyle="weak" fontWeight="bold">
+                          {'숙소'}
                         </Badge>
                       }
                     />
-                  );
-                })}
-                {accommodations[Number(value)].name && (
+                  )}
                   <ListRow
+                    onPress={() => {
+                      if (accommodations[Number(value)]?.name != '' && filteredPlaces.length == 3) {
+                        open('숙소는 1개, 여행지는 3개까지 추가 할 수 있어요.', {
+                          icon: 'icon-warning-circle',
+                        });
+                      } else {
+                        navigation.navigate('/enroll/essential-search', {
+                          idx: Number(value) - 1,
+                        });
+                      }
+                    }}
+                    left={
+                      <ListRow.Icon
+                        name="icon-plus-mono"
+                        style={{
+                          backgroundColor: colors.grey100,
+                        }}
+                        color={colors.blue500}
+                        type="border"
+                      />
+                    }
+                    right={<ListRow.Icon name="icon-arrow-right-mono" color={colors.grey400} />}
                     contents={
                       <ListRow.Texts
                         type="1RowTypeA"
-                        top={accommodations[Number(value)].name}
+                        top={'추가하기'}
                         topProps={{
                           typography: 't5',
-                          fontWeight: 'semibold',
+                          fontWeight: 'medium',
                           color: colors.grey800,
                         }}
                       />
                     }
-                    right={
-                      <Badge size="small" type={'red'} badgeStyle="weak" fontWeight="bold">
-                        {'숙소'}
-                      </Badge>
-                    }
                   />
-                )}
-                <ListRow
-                  onPress={() => {
-                    if (accommodations[Number(value)]?.name != '' && filteredPlaces.length == 3) {
-                      open('숙소는 1개, 여행지는 3개까지 추가 할 수 있어요.', {
-                        icon: 'icon-warning-circle',
-                      });
-                    } else {
-                      navigation.navigate('/enroll/essential-search', {
-                        idx: Number(value) - 1,
-                      });
-                    }
-                  }}
-                  left={
-                    <ListRow.Icon
-                      name="icon-plus-mono"
-                      style={{
-                        backgroundColor: colors.grey100,
-                      }}
-                      color={colors.blue500}
-                      type="border"
-                    />
-                  }
-                  right={<ListRow.Icon name="icon-arrow-right-mono" color={colors.grey400} />}
-                  contents={
-                    <ListRow.Texts
-                      type="1RowTypeA"
-                      top={'추가하기'}
-                      topProps={{
-                        typography: 't5',
-                        fontWeight: 'medium',
-                        color: colors.grey800,
-                      }}
-                    />
-                  }
-                />
-              </>
-            );
-          })()
-        )}
-        <FixedBottomCTA
-          onPress={() => {
-            goNext();
-          }}
-        >
-          추천 일정 조회하기
-        </FixedBottomCTA>
+                </>
+              );
+            })()
+          )}
+          <FixedBottomCTA
+            onPress={() => {
+              goNext();
+            }}
+          >
+            추천 일정 조회하기
+          </FixedBottomCTA>
+        </View>
       </View>
     </FixedBottomCTAProvider>
   );
@@ -534,9 +538,11 @@ function FinalCheck() {
 type ModifyBottomSheetContentProps = {
   startIndex: number;
   onCancel: () => void;
+  allowedSteps?: number[];
 };
 
-function ModifyBottomSheetContent({ startIndex, onCancel }: ModifyBottomSheetContentProps) {
+function ModifyBottomSheetContent({ startIndex, onCancel, allowedSteps }: ModifyBottomSheetContentProps) {
+  // 전체 네비게이션 스택
   const navigationStack = [
     { title: 'who', component: <EnrollWho marginTop={0} /> },
     { title: 'transit', component: <EnrollTransit marginTop={0} /> },
@@ -547,8 +553,19 @@ function ModifyBottomSheetContent({ startIndex, onCancel }: ModifyBottomSheetCon
     { title: 'popular', component: <EnrollPopular contentRatio={0.8} /> },
     { title: 'distance', component: <EnrollDistance contentRatio={0.88} /> },
   ];
-  const [step, setStep] = useState(startIndex);
-  const textData = routeStack['/' + navigationStack[step]?.title];
+
+  // 실제 이동 가능한 인덱스 배열, 없으면 전체 사용
+  const stepSequence = allowedSteps && allowedSteps.length > 0
+    ? allowedSteps
+    : navigationStack.map((_, idx) => idx);
+
+  // step은 stepSequence의 인덱스
+  const [step, setStep] = useState(
+    Math.max(0, stepSequence.indexOf(startIndex))
+  );
+
+  const currentStackIndex = stepSequence[step];
+  const textData = routeStack['/' + navigationStack[currentStackIndex]?.title];
 
   return (
     <View>
@@ -556,8 +573,8 @@ function ModifyBottomSheetContent({ startIndex, onCancel }: ModifyBottomSheetCon
         title={textData?.title}
         subTitle1={textData?.subTitle1}
         subTitle2={textData?.subTitle2}
-      ></StepText>
-      {navigationStack[step]?.component}
+      />
+      {navigationStack[currentStackIndex]?.component}
 
       <BottomSheet.CTA.Double
         containerStyle={{ backgroundColor: 'white' }}
@@ -566,10 +583,8 @@ function ModifyBottomSheetContent({ startIndex, onCancel }: ModifyBottomSheetCon
             type="dark"
             style="weak"
             display="block"
-            onPress={() => {
-              setStep(step - 1);
-            }}
-            disabled={step == 0}
+            onPress={() => setStep(step - 1)}
+            disabled={step === 0}
           >
             이전으로
           </Button>
@@ -578,14 +593,14 @@ function ModifyBottomSheetContent({ startIndex, onCancel }: ModifyBottomSheetCon
           <Button
             display="block"
             onPress={() => {
-              if (step == navigationStack.length - 1) {
+              if (step === stepSequence.length - 1) {
                 onCancel();
               } else {
                 setStep(step + 1);
               }
             }}
           >
-            {step == navigationStack.length - 1 ? '완료' : '다음으로'}
+            {step === stepSequence.length - 1 ? '완료' : '다음으로'}
           </Button>
         }
       />
