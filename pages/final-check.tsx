@@ -30,10 +30,9 @@ import { EnrollConcept } from './enroll/concept';
 import { EnrollPlay } from './enroll/play';
 import { EnrollPopular } from './enroll/popular';
 import { EnrollDistance } from './enroll/distance';
-import { EnrollTourOne } from './enroll/tour-one';
-import { EnrollTourTwo } from './enroll/tour-two';
 import { getTravelAi, travelSliceActions } from '../redux/travle-slice';
 import NavigationBar from '../components/navigation-bar';
+import {EnrollTour} from "./enroll/tour";
 
 export const Route = BedrockRoute('/final-check', {
   validateParams: (params) => params,
@@ -544,8 +543,7 @@ function ModifyBottomSheetContent({ startIndex, onCancel }: ModifyBottomSheetCon
     { title: 'busy', component: <EnrollBusy marginTop={0} /> },
     { title: 'concept', component: <EnrollConcept marginTop={0} /> },
     { title: 'play', component: <EnrollPlay marginTop={0} /> },
-    { title: 'tour-one', component: <EnrollTourOne marginTop={0} /> },
-    { title: 'tour-two', component: <EnrollTourTwo marginTop={0} /> },
+    { title: 'tour', component: <EnrollTour marginTop={0} /> },
     { title: 'popular', component: <EnrollPopular contentRatio={0.8} /> },
     { title: 'distance', component: <EnrollDistance contentRatio={0.88} /> },
   ];
