@@ -136,7 +136,7 @@ function AddPlace() {
     const result = await fetchRecommendList();
     if (!result || result.length === 0) {
       open('동선에는 딱 맞는 추천 장소가 아직 없어요');
-      navigation.reset({ index: 0, routes: [{ name: '/Main' }] });
+      navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }] });
     }
   };
 

@@ -9,6 +9,16 @@ type SaveBottomSheetProps = {
 };
 
 export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: SaveBottomSheetProps) {
+  const getResetRoute = () => {
+    if (import.meta.env.APP_START_MODE === '/enroll/title') {
+      return '/my-travle-list';
+    }
+    if (import.meta.env.APP_START_MODE === '/Main') {
+      return '/Main';
+    }
+    return '/my-travle-list';
+  };
+
   return (
     <>
       <Text
@@ -41,14 +51,7 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: Sav
             onPress={() => {
               bottomSheet.close();
               onSave();
-              {
-                isBack
-                  ? navigation.reset({ index: 0, routes: [{ name: '/Main' }] })
-                  : navigation.reset({
-                      index: 0,
-                      routes: [{ name: '/' }, { name: '/Main' }],
-                    });
-              }
+              navigation.reset({ index: 0, routes: [{ name: getResetRoute() }] });
             }}
           >
             저장 후 나가기

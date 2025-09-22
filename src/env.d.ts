@@ -13,6 +13,7 @@ type Env = {
   Tour_API_KEY: string;
   CRYPTO_KEY: string;
   Tripadvisor_KEy: string;
+  APP_START_MODE: string;
 };
 
 interface ImportMeta {

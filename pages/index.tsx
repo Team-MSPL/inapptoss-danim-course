@@ -32,7 +32,7 @@ export function Index() {
     if (loading) return; // prevent double tap
     if (userId != null) {
       dispatch(travelSliceActions.reset({ userId: userId, userJwtToken: userJwtToken }));
-      navigation.reset({ index: 0, routes: [{ name: '/main' }] });
+      navigation.reset({ index: 0, routes: [{ name: '/enroll/title' }] });
     } else {
       setLoading(true);
       try {
@@ -49,7 +49,7 @@ export function Index() {
       const userData = await dispatch(tossUser({ authorizationCode, referrer })).unwrap();
       if (userData?.resultType == 'SUCCESS') {
         await dispatch(socialConnect({ userToken: userData?.success?.userKey }));
-        navigation.navigate('/main');
+        navigation.navigate(`/${import.meta.env.APP_START_MODE}`);
       } else {
         open('로그인에 잠시 문제가 생겼어요', {
           icon: 'icon-warning-circle',
