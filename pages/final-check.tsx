@@ -361,15 +361,15 @@ function FinalCheck() {
                     <Text typography="t5" fontWeight="medium" color={colors.grey800}>
                       여행테마
                     </Text>
-                    <Stack.Horizontal gutter={4}>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                       {tendency[1].map((item, inx) => {
                         return item ? (
-                          <Badge size="medium" type="blue" badgeStyle="weak">
+                          <Badge size="medium" type="blue" badgeStyle="weak" key={inx}>
                             {tendencyList[1]?.list[inx]}
                           </Badge>
                         ) : null;
                       })}
-                    </Stack.Horizontal>
+                    </View>
                   </Stack.Vertical>
                 )}
                 {tendency[2].find((item) => item == 1) && (
@@ -377,15 +377,15 @@ function FinalCheck() {
                     <Text typography="t5" fontWeight="medium" color={colors.grey800}>
                       이런 걸 하고 싶어요
                     </Text>
-                    <Stack.Horizontal gutter={4}>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                       {tendency[2].map((item, inx) => {
                         return item ? (
-                          <Badge size="medium" type="red" badgeStyle="weak">
+                          <Badge size="medium" type="red" badgeStyle="weak" key={inx}>
                             {tendencyList[2]?.list[inx]}
                           </Badge>
                         ) : null;
                       })}
-                    </Stack.Horizontal>
+                    </View>
                   </Stack.Vertical>
                 )}
                 {tendency[3].find((item) => item == 1) && (
