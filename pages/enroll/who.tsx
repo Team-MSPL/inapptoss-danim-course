@@ -16,12 +16,12 @@ export const Route = BedrockRoute('/enroll/who', {
   component: EnrollWho,
 });
 
-export function EnrollWho({ marginTop = 74 }: EnrollWhoProps) {
+export function EnrollWho({ marginTop = 30 }: EnrollWhoProps) {
   const { tendency } = useAppSelector((state) => state.travelSlice);
 
   const { handleButtonClick, tendencyList } = useTendencyHandler();
   return (
-    <>
+    <View style={{flex: 1, paddingVertical: marginTop }}>
       <Text
         typography="t7"
         fontWeight="medium"
@@ -49,6 +49,6 @@ export function EnrollWho({ marginTop = 74 }: EnrollWhoProps) {
           ></TendencyButton>
         ))}
       </View>
-    </>
+    </View>
   );
 }

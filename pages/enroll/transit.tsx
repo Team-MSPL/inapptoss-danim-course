@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { BedrockRoute, Image } from 'react-native-bedrock';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { BedrockRoute } from 'react-native-bedrock';
 import { useAppDispatch, useAppSelector } from 'store';
 import { travelSliceActions } from '../../redux/travle-slice';
-import { TouchableOpacity } from '@react-native-bedrock/native/react-native-gesture-handler';
 import { CustomColor } from '../../utill/custom-color';
-import { GridList, Icon, Text } from '@toss-design-system/react-native';
+import { Icon, Text } from '@toss-design-system/react-native';
 
 type EnrollTransitProps = {
   marginTop?: number;
@@ -16,62 +15,89 @@ export const Route = BedrockRoute('/enroll/transit', {
   component: EnrollTransit,
 });
 
-export function EnrollTransit({ marginTop = 150 }: EnrollTransitProps) {
+export function EnrollTransit({ marginTop = 70 }: EnrollTransitProps) {
   const dispatch = useAppDispatch();
   const { transit } = useAppSelector((state) => state.travelSlice);
+
   const moveList = [
     {
-      name: '자동차 렌트카',
-      function: () => dispatch(travelSliceActions.enrollTransit(0)),
-      image: 'icon-car-blue',
+      name: '자동차·렌트카',
+      onPress: () => dispatch(travelSliceActions.enrollTransit(0)),
+      icon: 'icon-car-blue',
     },
     {
       name: '대중교통',
-      function: () => dispatch(travelSliceActions.enrollTransit(1)),
-      image: 'icon-train-blue',
+      onPress: () => dispatch(travelSliceActions.enrollTransit(1)),
+      icon: 'icon-train-blue',
     },
   ];
-  const styles = StyleSheet.create({
-    buttonContainerBase: {
-      alignItems: 'center',
-      height: 159,
-      justifyContent: 'center',
-      borderRadius: 8,
-      borderWidth: 1,
-      flexDirection: 'row',
-      gap: 10,
-    },
-  });
+
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginHorizontal: 24,
-        justifyContent: 'space-between',
-        marginTop: marginTop,
-      }}
-    >
-      <GridList column={2} style={{ marginBottom: 16 }}>
-        {moveList.map((item, idx) => {
-          const isSelected = transit === idx;
-
-          const containerStyle: ViewStyle = {
-            ...styles.buttonContainerBase,
-            borderColor: isSelected ? CustomColor.primary : CustomColor.ButtonBackground,
-            backgroundColor: isSelected ? 'rgba(195,245,80,0.3)' : CustomColor.ButtonBackground,
-          };
-
-          return (
-            <GridList.Item
-              image={<Icon style={{ width: 60, height: 60 }} name={item.image} />}
-              title={item.name}
-              key={idx}
-              style={containerStyle}
-              onPress={item.function}
-            ></GridList.Item>
-          );
-        })}
-      </GridList>
+    <View style={[styles.gridRow, { paddingVertical: marginTop }]}>
+      {moveList.map((item, idx) => {
+        const isSelected = transit === idx;
+        return (
+          <TouchableOpacity
+            key={item.name}
+            onPress={item.onPress}
+            activeOpacity={0.85}
+            style={[
+              styles.gridItem,
+              isSelected && styles.selectedGridItem,
+            ]}
+          >
+            <Icon name={item.icon} style={styles.icon} />
+            <Text style={[styles.itemText, isSelected && styles.selectedText]}>
+              {item.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
+
+const CARD_WIDTH = 170;
+const CARD_HEIGHT = 170;
+const CARD_RADIUS = 16;
+const CARD_GAP = 6;
+
+const styles = StyleSheet.create({
+  gridRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 24,
+    gap: CARD_GAP,
+  },
+  gridItem: {
+    flex: 1,
+    maxWidth: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: CARD_RADIUS,
+    borderWidth: 1,
+    borderColor: '#F2F3F7',
+    backgroundColor: CustomColor.ButtonBackground ?? '#FAFAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: CARD_GAP,
+  },
+  selectedGridItem: {
+    backgroundColor: 'rgba(195,245,80,0.3)',
+    borderColor: '#D7F940',
+  },
+  icon: {
+    width: 60,
+    height: 60,
+    marginBottom: 18,
+  },
+  itemText: {
+    fontSize: 16,
+    color: '#222',
+    fontWeight: '400',
+  },
+  selectedText: {
+    color: '#222',
+    fontWeight: '500',
+  },
+});
