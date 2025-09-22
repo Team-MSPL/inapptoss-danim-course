@@ -188,8 +188,8 @@ function Day() {
             selectedRangeStartTextStyle={{ color: colors.white }}
             selectedRangeEndTextStyle={{ color: colors.white }}
             selectedDayTextColor={colors.white}
-            nextTitle="다음 달"
-            previousTitle="이전 달"
+            nextTitle="→"
+            previousTitle="←"
             allowBackwardRangeSelect={true}
             selectYearTitle="년도 선택"
           />
@@ -198,7 +198,7 @@ function Day() {
               bottomSheet.close();
             }}
           >
-            선택완료
+            선택 완료
           </BottomSheet.CTA>
         </View>
       ),
