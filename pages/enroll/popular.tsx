@@ -15,7 +15,7 @@ export const Route = BedrockRoute("/enroll/popular", {
     component: EnrollPopular,
 });
 
-export function EnrollPopular({ contentRatio = 1 }: EnrollPopularProps) {
+export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
     const { popular } = useAppSelector((state) => state.travelSlice);
     const dispatch = useAppDispatch();
     const [value, setValue] = useState(popular);

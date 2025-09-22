@@ -12,7 +12,7 @@ export const Route = BedrockRoute('/enroll/tour', {
   component: EnrollTour,
 });
 
-export function EnrollTour({ marginTop = 74 }: { marginTop?: number }) {
+export function EnrollTour({ marginTop = 30 }: { marginTop?: number }) {
   const [page, setPage] = useState(0); // 0: 첫 화면, 1: 두 번째 화면
   const { tendency } = useAppSelector((state) => state.travelSlice);
   const { handleButtonClick, tendencyList } = useTendencyHandler();
