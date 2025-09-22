@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Animated } from 'react-native';
 import { BedrockRoute } from 'react-native-bedrock';
 import { useAppSelector } from 'store';
 import { useTendencyHandler } from '../../hooks/useTendencyHandler';
@@ -24,13 +24,27 @@ export function EnrollTour({ marginTop = 74 }: { marginTop?: number }) {
   const buttonList = tendencyList[tendencyIndex]?.list ?? [];
   const photoList = tendencyList[tendencyIndex]?.photo ?? [];
 
-  // 버튼 클릭 시 처리
+  const [warningVisible, setWarningVisible] = useState(false);
+  const warningOpacity = React.useRef(new Animated.Value(0)).current;
+
+  const isPetSelected = tendency[0]?.[6] === 1;
+  const indoorIdx = buttonList.findIndex(name => name.includes('실내여행지'));
+
   const onButtonPress = (idx: number) => {
-    if (page === 0 && tendency[0][6] == 1 && idx === 4) {
-      open('반려동물과 실내 여행지는 함께 선택할 수 없어요', {
-        icon: 'icon-warning-circle',
-      });
+    if (page === 0 && isPetSelected && idx === indoorIdx) {
+      setWarningVisible(true);
+      Animated.timing(warningOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
     } else {
+      setWarningVisible(false);
+      Animated.timing(warningOpacity, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
       handleButtonClick({ index: tendencyIndex, item: idx });
     }
   };
@@ -38,6 +52,17 @@ export function EnrollTour({ marginTop = 74 }: { marginTop?: number }) {
   return (
     <View>
       <View style={{ marginTop, ...styles.ButtonsContainer }}>
+        <Animated.View
+          style={{
+            backgroundColor: 'transparent',
+            marginBottom: 12,
+            marginHorizontal: 8,
+            opacity: warningOpacity,
+          }}>
+          <Text style={{ color: '#FF5959', fontSize: 14 }}>
+            반려동물을 선택하면 실내 여행지는 자동으로 제외돼요
+          </Text>
+        </Animated.View>
         {buttonList.map((item, idx) => (
           <TendencyButton
             marginBottom={0}
