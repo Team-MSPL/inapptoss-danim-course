@@ -19,7 +19,8 @@ function InfoMyInquiryList() {
           },
         }}
       ></PartnerNavigation>
-      <Text>Hello InfoMyInquiryList</Text>
+      <Text>문의 내용 불러오기 api 있는지</Text>
+      <Text>어쩌구저ㄱ쩌구</Text>
     </View>
   );
 }

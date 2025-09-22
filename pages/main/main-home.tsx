@@ -31,7 +31,7 @@ export default function MainHome() {
         ></Top>
         <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 20, marginTop: 30 }}>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => navigation.navigate('/join/who')}
             style={{
               width: Dimensions.get('window').width - 48,
               alignSelf: 'center',
