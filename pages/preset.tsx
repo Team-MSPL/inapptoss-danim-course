@@ -1,5 +1,6 @@
 import { FlatList, ScrollView } from '@react-native-bedrock/native/react-native-gesture-handler';
 import {
+  Asset,
   Badge,
   BottomSheet,
   Button,
@@ -24,6 +25,7 @@ import {
 } from 'react-native-bedrock';
 import { useAppSelector } from 'store';
 import NavigationBar from '../components/navigation-bar';
+import GrayCircle from "../components/design/gray-circle";
 
 export const Route = BedrockRoute('/preset', {
   validateParams: (params) => params,
@@ -142,7 +144,6 @@ function Preset() {
     navigation.navigate('/preset-detail', { index: e });
   };
   const onViewableItemsChanged = useRef((items) => {
-    console.log(items?.changed[0]?.index);
     setTabalue(String(items?.changed[0]?.index));
   });
   const calculateTendency = (e: any) => {
@@ -178,102 +179,112 @@ function Preset() {
     Array(presetDatas.length).fill(true),
   );
   const renderItem = ({ item, index }) => {
+    // 점수/이름 쌍을 만들어 정렬
+    const names = presetTendencyList[index]?.tendencyNameList || [];
+    const points = presetTendencyList[index]?.tendencyPointList || [];
+    const tendencyPairs = names.map((name, i) => ({
+      name,
+      point: points[i]
+    }));
+    // 내림차순 정렬
+    const sortedTendencyPairs = [...tendencyPairs].sort((a, b) => b.point - a.point);
+
     return (
-      <>
-        <Stack.Vertical
-          style={{
-            position: 'relative', // ← 이걸 추가
-            borderWidth: 1,
-            borderColor: '#eeeeee',
-            borderRadius: 13,
-            paddingHorizontal: 24,
-            paddingVertical: 20,
-            marginTop: 10,
-            marginBottom: 30,
-            marginHorizontal: 24,
-          }}
-          onLayout={(e) => handleItemLayout(e, index)}
-        >
-          {presetTendencyList[index]?.tendencyNameList.length >= 1 && (
-            <>
-              {presetTendencyList[index]?.tendencyNameList.length >= 2 &&
-                presetDatas.length >= 2 && (
-                  <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                    다른 일정에 비해
-                    <Text typography="t5" fontWeight="medium" color={colors.blue700}>
-                      [{calculateTendency(presetTendencyList[index])}]
-                    </Text>
-                    성향이 더 높아요
+      <Stack.Vertical
+        style={{
+          position: 'relative',
+          borderWidth: 1,
+          borderColor: '#eeeeee',
+          borderRadius: 13,
+          paddingHorizontal: 24,
+          paddingVertical: 20,
+          marginTop: 10,
+          marginBottom: 30,
+          marginHorizontal: 24,
+        }}
+        onLayout={(e) => handleItemLayout(e, index)}
+      >
+        {/* ...성향 badge 표시 부분 동일 */}
+
+        {/* 타임라인 */}
+        <View style={{ flexDirection: 'column', marginTop: 20, marginBottom: 16 }}>
+          {item?.map((value, idx) => {
+            const isLast = idx === item.length - 1;
+            // 대표 장소명
+            const mainPlace = value[value[0].category == 4 ? 1 : 0].name;
+            // 서브 장소 개수
+            const subPlaceCount =
+              value.filter((itemValue) => !itemValue.name.includes('추천')).length - 1;
+            return (
+              <View
+                key={idx}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  marginBottom: isLast ? 0 : 20,
+                }}
+              >
+                {/* 왼쪽: 타임라인 */}
+                <View style={{ alignItems: 'center', width: 54 }}>
+                  <GrayCircle size={8.5} style={{ marginTop: 5 }} />
+                  {/* 세로선 (마지막엔 생략) */}
+                  {!isLast && (
+                    <View
+                      style={{
+                        width: 1.5,
+                        height: 32,
+                        backgroundColor: '#E5E7EB',
+                        marginTop: 2,
+                      }}
+                    />
+                  )}
+                  <Text
+                    typography="t7"
+                    color={colors.grey800}
+                    style={{ position: 'absolute', top: -2, left: 18, fontWeight: '500' }}
+                  >
+                    {`${idx + 1}일 차`}
                   </Text>
-                )}
-              <Flex direction="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-                {presetTendencyList[index]?.tendencyNameList
-                  .slice(
-                    0,
-                    tendencyViewIndex[index]
-                      ? 4
-                      : presetTendencyList[index]?.tendencyNameList.length,
-                  )
-                  .map((item, index) => {
-                    return (
-                      <Badge size="medium" type="blue" badgeStyle="weak">
-                        {item + ' '} {presetTendencyList[index]?.tendencyPointList[index]}점
-                      </Badge>
-                    );
-                  })}
-              </Flex>
-            </>
-          )}
-          <View style={{ height: 20 }}></View>
-          {item?.map((value, idx) => (
-            <StepperRow
-              hideLine={idx == item.length - 1}
-              left={<StepperRow.NumberIcon number={idx + 1} />}
-              center={
-                <StepperRow.Texts
-                  type="A"
-                  title={value[value[0].category == 4 ? 1 : 0].name}
-                  description={
-                    value.filter((itemValue) => !itemValue.name.includes('추천')).length - 1 >= 1
-                      ? `+${
-                          value.filter((itemValue) => !itemValue.name.includes('추천')).length - 1
-                        }개 장소`
-                      : ''
-                  }
-                />
-              }
-            />
-          ))}
-          <Button
-            type="primary"
-            style="weak"
-            display="full"
-            onPress={() => {
-              goDetail(index);
-            }}
-          >
-            일정 자세히 보기
-          </Button>
-          {/* <PrimaryButton
-            alignSelf="center"
-            marginBottom={heightPercentage(10)}
-            marginTop={heightPercentage(10)}
-            width={widthPercentage(290)}
-            height={heightPercentage(50)}
-            label="일정 자세히 보기"
-            backgroundColor={colors.backgroundGray}
-            textColor={colors.PointYellow}
-            onPress={async () => {
-              goDetail(index);
-              await logEvent("view_course_result_detail", {
-                place: item[0][0].name,
-              });
-            }}
-          ></PrimaryButton> */}
-        </Stack.Vertical>
-      </>
+                </View>
+                {/* 오른쪽: 장소 정보 */}
+                <View style={{ marginLeft: 8, flex: 1 }}>
+                  <Text typography="t6" fontWeight="bold" color={colors.grey900}>
+                    {mainPlace}
+                  </Text>
+                  {subPlaceCount >= 1 && (
+                    <Text
+                      typography="t7"
+                      color={colors.grey700}
+                      style={{ marginTop: 2 }}
+                    >{`+${subPlaceCount}개 장소`}</Text>
+                  )}
+                </View>
+              </View>
+            );
+          })}
+        </View>
+        <Button
+          type="primary"
+          style="weak"
+          display="full"
+          onPress={() => {
+            goDetail(index);
+          }}
+        >
+          일정 자세히 보기
+        </Button>
+      </Stack.Vertical>
     );
   };
+
+  // 상단 카드(최고 점수 맨 앞으로)
+  const topNames = presetTendencyList[0]?.tendencyNameList || [];
+  const topPoints = presetTendencyList[0]?.tendencyPointList || [];
+  const topPairs = topNames.map((name, i) => ({
+    name,
+    point: topPoints[i]
+  }));
+  const sortedTopPairs = [...topPairs].sort((a, b) => b.point - a.point);
 
   return (
     <View style={{ flex: 1 }}>
@@ -282,13 +293,11 @@ function Preset() {
         title={
           <Text typography="t6" fontWeight="regular" color={colors.grey700}>
             점수가 낮은 일정은 간단한 동선을 우선시했어요
-            {/* 성향을 토대로 다님 AI가 추천을해줘요! */}
           </Text>
         }
         subtitle1={
           <Text typography="t3" fontWeight="bold" color={colors.grey900}>
             나그네님,{`\n`}이런 여행 일정은 어때요?
-            {/* 1분만에 다님으로{`\n`} 여행 일정을 추천받아보세요 */}
           </Text>
         }
       ></Top>
@@ -335,7 +344,7 @@ function Preset() {
               width: '100%',
               padding: 20,
               justifyContent: 'center',
-              position: 'relative', // absolute 아니어야 함!
+              position: 'relative',
             }}
           >
             <Text typography="st5" fontWeight="semibold" color={colors.white}>
@@ -343,9 +352,9 @@ function Preset() {
               {region.length >= 2 ? ` 외 ${region.length - 1}지역` : ''}
             </Text>
             <View style={{ flexDirection: 'row', marginTop: 8, gap: 8 }}>
-              {presetTendencyList[0]?.tendencyNameList.slice(0, 3).map((item, idx) => (
+              {sortedTopPairs.slice(0, 3).map((item, idx) => (
                 <View
-                  key={item}
+                  key={item.name + item.point}
                   style={{
                     borderRadius: 12,
                     paddingHorizontal: 7,
@@ -359,18 +368,18 @@ function Preset() {
                     color={colors.white}
                     style={{ alignSelf: 'center' }}
                   >
-                    {item}
+                    {item.name}
                   </Text>
                 </View>
               ))}
-              {presetTendencyList[0]?.tendencyNameList.length >= 4 && (
+              {sortedTopPairs.length >= 4 && (
                 <Text
                   typography="t7"
                   fontWeight="medium"
                   color={colors.white}
                   style={{ alignSelf: 'center' }}
                 >
-                  +{presetTendencyList[0]?.tendencyNameList.length - 3}
+                  +{sortedTopPairs.length - 3}
                 </Text>
               )}
             </View>
@@ -396,7 +405,7 @@ function Preset() {
       >
         {[...Array.from({ length: presetDatas.length }, (item, index) => index)].map(
           (item, idx) => {
-            return <Tab.Item value={String(idx)}>{idx + 1}</Tab.Item>;
+            return <Tab.Item key={idx} value={String(idx)}>{idx + 1}</Tab.Item>;
           },
         )}
       </Tab>
@@ -418,10 +427,11 @@ function Preset() {
         showsVerticalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged.current}
         viewabilityConfig={{
-          itemVisiblePercentThreshold: 90, // 50% 이상 보이면 감지
+          itemVisiblePercentThreshold: 90,
         }}
         renderItem={renderItem}
       ></FlatList>
     </View>
   );
 }
+export default Preset;
