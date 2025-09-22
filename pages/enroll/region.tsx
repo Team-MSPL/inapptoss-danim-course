@@ -19,7 +19,7 @@ import {
   TouchableOpacity,
 } from '@react-native-bedrock/native/react-native-gesture-handler';
 import { travelSliceActions } from '../../redux/travle-slice';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, TextInput } from 'react-native';
 import { CustomColor } from '../../utill/custom-color';
 
 export const Route = BedrockRoute('/enroll/region', {
@@ -119,14 +119,13 @@ function Region() {
       <SearchField
         hasClearButton
         placeholder="지역을 검색해보세요"
-        style={{ marginHorizontal: 24 }}
+        style={{ marginHorizontal: 24, marginBottom: 24 }}
         value={value}
         onChange={(e) => {
           setRegionSearchState(
             e.nativeEvent.text.length == 0 && regionText.length >= 1 ? false : true,
           );
           handleRegionText(e.nativeEvent.text);
-          // setValue(e.nativeEvent.text);
         }}
       />
       <View style={{ marginHorizontal: 24 }}>
@@ -171,8 +170,8 @@ function Region() {
         </ScrollView>
       </View>
 
+      {/* 하단 버튼(서울, 부산 등) */}
       <ScrollView
-        // ref={cityScrollRef}
         horizontal={true}
         nestedScrollEnabled={true}
         showsHorizontalScrollIndicator={false}
@@ -183,7 +182,7 @@ function Region() {
             <TouchableOpacity
               key={idx}
               style={{
-                paddingHorizontal: 10,
+                paddingHorizontal: 18, // 18로 변경됨
                 paddingVertical: 8,
                 backgroundColor: cityIndex == idx ? CustomColor.primary : '#FAFAFB',
                 borderRadius: 14,
@@ -200,12 +199,13 @@ function Region() {
             >
               <Text
                 typography="t5"
-                fontWeight="semibold"
+                fontWeight= {cityIndex == idx ? "semibold" : "regular"}
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={{
                   textAlign: 'center',
                   lineHeight: 22,
+                  color: '#505A69',
                   includeFontPadding: false,
                 }}
               >
@@ -229,36 +229,36 @@ function Region() {
               <TouchableOpacity
                 key={idx}
                 style={{
-                  paddingHorizontal: 10,
+                  paddingHorizontal: 18,
                   paddingVertical: 8,
                   backgroundColor: region.includes(item.subTitle)
                     ? 'rgba(202, 251, 7,0.2)'
                     : '#FAFAFB',
-                  borderWidth: region.includes(item.subTitle) ? 1 : 0,
+                  borderWidth: region.includes(item.subTitle) ? 0.5 : 0,
                   borderColor: CustomColor.primary,
                   borderRadius: 14,
                   minWidth: 60,
-                  minHeight: 40, // 고정 height 대신 최소 높이
+                  minHeight: 40,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginRight: 8,
                   marginBottom: 8,
-                  flexDirection: 'row', // 혹시 아이콘이나 텍스트 여러개 넣는 경우 대비
+                  flexDirection: 'row',
                 }}
                 onPress={() => {
-                  console.log(region);
                   cityIndex == 0 ? selectPopularity(item) : selectRegion(item);
                 }}
               >
                 <Text
                   typography="t5"
-                  fontWeight="semibold"
+                  fontWeight= {region.includes(item.subTitle) ? "semibold" : "regular"}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{
                     textAlign: 'center',
-                    lineHeight: 22, // typography에 맞는 값으로 조정
-                    includeFontPadding: false, // Android에서 글자 짤림 방지
+                    lineHeight: 22,
+                    color: '#505A69', // 색상 변경
+                    includeFontPadding: false,
                   }}
                 >
                   {item?.subTitle}
