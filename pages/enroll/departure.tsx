@@ -116,11 +116,18 @@ function Departure() {
           },
           listView: { width: INPUT_WIDTH, maxHeight: 250, zIndex: 1000 },
           textInput: {
+            position: 'relative',
+            top: 2,
             color: colors.grey500,
-
             backgroundColor: 'transparent',
-            flex: 0.9,
             fontSize: 16,
+            height: 44,
+            alignSelf: 'center',
+            lineHeight: 22,
+            paddingVertical: 0,
+            textAlignVertical: 'center',
+            paddingTop: 0,
+            paddingBottom: 0,
           },
           description: { color: 'black' },
         }}

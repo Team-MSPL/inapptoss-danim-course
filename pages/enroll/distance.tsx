@@ -37,6 +37,7 @@ export function EnrollDistance({ contentRatio = 1 }: EnrollDistanceProps) {
         range={value}
         contentRatio={contentRatio}
       />
+      <View style={{height: 30}}></View>
       <Slider value={value} onChange={setValue} min={1} max={10} step={1} color={colors.green300} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text typography="t5" fontWeight="medium" color={colors.grey700}>

@@ -71,27 +71,20 @@ export const routeStack = {
   },
   '/play': {
     prev: '/concept',
-    next: '/tour-one',
+    next: '/tour',
     title: '하고 싶은 활동이 있나요?',
     subTitle1: '2. 여행 스타일을 알아볼게요',
     subTitle2: '* 중복 선택 가능',
   },
-  '/tour-one': {
+  '/tour': {
     prev: '/play',
-    next: '/tour-two',
-    title: '가고 싶은 장소는 어디인가요?',
-    subTitle1: '2. 여행 스타일을 알아볼게요',
-    subTitle2: '* 중복 선택 가능',
-  },
-  '/tour-two': {
-    prev: '/tour-one',
     next: '/popular',
     title: '가고 싶은 장소는 어디인가요?',
     subTitle1: '2. 여행 스타일을 알아볼게요',
     subTitle2: '* 중복 선택 가능',
   },
   '/popular': {
-    prev: '/tourTwo',
+    prev: '/tour',
     next: '/distance',
     title: '사람들이 자주 찾는 명소,\n얼마나 포함할까요?',
     subTitle1: '3. 여행지의 인기도를 선택해주세요',
