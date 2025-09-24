@@ -52,8 +52,8 @@ export default defineConfig({
       // 트립어드바이저 api 키
       Tripadvisor_KEy: "02F5B2FD8DAD4CFBA7C2D77F11FD9BD8",
 
-      //앱 시작 모드 enroll/title(여행 일정 추천), Main(메인 화면)
-      APP_START_MODE: "enroll/title",
+      //앱 시작 모드 enroll/title(여행 일정 추천), main(메인 화면)
+      APP_START_MODE: "main",
     }),
   ],
 });
