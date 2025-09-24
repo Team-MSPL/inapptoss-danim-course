@@ -7,8 +7,16 @@ export const tendencyData = [
   {
     title: '누구와 떠나시나요?',
     multi: true,
-    list: ['나홀로', '연인과', '친구와', '가족과', '효도', '자녀와'],
-    // photo: [...], // 필요시 추가
+    list: ['나홀로', '연인과', '친구와', '가족과', '효도', '자녀와', '반려동물과'],
+    photo: [
+      'icon-person-default-man',
+      'https://static.toss.im/2d-emojis/png/4x/u1F491.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F468_u1F3FC_u200D_u1F91D_u200D_u1F468_u1F3FB.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F468_u200D_u1F469_u200D_u1F467_u200D_u1F466.png',
+      'icon-emoji-grandparents',
+      'icon-child',
+      'https://static.toss.im/2d-emojis/png/4x/u1F9AE.png',
+    ],
   },
   {
     title: '테마는 무엇인가요?',
@@ -37,11 +45,12 @@ export const tendencyData = [
 ];
 
 export const useRegionTendencyHandler = () => {
-  // regionSearchSlice에서 selectList 가져옴
+  // 최상위에서 한번만 호출!
   const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
+  // regionSearchSlice.request도 최상위에서 받아오기
+  const regionRequest = useAppSelector((state) => state.regionSearchSlice.request);
   const dispatch = useDispatch();
 
-  // 버튼 클릭 핸들러
   const handleButtonClick = ({ index, item }: { index: number; item: number }) => {
     // 선택값 toggle
     const updatedCategory = [...(selectList[index] ?? Array(tendencyData[index].list.length).fill(0))];
@@ -50,7 +59,7 @@ export const useRegionTendencyHandler = () => {
     const newSelectList = [...selectList];
     newSelectList[index] = updatedCategory;
     dispatch(regionSearchActions.setRequest({
-      ...useAppSelector((state) => state.regionSearchSlice.request),
+      ...regionRequest, // **최상위에서 받아온 regionRequest 사용**
       selectList: newSelectList,
     }));
   };
