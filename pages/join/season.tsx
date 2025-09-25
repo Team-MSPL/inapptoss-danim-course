@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, View, TouchableOpacity, Image} from 'react-native';
-import {BedrockRoute, useNavigation} from 'react-native-bedrock';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { BedrockRoute, useNavigation } from 'react-native-bedrock';
 import { useAppSelector } from 'store';
 import { Text, Button, FixedBottomCTAProvider, FixedBottomCTA } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
@@ -18,6 +18,13 @@ export default function SeasonSelect() {
   const seasonData = tendencyData[4]; // 계절 데이터
   const seasonSelect = selectList[4] ?? [0, 0, 0, 0];
 
+  // 반응형 카드 계산
+  const windowWidth = Dimensions.get('window').width;
+  const PADDING_HORIZONTAL = 30;
+  const CARD_GAP = 10;
+
+  const cardWidth = (windowWidth - PADDING_HORIZONTAL * 2 - CARD_GAP) / 2;
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <NavigationBar />
@@ -33,26 +40,36 @@ export default function SeasonSelect() {
             * 중복 선택 가능
           </Text>
         </View>
-        <View style={styles.gridRow}>
+        <View style={[styles.gridRow, { padding: PADDING_HORIZONTAL }]}>
           {seasonData.list.map((season, idx) => (
             <TouchableOpacity
               key={season}
               style={[
                 styles.gridItem,
+                {
+                  width: cardWidth,
+                  height: cardWidth,
+                  marginRight: idx % 2 === 0 ? CARD_GAP : 0,
+                  marginBottom: idx < 2 ? CARD_GAP : 0,
+                },
                 seasonSelect[idx] === 1 && styles.selectedGridItem,
               ]}
               activeOpacity={0.85}
               onPress={() => handleButtonClick({ index: 4, item: idx })}
             >
-              <View style={[
-                styles.iconBox,
-                seasonSelect[idx] === 1 && styles.selectedIconBox,
-              ]}>
+              <View style={styles.iconTextBox}>
                 <Image source={{ uri: seasonData.photo?.[idx] }} style={styles.icon} />
+                <Text
+                  typography="t5"
+                  color={'#505A69'}
+                  style={[
+                    styles.itemText,
+                    seasonSelect[idx] === 1 && styles.selectedText,
+                  ]}
+                >
+                  {season}
+                </Text>
               </View>
-              <Text style={[styles.itemText, seasonSelect[idx] === 1 && styles.selectedText]}>
-                {season}
-              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -74,11 +91,6 @@ export default function SeasonSelect() {
   );
 }
 
-const CARD_WIDTH = 148;
-const CARD_HEIGHT = 148;
-const CARD_RADIUS = 16;
-const CARD_GAP = 16;
-
 const styles = StyleSheet.create({
   header: {
     marginTop: 32,
@@ -88,50 +100,36 @@ const styles = StyleSheet.create({
   gridRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: CARD_GAP,
-    marginHorizontal: 24,
+    justifyContent: 'flex-start',
   },
   gridItem: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    borderRadius: CARD_RADIUS,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: '#F2F3F7',
     backgroundColor: '#FAFAFB',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: CARD_GAP / 2,
+    padding: 0,
   },
   selectedGridItem: {
     backgroundColor: 'rgba(195,245,80,0.2)',
     borderColor: '#D7F940',
   },
-  iconBox: {
-    width: 64,
-    height: 64,
-    borderRadius: 18,
-    backgroundColor: '#fff',
+  iconTextBox: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#F2F3F7',
-  },
-  selectedIconBox: {
-    backgroundColor: '#fff',
-    borderColor: '#D7F940',
   },
   icon: {
     width: 60,
     height: 60,
-    marginBottom: 18,
+    marginBottom: 12,
   },
   itemText: {
-    fontSize: 16,
-    color: '#222',
+    marginTop: 0,
+    textAlign: 'center',
     fontWeight: '400',
-    marginTop: 2,
+    color: '#505A69',
   },
   selectedText: {
     color: '#222',
