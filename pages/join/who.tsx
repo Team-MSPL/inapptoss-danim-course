@@ -1,41 +1,37 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Animated } from 'react-native';
-import { BedrockRoute } from "react-native-bedrock";
-import { FixedBottomCTAProvider, Text, colors } from '@toss-design-system/react-native';
+import {
+  FixedBottomCTAProvider,
+  Text,
+  colors,
+  Button,
+  FixedBottomCTA,
+  useBottomSheet, BottomSheet,
+} from '@toss-design-system/react-native';
 import NavigationBar from "../../components/navigation-bar";
 import { CustomProgressBarJoin } from "../../components/join/custom-progress-bar-join";
 import TendencyButton from '../../components/tendency-button';
 import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
 import { useAppSelector } from 'store';
 import { StepText } from "../../components/step-text";
-import {styles} from "../enroll/country";
+import { styles } from "../enroll/country";
 
-// 버튼 컨테이너 스타일을 EnrollWho와 동일하게 맞춤
 const buttonContainerStyle = {
   ...styles.ButtonsContainer,
   flexDirection: 'row',
   flexWrap: 'wrap',
-  gap: 12, // contentRatio 적용 필요하면 변수화
+  gap: 12,
   paddingHorizontal: 24,
-  // 필요하다면 row별 maxWidth나 justifyContent 등도 추가
 };
 
-
-export const Route = BedrockRoute('/join/who', {
-  validateParams: (params) => params,
-  component: JoinWho,
-});
-
 export default function JoinWho() {
-  const { handleButtonClick } = useRegionTendencyHandler(); // regionSearchSlice용 핸들러
+  const { handleButtonClick } = useRegionTendencyHandler();
   const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
   const whoList = tendencyData[0].list;
-
-  // 반려동물 인덱스 계산
   const petIdx = whoList.indexOf('반려동물과');
   const showWarning = petIdx !== -1 && selectList[0]?.[petIdx] === 1;
 
-  // 애니메이션 적용 (EnrollWho와 동일)
+  // 애니메이션
   const warningOpacity = useRef(new Animated.Value(showWarning ? 1 : 0)).current;
   useEffect(() => {
     Animated.timing(warningOpacity, {
@@ -44,6 +40,57 @@ export default function JoinWho() {
       useNativeDriver: true,
     }).start();
   }, [showWarning]);
+
+  // Toss BottomSheet 사용
+  const { open: openBottomSheet, close: closeBottomSheet } = useBottomSheet();
+
+  const handleNext = () => {
+    if (showWarning) {
+      openBottomSheet({
+        children: (
+          <View>
+            <View style={{marginTop: 28, paddingHorizontal: 24}}>
+              <Text typography="t4" color={colors.grey800} fontWeight="bold" style={{ marginBottom: 8 }}>
+                반려동물 출입 여행지를 찾고 있나요?
+              </Text>
+              <Text typography="t6" color={colors.grey600} style={{ marginBottom: 24 }}>
+                반려동물 출입이 허용되지 않은 곳은 추천에서 제외돼서 여행지가 적을 수 있어요.
+              </Text>
+            </View>
+            <BottomSheet.CTA.Double
+              leftButton={
+                <Button
+                  type="dark"
+                  style="weak"
+                  display="block"
+                  onPress={() => {
+                    closeBottomSheet()
+                  }}
+                >
+                  수정하기
+                </Button>
+              }
+              rightButton={
+                <Button
+                  type="primary"
+                  style="fill"
+                  display="block"
+                  onPress={() => {
+                    closeBottomSheet()
+                    // TODO: 확인시에 다음 페이지로 이동
+                  }}
+                >
+                  확인완료
+                </Button>
+              }
+            />
+          </View>
+        ),
+      });
+    } else {
+      // TODO: 반려동물 선택이 아니면 바로 다음 문항으로 이동
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -87,6 +134,19 @@ export default function JoinWho() {
             />
           ))}
         </View>
+        <FixedBottomCTA.Double
+          containerStyle={{ backgroundColor: 'white' }}
+          leftButton={
+            <Button type="dark" style="weak" display="block" onPress={() => { /* 이전으로 이동 */ }}>
+              이전으로
+            </Button>
+          }
+          rightButton={
+            <Button display="block" onPress={handleNext} disabled={false}>
+              다음으로
+            </Button>
+          }
+        />
       </FixedBottomCTAProvider>
     </View>
   );
