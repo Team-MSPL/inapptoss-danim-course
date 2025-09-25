@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'store';
-import { regionSearchActions } from "../redux/regionSearchSlice";
+import { regionSearchActions } from '../redux/regionSearchSlice';
 
 // 순서/구성: list와 photo 배열 개수 및 순서 100% 일치!
 export const tendencyData = [
@@ -23,12 +23,12 @@ export const tendencyData = [
     multi: true,
     list: ['힐링', '활동적인', '배움이 있는', '맛있는', '교통이 편한', '알뜰한'],
     photo: [
-      'https://static.toss.im/2d-emojis/png/4x/u1F331.png',  // 힐링 🌱
-      'https://static.toss.im/2d-emojis/png/4x/u1F93F.png',  // 활동적인 🤿
-      'https://static.toss.im/2d-emojis/png/4x/u1F4A1.png',  // 배움이 있는 💡
-      'https://static.toss.im/2d-emojis/png/4x/u1F37D.png',  // 맛있는 🍽️
-      'https://static.toss.im/2d-emojis/png/4x/u1F6E3.png',  // 교통이 편한 🛣️
-      'https://static.toss.im/2d-emojis/png/4x/u1F4B5.png',  // 알뜰한 💸
+      'https://static.toss.im/2d-emojis/png/4x/u1F331.png', // 힐링 🌱
+      'https://static.toss.im/2d-emojis/png/4x/u1F93F.png', // 활동적인 🤿
+      'https://static.toss.im/2d-emojis/png/4x/u1F4A1.png', // 배움이 있는 💡
+      'https://static.toss.im/2d-emojis/png/4x/u1F37D.png', // 맛있는 🍽️
+      'https://static.toss.im/2d-emojis/png/4x/u1F6E3.png', // 교통이 편한 🛣️
+      'https://static.toss.im/2d-emojis/png/4x/u1F4B5.png', // 알뜰한 💸
     ],
   },
   {
@@ -36,18 +36,30 @@ export const tendencyData = [
     multi: true,
     list: ['레저 스포츠', '산책', '드라이브', '이색체험', '쇼핑', '시티투어'],
     photo: [
-      'https://static.toss.im/2d-emojis/png/4x/u1F6B4.png',  // 레저 스포츠 🚴
-      'https://static.toss.im/2d-emojis/png/4x/u1F6B6.png',  // 산책 🚶
-      'https://static.toss.im/2d-emojis/png/4x/u1F698.png',  // 드라이브 🚗
-      'https://static.toss.im/2d-emojis/png/4x/u1F3C3.png',  // 이색체험 🪂(없으면 달리기)
-      'https://static.toss.im/2d-emojis/png/4x/u1F6CD.png',  // 쇼핑 🛍️
-      'https://static.toss.im/2d-emojis/png/4x/u1F3E2.png',  // 시티투어 🏢
+      'https://static.toss.im/2d-emojis/png/4x/u1F6B4.png', // 레저 스포츠 🚴
+      'https://static.toss.im/2d-emojis/png/4x/u1F6B6.png', // 산책 🚶
+      'https://static.toss.im/2d-emojis/png/4x/u1F698.png', // 드라이브 🚗
+      'https://static.toss.im/2d-emojis/png/4x/u1F3C3.png', // 이색체험 🪂(없으면 달리기)
+      'https://static.toss.im/2d-emojis/png/4x/u1F6CD.png', // 쇼핑 🛍️
+      'https://static.toss.im/2d-emojis/png/4x/u1F3E2.png', // 시티투어 🏢
     ],
   },
   {
     title: '가고 싶은 장소는 어디인가요?',
     multi: true,
-    list: ['바다', '산', '실내여행지', '문화시설', '사진 명소', '유적지', '박물관', '전통', '공원', '사찰', '성지'],
+    list: [
+      '바다',
+      '산',
+      '실내여행지',
+      '문화시설',
+      '사진 명소',
+      '유적지',
+      '박물관',
+      '전통',
+      '공원',
+      '사찰',
+      '성지',
+    ],
     photo: [
       'https://static.toss.im/2d-emojis/png/4x/u1F30A.png', // 바다 🌊
       'https://static.toss.im/2d-emojis/png/4x/u1F3D4.png', // 산 ⛰️
@@ -70,7 +82,7 @@ export const tendencyData = [
       'https://static.toss.im/2d-emojis/png/4x/u1F33C.png', // 봄
       'https://static.toss.im/2d-emojis/png/4x/u1F3DD.png', // 여름
       'https://static.toss.im/2d-emojis/png/4x/u1F341.png', // 가을
-      'https://static.toss.im/2d-emojis/png/4x/u2744.png',  // 겨울
+      'https://static.toss.im/2d-emojis/png/4x/u2744.png', // 겨울
     ],
   },
 ];
@@ -84,15 +96,19 @@ export const useRegionTendencyHandler = () => {
 
   const handleButtonClick = ({ index, item }: { index: number; item: number }) => {
     // 선택값 toggle
-    const updatedCategory = [...(selectList[index] ?? Array(tendencyData[index].list.length).fill(0))];
+    const updatedCategory = [
+      ...(selectList[index] ?? Array(tendencyData[index].list.length).fill(0)),
+    ];
     updatedCategory[item] = updatedCategory[item] === 1 ? 0 : 1;
     // 전체 selectList 갱신
     const newSelectList = [...selectList];
     newSelectList[index] = updatedCategory;
-    dispatch(regionSearchActions.setRequest({
-      ...regionRequest,
-      selectList: newSelectList,
-    }));
+    dispatch(
+      regionSearchActions.setRequest({
+        ...regionRequest,
+        selectList: newSelectList,
+      }),
+    );
   };
 
   return { tendencyData, handleButtonClick };

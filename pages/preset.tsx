@@ -1,4 +1,4 @@
-import { FlatList } from '@react-native-bedrock/native/react-native-gesture-handler';
+import { FlatList } from '@granite-js/native/react-native-gesture-handler';
 import {
   Button,
   colors,
@@ -10,20 +10,20 @@ import {
   Badge,
 } from '@toss-design-system/react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import {
-  BedrockRoute,
+  createRoute,
   Flex,
   Image,
   Stack,
   useBackEvent,
   useNavigation,
-} from 'react-native-bedrock';
+} from '@granite-js/react-native';
 import { useAppSelector } from 'store';
 import NavigationBar from '../components/navigation-bar';
 import GrayCircle from '../components/design/gray-circle';
 
-export const Route = BedrockRoute('/preset', {
+export const Route = createRoute('/preset', {
   validateParams: (params) => params,
   component: Preset,
 });
@@ -202,21 +202,16 @@ function Preset() {
           <>
             {sortedTendencyPairs.length >= 2 && presetDatas.length >= 2 && (
               <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                다른 일정에 비해{" "}
+                다른 일정에 비해{' '}
                 <Text typography="t5" fontWeight="medium" color={colors.blue700}>
                   [{calculateTendency(presetTendencyList[index])}]
-                </Text>
-                {" "}성향이 더 높아요
+                </Text>{' '}
+                성향이 더 높아요
               </Text>
             )}
             <Flex direction="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
               {sortedTendencyPairs
-                .slice(
-                  0,
-                  tendencyViewIndex[index]
-                    ? 4
-                    : sortedTendencyPairs.length,
-                )
+                .slice(0, tendencyViewIndex[index] ? 4 : sortedTendencyPairs.length)
                 .map((item, i) => {
                   // 최고점수만 yellow, 나머지는 blue
                   const badgeType = i === 0 ? 'yellow' : 'blue';
@@ -258,12 +253,14 @@ function Preset() {
                 }}
               >
                 {/* 타임라인 (왼쪽 선+원) */}
-                <View style={{
-                  width: TIMELINE_WIDTH,
-                  alignItems: 'center',
-                  position: 'relative',
-                  height: ROW_HEIGHT,
-                }}>
+                <View
+                  style={{
+                    width: TIMELINE_WIDTH,
+                    alignItems: 'center',
+                    position: 'relative',
+                    height: ROW_HEIGHT,
+                  }}
+                >
                   <GrayCircle size={CIRCLE_SIZE} />
                   {!isLast && (
                     <View
@@ -467,7 +464,11 @@ function Preset() {
       >
         {[...Array.from({ length: presetDatas.length }, (item, index) => index)].map(
           (item, idx) => {
-            return <Tab.Item key={idx} value={String(idx)}>{idx + 1}</Tab.Item>;
+            return (
+              <Tab.Item key={idx} value={String(idx)}>
+                {idx + 1}
+              </Tab.Item>
+            );
           },
         )}
       </Tab>

@@ -6,16 +6,17 @@ import {
   colors,
   Button,
   FixedBottomCTA,
-  useBottomSheet, BottomSheet,
+  useBottomSheet,
+  BottomSheet,
 } from '@toss-design-system/react-native';
-import NavigationBar from "../../components/navigation-bar";
-import { CustomProgressBarJoin } from "../../components/join/custom-progress-bar-join";
+import NavigationBar from '../../components/navigation-bar';
+import { CustomProgressBarJoin } from '../../components/join/custom-progress-bar-join';
 import TendencyButton from '../../components/tendency-button';
 import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
 import { useAppSelector } from 'store';
-import { StepText } from "../../components/step-text";
-import { styles } from "../enroll/country";
-import {BedrockRoute, useNavigation} from "react-native-bedrock";
+import { StepText } from '../../components/step-text';
+import { styles } from '../enroll/country';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 
 const buttonContainerStyle = {
   ...styles.ButtonsContainer,
@@ -25,7 +26,7 @@ const buttonContainerStyle = {
   paddingHorizontal: 24,
 };
 
-export const Route = BedrockRoute('/join/who', {
+export const Route = createRoute('/join/who', {
   validateParams: (params) => params,
   component: JoinWho,
 });
@@ -56,8 +57,13 @@ export default function JoinWho() {
       openBottomSheet({
         children: (
           <View>
-            <View style={{marginTop: 28, paddingHorizontal: 24}}>
-              <Text typography="t4" color={colors.grey800} fontWeight="bold" style={{ marginBottom: 8 }}>
+            <View style={{ marginTop: 28, paddingHorizontal: 24 }}>
+              <Text
+                typography="t4"
+                color={colors.grey800}
+                fontWeight="bold"
+                style={{ marginBottom: 8 }}
+              >
                 반려동물 출입 여행지를 찾고 있나요?
               </Text>
               <Text typography="t6" color={colors.grey600} style={{ marginBottom: 24 }}>
@@ -69,9 +75,9 @@ export default function JoinWho() {
                 <Button
                   type="dark"
                   style="weak"
-                  display= "block"
+                  display="block"
                   onPress={() => {
-                    closeBottomSheet()
+                    closeBottomSheet();
                   }}
                 >
                   수정하기
@@ -83,8 +89,8 @@ export default function JoinWho() {
                   style="fill"
                   display="block"
                   onPress={() => {
-                    closeBottomSheet()
-                    navigation.navigate('/join/season')
+                    closeBottomSheet();
+                    navigation.navigate('/join/season');
                   }}
                 >
                   확인완료
@@ -95,7 +101,7 @@ export default function JoinWho() {
         ),
       });
     } else {
-      navigation.navigate('/join/season')
+      navigation.navigate('/join/season');
     }
   };
 

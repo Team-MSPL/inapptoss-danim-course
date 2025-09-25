@@ -1,5 +1,5 @@
 import React from 'react';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { useAppSelector } from 'store';
 import { useTendencyHandler } from '../../hooks/useTendencyHandler';
 import { View } from 'react-native';
@@ -10,7 +10,7 @@ type EnrollConceptProps = {
   marginTop?: number;
 };
 
-export const Route = BedrockRoute('/enroll/concept', {
+export const Route = createRoute('/enroll/concept', {
   validateParams: (params) => params,
   component: EnrollConcept,
 });

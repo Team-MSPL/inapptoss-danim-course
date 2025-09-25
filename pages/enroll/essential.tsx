@@ -1,10 +1,10 @@
 import { Badge, colors, ListRow, Text, useToast } from '@toss-design-system/react-native';
 import React from 'react';
 import { View } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { useAppSelector } from 'store';
 
-export const Route = BedrockRoute('/enroll/essential', {
+export const Route = createRoute('/enroll/essential', {
   validateParams: (params) => params,
   component: Essential,
 });

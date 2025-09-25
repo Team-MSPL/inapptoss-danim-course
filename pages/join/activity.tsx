@@ -10,10 +10,10 @@ import NavigationBar from '../../components/navigation-bar';
 import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
 import { useAppSelector } from 'store';
 import TendencyButton from '../../components/tendency-button';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
 
-export const Route = BedrockRoute('/join/activity', {
+export const Route = createRoute('/join/activity', {
   validateParams: (params) => params,
   component: JoinActivity,
 });
@@ -67,7 +67,11 @@ export default function JoinActivity() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/place')}>
+            <Button
+              display="block"
+              type="primary"
+              onPress={() => navigation.navigate('/join/place')}
+            >
               다음으로
             </Button>
           }

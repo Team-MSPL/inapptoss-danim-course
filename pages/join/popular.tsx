@@ -1,19 +1,21 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import {
   FixedBottomCTAProvider,
   Button,
   FixedBottomCTA,
-  Text, colors, Slider,
+  Text,
+  colors,
+  Slider,
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { useAppSelector } from 'store';
 import { regionSearchActions } from '../../redux/regionSearchSlice';
 import { useDispatch } from 'react-redux';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
 
-export const Route = BedrockRoute('/join/popular', {
+export const Route = createRoute('/join/popular', {
   validateParams: (params) => params,
   component: PopularSensitivityScreen,
 });
@@ -23,18 +25,19 @@ export default function PopularSensitivityScreen() {
   const dispatch = useDispatch();
 
   const popularSensitivity = useAppSelector(
-    state => state.regionSearchSlice.request.popularSensitivity ?? 5
+    (state) => state.regionSearchSlice.request.popularSensitivity ?? 5,
   );
 
   const [value, setValue] = useState(popularSensitivity);
 
   const handleSliderChange = (value: number) => {
-    dispatch(regionSearchActions.setRequest({
-      ...state.regionSearchSlice.request,
-      popularSensitivity: Math.round(value),
-    }));
-  }
-
+    dispatch(
+      regionSearchActions.setRequest({
+        ...state.regionSearchSlice.request,
+        popularSensitivity: Math.round(value),
+      }),
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -44,21 +47,23 @@ export default function PopularSensitivityScreen() {
           title={'가고자 하는 여행지가\n어떤 느낌이었으면 하나요?'}
           subTitle1={'2. 여행지의 인기도를 선택해주세요'}
         />
-        <View style={{
-          backgroundColor: '#F6F7FA',
-          borderRadius: 16,
-          paddingVertical: 16,
-          paddingHorizontal: 24,
-          marginHorizontal: 30,
-          marginBottom: 32,
-          marginTop: 20,
-        }}>
+        <View
+          style={{
+            backgroundColor: '#F6F7FA',
+            borderRadius: 16,
+            paddingVertical: 16,
+            paddingHorizontal: 24,
+            marginHorizontal: 30,
+            marginBottom: 32,
+            marginTop: 20,
+          }}
+        >
           {[
-            ["1. 가장 이색적인", "경남 함안군 등 37개 지역"],
-            ["2. 이색적인", "경북 청송군 등 53개 지역"],
-            ["3. 매력적인", "강원 화천시 등 32개 지역"],
-            ["4. 유명한", "강원 강릉시 등 30개 지역"],
-            ["5. 가장 유명한", "서울, 제주 등 10개 지역"],
+            ['1. 가장 이색적인', '경남 함안군 등 37개 지역'],
+            ['2. 이색적인', '경북 청송군 등 53개 지역'],
+            ['3. 매력적인', '강원 화천시 등 32개 지역'],
+            ['4. 유명한', '강원 강릉시 등 30개 지역'],
+            ['5. 가장 유명한', '서울, 제주 등 10개 지역'],
           ].map(([left, right], i) => (
             <View
               key={i}
@@ -88,7 +93,7 @@ export default function PopularSensitivityScreen() {
             step={1}
             color={colors.green300}
           />
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text typography="t5" fontWeight="medium" color={colors.grey700}>
               가장 이색적인
             </Text>
@@ -105,7 +110,11 @@ export default function PopularSensitivityScreen() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/distance')}>
+            <Button
+              display="block"
+              type="primary"
+              onPress={() => navigation.navigate('/join/distance')}
+            >
               다음으로
             </Button>
           }

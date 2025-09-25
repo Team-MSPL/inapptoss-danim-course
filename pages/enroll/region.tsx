@@ -6,7 +6,7 @@ import {
   Text,
 } from '@toss-design-system/react-native';
 import React, { useCallback, useRef, useState } from 'react';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { CustomProgressBar } from '../../components/progress-bar';
 import { StepText } from '../../components/step-text';
 import { styles } from './country';
@@ -14,15 +14,12 @@ import TendencyButton from '../../components/tendency-button';
 import { RouteButton } from '../../components/route-button';
 import { cityViewList } from '../../utill/city-list';
 import { useAppDispatch, useAppSelector } from 'store';
-import {
-  ScrollView,
-  TouchableOpacity,
-} from '@react-native-bedrock/native/react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from '@granite-js/native/react-native-gesture-handler';
 import { travelSliceActions } from '../../redux/travle-slice';
 import { Pressable, View, TextInput } from 'react-native';
 import { CustomColor } from '../../utill/custom-color';
 
-export const Route = BedrockRoute('/enroll/region', {
+export const Route = createRoute('/enroll/region', {
   validateParams: (params) => params,
   component: Region,
 });
@@ -199,7 +196,7 @@ function Region() {
             >
               <Text
                 typography="t5"
-                fontWeight= {cityIndex == idx ? "semibold" : "regular"}
+                fontWeight={cityIndex == idx ? 'semibold' : 'regular'}
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={{
@@ -251,7 +248,7 @@ function Region() {
               >
                 <Text
                   typography="t5"
-                  fontWeight= {region.includes(item.subTitle) ? "semibold" : "regular"}
+                  fontWeight={region.includes(item.subTitle) ? 'semibold' : 'regular'}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{

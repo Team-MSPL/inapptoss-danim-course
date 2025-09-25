@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
-import { BedrockRoute, Flex, Image, Lottie, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
+import { Image } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import {
   getMyTravelList,
@@ -20,11 +21,11 @@ import {
   Top,
   useToast,
 } from '@toss-design-system/react-native';
-import { FlatList } from '@react-native-bedrock/native/react-native-gesture-handler';
+import { FlatList } from '@granite-js/native/react-native-gesture-handler';
 import moment from 'moment';
 import { cityViewList } from '../utill/city-list';
 
-export const Route = BedrockRoute('/my-travle-list', {
+export const Route = createRoute('/my-travle-list', {
   validateParams: (params) => params,
   component: MyTravleList,
 });

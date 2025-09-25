@@ -1,4 +1,4 @@
-import { FlatList } from '@react-native-bedrock/native/react-native-gesture-handler';
+import { FlatList } from 'react-native';
 import {
   BottomSheet,
   Button,
@@ -12,7 +12,7 @@ import {
 } from '@toss-design-system/react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import { View, NativeSyntheticEvent, NativeScrollEvent, Animated, Dimensions } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import CustomMapViewMarker from '../components/map-view-marker';
 import {
@@ -22,7 +22,7 @@ import {
   travelSliceActions,
 } from '../redux/travle-slice';
 import { useDistance } from '../hooks/useDistance';
-import { CommonActions } from '@react-native-bedrock/native/@react-navigation/native';
+import { CommonActions } from '@granite-js/native/@react-navigation/native';
 import NavigationBar from '../components/navigation-bar';
 import { PresetTendencyHeader } from '../components/preset-detail/preset-tendency-header';
 import { PresetDayCard } from '../components/preset-detail/preset-day-card';
@@ -45,7 +45,7 @@ interface TendencyObj {
   tendencyRanking: number[];
 }
 
-export const Route = BedrockRoute('/preset-detail', {
+export const Route = createRoute('/preset-detail', {
   validateParams: (params: any) => params,
   component: PresetDetail,
 });

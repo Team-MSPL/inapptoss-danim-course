@@ -1,20 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, Animated } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { useAppSelector } from 'store';
 import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
 import TendencyButton from '../../components/tendency-button';
-import { Icon, Button, FixedBottomCTAProvider, FixedBottomCTA, Text, colors } from '@toss-design-system/react-native';
+import {
+  Icon,
+  Button,
+  FixedBottomCTAProvider,
+  FixedBottomCTA,
+  Text,
+  colors,
+} from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { StepText } from '../../components/step-text';
 
 const PLACE_IDX = 3;
 const PLACE_PAGE_SPLIT = [
-  [0, 6],   // 첫 페이지: 0~5 (6개)
-  [6, 11],  // 두 번째 페이지: 6~10 (5개)
+  [0, 6], // 첫 페이지: 0~5 (6개)
+  [6, 11], // 두 번째 페이지: 6~10 (5개)
 ];
 
-export const Route = BedrockRoute('/join/place', {
+export const Route = createRoute('/join/place', {
   validateParams: (params) => params,
   component: JoinPlace,
 });
@@ -61,7 +68,7 @@ export default function JoinPlace() {
 
   // 실내여행지 버튼 onPress 핸들러
   const handlePlaceButtonPress = (idx: number) => {
-    if (isPetSelected && (start + idx === indoorIdx)) {
+    if (isPetSelected && start + idx === indoorIdx) {
       setShowConflictWarning(true);
       // 경고문구가 일정 시간 후 사라지게 하려면 아래 코드 추가:
       // setTimeout(() => setShowConflictWarning(false), 2000);
@@ -90,25 +97,22 @@ export default function JoinPlace() {
           }}
         >
           {showConflictWarning && (
-            <Text
-              typography="t7"
-              fontWeight="bold"
-              color={colors.red600}
-              style={{ fontSize: 16 }}
-            >
+            <Text typography="t7" fontWeight="bold" color={colors.red600} style={{ fontSize: 16 }}>
               반려동물과 실내여행지는 함께 선택할 수 없습니다.
             </Text>
           )}
         </Animated.View>
-        <View style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: 12,
-          paddingHorizontal: 24,
-          justifyContent: 'center',
-          marginTop: 16,
-          marginBottom: 14,
-        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 12,
+            paddingHorizontal: 24,
+            justifyContent: 'center',
+            marginTop: 16,
+            marginBottom: 14,
+          }}
+        >
           {curPlaceList.map((item, idx) => (
             <TendencyButton
               key={item}
@@ -124,21 +128,24 @@ export default function JoinPlace() {
           ))}
         </View>
         {/* 페이지 이동 화살표 */}
-        <View style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 0,
-          marginBottom: 16,
-          gap: 8,
-        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 0,
+            marginBottom: 16,
+            gap: 8,
+          }}
+        >
           <TouchableOpacity
             onPress={() => setPage(page - 1)}
             disabled={page === 0}
             style={{
               opacity: page === 0 ? 0.3 : 1,
               padding: 12,
-            }}>
+            }}
+          >
             <Icon name="icon-arrow-left-sidebar-mono" size={28} color="#222" />
           </TouchableOpacity>
           <TouchableOpacity
@@ -147,7 +154,8 @@ export default function JoinPlace() {
             style={{
               opacity: page === PLACE_PAGE_SPLIT.length - 1 ? 0.3 : 1,
               padding: 12,
-            }}>
+            }}
+          >
             <Icon name="icon-arrow-right-sidebar-mono" size={28} color="#222" />
           </TouchableOpacity>
         </View>
@@ -159,7 +167,11 @@ export default function JoinPlace() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/popular')}>
+            <Button
+              display="block"
+              type="primary"
+              onPress={() => navigation.navigate('/join/popular')}
+            >
               다음으로
             </Button>
           }

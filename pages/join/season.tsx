@@ -1,13 +1,19 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
+import { Image } from '@granite-js/react-native';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { useAppSelector } from 'store';
-import { Text, Button, FixedBottomCTAProvider, FixedBottomCTA } from '@toss-design-system/react-native';
+import {
+  Text,
+  Button,
+  FixedBottomCTAProvider,
+  FixedBottomCTA,
+} from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
-import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
+import { CustomProgressBarJoin } from '../../components/join/custom-progress-bar-join';
 
-export const Route = BedrockRoute('/join/season', {
+export const Route = createRoute('/join/season', {
   validateParams: (params) => params,
   component: SeasonSelect,
 });
@@ -63,10 +69,7 @@ export default function SeasonSelect() {
                 <Text
                   typography="t5"
                   color={'#505A69'}
-                  style={[
-                    styles.itemText,
-                    seasonSelect[idx] === 1 && styles.selectedText,
-                  ]}
+                  style={[styles.itemText, seasonSelect[idx] === 1 && styles.selectedText]}
                 >
                   {season}
                 </Text>
@@ -82,7 +85,11 @@ export default function SeasonSelect() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/theme')}>
+            <Button
+              display="block"
+              type="primary"
+              onPress={() => navigation.navigate('/join/theme')}
+            >
               다음으로
             </Button>
           }

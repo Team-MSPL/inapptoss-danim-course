@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import { travelSliceActions } from '../../redux/travle-slice';
 import { CustomColor } from '../../utill/custom-color';
@@ -10,7 +10,7 @@ type EnrollTransitProps = {
   marginTop?: number;
 };
 
-export const Route = BedrockRoute('/enroll/transit', {
+export const Route = createRoute('/enroll/transit', {
   validateParams: (params) => params,
   component: EnrollTransit,
 });
@@ -41,15 +41,10 @@ export function EnrollTransit({ marginTop = 70 }: EnrollTransitProps) {
             key={item.name}
             onPress={item.onPress}
             activeOpacity={0.85}
-            style={[
-              styles.gridItem,
-              isSelected && styles.selectedGridItem,
-            ]}
+            style={[styles.gridItem, isSelected && styles.selectedGridItem]}
           >
             <Icon name={item.icon} style={styles.icon} />
-            <Text style={[styles.itemText, isSelected && styles.selectedText]}>
-              {item.name}
-            </Text>
+            <Text style={[styles.itemText, isSelected && styles.selectedText]}>{item.name}</Text>
           </TouchableOpacity>
         );
       })}

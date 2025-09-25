@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
 import {
   Border,
@@ -12,7 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from 'store';
 import { travelSliceActions } from '../../redux/travle-slice';
 
-export const Route = BedrockRoute('/enroll/title', {
+export const Route = createRoute('/enroll/title', {
   validateParams: (params) => params,
   component: EnrollTitle,
 });

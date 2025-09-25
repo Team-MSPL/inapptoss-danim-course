@@ -2,9 +2,9 @@ import { AnyAction, combineReducers, configureStore, Reducer } from '@reduxjs/to
 import travelSliceReducer from '../redux/travle-slice';
 import productReducer from '../redux/productSlice';
 import inquiryReducer from '../redux/inquirySlice';
-import regionSearchReducer from '../redux/regionSearchSlice'
+import regionSearchReducer from '../redux/regionSearchSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import AsyncStorage from '@react-native-bedrock/native/@react-native-async-storage/async-storage';
+import AsyncStorage from '@granite-js/native/@react-native-async-storage/async-storage';
 
 const persistConfig = {
   key: 'root',

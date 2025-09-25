@@ -1,21 +1,20 @@
 import React from 'react';
-import {Dimensions, Image, TouchableOpacity, View} from "react-native";
-import {Badge, colors, FixedBottomCTAProvider, PartnerNavigation, Text, Top} from "@toss-design-system/react-native";
-import {useNavigation} from "react-native-bedrock";
+import { Dimensions, TouchableOpacity, View } from 'react-native';
+import { Image } from '@granite-js/react-native';
+import {
+  Badge,
+  colors,
+  FixedBottomCTAProvider,
+  Text,
+  Top,
+} from '@toss-design-system/react-native';
+import { useNavigation } from '@granite-js/react-native';
 
 export default function MainHome() {
   const navigation = useNavigation();
 
   return (
     <View style={{ flex: 1 }}>
-      <PartnerNavigation
-        title="다님"
-        icon={{
-          source: {
-            uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
-          },
-        }}
-      ></PartnerNavigation>
       <FixedBottomCTAProvider>
         <Top
           title={

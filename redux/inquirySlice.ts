@@ -1,5 +1,5 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import axiosAuth from "./api";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axiosAuth from './api';
 
 interface InquiryState {
   loading: boolean;
@@ -52,7 +52,7 @@ export const postInquiry = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  }
+  },
 );
 
 export const { resetInquiryState } = inquirySlice.actions;

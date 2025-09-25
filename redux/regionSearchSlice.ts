@@ -9,7 +9,7 @@ import {
 // 비동기 thunk: 여행 지역 추천 API 호출
 export const fetchRegionRecommendations = createAsyncThunk<
   RegionRecommendation[], // 반환 타입
-  RegionSearchRequest     // 요청 타입
+  RegionSearchRequest // 요청 타입
 >('regionSearch/fetchRegionRecommendations', async (requestData, { rejectWithValue }) => {
   try {
     const response = await axios.post('<databaseURL>/regionSearch/run', requestData, {
@@ -49,10 +49,13 @@ const regionSearchSlice = createSlice({
         state.loading = true;
         state.error = undefined;
       })
-      .addCase(fetchRegionRecommendations.fulfilled, (state, action: PayloadAction<RegionRecommendation[]>) => {
-        state.response = action.payload;
-        state.loading = false;
-      })
+      .addCase(
+        fetchRegionRecommendations.fulfilled,
+        (state, action: PayloadAction<RegionRecommendation[]>) => {
+          state.response = action.payload;
+          state.loading = false;
+        },
+      )
       .addCase(fetchRegionRecommendations.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload;
         state.loading = false;

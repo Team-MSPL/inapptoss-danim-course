@@ -1,7 +1,7 @@
 import { colors, Slider, Text } from '@toss-design-system/react-native';
 import React, { useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import CustomMapView from '../../components/map-view';
 import { cityViewList } from '../../utill/city-list';
 import { useAppSelector } from 'store';
@@ -10,7 +10,7 @@ type EnrollDistanceProps = {
   contentRatio?: number;
 };
 
-export const Route = BedrockRoute('/enroll/distance', {
+export const Route = createRoute('/enroll/distance', {
   validateParams: (params) => params,
   component: EnrollDistance,
 });
@@ -37,7 +37,7 @@ export function EnrollDistance({ contentRatio = 1 }: EnrollDistanceProps) {
         range={value}
         contentRatio={contentRatio}
       />
-      <View style={{height: 30}}></View>
+      <View style={{ height: 30 }}></View>
       <Slider value={value} onChange={setValue} min={1} max={10} step={1} color={colors.green300} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text typography="t5" fontWeight="medium" color={colors.grey700}>

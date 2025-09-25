@@ -17,7 +17,7 @@ import {
 } from '@toss-design-system/react-native';
 import React, { MutableRefObject, useRef, useState } from 'react';
 import { Dimensions, View } from 'react-native';
-import { BedrockRoute, Lottie, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -31,7 +31,7 @@ import {
 } from '../redux/travle-slice';
 import { cityList, regionList, regionOneList } from './enroll/essential-search';
 import NavigationBar from '../components/navigation-bar';
-export const Route = BedrockRoute('/add-place', {
+export const Route = createRoute('/add-place', {
   validateParams: (params) => params,
   component: AddPlace,
 });

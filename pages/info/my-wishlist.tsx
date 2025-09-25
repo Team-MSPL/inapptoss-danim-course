@@ -1,10 +1,10 @@
 import { Text } from '@toss-design-system/react-native';
 import React from 'react';
 import { View } from 'react-native';
-import {BedrockRoute} from "react-native-bedrock";
-import MyGuide from "./my-guide";
+import { createRoute } from '@granite-js/react-native';
+import MyGuide from './my-guide';
 
-export const Route = BedrockRoute('/info/my-wishlist', {
+export const Route = createRoute('/info/my-wishlist', {
   validateParams: (params) => params,
   component: MyWishlist,
 });

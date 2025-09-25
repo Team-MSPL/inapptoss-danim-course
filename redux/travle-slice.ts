@@ -590,7 +590,7 @@ export const getProductList = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 export const axiosGoogle = axios.create({

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { BedrockRoute, Lottie, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import { recommendApi, recommendTripadvisor } from '../redux/travle-slice';
 import {
@@ -14,11 +14,11 @@ import {
   useBottomSheet,
   useToast,
 } from '@toss-design-system/react-native';
-import { ScrollView } from '@react-native-bedrock/native/react-native-gesture-handler';
+import { ScrollView } from '@granite-js/native/react-native-gesture-handler';
 import CustomMapViewMarker from '../components/map-view-marker';
 import NavigationBar from '../components/navigation-bar';
 
-export const Route = BedrockRoute('/recommend-place', {
+export const Route = createRoute('/recommend-place', {
   validateParams: (params) => params,
   component: RecommendPlace,
 });

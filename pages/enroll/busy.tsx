@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Image } from '@granite-js/react-native';
+import { createRoute } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import { travelSliceActions } from '../../redux/travle-slice';
 import { CustomColor } from '../../utill/custom-color';
@@ -10,7 +11,7 @@ type EnrollBusyProps = {
   marginTop?: number;
 };
 
-export const Route = BedrockRoute('/enroll/busy', {
+export const Route = createRoute('/enroll/busy', {
   validateParams: (params) => params,
   component: EnrollBusy,
 });
@@ -41,15 +42,10 @@ export function EnrollBusy({ marginTop = 70 }: EnrollBusyProps) {
             key={item.name}
             onPress={item.onPress}
             activeOpacity={0.85}
-            style={[
-              styles.gridItem,
-              isSelected && styles.selectedGridItem,
-            ]}
+            style={[styles.gridItem, isSelected && styles.selectedGridItem]}
           >
             <Image source={{ uri: item.image }} style={styles.icon} />
-            <Text style={[styles.itemText, isSelected && styles.selectedText]}>
-              {item.name}
-            </Text>
+            <Text style={[styles.itemText, isSelected && styles.selectedText]}>{item.name}</Text>
           </TouchableOpacity>
         );
       })}

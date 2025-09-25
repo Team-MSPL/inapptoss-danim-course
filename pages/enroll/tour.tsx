@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Animated } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { useAppSelector } from 'store';
 import { useTendencyHandler } from '../../hooks/useTendencyHandler';
 import { styles } from './country';
 import TendencyButton from '../../components/tendency-button';
 import { Text, useToast, Icon } from '@toss-design-system/react-native';
 
-export const Route = BedrockRoute('/enroll/tour', {
+export const Route = createRoute('/enroll/tour', {
   validateParams: (params) => params,
   component: EnrollTour,
 });
@@ -28,7 +28,7 @@ export function EnrollTour({ marginTop = 30 }: { marginTop?: number }) {
   const warningOpacity = React.useRef(new Animated.Value(0)).current;
 
   const isPetSelected = tendency[0]?.[6] === 1;
-  const indoorIdx = buttonList.findIndex(name => name.includes('실내여행지'));
+  const indoorIdx = buttonList.findIndex((name) => name.includes('실내여행지'));
 
   const onButtonPress = (idx: number) => {
     if (page === 0 && isPetSelected && idx === indoorIdx) {
@@ -58,7 +58,8 @@ export function EnrollTour({ marginTop = 30 }: { marginTop?: number }) {
             marginBottom: 12,
             marginHorizontal: 8,
             opacity: warningOpacity,
-          }}>
+          }}
+        >
           <Text style={{ color: '#FF5959', fontSize: 14 }}>
             반려동물을 선택하면 실내 여행지는 자동으로 제외돼요
           </Text>
@@ -76,20 +77,23 @@ export function EnrollTour({ marginTop = 30 }: { marginTop?: number }) {
         ))}
       </View>
       {/* 하단 화살표 네비게이션 */}
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 24,
-        gap: 8,
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 24,
+          gap: 8,
+        }}
+      >
         <TouchableOpacity
           onPress={() => setPage(page - 1)}
           disabled={page === 0}
           style={{
             opacity: page === 0 ? 0.3 : 1,
             padding: 12,
-          }}>
+          }}
+        >
           <Icon name="icon-arrow-left-sidebar-mono" size={28} color="#222" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -98,7 +102,8 @@ export function EnrollTour({ marginTop = 30 }: { marginTop?: number }) {
           style={{
             opacity: page === TENDENCY_INDEXES.length - 1 ? 0.3 : 1,
             padding: 12,
-          }}>
+          }}
+        >
           <Icon name="icon-arrow-right-sidebar-mono" size={28} color="#222" />
         </TouchableOpacity>
       </View>

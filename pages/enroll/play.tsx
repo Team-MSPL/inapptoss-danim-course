@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { useAppSelector } from 'store';
 import { useTendencyHandler } from '../../hooks/useTendencyHandler';
 import { styles } from './country';
@@ -10,7 +10,7 @@ type EnrollPlayProps = {
   marginTop?: number;
 };
 
-export const Route = BedrockRoute('/enroll/play', {
+export const Route = createRoute('/enroll/play', {
   validateParams: (params) => params,
   component: EnrollPlay,
 });

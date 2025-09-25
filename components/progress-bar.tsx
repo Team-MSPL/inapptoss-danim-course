@@ -1,7 +1,7 @@
 import { colors, ProgressBar } from '@toss-design-system/react-native';
 import { CustomColor } from '../utill/custom-color';
 import { routeStack } from '../utill/route-stack';
-import { useNavigation } from 'react-native-bedrock';
+import { useNavigation } from '@granite-js/react-native';
 
 export const CustomProgressBar = () => {
   const navigation = useNavigation();
