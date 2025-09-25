@@ -15,7 +15,12 @@ export default defineConfig({
         icon: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png', // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
         bridgeColorMode: 'basic',
       },
-      permissions: [],
+      permissions: [
+        {
+          name: 'geolocation',
+          access: 'access',
+        },
+      ],
       navigationBar: {
         withBackButton: true,
         withHomeButton: true,

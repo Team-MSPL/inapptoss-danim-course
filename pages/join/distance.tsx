@@ -1,28 +1,20 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Alert } from 'react-native';
-import {
-  FixedBottomCTAProvider,
-  Button,
-  FixedBottomCTA,
-  Text,
-  colors,
-  Icon,
-  Slider,
-} from '@toss-design-system/react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, Button, Alert, TextInput } from 'react-native';
+import { getCurrentLocation, Accuracy } from '@apps-in-toss/framework';
+import { FixedBottomCTAProvider, FixedBottomCTA, colors, Icon, Slider } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-import { createRoute, useNavigation } from '@granite-js/react-native';
 import CustomMapView from '../../components/map-view';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'store';
 import { regionSearchActions } from '../../redux/regionSearchSlice';
-import { getCurrentLocation, Accuracy, Location } from '@apps-in-toss/framework';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 
 export const Route = createRoute('/join/distance', {
   validateParams: (params) => params,
   component: JoinDistance,
 });
 
-const ZOOM_STEP = 0.275;
+const ZOOM_STEP = 0.4;
 function getZoomByValue(value: number) {
   return 12.5 - (value - 1) * ZOOM_STEP;
 }
@@ -38,52 +30,32 @@ export default function JoinDistance() {
     request.distanceSensitivity > 0 ? request.distanceSensitivity : 5,
   );
   const [searchValue, setSearchValue] = useState('');
-  const [location, setLocation] = useState<Location | null>(null);
+  const [location, setLocation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState<string>('unknown');
-  const [permissionRequested, setPermissionRequested] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 권한 상태 확인
-  const checkPermission = async () => {
-    try {
-      const status = await getCurrentLocation.getPermission?.();
-      setPermissionStatus(status ?? 'unknown');
-      Alert.alert('위치 권한 상태', String(status));
-    } catch (e) {
-      setPermissionStatus('error');
-      Alert.alert('권한 확인 실패', String(e));
-    }
-  };
-
-  // 권한 다이얼로그 요청
-  const requestPermission = async () => {
-    setPermissionRequested(true);
-    try {
-      const result = await getCurrentLocation.openPermissionDialog?.();
-      if (result === true) {
-        Alert.alert('위치 권한이 허용되었습니다.');
-      } else {
-        Alert.alert('위치 권한이 거부되었습니다.');
-      }
-    } catch (e) {
-      Alert.alert('권한 요청 실패', String(e));
-    }
-  };
-
-  // 위치 요청
-  const fetchLocation = async () => {
+  // 위치 권한 요청 및 위치 요청
+  const requestLocationAndFetch = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getCurrentLocation({ accuracy: Accuracy.Balanced });
-      setLocation(response);
+      const granted = await getCurrentLocation.openPermissionDialog?.();
+      if (granted) {
+        const loc = await getCurrentLocation({ accuracy: Accuracy.Balanced });
+        setLocation(loc);
+      }
+      // 권한 거부 시 아무것도 하지 않음, 계속 서울시청 기준
     } catch (e: any) {
       setError(e?.message || '위치 정보를 가져오지 못했습니다.');
-      setLocation(null);
     }
     setLoading(false);
   };
+
+  // 최초 마운트 시 위치 요청 시도
+  useEffect(() => {
+    requestLocationAndFetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 지도 중심 좌표
   let lat = SEOUL_CITY_HALL.latitude;
@@ -93,7 +65,7 @@ export default function JoinDistance() {
     lng = location.coords.longitude;
   }
 
-  // 슬라이더 놓을 때에만 리덕스 업데이트
+  // 슬라이더 변경 완료시 리덕스 업데이트
   const handleRangeChangeEnd = (value: number) => {
     dispatch(
       regionSearchActions.setRequest({
@@ -107,62 +79,19 @@ export default function JoinDistance() {
     );
   };
 
-  // 렌더링 분기
-  if (!permissionRequested) {
-    return (
-      <View style={styles.centered}>
-        <Text style={{ marginBottom: 16 }}>여행 반경 추천을 위해 위치 권한이 필요합니다.</Text>
-        <Button type="primary" onPress={requestPermission}>
-          위치 권한 요청하기
-        </Button>
-        <View style={{ height: 12 }} />
-        <Button type="dark" style="weak" onPress={checkPermission}>
-          권한 상태 확인
-        </Button>
-        <Text style={{ marginTop: 16, color: colors.grey400 }}>
-          권한 거부 시 서울시청을 기준으로 보여집니다.
-        </Text>
-      </View>
-    );
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <Text>위치를 불러오는 중입니다...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text style={{ marginBottom: 8 }}>{error}</Text>
-        <Button style="weak" type="dark" onPress={fetchLocation}>
-          위치 다시 시도
-        </Button>
-        <Text style={{ marginTop: 16, color: colors.grey400 }}>
-          계속 안된다면 위치 권한을 확인해 주세요. {'\n'}
-          서울시청을 기준으로 지도를 표시합니다.
-        </Text>
-      </View>
-    );
-  }
-
-  // 정상 위치 or fallback
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <NavigationBar />
       <FixedBottomCTAProvider>
         {/* Step Header */}
         <View style={{ marginHorizontal: 24, marginTop: 16, marginBottom: 0 }}>
-          <Text typography="t6" color={colors.grey600} style={{ marginBottom: 6 }}>
+          <Text style={{ fontSize: 16, color: colors.grey600, marginBottom: 6 }}>
             3. 원하는 반경의 지역을 추천해드려요
           </Text>
-          <Text typography="t2" fontWeight="bold" style={{ marginBottom: 8 }}>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 8 }}>
             현재 위치에서 추천받을 여행 반경을 선택해주세요
           </Text>
-          <Text typography="t7" color={colors.grey500} style={{ marginBottom: 16 }}>
+          <Text style={{ fontSize: 13, color: colors.grey500, marginBottom: 16 }}>
             그림은 이해를 돕기 위한 예시이므로 실제 결과와는 차이가 있을 수 있어요.
           </Text>
           {/* 검색/다른 위치 입력창 */}
@@ -178,6 +107,7 @@ export default function JoinDistance() {
             />
           </View>
         </View>
+
         {/* 지도 */}
         <View style={{ alignItems: 'center', marginTop: 12 }}>
           <CustomMapView
@@ -189,6 +119,20 @@ export default function JoinDistance() {
             contentRatio={1}
           />
         </View>
+
+        {/* 로딩/에러/위치 권한 안내 메시지 */}
+        <View style={{ alignItems: 'center', marginTop: 10, minHeight: 28 }}>
+          {loading && <Text>위치를 불러오는 중입니다...</Text>}
+          {!loading && error && (
+            <Text style={{ color: 'red', marginBottom: 4 }}>{error}</Text>
+          )}
+          {!loading && !location && (
+            <Text style={{ color: colors.grey400 }}>
+              위치 권한이 없으면 서울시청을 기준으로 보여집니다.
+            </Text>
+          )}
+        </View>
+
         {/* 슬라이더 */}
         <View style={{ marginHorizontal: 32, marginTop: 24 }}>
           <Slider
@@ -201,30 +145,18 @@ export default function JoinDistance() {
             color={colors.green300}
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 }}>
-            <Text typography="t5" fontWeight="medium" color={colors.grey700}>
-              내 근처
-            </Text>
-            <Text typography="t5" fontWeight="medium" color={colors.grey700}>
-              한국 전체
-            </Text>
+            <Text style={{ fontSize: 15, color: colors.grey700 }}>내 근처</Text>
+            <Text style={{ fontSize: 15, color: colors.grey700 }}>한국 전체</Text>
           </View>
         </View>
         {/* 하단 버튼 */}
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: 'white' }}
           leftButton={
-            <Button type="dark" style="weak" display="block" onPress={() => navigation.goBack()}>
-              이전으로
-            </Button>
+            <Button title="이전으로" color={colors.grey700} onPress={() => navigation.goBack()} />
           }
           rightButton={
-            <Button
-              display="block"
-              type="primary"
-              onPress={() => navigation.navigate('/join/confirm')}
-            >
-              다음으로
-            </Button>
+            <Button title="다음으로" color={colors.green300} onPress={() => navigation.navigate('/join/confirm')} />
           }
         />
       </FixedBottomCTAProvider>
