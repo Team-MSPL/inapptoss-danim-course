@@ -105,7 +105,7 @@ export default function PopularSensitivityScreen() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/popular')}>
+            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/distance')}>
               다음으로
             </Button>
           }

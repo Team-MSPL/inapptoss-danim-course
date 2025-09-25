@@ -36,6 +36,9 @@ const regionSearchSlice = createSlice({
     setPopularSensitivity(state, action: PayloadAction<number>) {
       state.request.popularSensitivity = action.payload;
     },
+    setRecentPosition(state, action: PayloadAction<{ lat: number; lng: number }>) {
+      state.request.recentPosition = action.payload;
+    },
     reset(state) {
       Object.assign(state, initialRegionSearchState);
     },

@@ -24,6 +24,7 @@ import { Route as _InfoMyInquiryRoute } from '../pages/info/my-inquiry';
 import { Route as _InfoMyReservationRoute } from '../pages/info/my-reservation';
 import { Route as _InfoMyWishlistRoute } from '../pages/info/my-wishlist';
 import { Route as _JoinActivityRoute } from '../pages/join/activity';
+import { Route as _JoinDistanceRoute } from '../pages/join/distance';
 import { Route as _JoinPlaceRoute } from '../pages/join/place';
 import { Route as _JoinPopularRoute } from '../pages/join/popular';
 import { Route as _JoinSeasonRoute } from '../pages/join/season';
@@ -61,6 +62,7 @@ declare module 'react-native-bedrock' {
     '/info/my-reservation': ReturnType<typeof _InfoMyReservationRoute.useParams>;
     '/info/my-wishlist': ReturnType<typeof _InfoMyWishlistRoute.useParams>;
     '/join/activity': ReturnType<typeof _JoinActivityRoute.useParams>;
+    '/join/distance': ReturnType<typeof _JoinDistanceRoute.useParams>;
     '/join/place': ReturnType<typeof _JoinPlaceRoute.useParams>;
     '/join/popular': ReturnType<typeof _JoinPopularRoute.useParams>;
     '/join/season': ReturnType<typeof _JoinSeasonRoute.useParams>;
