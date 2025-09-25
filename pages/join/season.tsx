@@ -1,29 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import {BedrockRoute, useNavigation} from 'react-native-bedrock';
-import { useAppDispatch, useAppSelector } from 'store';
-import { travelSliceActions } from '../../redux/travle-slice';
+import { useAppSelector } from 'store';
 import { Text, Button, FixedBottomCTAProvider, FixedBottomCTA } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-
-const seasonList = [
-  {
-    name: '봄',
-    icon: '🌼',
-  },
-  {
-    name: '여름',
-    icon: '🏝️',
-  },
-  {
-    name: '가을',
-    icon: '🍁',
-  },
-  {
-    name: '겨울',
-    icon: '❄️',
-  },
-];
+import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
 
 export const Route = BedrockRoute('/join/season', {
   validateParams: (params) => params,
@@ -32,20 +13,10 @@ export const Route = BedrockRoute('/join/season', {
 
 export default function SeasonSelect() {
   const navigation = useNavigation();
-  const dispatch = useAppDispatch();
+  const { handleButtonClick } = useRegionTendencyHandler();
   const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
-  const seasonSelect = selectList[selectList.length - 1] ?? [0, 0, 0, 0];
-
-  const handleSelect = (idx: number) => {
-    const updated = [...seasonSelect];
-    updated[idx] = updated[idx] === 1 ? 0 : 1;
-    const newSelectList = [...selectList];
-    newSelectList[newSelectList.length - 1] = updated;
-    dispatch(travelSliceActions.setRequest({
-      ...useAppSelector((state) => state.regionSearchSlice.request),
-      selectList: newSelectList,
-    }));
-  };
+  const seasonData = tendencyData[4]; // 계절 데이터
+  const seasonSelect = selectList[4] ?? [0, 0, 0, 0];
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -63,26 +34,24 @@ export default function SeasonSelect() {
           </Text>
         </View>
         <View style={styles.gridRow}>
-          {seasonList.map((season, idx) => (
+          {seasonData.list.map((season, idx) => (
             <TouchableOpacity
-              key={season.name}
+              key={season}
               style={[
                 styles.gridItem,
                 seasonSelect[idx] === 1 && styles.selectedGridItem,
               ]}
               activeOpacity={0.85}
-              onPress={() => handleSelect(idx)}
+              onPress={() => handleButtonClick({ index: 4, item: idx })}
             >
               <View style={[
                 styles.iconBox,
                 seasonSelect[idx] === 1 && styles.selectedIconBox,
               ]}>
-                <Text style={[styles.icon, seasonSelect[idx] === 1 && styles.selectedIcon]}>
-                  {season.icon}
-                </Text>
+                <Image source={{ uri: seasonData.photo?.[idx] }} style={styles.icon} />
               </View>
               <Text style={[styles.itemText, seasonSelect[idx] === 1 && styles.selectedText]}>
-                {season.name}
+                {season}
               </Text>
             </TouchableOpacity>
           ))}
@@ -90,7 +59,7 @@ export default function SeasonSelect() {
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: 'white', marginTop: 32 }}
           leftButton={
-            <Button type="dark" style="weak" display="block" onPress={() => { /* 이전 페이지 이동 */ }}>
+            <Button type="dark" style="weak" display="block" onPress={() => navigation.goBack()}>
               이전으로
             </Button>
           }
@@ -154,11 +123,9 @@ const styles = StyleSheet.create({
     borderColor: '#D7F940',
   },
   icon: {
-    fontSize: 36,
-    color: '#D2D2D2',
-  },
-  selectedIcon: {
-    color: '#B6E014',
+    width: 60,
+    height: 60,
+    marginBottom: 18,
   },
   itemText: {
     fontSize: 16,

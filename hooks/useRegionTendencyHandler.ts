@@ -40,8 +40,13 @@ export const tendencyData = [
     title: '계절은 언제가 좋으신가요?',
     multi: true,
     list: ['봄', '여름', '가을', '겨울'],
-    // photo: [...],
-  }
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F33C.png', // 봄
+      'https://static.toss.im/2d-emojis/png/4x/u1F3DD.png', // 여름
+      'https://static.toss.im/2d-emojis/png/4x/u1F341.png', // 가을
+      'https://static.toss.im/2d-emojis/png/4x/u2744.png',  // 겨울
+    ],
+  },
 ];
 
 export const useRegionTendencyHandler = () => {
