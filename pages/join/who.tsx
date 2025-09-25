@@ -15,6 +15,7 @@ import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTen
 import { useAppSelector } from 'store';
 import { StepText } from "../../components/step-text";
 import { styles } from "../enroll/country";
+import {BedrockRoute, useNavigation} from "react-native-bedrock";
 
 const buttonContainerStyle = {
   ...styles.ButtonsContainer,
@@ -24,7 +25,13 @@ const buttonContainerStyle = {
   paddingHorizontal: 24,
 };
 
+export const Route = BedrockRoute('/join/who', {
+  validateParams: (params) => params,
+  component: JoinWho,
+});
+
 export default function JoinWho() {
+  const navigation = useNavigation();
   const { handleButtonClick } = useRegionTendencyHandler();
   const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
   const whoList = tendencyData[0].list;
@@ -77,7 +84,7 @@ export default function JoinWho() {
                   display="block"
                   onPress={() => {
                     closeBottomSheet()
-                    // TODO: 확인시에 다음 페이지로 이동
+                    navigation.navigate('/join/season')
                   }}
                 >
                   확인완료
@@ -88,7 +95,7 @@ export default function JoinWho() {
         ),
       });
     } else {
-      // TODO: 반려동물 선택이 아니면 바로 다음 문항으로 이동
+      navigation.navigate('/join/season')
     }
   };
 
@@ -137,7 +144,7 @@ export default function JoinWho() {
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: 'white' }}
           leftButton={
-            <Button type="dark" style="weak" display="block" onPress={() => { /* 이전으로 이동 */ }}>
+            <Button type="dark" style="weak" display="block" onPress={() => navigation.goBack()}>
               이전으로
             </Button>
           }

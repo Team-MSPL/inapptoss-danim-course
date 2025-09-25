@@ -23,6 +23,8 @@ import { Route as _InfoMyInquiryListRoute } from '../pages/info/my-inquiry-list'
 import { Route as _InfoMyInquiryRoute } from '../pages/info/my-inquiry';
 import { Route as _InfoMyReservationRoute } from '../pages/info/my-reservation';
 import { Route as _InfoMyWishlistRoute } from '../pages/info/my-wishlist';
+import { Route as _JoinSeasonRoute } from '../pages/join/season';
+import { Route as _JoinWhoRoute } from '../pages/join/who';
 import { Route as _MyTravleListRoute } from '../pages/my-travle-list';
 import { Route as _PresetDetailRoute } from '../pages/preset-detail';
 import { Route as _PresetRoute } from '../pages/preset';
@@ -54,6 +56,8 @@ declare module 'react-native-bedrock' {
     '/info/my-inquiry': ReturnType<typeof _InfoMyInquiryRoute.useParams>;
     '/info/my-reservation': ReturnType<typeof _InfoMyReservationRoute.useParams>;
     '/info/my-wishlist': ReturnType<typeof _InfoMyWishlistRoute.useParams>;
+    '/join/season': ReturnType<typeof _JoinSeasonRoute.useParams>;
+    '/join/who': ReturnType<typeof _JoinWhoRoute.useParams>;
     '/my-travle-list': ReturnType<typeof _MyTravleListRoute.useParams>;
     '/preset-detail': ReturnType<typeof _PresetDetailRoute.useParams>;
     '/preset': ReturnType<typeof _PresetRoute.useParams>;
