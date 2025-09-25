@@ -3,6 +3,7 @@ export interface RegionSearchRequest {
   selectPopular: number[];
   recentPosition: { lat: number; lng: number };
   distanceSensitivity: number;
+  popularSensitivity?: number;
   version?: number;
   country?: string;
 }
@@ -35,6 +36,7 @@ export const initialRegionSearchState: RegionSearchState = {
     selectPopular: [],
     recentPosition: { lat: 0, lng: 0 },
     distanceSensitivity: -1,
+    popularSensitivity: 5,
     version: 2,
     country: 'Korea',
   },

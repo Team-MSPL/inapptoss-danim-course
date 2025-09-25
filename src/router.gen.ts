@@ -25,6 +25,7 @@ import { Route as _InfoMyReservationRoute } from '../pages/info/my-reservation';
 import { Route as _InfoMyWishlistRoute } from '../pages/info/my-wishlist';
 import { Route as _JoinActivityRoute } from '../pages/join/activity';
 import { Route as _JoinPlaceRoute } from '../pages/join/place';
+import { Route as _JoinPopularRoute } from '../pages/join/popular';
 import { Route as _JoinSeasonRoute } from '../pages/join/season';
 import { Route as _JoinThemeRoute } from '../pages/join/theme';
 import { Route as _JoinWhoRoute } from '../pages/join/who';
@@ -61,6 +62,7 @@ declare module 'react-native-bedrock' {
     '/info/my-wishlist': ReturnType<typeof _InfoMyWishlistRoute.useParams>;
     '/join/activity': ReturnType<typeof _JoinActivityRoute.useParams>;
     '/join/place': ReturnType<typeof _JoinPlaceRoute.useParams>;
+    '/join/popular': ReturnType<typeof _JoinPopularRoute.useParams>;
     '/join/season': ReturnType<typeof _JoinSeasonRoute.useParams>;
     '/join/theme': ReturnType<typeof _JoinThemeRoute.useParams>;
     '/join/who': ReturnType<typeof _JoinWhoRoute.useParams>;

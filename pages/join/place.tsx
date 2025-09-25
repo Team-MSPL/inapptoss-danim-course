@@ -159,7 +159,7 @@ export default function JoinPlace() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => {/* 다음 페이지 이동 */}}>
+            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/popular')}>
               다음으로
             </Button>
           }
