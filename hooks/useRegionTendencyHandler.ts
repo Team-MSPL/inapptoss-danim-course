@@ -1,8 +1,8 @@
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'store';
-import { regionSearchActions} from "../redux/regionSearchSlice";
+import { regionSearchActions } from "../redux/regionSearchSlice";
 
-// 새로운 성향 데이터 (사진 등 추가 가능)
+// 순서/구성: list와 photo 배열 개수 및 순서 100% 일치!
 export const tendencyData = [
   {
     title: '누구와 떠나시나요?',
@@ -22,19 +22,45 @@ export const tendencyData = [
     title: '테마는 무엇인가요?',
     multi: true,
     list: ['힐링', '활동적인', '배움이 있는', '맛있는', '교통이 편한', '알뜰한'],
-    // photo: [...],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F331.png',  // 힐링 🌱
+      'https://static.toss.im/2d-emojis/png/4x/u1F93F.png',  // 활동적인 🤿
+      'https://static.toss.im/2d-emojis/png/4x/u1F4A1.png',  // 배움이 있는 💡
+      'https://static.toss.im/2d-emojis/png/4x/u1F37D.png',  // 맛있는 🍽️
+      'https://static.toss.im/2d-emojis/png/4x/u1F6E3.png',  // 교통이 편한 🛣️
+      'https://static.toss.im/2d-emojis/png/4x/u1F4B5.png',  // 알뜰한 💸
+    ],
   },
   {
     title: '무엇을 하고싶으신가요?',
     multi: true,
-    list: ['레저 스포츠', '산책', '드라이브코스', '이색체험', '쇼핑', '시티투어', '역사 여행'],
-    // photo: [...],
+    list: ['레저 스포츠', '산책', '드라이브', '이색체험', '쇼핑', '시티투어'],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F6B4.png',  // 레저 스포츠 🚴
+      'https://static.toss.im/2d-emojis/png/4x/u1F6B6.png',  // 산책 🚶
+      'https://static.toss.im/2d-emojis/png/4x/u1F698.png',  // 드라이브 🚗
+      'https://static.toss.im/2d-emojis/png/4x/u1F3C3.png',  // 이색체험 🪂(없으면 달리기)
+      'https://static.toss.im/2d-emojis/png/4x/u1F6CD.png',  // 쇼핑 🛍️
+      'https://static.toss.im/2d-emojis/png/4x/u1F3E2.png',  // 시티투어 🏢
+    ],
   },
   {
-    title: '어떤 자연/문화가 좋으신가요?',
+    title: '가고 싶은 장소는 어디인가요?',
     multi: true,
-    list: ['바다', '산', '자연경관', '문화시설', '사진 명소', '전통'],
-    // photo: [...],
+    list: ['바다', '산', '실내여행지', '문화시설', '사진 명소', '유적지', '박물관', '전통', '공원', '사찰', '성지'],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F30A.png', // 바다 🌊
+      'https://static.toss.im/2d-emojis/png/4x/u1F3D4.png', // 산 ⛰️
+      'https://static.toss.im/2d-emojis/png/4x/u1F3E2.png', // 실내여행지 🏢
+      'https://static.toss.im/2d-emojis/png/4x/u1F3AD.png', // 문화시설 🎭
+      'https://static.toss.im/2d-emojis/png/4x/u1F4F7.png', // 사진 명소 📷
+      'https://static.toss.im/2d-emojis/png/4x/u1F3DB.png', // 유적지 🏛️
+      'https://static.toss.im/2d-emojis/png/4x/u1F3A8.png', // 박물관 🎨
+      'https://static.toss.im/2d-emojis/png/4x/u1F3EF.png', // 전통 🏯
+      'https://static.toss.im/2d-emojis/png/4x/u1F3DE.png', // 공원 🏞️
+      'https://static.toss.im/2d-emojis/png/4x/u1F54B.png', // 사찰 🕌
+      'https://static.toss.im/2d-emojis/png/4x/u1F54C.png', // 성지 🕍
+    ],
   },
   {
     title: '계절은 언제가 좋으신가요?',
@@ -64,7 +90,7 @@ export const useRegionTendencyHandler = () => {
     const newSelectList = [...selectList];
     newSelectList[index] = updatedCategory;
     dispatch(regionSearchActions.setRequest({
-      ...regionRequest, // **최상위에서 받아온 regionRequest 사용**
+      ...regionRequest,
       selectList: newSelectList,
     }));
   };

@@ -69,7 +69,7 @@ export default function JoinWho() {
                 <Button
                   type="dark"
                   style="weak"
-                  display="block"
+                  display= "block"
                   onPress={() => {
                     closeBottomSheet()
                   }}

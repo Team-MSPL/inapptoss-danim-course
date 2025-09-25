@@ -5,6 +5,7 @@ import { useAppSelector } from 'store';
 import { Text, Button, FixedBottomCTAProvider, FixedBottomCTA } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
+import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
 export const Route = BedrockRoute('/join/season', {
   validateParams: (params) => params,
@@ -15,10 +16,9 @@ export default function SeasonSelect() {
   const navigation = useNavigation();
   const { handleButtonClick } = useRegionTendencyHandler();
   const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
-  const seasonData = tendencyData[4]; // 계절 데이터
+  const seasonData = tendencyData[4];
   const seasonSelect = selectList[4] ?? [0, 0, 0, 0];
 
-  // 반응형 카드 계산
   const windowWidth = Dimensions.get('window').width;
   const PADDING_HORIZONTAL = 30;
   const CARD_GAP = 10;
@@ -29,6 +29,7 @@ export default function SeasonSelect() {
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <NavigationBar />
       <FixedBottomCTAProvider>
+        <CustomProgressBarJoin currentIndex={2} />
         <View style={styles.header}>
           <Text typography="t6" color="#8A8A8A" fontWeight="medium" style={{ marginBottom: 2 }}>
             1. 여행 스타일을 알아볼게요
@@ -81,7 +82,7 @@ export default function SeasonSelect() {
             </Button>
           }
           rightButton={
-            <Button display="block" type="primary" onPress={() => { /* 다음 페이지 이동 */ }}>
+            <Button display="block" type="primary" onPress={() => navigation.navigate('/join/theme')}>
               다음으로
             </Button>
           }
