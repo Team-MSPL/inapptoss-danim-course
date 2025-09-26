@@ -10,6 +10,7 @@ import { regionSearchActions } from '../../redux/regionSearchSlice';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import type { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
+import {StepText} from "../../components/step-text";
 
 export const Route = createRoute('/join/distance', {
   validateParams: (params) => params,
@@ -97,16 +98,12 @@ export default function JoinDistance() {
       <NavigationBar />
       <FixedBottomCTAProvider>
         {/* Step Header */}
-        <View style={{ marginHorizontal: 24, marginTop: 16, marginBottom: 0 }}>
-          <Text style={{ fontSize: 16, color: colors.grey600, marginBottom: 6 }}>
-            3. 원하는 반경의 지역을 추천해드려요
-          </Text>
-          <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 8 }}>
-            현재 위치에서 추천받을 여행 반경{'\n'}을 선택해주세요
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.grey500, marginBottom: 16 }}>
-            그림은 이해를 돕기 위한 예시이므로 실제 결과와는 {'\n'}차이가 있을 수 있어요.
-          </Text>
+        <StepText
+          title={'현재 위치에서 추천받을 여행 반경\n을 선택해주세요'}
+          subTitle1={'3. 원하는 반경의 지역을 추천해드려요'}
+          subTitle2={'그림은 이해를 돕기 위한 예시이므로 실제 결과와는 \n차이가 있을 수 있어요.'}
+        />
+        <View style={{ marginHorizontal: 24, marginBottom: 0 }}>
           {/* 검색/다른 위치 입력창 */}
           <View style={styles.searchBox}>
             <GooglePlacesAutocomplete
