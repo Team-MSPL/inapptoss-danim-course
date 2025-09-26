@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import LottieView from '@granite-js/native/lottie-react-native';
-import { StepText } from "../../components/step-text";
-import { FixedBottomCTAProvider } from "@toss-design-system/react-native";
-import { useRegionSearchStore} from "../../zustand/regionSearchStore";
-import { postRegionSearch} from "../../zustand/api";
+import { StepText } from '../../components/step-text';
+import { FixedBottomCTAProvider } from '@toss-design-system/react-native';
+import { useRegionSearchStore } from '../../zustand/regionSearchStore';
+import { postRegionSearch } from '../../zustand/api';
 
 const LOTTIE_URL = "https://static.toss.im/lotties/loading/load-ripple.json";
 
@@ -24,9 +24,24 @@ function RegionSearchLoading() {
       try {
         const result = await postRegionSearch(storeState);
         navigation.navigate('/join/result', { result });
-      } catch (e) {
-        // 에러처리 (예: 알림, 재시도 등)
-        console.error(e);
+      } catch (e: any) {
+        if (e?.response?.status === 405) {
+          // 405면 메인으로
+          Alert.alert(
+            '서버 오류',
+            '문제가 발생하여 메인화면으로 이동합니다.',
+            [
+              {
+                text: '확인',
+                onPress: () => navigation.navigate('/main'),
+              },
+            ],
+            { cancelable: false }
+          );
+        } else {
+          // 기타 에러는 콘솔 출력
+          console.error(e);
+        }
       }
     }
     fetchData();
