@@ -28,6 +28,7 @@ import { Route as _JoinDistanceRoute } from '../pages/join/distance';
 import { Route as _JoinLoadingRoute } from '../pages/join/loading';
 import { Route as _JoinPlaceRoute } from '../pages/join/place';
 import { Route as _JoinPopularRoute } from '../pages/join/popular';
+import { Route as _JoinResultRoute } from '../pages/join/result';
 import { Route as _JoinSeasonRoute } from '../pages/join/season';
 import { Route as _JoinThemeRoute } from '../pages/join/theme';
 import { Route as _JoinWhoRoute } from '../pages/join/who';
@@ -67,6 +68,7 @@ declare module '@granite-js/react-native' {
     '/join/loading': ReturnType<typeof _JoinLoadingRoute.useParams>;
     '/join/place': ReturnType<typeof _JoinPlaceRoute.useParams>;
     '/join/popular': ReturnType<typeof _JoinPopularRoute.useParams>;
+    '/join/result': ReturnType<typeof _JoinResultRoute.useParams>;
     '/join/season': ReturnType<typeof _JoinSeasonRoute.useParams>;
     '/join/theme': ReturnType<typeof _JoinThemeRoute.useParams>;
     '/join/who': ReturnType<typeof _JoinWhoRoute.useParams>;

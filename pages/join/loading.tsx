@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useRegionSearchStore } from "../../zustand/regionSearchStore";
 import NavigationBar from '../../components/navigation-bar';
-import { createRoute } from '@granite-js/react-native';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import LottieView from '@granite-js/native/lottie-react-native';
 import { StepText } from "../../components/step-text";
 import { FixedBottomCTAProvider } from "@toss-design-system/react-native";
+import { useRegionSearchStore} from "../../zustand/regionSearchStore";
+import { postRegionSearch} from "../../zustand/api";
 
 const LOTTIE_URL = "https://static.toss.im/lotties/loading/load-ripple.json";
 
@@ -15,16 +16,21 @@ export const Route = createRoute('/join/loading', {
 });
 
 function RegionSearchLoading() {
-  // zustand의 store 전체 상태 받아오기
   const storeState = useRegionSearchStore((state) => state);
+  const navigation = useNavigation();
 
   useEffect(() => {
     async function fetchData() {
-      console.log('Zustand 지역 추천 요청 정보:', storeState);
-      // 실제 API 호출 후 navigation.navigate('/join/result') 등
+      try {
+        const result = await postRegionSearch(storeState);
+        navigation.navigate('/join/result', { result });
+      } catch (e) {
+        // 에러처리 (예: 알림, 재시도 등)
+        console.error(e);
+      }
     }
     fetchData();
-  }, [storeState]);
+  }, [storeState, navigation]);
 
   return (
     <View style={styles.container}>
