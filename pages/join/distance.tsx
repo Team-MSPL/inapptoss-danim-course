@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Button, TextInput } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { getCurrentLocation, Accuracy } from '@apps-in-toss/framework';
-import { FixedBottomCTAProvider, FixedBottomCTA, colors, Icon, Slider } from '@toss-design-system/react-native';
+import { FixedBottomCTAProvider, FixedBottomCTA, colors, Icon, Slider, Button } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import CustomMapView from '../../components/map-view';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'store';
 import { regionSearchActions } from '../../redux/regionSearchSlice';
 import { createRoute, useNavigation } from '@granite-js/react-native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import type { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 
 export const Route = createRoute('/join/distance', {
   validateParams: (params) => params,
@@ -15,12 +17,12 @@ export const Route = createRoute('/join/distance', {
 });
 
 const KOREA_CENTER = { latitude: 36.5, longitude: 127.8 };
-const SEOUL_CITY_HALL = { latitude: 37.5665, longitude: 126.978 };
+const INPUT_WIDTH = Math.min(340, Dimensions.get('window').width - 36);
 
 function getRadiusByRange(range: number) {
   const map = [1000, 3000, 10000, 20000, 50000, 100000, 150000, 200000, 300000, 500000];
   // @ts-ignore
-  return map[range - 1] * 0.00057; // 사용자가 지정한 비율 유지
+  return map[range - 1] * 0.00057;
 }
 function getZoomByRange(range: number) {
   const map = [14, 13, 11.5, 10.5, 9, 8, 7.5, 7, 6.5, 6];
@@ -31,12 +33,13 @@ export default function JoinDistance() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const request = useAppSelector((state) => state.regionSearchSlice.request);
+  const autocompleteRef = useRef<GooglePlacesAutocompleteRef>(null);
 
   const [range, setRange] = useState(
     request.distanceSensitivity > 0 ? request.distanceSensitivity : 5,
   );
-  const [searchValue, setSearchValue] = useState('');
-  const [location, setLocation] = useState<any>(null);
+  const [location, setLocation] = useState<any>(null); // 내 위치
+  const [selectedLocation, setSelectedLocation] = useState<null | { lat: number; lng: number; name?: string }>(null); // 검색 선택 지역
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,21 +53,24 @@ export default function JoinDistance() {
         const loc = await getCurrentLocation({ accuracy: Accuracy.Balanced });
         setLocation(loc);
       }
-      // 권한 거부 시 아무것도 하지 않음, 계속 default 중심
     } catch (e: any) {
       setError(e?.message || '위치 정보를 가져오지 못했습니다.');
     }
     setLoading(false);
   };
 
-  // 최초 마운트 시 위치 요청 시도
+  // 최초 마운트 시 위치 요청
   useEffect(() => {
     requestLocationAndFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
+  // 지도 중심 좌표 계산
   let lat: number, lng: number;
-  if (range <= 6 && location?.coords) {
+  if (range <= 5 && selectedLocation) {
+    lat = selectedLocation.lat;
+    lng = selectedLocation.lng;
+  } else if (range <= 5 && location?.coords) {
     lat = location.coords.latitude;
     lng = location.coords.longitude;
   } else {
@@ -96,21 +102,67 @@ export default function JoinDistance() {
             3. 원하는 반경의 지역을 추천해드려요
           </Text>
           <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 8 }}>
-            현재 위치에서 추천받을 여행 반경을 선택해주세요
+            현재 위치에서 추천받을 여행 반경{'\n'}을 선택해주세요
           </Text>
           <Text style={{ fontSize: 13, color: colors.grey500, marginBottom: 16 }}>
-            그림은 이해를 돕기 위한 예시이므로 실제 결과와는 차이가 있을 수 있어요.
+            그림은 이해를 돕기 위한 예시이므로 실제 결과와는 {'\n'}차이가 있을 수 있어요.
           </Text>
           {/* 검색/다른 위치 입력창 */}
           <View style={styles.searchBox}>
-            <Icon name="icon-search-mono" color={colors.grey400} size={20} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="다른 위치를 원하시면 검색해 주세요"
-              value={searchValue}
-              onChangeText={setSearchValue}
-              placeholderTextColor={colors.grey400}
-              editable={false}
+            <GooglePlacesAutocomplete
+              placeholder="지역을 검색해보세요"
+              disableScroll={false}
+              enablePoweredByContainer={false}
+              keepResultsAfterBlur={true}
+              ref={autocompleteRef}
+              query={{
+                key: import.meta.env.GOOGLE_API_KEY,
+                language: 'ko',
+              }}
+              textInputProps={{
+                placeholderTextColor: colors.grey500,
+                allowFontScaling: false,
+              }}
+              renderLeftButton={() => <Icon name="icon-search-mono" />}
+              styles={{
+                container: { alignItems: 'center' },
+                textInputContainer: {
+                  width: INPUT_WIDTH,
+                  height: 28,
+                  borderRadius: 12,
+                  backgroundColor: colors.grey100,
+                  alignItems: 'center',
+                  paddingLeft: 20,
+                },
+                listView: { width: INPUT_WIDTH, maxHeight: 250, zIndex: 1000 },
+                textInput: {
+                  position: 'relative',
+                  top: 2,
+                  color: colors.grey500,
+                  backgroundColor: 'transparent',
+                  fontSize: 15,
+                  height: 28,
+                  lineHeight: 20,
+                  alignSelf: 'center',
+                  paddingVertical: 0,
+                  textAlignVertical: 'center',
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                },
+                description: { color: 'black' },
+              }}
+              fetchDetails={true}
+              onPress={async (data, details) => {
+                if (details?.geometry?.location) {
+                  setSelectedLocation({
+                    lat: details.geometry.location.lat,
+                    lng: details.geometry.location.lng,
+                    name: details.name,
+                  });
+                }
+              }}
+              onFail={(error) => console.log(error)}
+              onNotFound={() => console.log('no results')}
             />
           </View>
         </View>
@@ -133,15 +185,19 @@ export default function JoinDistance() {
           {!loading && error && (
             <Text style={{ color: 'red', marginBottom: 4 }}>{error}</Text>
           )}
-          {!loading && !location && (
+          {!loading && !location && !selectedLocation && (
             <Text style={{ color: colors.grey400 }}>
-              위치 권한이 없으면 서울시청을 기준으로 보여집니다.
+              위치 권한이 없으면 대한민국 중심을 기준으로 보여집니다.
             </Text>
           )}
         </View>
 
         {/* 슬라이더 */}
-        <View style={{ marginHorizontal: 32, marginTop: 24 }}>
+        <View style={{ marginHorizontal: 32 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 }}>
+            <Text style={{ fontSize: 15, color: colors.grey700 }}>내 근처/선택지역</Text>
+            <Text style={{ fontSize: 15, color: colors.grey700 }}>한국 전체</Text>
+          </View>
           <Slider
             value={range}
             onChange={setRange}
@@ -151,19 +207,23 @@ export default function JoinDistance() {
             step={1}
             color={colors.green300}
           />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 }}>
-            <Text style={{ fontSize: 15, color: colors.grey700 }}>내 근처</Text>
-            <Text style={{ fontSize: 15, color: colors.grey700 }}>한국 전체</Text>
-          </View>
         </View>
         {/* 하단 버튼 */}
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: 'white' }}
           leftButton={
-            <Button title="이전으로" color={colors.grey700} onPress={() => navigation.goBack()} />
+            <Button type="dark" style="weak" display="block" onPress={() => navigation.goBack()}>
+              이전으로
+            </Button>
           }
           rightButton={
-            <Button title="다음으로" color={colors.green300} onPress={() => navigation.navigate('/join/confirm')} />
+            <Button
+              display="block"
+              type="primary"
+              onPress={() => navigation.navigate('/join/loading')}
+            >
+              다음으로
+            </Button>
           }
         />
       </FixedBottomCTAProvider>
@@ -183,9 +243,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.grey100,
     borderRadius: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 0,
     paddingVertical: 10,
-    marginBottom: 12,
+    marginVertical: 12,
   },
   searchInput: {
     marginLeft: 8,
