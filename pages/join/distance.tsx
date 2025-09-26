@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Button, Alert, TextInput } from 'react-native';
+import { View, StyleSheet, Text, Button, TextInput } from 'react-native';
 import { getCurrentLocation, Accuracy } from '@apps-in-toss/framework';
 import { FixedBottomCTAProvider, FixedBottomCTA, colors, Icon, Slider } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
@@ -14,12 +14,18 @@ export const Route = createRoute('/join/distance', {
   component: JoinDistance,
 });
 
-const ZOOM_STEP = 0.4;
-function getZoomByValue(value: number) {
-  return 12.5 - (value - 1) * ZOOM_STEP;
-}
-
+const KOREA_CENTER = { latitude: 36.5, longitude: 127.8 };
 const SEOUL_CITY_HALL = { latitude: 37.5665, longitude: 126.978 };
+
+function getRadiusByRange(range: number) {
+  const map = [1000, 3000, 10000, 20000, 50000, 100000, 150000, 200000, 300000, 500000];
+  // @ts-ignore
+  return map[range - 1] * 0.00057; // 사용자가 지정한 비율 유지
+}
+function getZoomByRange(range: number) {
+  const map = [14, 13, 11.5, 10.5, 9, 8, 7.5, 7, 6.5, 6];
+  return (map[range - 1] ?? 14) * 0.9;
+}
 
 export default function JoinDistance() {
   const navigation = useNavigation();
@@ -44,7 +50,7 @@ export default function JoinDistance() {
         const loc = await getCurrentLocation({ accuracy: Accuracy.Balanced });
         setLocation(loc);
       }
-      // 권한 거부 시 아무것도 하지 않음, 계속 서울시청 기준
+      // 권한 거부 시 아무것도 하지 않음, 계속 default 중심
     } catch (e: any) {
       setError(e?.message || '위치 정보를 가져오지 못했습니다.');
     }
@@ -56,13 +62,14 @@ export default function JoinDistance() {
     requestLocationAndFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // 지도 중심 좌표
-  let lat = SEOUL_CITY_HALL.latitude;
-  let lng = SEOUL_CITY_HALL.longitude;
-  if (location?.coords) {
+  
+  let lat: number, lng: number;
+  if (range <= 6 && location?.coords) {
     lat = location.coords.latitude;
     lng = location.coords.longitude;
+  } else {
+    lat = KOREA_CENTER.latitude;
+    lng = KOREA_CENTER.longitude;
   }
 
   // 슬라이더 변경 완료시 리덕스 업데이트
@@ -113,8 +120,8 @@ export default function JoinDistance() {
           <CustomMapView
             lat={lat}
             lng={lng}
-            zoom={getZoomByValue(range)}
-            range={range}
+            zoom={getZoomByRange(range)}
+            range={getRadiusByRange(range)}
             style={styles.mapView}
             contentRatio={1}
           />
