@@ -1,145 +1,116 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Text,
   View,
   Image,
   StyleSheet,
-  Dimensions,
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import { Icon } from '@toss-design-system/react-native';
+import {Badge, colors, Text, Tooltip} from '@toss-design-system/react-native';
+import { PlaceResult } from "../../components/join/type";
+import {
+  CARD_BORDER_RADIUS,
+  CARD_MARGIN_BOTTOM,
+  CARD_WIDTH,
+} from "../../components/join/constants/resultConstants";
+import { StepText } from "../../components/step-text";
 
-const { width: windowWidth } = Dimensions.get('window');
+const CARD_ASPECT = 1.9;
+const CARD_HEIGHT = CARD_WIDTH / CARD_ASPECT;
 
-const CARD_WIDTH = windowWidth - 48;
-const CARD_BORDER_RADIUS = 18;
-const CARD_MARGIN_BOTTOM = 16;
+function takenDayToLabel(takenDay: number) {
+  return `${takenDay}박 ${takenDay + 1}일`;
+}
 
 export const Route = createRoute('/join/result', {
   validateParams: (params) => params,
   component: JoinResult,
 });
 
-// -------- 타입 선언 --------
-interface TopPopularPlace {
-  name: string;
-  photo: string;
-  lat: number;
-  lng: number;
-}
-
-interface PlaceResult {
-  name: string;
-  takenDay: number;
-  photo: string;
-  tendency: string[];
-  topPopularPlaceList: TopPopularPlace[];
-}
-// ---------------------------
-
-// 필요시 여기에 변경
-const DAY_TAB_LIST = [
-  { label: '1박 2일 추천', takenDay: 1 },
-  { label: '3박 4일 추천', takenDay: 3 },
-];
-
-function Tag({ label }: { label: string }) {
-  return (
-    <View style={styles.tag}>
-      <Text style={styles.tagText}>{label}</Text>
-    </View>
-  );
-}
-
 function PlaceCard({ place }: { place: PlaceResult }) {
   return (
-    <View style={styles.card}>
-      <Image
-        source={{ uri: place.photo }}
-        style={styles.cardImage}
-        resizeMode="cover"
-      />
-      <View style={styles.cardOverlay} />
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{place.name}</Text>
-        <View style={styles.tagsRow}>
-          {place.tendency.slice(0, 5).map((tag, idx) => (
-            <Tag label={tag} key={idx} />
-          ))}
-        </View>
+    <View style={{ marginBottom: CARD_MARGIN_BOTTOM, marginTop: 80 }}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', flex: 1 }}>
+        <Tooltip message={
+          <View style={{paddingHorizontal: 40, alignSelf: 'flex-end'}}>
+            <Text style={styles.tooltipText}>
+              <Text typography="t6" fontWeight={"bold"} color={"#5350FF"}>
+                {takenDayToLabel(place.takenDay)}
+              </Text>
+              <Text typography="t6" fontWeight={"bold"} color={colors.grey800}> 추천</Text>
+            </Text>
+          </View>
+        } size="large" style={{position: 'absolute'}} placement="top" contentPositionByRatio={2} messageAlign="right" autoFlip children={
+          <View style={styles.card}>
+            <Image
+              source={{ uri: place.photo }}
+              style={styles.cardImage}
+              resizeMode="cover"
+            />
+            <View style={styles.cardOverlay} />
+            <View style={styles.cardContent}>
+              <View style={styles.cardContentInner}>
+                <Text style={styles.cardTitle}>{place.name}</Text>
+                <View style={styles.tagsRow}>
+                  {place.tendency.slice(0, 5).map((tag, idx) => (
+                    <Badge key={idx} style={styles.badge} color="grey700" fill="grey200">
+                      <Text style={styles.badgeText}>{tag}</Text>
+                    </Badge>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </View>
+        }/>
       </View>
     </View>
   );
 }
 
 function JoinResult() {
-  // 파라미터로 전달된 result (PlaceResult[])
   const params = Route.useParams();
   const result: PlaceResult[] = params.result ?? [];
   const navigation = useNavigation();
 
-  // 탭 상태: 1박2일, 3박4일 등
+  // 탭 목록을 result에서 동적으로 만듦(중복없음, takenDay 오름차순)
+  const tabList = useMemo(() => {
+    const days = Array.from(new Set(result.map(r => r.takenDay))).sort((a, b) => a - b);
+    return days.map(takenDay => ({
+      label: takenDayToLabel(takenDay) + ' 추천',
+      takenDay,
+    }));
+  }, [result]);
+
   const [selectedTab, setSelectedTab] = useState(0);
 
-  // 탭별 place 필터링
   const filteredPlaces: PlaceResult[] = useMemo(() => {
-    const takenDay = DAY_TAB_LIST[selectedTab].takenDay;
+    if (!tabList.length) return [];
+    const takenDay = tabList[selectedTab]?.takenDay;
     return result?.filter((place) => place.takenDay === takenDay) ?? [];
-  }, [result, selectedTab]);
+  }, [result, tabList, selectedTab]);
 
   return (
     <View style={styles.container}>
-      {/* Top bar */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="icon-arrow-left-mono" size={24} color="#222" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>다님</Text>
-        <View style={{ width: 24, alignItems: 'flex-end' }}>
-          <Icon name="icon-close-mono" size={24} color="#C2C2C2" />
-        </View>
-      </View>
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 36 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ paddingHorizontal: 24, marginTop: 16 }}>
-          <Text style={styles.title}>나그네님,{"\n"}이런 여행지는 어때요?</Text>
-          <Text style={styles.desc}>여행 성향을 기반으로 추천된 여행지예요!</Text>
-        </View>
-        {/* 탭 */}
-        <View style={styles.tabsRow}>
-          {DAY_TAB_LIST.map((tab, idx) => (
-            <TouchableOpacity
-              key={tab.takenDay}
-              style={[
-                styles.tabBtn,
-                selectedTab === idx && styles.tabBtnActive,
-              ]}
-              onPress={() => setSelectedTab(idx)}
-              activeOpacity={0.85}
-            >
-              <Text style={[
-                styles.tabBtnText,
-                selectedTab === idx && styles.tabBtnTextActive,
-              ]}>
-                {tab.label}
-              </Text>
-              {selectedTab === idx && <View style={styles.tabPointer} />}
-            </TouchableOpacity>
-          ))}
-        </View>
+        <StepText
+          title={'나그네님,\n이런 여행지는 어때요?'}
+          subTitle2={'여행 성향을 기반으로 추천 여행지예요!'}
+        />
         {/* 카드 리스트 */}
         <View style={{ paddingHorizontal: 24, marginTop: 10 }}>
           {filteredPlaces.length === 0 && (
             <Text style={{ color: '#888', marginVertical: 36 }}>추천 결과가 없습니다.</Text>
           )}
           {filteredPlaces.map((place, idx) => (
-            <PlaceCard place={place} key={place.name + idx} />
+            <PlaceCard
+              place={place}
+              key={place.name + idx}
+            />
           ))}
         </View>
       </ScrollView>
@@ -149,29 +120,6 @@ function JoinResult() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    height: 56,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 0,
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-  },
-  headerTitle: { fontWeight: 'bold', fontSize: 18, color: '#222' },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 2,
-    marginTop: 0,
-  },
-  desc: {
-    color: '#7C7C7C',
-    fontSize: 15,
-    fontWeight: '400',
-    marginBottom: 10,
-  },
   tabsRow: {
     flexDirection: 'row',
     marginTop: 16,
@@ -218,54 +166,114 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.09,
     shadowRadius: 3,
   },
+  tooltipContainer: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginBottom: -10, // 카드와 말풍선 사이 간격 조정
+    zIndex: 2,
+  },
+  tooltipBox: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    paddingHorizontal: 32,
+    paddingVertical: 13,
+    shadowColor: '#222',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  tooltipText: {
+    fontSize: 19,
+    color: '#222',
+    fontWeight: '400',
+    textAlign: 'center',
+  },
+  tooltipArrowContainer: {
+    overflow: 'visible',
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tooltipArrow: {
+    width: 28,
+    height: 16,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+    backgroundColor: 'transparent',
+    borderTopWidth: 0,
+    borderLeftWidth: 14,
+    borderRightWidth: 14,
+    borderBottomWidth: 16,
+    borderStyle: 'solid',
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: '#fff',
+    alignSelf: 'center',
+  },
   card: {
     width: CARD_WIDTH,
-    aspectRatio: 1.9,
+    height: CARD_HEIGHT,
     borderRadius: CARD_BORDER_RADIUS,
     overflow: 'hidden',
-    marginBottom: CARD_MARGIN_BOTTOM,
     backgroundColor: '#eee',
     position: 'relative',
+    marginTop: 14,
+    justifyContent: 'flex-end',
   },
   cardImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
+    borderRadius: CARD_BORDER_RADIUS,
   },
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.20)',
+    borderRadius: CARD_BORDER_RADIUS,
   },
   cardContent: {
-    flex: 1,
+    width: '100%',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    alignItems: 'flex-end',
     justifyContent: 'flex-end',
+  },
+  cardContentInner: {
+    alignItems: 'flex-end',
     padding: 18,
+    width: '100%',
   },
   cardTitle: {
     color: '#fff',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 10,
     textShadowColor: 'rgba(0,0,0,0.12)',
     textShadowRadius: 2,
     textShadowOffset: { width: 0, height: 1 },
+    textAlign: 'right',
   },
   tagsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'flex-end',
     gap: 6,
   },
-  tag: {
-    backgroundColor: 'rgba(255,255,255,0.19)',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    marginRight: 6,
+  badge: {
+    marginLeft: 6,
     marginBottom: 4,
+    borderRadius: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    backgroundColor: '#454B54',
   },
-  tagText: {
+  badgeText: {
+    fontSize: 14,
     color: '#fff',
-    fontSize: 13,
     fontWeight: '500',
   },
 });
