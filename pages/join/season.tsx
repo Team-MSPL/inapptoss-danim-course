@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
 import { Image } from '@granite-js/react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import { useAppSelector } from 'store';
 import {
   Text,
   Button,
@@ -10,8 +9,9 @@ import {
   FixedBottomCTA,
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
 import { CustomProgressBarJoin } from '../../components/join/custom-progress-bar-join';
+import { useRegionSearchStore } from "../../zustand/regionSearchStore";
+import { tendencyData } from "../../components/join/constants/tendencyData";
 
 export const Route = createRoute('/join/season', {
   validateParams: (params) => params,
@@ -20,8 +20,10 @@ export const Route = createRoute('/join/season', {
 
 export default function SeasonSelect() {
   const navigation = useNavigation();
-  const { handleButtonClick } = useRegionTendencyHandler();
-  const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
+
+  const selectList = useRegionSearchStore((state) => state.selectList);
+  const setSelectList = useRegionSearchStore((state) => state.setSelectList);
+
   const seasonData = tendencyData[4];
   const seasonSelect = selectList[4] ?? [0, 0, 0, 0];
 
@@ -30,6 +32,14 @@ export default function SeasonSelect() {
   const CARD_GAP = 10;
 
   const cardWidth = (windowWidth - PADDING_HORIZONTAL * 2 - CARD_GAP) / 2;
+
+  const handleSeasonButtonClick = (idx: number) => {
+    const newSeasonArr = [...seasonSelect];
+    newSeasonArr[idx] = newSeasonArr[idx] === 1 ? 0 : 1;
+    const newSelectList = [...selectList];
+    newSelectList[4] = newSeasonArr;
+    setSelectList(newSelectList);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -62,7 +72,7 @@ export default function SeasonSelect() {
                 seasonSelect[idx] === 1 && styles.selectedGridItem,
               ]}
               activeOpacity={0.85}
-              onPress={() => handleButtonClick({ index: 4, item: idx })}
+              onPress={() => handleSeasonButtonClick(idx)}
             >
               <View style={styles.iconTextBox}>
                 <Image source={{ uri: seasonData.photo?.[idx] }} style={styles.icon} />

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useAppSelector } from 'store';
+import { useRegionSearchStore } from "../../zustand/regionSearchStore";
 import NavigationBar from '../../components/navigation-bar';
 import { createRoute } from '@granite-js/react-native';
 import LottieView from '@granite-js/native/lottie-react-native';
@@ -15,15 +15,16 @@ export const Route = createRoute('/join/loading', {
 });
 
 function RegionSearchLoading() {
-  const request = useAppSelector((state) => state.regionSearchSlice.request);
+  // zustand의 store 전체 상태 받아오기
+  const storeState = useRegionSearchStore((state) => state);
 
   useEffect(() => {
     async function fetchData() {
-      console.log('지역 추천 요청 정보:', request);
+      console.log('Zustand 지역 추천 요청 정보:', storeState);
       // 실제 API 호출 후 navigation.navigate('/join/result') 등
     }
     fetchData();
-  }, [request]);
+  }, [storeState]);
 
   return (
     <View style={styles.container}>

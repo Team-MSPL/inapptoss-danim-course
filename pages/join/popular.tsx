@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import {
   FixedBottomCTAProvider,
@@ -9,35 +9,52 @@ import {
   Slider,
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-import { useAppSelector } from 'store';
-import { regionSearchActions } from '../../redux/regionSearchSlice';
-import { useDispatch } from 'react-redux';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
+// Zustand store import
+import { useRegionSearchStore} from "../../zustand/regionSearchStore";
 
 export const Route = createRoute('/join/popular', {
   validateParams: (params) => params,
   component: PopularSensitivityScreen,
 });
 
+function getPopularRange(val: number): [number, number] {
+  // 1~5 값을 [0, 20], [20, 40], ..., [80, 100]로 변환
+  switch (val) {
+    case 1: return [0, 20];
+    case 2: return [20, 40];
+    case 3: return [40, 60];
+    case 4: return [60, 80];
+    case 5: return [80, 100];
+    default: return [0, 20];
+  }
+}
+
 export default function PopularSensitivityScreen() {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
 
-  const popularSensitivity = useAppSelector(
-    (state) => state.regionSearchSlice.request.popularSensitivity ?? 5,
-  );
+  // Zustand 사용
+  const selectPopular = useRegionSearchStore((state) => state.selectPopular);
+  const setSelectPopular = useRegionSearchStore((state) => state.setSelectPopular);
 
-  const [value, setValue] = useState(popularSensitivity);
-
-  const handleSliderChange = (value: number) => {
-    dispatch(
-      regionSearchActions.setRequest({
-        ...state.regionSearchSlice.request,
-        popularSensitivity: Math.round(value),
-      }),
-    );
+  // 슬라이더 값을 selectPopular에서 구해옴. (예: [40,60]이면 3)
+  const getInitialValue = () => {
+    if (!selectPopular || selectPopular.length !== 2) return 3;
+    const [start] = selectPopular;
+    if (start < 20) return 1;
+    if (start < 40) return 2;
+    if (start < 60) return 3;
+    if (start < 80) return 4;
+    return 5;
   };
+
+  const [value, setValue] = useState<number>(getInitialValue());
+
+  // 값이 바뀌면 zustand에 selectPopular 저장
+  useEffect(() => {
+    setSelectPopular(getPopularRange(value));
+  }, [value, setSelectPopular]);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -71,7 +88,7 @@ export default function PopularSensitivityScreen() {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: i === 0 ? 12 : 12, // 첫 줄만 marginVertical: 12였으면 조정
+                marginBottom: i === 0 ? 12 : 12,
                 marginTop: i === 0 ? 12 : 0,
                 marginLeft: 4,
               }}
@@ -89,7 +106,7 @@ export default function PopularSensitivityScreen() {
             value={value}
             onChange={setValue}
             min={1}
-            max={10}
+            max={5}
             step={1}
             color={colors.green300}
           />

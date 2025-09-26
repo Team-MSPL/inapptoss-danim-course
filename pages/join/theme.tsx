@@ -7,11 +7,13 @@ import {
   Text,
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
-import { useAppSelector } from 'store';
+// tendencyData import (상수로 분리했다면 경로 맞게 수정)
+import { tendencyData } from "../../components/join/constants/tendencyData";
 import TendencyButton from '../../components/tendency-button';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
+// Zustand store import
+import { useRegionSearchStore} from "../../zustand/regionSearchStore";
 
 export const Route = createRoute('/join/theme', {
   validateParams: (params) => params,
@@ -20,10 +22,24 @@ export const Route = createRoute('/join/theme', {
 
 export default function JoinTheme() {
   const navigation = useNavigation();
-  const { handleButtonClick } = useRegionTendencyHandler();
-  const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
+
+  // Zustand 사용
+  const selectList = useRegionSearchStore((state) => state.selectList);
+  const setSelectList = useRegionSearchStore((state) => state.setSelectList);
+
   const themeList = tendencyData[1].list;
   const themeIcons = tendencyData[1].photo;
+  const themeSelect = selectList[1] ?? new Array(themeList.length).fill(0);
+
+  // 테마 버튼 클릭 핸들러
+  const handleThemeButtonClick = (idx: number) => {
+    const newThemeArr = [...themeSelect];
+    newThemeArr[idx] = newThemeArr[idx] === 1 ? 0 : 1;
+    // selectList의 1번째(테마)만 바꿔서 저장
+    const newSelectList = [...selectList];
+    newSelectList[1] = newThemeArr;
+    setSelectList(newSelectList);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -50,11 +66,11 @@ export default function JoinTheme() {
             <TendencyButton
               key={item}
               marginBottom={12}
-              bgColor={selectList[1]?.[idx] === 1}
+              bgColor={themeSelect[idx] === 1}
               label={item}
               divide
               imageUrl={themeIcons?.[idx]}
-              onPress={() => handleButtonClick({ index: 1, item: idx })}
+              onPress={() => handleThemeButtonClick(idx)}
               width={150}
             />
           ))}

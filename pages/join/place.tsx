@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, Animated } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import { useAppSelector } from 'store';
-import { useRegionTendencyHandler, tendencyData } from '../../hooks/useRegionTendencyHandler';
+// Zustand store import
+import { useRegionSearchStore} from "../../zustand/regionSearchStore";
+// tendencyData import (상수로 분리했다면 경로 맞게 수정)
+import { tendencyData} from "../../components/join/constants/tendencyData";
 import TendencyButton from '../../components/tendency-button';
 import {
   Icon,
@@ -30,8 +32,10 @@ export default function JoinPlace() {
   const [page, setPage] = useState(0);
   const [showConflictWarning, setShowConflictWarning] = useState(false);
   const navigation = useNavigation();
-  const { handleButtonClick } = useRegionTendencyHandler();
-  const selectList = useAppSelector((state) => state.regionSearchSlice.request.selectList ?? []);
+
+  // Zustand 사용
+  const selectList = useRegionSearchStore((state) => state.selectList);
+  const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
   // 누구와 list/반려동물 인덱스
   const whoList = tendencyData[0]?.list ?? [];
@@ -66,16 +70,20 @@ export default function JoinPlace() {
     }
   }, [showConflictWarning]);
 
-  // 실내여행지 버튼 onPress 핸들러
+  // 실내여행지 버튼 onPress 핸들러 (Zustand로 반영)
   const handlePlaceButtonPress = (idx: number) => {
     if (isPetSelected && start + idx === indoorIdx) {
       setShowConflictWarning(true);
-      // 경고문구가 일정 시간 후 사라지게 하려면 아래 코드 추가:
-      // setTimeout(() => setShowConflictWarning(false), 2000);
       return;
     }
-    setShowConflictWarning(false); // 다른 버튼 누르면 경고문구 사라지게
-    handleButtonClick({ index: PLACE_IDX, item: start + idx });
+    setShowConflictWarning(false);
+    // selectList[3]만 수정
+    const prevArr = selectList[PLACE_IDX] ?? new Array(placeList.length).fill(0);
+    const newArr = [...prevArr];
+    newArr[start + idx] = newArr[start + idx] === 1 ? 0 : 1;
+    const newSelectList = [...selectList];
+    newSelectList[PLACE_IDX] = newArr;
+    setSelectList(newSelectList);
   };
 
   return (
@@ -123,7 +131,6 @@ export default function JoinPlace() {
               imageUrl={curPlacePhotoList[idx]}
               onPress={() => handlePlaceButtonPress(idx)}
               width={150}
-              // disabled={isPetSelected && (start + idx === indoorIdx)} // 비활성화 제거
             />
           ))}
         </View>

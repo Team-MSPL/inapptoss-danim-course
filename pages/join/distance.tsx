@@ -1,16 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { getCurrentLocation, Accuracy } from '@apps-in-toss/framework';
-import { FixedBottomCTAProvider, FixedBottomCTA, colors, Icon, Slider, Button } from '@toss-design-system/react-native';
+import {
+  FixedBottomCTAProvider,
+  FixedBottomCTA,
+  colors,
+  Icon,
+  Slider,
+  Button,
+} from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import CustomMapView from '../../components/map-view';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from 'store';
-import { regionSearchActions } from '../../redux/regionSearchSlice';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import type { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
-import {StepText} from "../../components/step-text";
+import { StepText } from '../../components/step-text';
+import { useRegionSearchStore} from "../../zustand/regionSearchStore";
 
 export const Route = createRoute('/join/distance', {
   validateParams: (params) => params,
@@ -32,15 +37,22 @@ function getZoomByRange(range: number) {
 
 export default function JoinDistance() {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const request = useAppSelector((state) => state.regionSearchSlice.request);
+  // Zustand 사용
+  const distanceSensitivity = useRegionSearchStore((state) => state.distanceSensitivity);
+  const setDistanceSensitivity = useRegionSearchStore((state) => state.setDistanceSensitivity);
+  const recentPosition = useRegionSearchStore((state) => state.recentPosition);
+  const setRecentPosition = useRegionSearchStore((state) => state.setRecentPosition);
+
   const autocompleteRef = useRef<GooglePlacesAutocompleteRef>(null);
 
+  // 슬라이더 초기값: distanceSensitivity 있으면, 없으면 5
   const [range, setRange] = useState(
-    request.distanceSensitivity > 0 ? request.distanceSensitivity : 5,
+    distanceSensitivity > 0 ? distanceSensitivity : 5,
   );
-  const [location, setLocation] = useState<any>(null); // 내 위치
-  const [selectedLocation, setSelectedLocation] = useState<null | { lat: number; lng: number; name?: string }>(null); // 검색 선택 지역
+  // 내 위치
+  const [location, setLocation] = useState<any>(null);
+  // 검색 선택 지역
+  const [selectedLocation, setSelectedLocation] = useState<null | { lat: number; lng: number; name?: string }>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,19 +91,28 @@ export default function JoinDistance() {
     lng = KOREA_CENTER.longitude;
   }
 
-  // 슬라이더 변경 완료시 리덕스 업데이트
-  const handleRangeChangeEnd = (value: number) => {
-    dispatch(
-      regionSearchActions.setRequest({
-        ...request,
-        distanceSensitivity: value,
-        recentPosition: {
-          lat,
-          lng,
-        },
-      }),
-    );
+  // 슬라이더 변경 시, zustand에 distanceSensitivity, recentPosition 업데이트
+  const handleRangeChange = (value: number) => {
+    setRange(value);
+    setDistanceSensitivity(value);
+    setRecentPosition({ lat, lng });
   };
+
+  // 구글 플레이스에서 지역 선택 시, zustand에 recentPosition 반영
+  const handlePlaceSelect = async (data: any, details: any) => {
+    if (details?.geometry?.location) {
+      const { lat, lng } = details.geometry.location;
+      setSelectedLocation({ lat, lng, name: details.name });
+      setRecentPosition({ lat, lng });
+    }
+  };
+
+  // 컴포넌트 마운트/슬라이더 변경시 zustand에도 반영
+  useEffect(() => {
+    setDistanceSensitivity(range);
+    setRecentPosition({ lat, lng });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [range, lat, lng]);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -149,15 +170,7 @@ export default function JoinDistance() {
                 description: { color: 'black' },
               }}
               fetchDetails={true}
-              onPress={async (data, details) => {
-                if (details?.geometry?.location) {
-                  setSelectedLocation({
-                    lat: details.geometry.location.lat,
-                    lng: details.geometry.location.lng,
-                    name: details.name,
-                  });
-                }
-              }}
+              onPress={handlePlaceSelect}
               onFail={(error) => console.log(error)}
               onNotFound={() => console.log('no results')}
             />
@@ -197,8 +210,7 @@ export default function JoinDistance() {
           </View>
           <Slider
             value={range}
-            onChange={setRange}
-            onChangeEnd={handleRangeChangeEnd}
+            onChange={handleRangeChange}
             min={1}
             max={10}
             step={1}
