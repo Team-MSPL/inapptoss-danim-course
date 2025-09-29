@@ -31,7 +31,7 @@ export function Index() {
     if (loading) return; // prevent double tap
     if (userId != null) {
       dispatch(travelSliceActions.reset({ userId: userId, userJwtToken: userJwtToken }));
-      navigation.reset({ index: 0, routes: [{ name: '/enroll/title' }] });
+      navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}`}] });
     } else {
       setLoading(true);
       try {
