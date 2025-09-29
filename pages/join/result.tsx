@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import {Badge, colors, Text, Tooltip} from '@toss-design-system/react-native';
+import { Badge, colors, Text, Tooltip } from '@toss-design-system/react-native';
 import { PlaceResult } from "../../components/join/type";
 import {
   CARD_BORDER_RADIUS,
@@ -28,41 +28,75 @@ export const Route = createRoute('/join/result', {
   component: JoinResult,
 });
 
+function splitTags(tags: string[], splitIndex: number = 3) {
+  // 첫 줄: 최대 splitIndex개, 두 번째 줄: 나머지
+  return [tags.slice(0, splitIndex), tags.slice(splitIndex)];
+}
+
+function BadgeRows({ tags }: { tags: string[] }) {
+  const [row1, row2] = splitTags(tags, 3);
+  return (
+    <View style={styles.badgeRowsContainer}>
+      <View style={styles.tagsRow}>
+        {row1.map((tag, idx) => (
+          <Badge key={idx} size="small" badgeStyle="fill" type="elephant">
+            {tag}
+          </Badge>
+        ))}
+      </View>
+      {row2.length > 0 && (
+        <View style={[styles.tagsRow, { marginTop: 4 }]}>
+          {row2.map((tag, idx) => (
+            <Badge key={row1.length + idx} size="small" badgeStyle="fill" type="elephant">
+              {tag}
+            </Badge>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
 function PlaceCard({ place }: { place: PlaceResult }) {
   return (
     <View style={{ marginBottom: CARD_MARGIN_BOTTOM, marginTop: 80 }}>
       <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', flex: 1 }}>
-        <Tooltip message={
-          <View style={{paddingHorizontal: 40, alignSelf: 'flex-end'}}>
-            <Text style={styles.tooltipText}>
-              <Text typography="t6" fontWeight={"bold"} color={"#5350FF"}>
-                {takenDayToLabel(place.takenDay)}
-              </Text>
-              <Text typography="t6" fontWeight={"bold"} color={colors.grey800}> 추천</Text>
-            </Text>
-          </View>
-        } size="large" style={{position: 'absolute'}} placement="top" contentPositionByRatio={2} messageAlign="right" autoFlip children={
-          <View style={styles.card}>
-            <Image
-              source={{ uri: place.photo }}
-              style={styles.cardImage}
-              resizeMode="cover"
-            />
-            <View style={styles.cardOverlay} />
-            <View style={styles.cardContent}>
-              <View style={styles.cardContentInner}>
-                <Text style={styles.cardTitle}>{place.name}</Text>
-                <View style={styles.tagsRow}>
-                  {place.tendency.slice(0, 5).map((tag, idx) => (
-                    <Badge key={idx} style={styles.badge} color="grey700" fill="grey200">
-                      <Text style={styles.badgeText}>{tag}</Text>
-                    </Badge>
-                  ))}
-                </View>
+
+        <View style={{ position: 'absolute', top: -38, right: 0, left: 0, alignItems: 'flex-end', zIndex: 2 }}>
+          <Tooltip
+            message={
+              <View style={{ paddingHorizontal: 40, alignSelf: 'flex-end' }}>
+                <Text style={styles.tooltipText}>
+                  <Text typography="t6" fontWeight={"bold"} color={"#5350FF"}>
+                    {takenDayToLabel(place.takenDay)}
+                  </Text>
+                  <Text typography="t6" fontWeight={"bold"} color={colors.grey800}> 추천</Text>
+                </Text>
               </View>
+            }
+            size="large"
+            placement="top"
+            messageAlign="right"
+            autoFlip
+          >
+            <View style={{ height: 16, width: 40, backgroundColor: 'transparent', }} />
+          </Tooltip>
+        </View>
+
+        <View style={styles.card}>
+          <Image
+            source={{ uri: place.photo }}
+            style={styles.cardImage}
+            resizeMode="cover"
+          />
+          <View style={styles.cardOverlay} />
+          <View style={styles.cardContent}>
+            <View style={styles.cardContentInner}>
+              <Text style={styles.cardTitle}>{place.name}</Text>
+              <BadgeRows tags={place.tendency.slice(0, 5)} />
             </View>
           </View>
-        }/>
+        </View>
       </View>
     </View>
   );
@@ -256,6 +290,11 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
     textShadowOffset: { width: 0, height: 1 },
     textAlign: 'right',
+  },
+  badgeRowsContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginTop: 2,
   },
   tagsRow: {
     flexDirection: 'row',
