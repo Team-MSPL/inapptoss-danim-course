@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Animated } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { styles } from './country';
 import TendencyButton from '../../components/tendency-button';
 import { useAppSelector } from 'store';
@@ -12,7 +12,7 @@ type EnrollWhoProps = {
   contentRatio?: number;
 };
 
-export const Route = BedrockRoute('/enroll/who', {
+export const Route = createRoute('/enroll/who', {
   validateParams: (params) => params,
   component: EnrollWho,
 });

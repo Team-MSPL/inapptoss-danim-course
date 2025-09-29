@@ -1,16 +1,16 @@
-import { createSlice } from "@reduxjs/toolkit";
-import {getProductList} from "./travle-slice";
+import { createSlice } from '@reduxjs/toolkit';
+import { getProductList } from './travle-slice';
 
 const initialState = {
   productList: [],
   total: 0,
   loading: false,
   error: null,
-  sortType: "recommend",
+  sortType: 'recommend',
 };
 
 const productSlice = createSlice({
-  name: "product",
+  name: 'product',
   initialState,
   reducers: {
     setSortType(state, action) {
@@ -31,9 +31,7 @@ const productSlice = createSlice({
       .addCase(getProductList.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          typeof action.payload === "string"
-            ? action.payload
-            : "상품을 불러오는데 실패했습니다.";
+          typeof action.payload === 'string' ? action.payload : '상품을 불러오는데 실패했습니다.';
       });
   },
 });

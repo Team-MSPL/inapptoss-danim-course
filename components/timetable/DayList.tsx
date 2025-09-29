@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack } from 'react-native-bedrock';
+import { Stack } from '@granite-js/react-native';
 import { TimetableDay, TimetableState } from './type';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Badge, colors, ListRow, Icon } from '@toss-design-system/react-native';

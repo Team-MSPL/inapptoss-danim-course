@@ -1,10 +1,10 @@
 import React from 'react';
-import { Stack } from 'react-native-bedrock';
+import { Stack } from '@granite-js/react-native';
 import { colors, Text } from '@toss-design-system/react-native';
 import { View } from 'react-native';
 import moment from 'moment';
 // 회색 원 컴포넌트(GrayCircle)는 직접 구현하거나 기존 컴포넌트 사용
-import GrayCircle from "../design/gray-circle";
+import GrayCircle from '../design/gray-circle';
 
 type TimetableItem = {
   name: string;
@@ -104,7 +104,16 @@ export function PresetDayCard({ item, index, day, handleItemLayout }: PresetDayC
                 )}
               </View>
               {/* 오른쪽 - 장소/시간 */}
-              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', minHeight: CIRCLE_SIZE, bottom: 5, marginLeft: 12 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  minHeight: CIRCLE_SIZE,
+                  bottom: 5,
+                  marginLeft: 12,
+                }}
+              >
                 <Text
                   typography="t6"
                   fontWeight="bold"
@@ -114,11 +123,7 @@ export function PresetDayCard({ item, index, day, handleItemLayout }: PresetDayC
                   {value.name}
                 </Text>
                 {!!timeText && (
-                  <Text
-                    typography="t7"
-                    fontWeight="medium"
-                    color={colors.blue600}
-                  >
+                  <Text typography="t7" fontWeight="medium" color={colors.blue600}>
                     {timeText}
                   </Text>
                 )}

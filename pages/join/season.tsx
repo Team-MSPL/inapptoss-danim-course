@@ -1,0 +1,156 @@
+import React from 'react';
+import { StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
+import { Image } from '@granite-js/react-native';
+import { createRoute, useNavigation } from '@granite-js/react-native';
+import {
+  Text,
+  Button,
+  FixedBottomCTAProvider,
+  FixedBottomCTA,
+} from '@toss-design-system/react-native';
+import NavigationBar from '../../components/navigation-bar';
+import { CustomProgressBarJoin } from '../../components/join/custom-progress-bar-join';
+import { useRegionSearchStore } from "../../zustand/regionSearchStore";
+import { tendencyData } from "../../components/join/constants/tendencyData";
+
+export const Route = createRoute('/join/season', {
+  validateParams: (params) => params,
+  component: SeasonSelect,
+});
+
+export default function SeasonSelect() {
+  const navigation = useNavigation();
+
+  const selectList = useRegionSearchStore((state) => state.selectList);
+  const setSelectList = useRegionSearchStore((state) => state.setSelectList);
+
+  const seasonData = tendencyData[4];
+  const seasonSelect = selectList[4] ?? [0, 0, 0, 0];
+
+  const windowWidth = Dimensions.get('window').width;
+  const PADDING_HORIZONTAL = 30;
+  const CARD_GAP = 10;
+
+  const cardWidth = (windowWidth - PADDING_HORIZONTAL * 2 - CARD_GAP) / 2;
+
+  const handleSeasonButtonClick = (idx: number) => {
+    const newSeasonArr = [...seasonSelect];
+    newSeasonArr[idx] = newSeasonArr[idx] === 1 ? 0 : 1;
+    const newSelectList = [...selectList];
+    newSelectList[4] = newSeasonArr;
+    setSelectList(newSelectList);
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <NavigationBar />
+      <FixedBottomCTAProvider>
+        <CustomProgressBarJoin currentIndex={2} />
+        <View style={styles.header}>
+          <Text typography="t6" color="#8A8A8A" fontWeight="medium" style={{ marginBottom: 2 }}>
+            1. 여행 스타일을 알아볼게요
+          </Text>
+          <Text typography="t3" fontWeight="bold" style={{ marginBottom: 6 }}>
+            여행 테마는 무엇인가요?
+          </Text>
+          <Text typography="t7" color="#C2C2C2">
+            * 중복 선택 가능
+          </Text>
+        </View>
+        <View style={[styles.gridRow, { padding: PADDING_HORIZONTAL }]}>
+          {seasonData.list.map((season, idx) => (
+            <TouchableOpacity
+              key={season}
+              style={[
+                styles.gridItem,
+                {
+                  width: cardWidth,
+                  height: cardWidth,
+                  marginRight: idx % 2 === 0 ? CARD_GAP : 0,
+                  marginBottom: idx < 2 ? CARD_GAP : 0,
+                },
+                seasonSelect[idx] === 1 && styles.selectedGridItem,
+              ]}
+              activeOpacity={0.85}
+              onPress={() => handleSeasonButtonClick(idx)}
+            >
+              <View style={styles.iconTextBox}>
+                <Image source={{ uri: seasonData.photo?.[idx] }} style={styles.icon} />
+                <Text
+                  typography="t5"
+                  color={'#505A69'}
+                  style={[styles.itemText, seasonSelect[idx] === 1 && styles.selectedText]}
+                >
+                  {season}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <FixedBottomCTA.Double
+          containerStyle={{ backgroundColor: 'white', marginTop: 32 }}
+          leftButton={
+            <Button type="dark" style="weak" display="block" onPress={() => navigation.goBack()}>
+              이전으로
+            </Button>
+          }
+          rightButton={
+            <Button
+              display="block"
+              type="primary"
+              onPress={() => navigation.navigate('/join/theme')}
+            >
+              다음으로
+            </Button>
+          }
+        />
+      </FixedBottomCTAProvider>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    marginTop: 32,
+    marginBottom: 18,
+    marginHorizontal: 24,
+  },
+  gridRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  gridItem: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#F2F3F7',
+    backgroundColor: '#FAFAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+  },
+  selectedGridItem: {
+    backgroundColor: 'rgba(195,245,80,0.2)',
+    borderColor: '#D7F940',
+  },
+  iconTextBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 60,
+    height: 60,
+    marginBottom: 12,
+  },
+  itemText: {
+    marginTop: 0,
+    textAlign: 'center',
+    fontWeight: '400',
+    color: '#505A69',
+  },
+  selectedText: {
+    color: '#222',
+    fontWeight: '500',
+  },
+});

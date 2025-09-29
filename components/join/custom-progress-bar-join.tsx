@@ -5,8 +5,7 @@ type CustomProgressBarJoinProps = {
 };
 
 export const CustomProgressBarJoin = ({ currentIndex }: CustomProgressBarJoinProps) => {
-
-  const stackLength = 8
+  const stackLength = 8;
   return (
     <ProgressBar
       progress={((currentIndex + 1) / (stackLength - 2)) * 100}

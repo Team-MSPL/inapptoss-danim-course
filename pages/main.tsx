@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Dimensions, TouchableOpacity, View, Image, StyleSheet} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import MainHome from './main/main-home';
 import MainTrip from './main/main-trip';
 import MainTravelShop from './main/main-travel-shop';

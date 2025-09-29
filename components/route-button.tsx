@@ -1,5 +1,5 @@
 import { Button, FixedBottomCTA, useToast } from '@toss-design-system/react-native';
-import { useNavigation } from 'react-native-bedrock';
+import { useNavigation } from '@granite-js/react-native';
 import { routeStack } from '../utill/route-stack';
 import { useAppDispatch, useAppSelector } from 'store';
 import { cityViewList } from '../utill/city-list';

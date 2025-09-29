@@ -1,4 +1,4 @@
-import { FlatList } from '@react-native-bedrock/native/react-native-gesture-handler';
+import { FlatList } from 'react-native';
 import { colors, Text } from '@toss-design-system/react-native';
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import {

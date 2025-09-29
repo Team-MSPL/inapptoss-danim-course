@@ -1,7 +1,7 @@
 import { Icon } from '@toss-design-system/react-native';
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import {TAB_ITEMS} from "./constants";
+import { TAB_ITEMS } from './constants';
 
 type CustomBottomBarProps = {
   currentIndex: number;
@@ -18,12 +18,10 @@ export default function CustomBottomBar({ currentIndex, onTabPress }: CustomBott
           onPress={() => onTabPress(idx)}
           activeOpacity={0.8}
         >
-          <Icon
-            name={item.icon}
-            size={24}
-            color={currentIndex === idx ? "#222" : "#bbb"}
-          />
-          <Text style={[styles.tabLabel, currentIndex === idx && { color: "#222", fontWeight: "bold" }]}>
+          <Icon name={item.icon} size={24} color={currentIndex === idx ? '#222' : '#bbb'} />
+          <Text
+            style={[styles.tabLabel, currentIndex === idx && { color: '#222', fontWeight: 'bold' }]}
+          >
             {item.label}
           </Text>
         </TouchableOpacity>
@@ -58,7 +56,7 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 11,
     color: '#bbb',
-    fontWeight: "500",
+    fontWeight: '500',
     marginTop: 4,
   },
 });

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
-import {PartnerNavigation} from "@toss-design-system/react-native";
+import { createRoute } from '@granite-js/react-native';
 
-export const Route = BedrockRoute('/info/my-inquiry-list', {
+export const Route = createRoute('/info/my-inquiry-list', {
   validateParams: (params) => params,
   component: InfoMyInquiryList,
 });
@@ -11,14 +10,6 @@ export const Route = BedrockRoute('/info/my-inquiry-list', {
 function InfoMyInquiryList() {
   return (
     <View>
-      <PartnerNavigation
-        title="다님"
-        icon={{
-          source: {
-            uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
-          },
-        }}
-      ></PartnerNavigation>
       <Text>문의 내용 불러오기 api 있는지</Text>
       <Text>어쩌구저ㄱ쩌구</Text>
     </View>

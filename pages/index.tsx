@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import {
   colors,
   Text,
@@ -8,14 +8,13 @@ import {
   Top,
   FixedBottomCTA,
   FixedBottomCTAProvider,
-  PartnerNavigation,
   useToast,
 } from '@toss-design-system/react-native';
 import { appLogin } from '@apps-in-toss/framework';
 import { useAppDispatch, useAppSelector } from 'store';
 import { socialConnect, tossUser, travelSliceActions } from '../redux/travle-slice';
 
-export const Route = BedrockRoute('/', {
+export const Route = createRoute('/', {
   validateParams: (params) => params,
   component: Index,
 });
@@ -64,14 +63,6 @@ export function Index() {
 
   return (
     <View style={{ flex: 1 }}>
-      <PartnerNavigation
-        title="다님"
-        icon={{
-          source: {
-            uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
-          },
-        }}
-      />
       <FixedBottomCTAProvider>
         <Top
           title={

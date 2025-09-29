@@ -1,6 +1,6 @@
-import React from "react";
-import { View } from "react-native";
-import {colors} from "@toss-design-system/react-native";
+import React from 'react';
+import { View } from 'react-native';
+import { colors } from '@toss-design-system/react-native';
 
 type GrayCircleProps = {
   size?: number;
@@ -9,10 +9,10 @@ type GrayCircleProps = {
 };
 
 export default function GrayCircle({
-                                     size = 40,
-                                     color = colors.grey600,
-                                     style = {},
-                                   }: GrayCircleProps) {
+  size = 40,
+  color = colors.grey600,
+  style = {},
+}: GrayCircleProps) {
   return (
     <View
       style={{

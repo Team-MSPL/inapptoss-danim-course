@@ -1,5 +1,5 @@
+import { closeView } from '@apps-in-toss/framework';
 import { BottomSheet, Button, colors, Text } from '@toss-design-system/react-native';
-import { closeView } from 'react-native-bedrock';
 
 type SaveBottomSheetProps = {
   onSave: () => void;

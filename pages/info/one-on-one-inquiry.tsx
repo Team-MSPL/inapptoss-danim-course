@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {Alert, View, Text, TextInput, StyleSheet, Platform} from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { useAppDispatch, useAppSelector } from 'store'; // redux hooks
-import { FixedBottomCTA, FixedBottomCTAProvider, PartnerNavigation, Top, colors } from '@toss-design-system/react-native';
-import {resetInquiryState} from "../../redux/inquirySlice";
-import {postInquiry} from "../../redux/inquirySlice";
+import {
+  FixedBottomCTA,
+  FixedBottomCTAProvider,
+  Top,
+  colors,
+} from '@toss-design-system/react-native';
+import { resetInquiryState } from '../../redux/inquirySlice';
+import { postInquiry } from '../../redux/inquirySlice';
 
 export default function InfoOneOnOneInquiry() {
   const [value, setValue] = useState('');
@@ -37,15 +42,13 @@ export default function InfoOneOnOneInquiry() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <PartnerNavigation
-        title="다님"
-        icon={{
-          source: {
-            uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
-          },
-        }}
+      <Top.Root
+        title={
+          <Top.TitleParagraph typography="t3" color={colors.grey900}>
+            1:1 문의하기
+          </Top.TitleParagraph>
+        }
       />
-      <Top.Root title={<Top.TitleParagraph typography="t3" color={colors.grey900}>1:1 문의하기</Top.TitleParagraph>} />
       <FixedBottomCTAProvider>
         <View style={styles.container}>
           <View style={styles.boxWrapper}>

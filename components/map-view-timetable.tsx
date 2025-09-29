@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Dimensions, StyleSheet } from 'react-native';
-import WebView from '@react-native-bedrock/native/react-native-webview';
+import WebView from '@granite-js/native/react-native-webview';
 import { cityViewList } from '../utill/city-list';
 import { useAppSelector } from 'store';
 

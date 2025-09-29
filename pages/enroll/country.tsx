@@ -1,7 +1,7 @@
 import { FixedBottomCTAProvider } from '@toss-design-system/react-native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
 import { RouteButton } from '../../components/route-button';
 import TendencyButton from '../../components/tendency-button';
@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from 'store';
 import { travelSliceActions } from '../../redux/travle-slice';
 import { CustomProgressBar } from '../../components/progress-bar';
 
-export const Route = BedrockRoute('/enroll/country', {
+export const Route = createRoute('/enroll/country', {
   validateParams: (params) => params,
   component: Country,
 });

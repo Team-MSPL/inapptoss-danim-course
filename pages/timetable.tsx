@@ -4,7 +4,6 @@ import {
   FixedBottomCTA,
   FixedBottomCTAProvider,
   ListRow,
-  PartnerNavigation,
   Tab,
   useBottomSheet,
   useToast,
@@ -12,10 +11,10 @@ import {
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, TouchableOpacity, View } from 'react-native';
-import { BedrockRoute, useBackEvent, useNavigation } from 'react-native-bedrock';
+import { createRoute, useBackEvent, useNavigation } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import CustomMapViewMarker from '../components/map-view-marker';
-import { FlatList } from '@react-native-bedrock/native/react-native-gesture-handler';
+import { FlatList } from '@granite-js/native/react-native-gesture-handler';
 import { saveTravel, travelSliceActions, updateTravelCourse } from '../redux/travle-slice';
 import { defaultTimetableItem, TimetableDay, TimetableState } from '../components/timetable/type';
 import { SaveBottomSheet } from '../components/timetable/save-bottom-sheet';
@@ -25,7 +24,7 @@ import { RemoveBottomSheet } from '../components/timetable/remove-bottom-sheet';
 import { HourBottomSheetContent } from '../components/timetable/hour-bottom-sheet';
 import ArrowToggleButton from '../components/timetable/arrow-toggle-button';
 
-export const Route = BedrockRoute('/timetable', {
+export const Route = createRoute('/timetable', {
   validateParams: (params) => params,
   component: Timetable,
 });
@@ -268,14 +267,6 @@ function Timetable() {
 
   return (
     <View style={{ flex: 1 }}>
-      <PartnerNavigation
-        title="다님"
-        icon={{
-          source: {
-            uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
-          },
-        }}
-      />
       <FixedBottomCTAProvider>
         <>
           <ListRow

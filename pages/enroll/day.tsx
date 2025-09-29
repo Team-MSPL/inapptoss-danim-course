@@ -8,7 +8,7 @@ import {
 } from '@toss-design-system/react-native';
 import React, { useLayoutEffect, useRef } from 'react';
 import { View } from 'react-native';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import CalendarPicker from 'react-native-calendar-picker';
 import { travelSliceActions } from '../../redux/travle-slice';
@@ -16,7 +16,7 @@ import moment from 'moment';
 import TimePickerModal from '../../utill/time-picker';
 import CustomDatePickerModal from '../../components/date-picker-modal';
 import DatePickerModal from '../../components/date-picker-modal';
-export const Route = BedrockRoute('/enroll/day', {
+export const Route = createRoute('/enroll/day', {
   validateParams: (params) => params,
   component: Day,
 });

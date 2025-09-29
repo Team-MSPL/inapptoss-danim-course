@@ -1,6 +1,6 @@
 import { Checkbox, colors, Icon, ListRow } from '@toss-design-system/react-native';
 import React, { MutableRefObject, useEffect, useRef } from 'react';
-import { BedrockRoute } from 'react-native-bedrock';
+import { createRoute } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import { handleNearBySearch, travelSliceActions } from '../../redux/travle-slice';
 import { cityViewList } from '../../utill/city-list';
@@ -10,7 +10,7 @@ import {
 } from 'react-native-google-places-autocomplete';
 import { Dimensions, TouchableOpacity } from 'react-native';
 
-export const Route = BedrockRoute('/enroll/departure', {
+export const Route = createRoute('/enroll/departure', {
   validateParams: (params) => params,
   component: Departure,
 });

@@ -17,7 +17,8 @@ import {
 } from '@toss-design-system/react-native';
 import React, { useCallback, useState } from 'react';
 import { Pressable, View } from 'react-native';
-import { BedrockRoute, Image, Lottie, Stack, useNavigation } from 'react-native-bedrock';
+import { createRoute, Stack, useNavigation } from '@granite-js/react-native';
+import { Image } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import { cityViewList } from '../utill/city-list';
 import { useTendencyHandler } from '../hooks/useTendencyHandler';
@@ -32,9 +33,9 @@ import { EnrollPopular } from './enroll/popular';
 import { EnrollDistance } from './enroll/distance';
 import { getTravelAi, travelSliceActions } from '../redux/travle-slice';
 import NavigationBar from '../components/navigation-bar';
-import {EnrollTour} from "./enroll/tour";
+import { EnrollTour } from './enroll/tour';
 
-export const Route = BedrockRoute('/final-check', {
+export const Route = createRoute('/final-check', {
   validateParams: (params) => params,
   component: FinalCheck,
 });
@@ -208,7 +209,6 @@ function FinalCheck() {
     // />
     <FixedBottomCTAProvider>
       <NavigationBar />
-
       <View style={{ marginHorizontal: 0 }}>
         <Text
           typography="st8"
@@ -294,7 +294,7 @@ function FinalCheck() {
                 {tendency[0].find((item) => item == 1) == undefined
                   ? ''
                   : tendency[0].findIndex((item) => item == 1) == 0 ||
-                  tendency[0].findIndex((item) => item == 1) == 4
+                      tendency[0].findIndex((item) => item == 1) == 4
                     ? ' '
                     : ' 함께하는 '}
                 {seasonList[season.findIndex((item) => item == 1)].title} 여행
@@ -347,7 +347,7 @@ function FinalCheck() {
             },
           )}
         </Tab>
-        <View style={{paddingHorizontal: 24}}>
+        <View style={{ paddingHorizontal: 24 }}>
           {value == '0' ? (
             <Stack.Vertical
               style={{
@@ -361,9 +361,9 @@ function FinalCheck() {
               }}
             >
               <Text
-                style={{position: 'absolute', right: 20, top: 20}}
+                style={{ position: 'absolute', right: 20, top: 20 }}
                 onPress={() => {
-                  showHourBottomSheet(3, [1,2]);
+                  showHourBottomSheet(3, [1, 2]);
                 }}
                 typography="t5"
                 fontWeight="medium"
@@ -558,7 +558,11 @@ type ModifyBottomSheetContentProps = {
   allowedSteps?: number[];
 };
 
-function ModifyBottomSheetContent({ startIndex, onCancel, allowedSteps }: ModifyBottomSheetContentProps) {
+function ModifyBottomSheetContent({
+  startIndex,
+  onCancel,
+  allowedSteps,
+}: ModifyBottomSheetContentProps) {
   // 전체 네비게이션 스택
   const navigationStack = [
     { title: 'who', component: <EnrollWho marginTop={0} contentRatio={0.8} /> },
@@ -572,24 +576,18 @@ function ModifyBottomSheetContent({ startIndex, onCancel, allowedSteps }: Modify
   ];
 
   // 실제 이동 가능한 인덱스 배열, 없으면 전체 사용
-  const stepSequence = allowedSteps && allowedSteps.length > 0
-    ? allowedSteps
-    : navigationStack.map((_, idx) => idx);
+  const stepSequence =
+    allowedSteps && allowedSteps.length > 0 ? allowedSteps : navigationStack.map((_, idx) => idx);
 
   // step은 stepSequence의 인덱스
-  const [step, setStep] = useState(
-    Math.max(0, stepSequence.indexOf(startIndex))
-  );
+  const [step, setStep] = useState(Math.max(0, stepSequence.indexOf(startIndex)));
 
   const currentStackIndex = stepSequence[step];
   const textData = routeStack['/' + navigationStack[currentStackIndex]?.title];
 
   return (
     <View>
-      <StepText
-        title={textData?.title}
-        subTitle2={textData?.subTitle2}
-      />
+      <StepText title={textData?.title} subTitle2={textData?.subTitle2} />
       {navigationStack[currentStackIndex]?.component}
 
       <BottomSheet.CTA.Double

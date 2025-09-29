@@ -11,7 +11,7 @@ import {
 } from '@toss-design-system/react-native';
 import React, { MutableRefObject, useRef, useState } from 'react';
 import { Dimensions, Text, View } from 'react-native';
-import { BedrockRoute, useNavigation } from 'react-native-bedrock';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -19,7 +19,7 @@ import {
 import { useAppDispatch, useAppSelector } from 'store';
 import { googleDetailApi, travelSliceActions } from '../../redux/travle-slice';
 
-export const Route = BedrockRoute('/enroll/essential-search', {
+export const Route = createRoute('/enroll/essential-search', {
   validateParams: (params) => params,
   component: EnrollEssentialSearch,
 });
@@ -126,7 +126,7 @@ function EnrollEssentialSearch() {
           placeholderTextColor: colors.grey500,
           allowFontScaling: false,
         }}
-        renderLeftButton={() => <Icon name="icon-search-mono" style={{marginVertical: 12}} />}
+        renderLeftButton={() => <Icon name="icon-search-mono" style={{ marginVertical: 12 }} />}
         styles={{
           container: { alignItems: 'center', marginTop: 30 },
           textInputContainer: {
