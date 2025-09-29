@@ -18,14 +18,12 @@ export const Route = createRoute('/join/loading', {
 function RegionSearchLoading() {
   const storeState = useRegionSearchStore((state) => state);
   const navigation = useNavigation();
-  const { open: openToast } = useToast();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log(storeState);
         const result = await postRegionSearch(storeState);
-        navigation.navigate('/join/result', { result });
+        navigation.reset({ index: 0, routes: [{ name: `/join/result`, params: result}]});
       } catch (e: any) {
         if (e?.response?.status === 405) {
           Alert.alert(
