@@ -22,6 +22,7 @@ function RegionSearchLoading() {
   useEffect(() => {
     async function fetchData() {
       try {
+        console.log(storeState);
         const result = await postRegionSearch(storeState);
         navigation.navigate('/join/result', { result });
       } catch (e: any) {
