@@ -28,8 +28,17 @@ function RegionSearchLoading() {
         navigation.navigate('/join/result', { result });
       } catch (e: any) {
         if (e?.response?.status === 405) {
-          openToast('추천드릴 수 있는 지역이 없습니다. 지역의 인기도와 여행 반경을 재설정 후, 다시 시도해주세요.');
-          navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }] });
+          Alert.alert(
+            '추천 지역 없음',
+            '지역의 인기도와 여행 반경을 재설정 후, 다시 시도해주세요.',
+            [
+              {
+                text: '확인',
+                onPress: () => navigation.navigate('/join/who'),
+              },
+            ],
+            { cancelable: false }
+          );
         } else {
           console.error(e);
         }
