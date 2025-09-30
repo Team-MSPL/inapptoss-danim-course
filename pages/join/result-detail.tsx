@@ -1,62 +1,79 @@
 import React from 'react';
 import { View, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import {createRoute, useNavigation} from '@granite-js/react-native';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import { PlaceResult } from "../../components/join/type";
-import {Badge, BottomCTA, colors, FixedBottomCTAProvider, Text} from '@toss-design-system/react-native';
-import {useAppDispatch, useAppSelector} from "../../src/store";
-import {travelSliceActions} from "../../redux/travle-slice";
-import {useRegionSearchStore} from "../../zustand/regionSearchStore";
-import {koreaCityList} from "../../utill/city-list";
+import { Badge, BottomCTA, colors, FixedBottomCTAProvider, Text } from '@toss-design-system/react-native';
+import { useAppDispatch } from "../../src/store";
+import { travelSliceActions } from "../../redux/travle-slice";
+import { useRegionSearchStore } from "../../zustand/regionSearchStore";
+import { koreaCityList } from "../../utill/city-list";
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
   component: JoinResultDetail,
 });
 
-function findCityIndexByName(name: string): number {
-  // 하드코딩된 케이스: 이름이 딱 맞을 때
-  if (name.startsWith("서울")) return 0;
-  if (name.startsWith("제주")) return 0;
-  if (name.startsWith("부산")) return 0;
-  if (name.startsWith("대구")) return 1;
-  if (name.startsWith("인천")) return 2;
-  if (name.startsWith("광주")) return 3;
-  if (name.startsWith("대전")) return 4;
-  if (name.startsWith("울산")) return 5;
-  if (name.startsWith("세종")) return 6;
+// 이름 기반 상태 업데이트 로직
+function getRegionStateByName(name: string) {
+  // 하드코딩 케이스
+  const hardCodeMap: Record<string, { cityIndex: number }> = {
+    '서울': { cityIndex: 1 },
+    '제주': { cityIndex: 11 },
+    '부산': { cityIndex: 2, subIdx: 0 },
+    '대구': { cityIndex: 2, subIdx: 1 },
+    '인천': { cityIndex: 2, subIdx: 2 },
+    '광주': { cityIndex: 2, subIdx: 3 },
+    '대전': { cityIndex: 2, subIdx: 4 },
+    '울산': { cityIndex: 2, subIdx: 5 },
+    '세종': { cityIndex: 2, subIdx: 6 },
+  };
 
+  // 서울/제주/부산/대구/인천/광주/대전/울산/세종
+  if (name in hardCodeMap) {
+    const info = hardCodeMap[name];
+    // 서울, 제주는 region을 ["전체"], cityDistance는 [0]
+    if (name === '서울' || name === '제주') {
+      return {
+        region: ['전체'],
+        cityIndex: info.cityIndex,
+        cityDistance: [0],
+      };
+    }
+    // 부산~세종은 광역시 하위
+    return {
+      region: [name],
+      cityIndex: info.cityIndex,
+      cityDistance: [info.subIdx ?? 0],
+    };
+  }
+
+  // 나머지는 '강원 동해시' 등 띄어쓰기
   const [title, subTitle] = name.split(' ');
+
+  let cityIndex = -1;
+  let cityDistance: number[] = [];
+  let region: string[] = [];
 
   for (let i = 0; i < koreaCityList.length; i++) {
     if (koreaCityList[i].title === title) {
+      cityIndex = i;
       for (let sub of koreaCityList[i].sub) {
         if (sub.subTitle === subTitle) {
-          return i;
+          cityDistance.push(sub.id);
+          region.push(sub.subTitle);
         }
       }
     }
   }
 
-  return -1;
-}
-function getRegionListByName(name: string): string[] {
-  switch (name) {
-    case '서울':
-      return ['서울 도심권', '서울 동남권', '서울 동북권', '서울 서남권', '서울 서북권'];
-    case '제주':
-      return ['제주 서귀포시', '제주 제주시'];
-    case '부산':
-    case '대구':
-    case '인천':
-    case '광주':
-    case '대전':
-    case '울산':
-    case '세종':
-      return [`${name} 전체`];
-    default:
-      // 나머지는 그대로
-      return [name];
+  // fallback: 만약 못찾으면 그냥 전체
+  if (cityIndex === -1) {
+    cityIndex = 0;
+    cityDistance = [0];
+    region = ['전체'];
   }
+
+  return { region, cityIndex, cityDistance };
 }
 
 function PopularPlaceCardBig({ place }: { place: PlaceResult }) {
@@ -94,25 +111,25 @@ function JoinResultDetail() {
   const dispatch = useAppDispatch();
 
   const handleNext = () => {
-    const regionList = getRegionListByName(place?.name ?? '');
     const tendencyList = storeState.selectList;
 
-    const cityIndex = findCityIndexByName(place?.name ?? '');
+    // 이름 기반으로 상태 추출
+    const { region, cityIndex, cityDistance } = getRegionStateByName(place?.name ?? '');
 
-    //필드 업데이트 성향 업데이트임.
+    // 필드 업데이트
     dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
     dispatch(travelSliceActions.updateFiled({ field: 'country', value: 0 }));
-    dispatch(travelSliceActions.updateFiled({ field: 'region', value: regionList }));
-    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
+    dispatch(travelSliceActions.updateFiled({ field: 'region', value: region }));
     dispatch(travelSliceActions.updateFiled({ field: 'popular', value: 10 }));
     dispatch(travelSliceActions.updateFiled({ field: 'distance', value: 10 }));
     dispatch(travelSliceActions.updateFiled({ field: 'cityIndex', value: cityIndex }));
+    dispatch(travelSliceActions.updateFiled({ field: 'cityDistance', value: cityDistance }));
 
     navigation.navigate('/join/enroll-route')
-  }
+  };
 
   return (
-    <View style={{ flex: 1}}>
+    <View style={{ flex: 1 }}>
       <FixedBottomCTAProvider>
         <View style={styles.imageContainer}>
           <Image
@@ -124,7 +141,7 @@ function JoinResultDetail() {
         {/* 여행지명 + 태그 */}
         <View style={styles.contentBox}>
           <Text typography="st5" fontWeight="bold" color={colors.black}>{place.name}</Text>
-          <View style={{backgroundColor: colors.grey100, width: Dimensions.get("window").width, height: 1, marginVertical: 20, right: 24}}></View>
+          <View style={{ backgroundColor: colors.grey100, width: Dimensions.get("window").width, height: 1, marginVertical: 20, right: 24 }}></View>
           <View style={styles.tagsRow}>
             {(place.tendency ?? []).map((tag, idx) => (
               <Badge key={idx} fontWeight="normal" size="medium" badgeStyle="weak" type="blue">
@@ -132,15 +149,12 @@ function JoinResultDetail() {
               </Badge>
             ))}
           </View>
-
           {/* 인기 여행지 Top 5 */}
           {topPopularPlaceList.length > 0 && (
             <View style={styles.popularSection}>
               <Text typography="t4" fontWeight="bold" color={colors.black}>인기 여행지 Top 5</Text>
-              <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{marginBottom: 20}}>해당 지역의 인기 여행지를 확인하세요</Text>
-              {/* 첫번째 카드 한 줄 크게 */}
+              <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{ marginBottom: 20 }}>해당 지역의 인기 여행지를 확인하세요</Text>
               <PopularPlaceCardBig place={topPopularPlaceList[0]} />
-              {/* 2~5번 카드 그리드 */}
               <View style={styles.popularGrid}>
                 {topPopularPlaceList.slice(1, 5).map((popularPlace, idx) => (
                   <PopularPlaceCard place={popularPlace} idx={idx} key={popularPlace.name + idx} />
@@ -164,7 +178,7 @@ const width = Dimensions.get('window').width;
 const IMAGE_HEIGHT = 220;
 const CARD_BIG_HEIGHT = 200;
 const CARD_BIG_RADIUS = 28;
-const CARD_SIZE = (width - 24 * 2 - 14) / 2; // 2열 그리드
+const CARD_SIZE = (width - 24 * 2 - 14) / 2;
 const CARD_RADIUS = 28;
 
 const styles = StyleSheet.create({
@@ -229,7 +243,6 @@ const styles = StyleSheet.create({
     color: '#A0A4B8',
     marginBottom: 14,
   },
-  // Top 1 카드
   popularCardBig: {
     width: '100%',
     height: CARD_BIG_HEIGHT,
