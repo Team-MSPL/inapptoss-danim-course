@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { createRoute } from '@granite-js/react-native';
 import { PlaceResult } from "../../components/join/type";
-import { Badge, colors, Text } from '@toss-design-system/react-native';
+import {Badge, BottomCTA, colors, FixedBottomCTAProvider, Text} from '@toss-design-system/react-native';
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
@@ -41,44 +41,53 @@ function JoinResultDetail() {
   const topPopularPlaceList = place.topPopularPlaceList ?? [];
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* 상단 대표 이미지 */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: place.photo }}
-          style={styles.headerImage}
-          resizeMode="cover"
-        />
-      </View>
-      {/* 여행지명 + 태그 */}
-      <View style={styles.contentBox}>
-        <Text typography="st5" fontWeight="bold" color={colors.black}>{place.name}</Text>
-        <View style={{backgroundColor: colors.grey100, width: Dimensions.get("window").width, height: 1, marginVertical: 20, right: 24}}></View>
-        <View style={styles.tagsRow}>
-          {(place.tendency ?? []).map((tag, idx) => (
-            <Badge key={idx} fontWeight="normal" size="medium" badgeStyle="weak" type="blue">
-              {tag}
-            </Badge>
-          ))}
+    <View style={{ flex: 1}}>
+      <FixedBottomCTAProvider>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: place.photo }}
+            style={styles.headerImage}
+            resizeMode="cover"
+          />
         </View>
-
-        {/* 인기 여행지 Top 5 */}
-        {topPopularPlaceList.length > 0 && (
-          <View style={styles.popularSection}>
-            <Text typography="t4" fontWeight="bold" color={colors.black}>인기 여행지 Top 5</Text>
-            <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{marginBottom: 20}}>해당 지역의 인기 여행지를 확인하세요</Text>
-            {/* 첫번째 카드 한 줄 크게 */}
-            <PopularPlaceCardBig place={topPopularPlaceList[0]} />
-            {/* 2~5번 카드 그리드 */}
-            <View style={styles.popularGrid}>
-              {topPopularPlaceList.slice(1, 5).map((popularPlace, idx) => (
-                <PopularPlaceCard place={popularPlace} idx={idx} key={popularPlace.name + idx} />
-              ))}
-            </View>
+        {/* 여행지명 + 태그 */}
+        <View style={styles.contentBox}>
+          <Text typography="st5" fontWeight="bold" color={colors.black}>{place.name}</Text>
+          <View style={{backgroundColor: colors.grey100, width: Dimensions.get("window").width, height: 1, marginVertical: 20, right: 24}}></View>
+          <View style={styles.tagsRow}>
+            {(place.tendency ?? []).map((tag, idx) => (
+              <Badge key={idx} fontWeight="normal" size="medium" badgeStyle="weak" type="blue">
+                {tag}
+              </Badge>
+            ))}
           </View>
-        )}
-      </View>
-    </ScrollView>
+
+          {/* 인기 여행지 Top 5 */}
+          {topPopularPlaceList.length > 0 && (
+            <View style={styles.popularSection}>
+              <Text typography="t4" fontWeight="bold" color={colors.black}>인기 여행지 Top 5</Text>
+              <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{marginBottom: 20}}>해당 지역의 인기 여행지를 확인하세요</Text>
+              {/* 첫번째 카드 한 줄 크게 */}
+              <PopularPlaceCardBig place={topPopularPlaceList[0]} />
+              {/* 2~5번 카드 그리드 */}
+              <View style={styles.popularGrid}>
+                {topPopularPlaceList.slice(1, 5).map((popularPlace, idx) => (
+                  <PopularPlaceCard place={popularPlace} idx={idx} key={popularPlace.name + idx} />
+                ))}
+              </View>
+            </View>
+          )}
+        </View>
+        <BottomCTA.Single
+          type="primary"
+          style="fill"
+          onPress={() => {
+            // ...
+          }}>
+          이 지역의 여행 일정 추천 받기
+        </BottomCTA.Single>
+      </FixedBottomCTAProvider>
+    </View>
   );
 }
 
