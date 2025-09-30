@@ -26,12 +26,10 @@ export default defineConfig({
         withHomeButton: true,
         initialAccessoryButton: {
           icon: {
-            source: {
-              uri: 'https://static.toss.im/appsintoss/561/454aa293-9dc9-4c77-9662-c42d09255859.png',
-            },
+            name: 'icon-letter-mono',
           },
-          title: '다님',
-          id: '다님'
+          title: 'letter',
+          id: 'letter'
         },
       }
     }),

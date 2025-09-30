@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, StyleSheet } from 'react-native';
 import MainHome from './main/main-home';
 import MainTrip from './main/main-trip';
 import MainTravelShop from './main/main-travel-shop';
 import MainInfo from './main/main-info';
 import CustomBottomBar from '../components/main/custom-bottom-bar';
+import {useTopNavigation} from "@apps-in-toss/framework";
+import {useNavigation} from "@granite-js/react-native";
 
 export default function Main() {
   const [tab, setTab] = useState(0);
+  const navigation = useNavigation();
+  const { addAccessoryButton } = useTopNavigation();
+  useEffect(() => {
+    addAccessoryButton({
+      title: 'letter',
+      icon: {
+        name: 'icon-letter-mono',
+      },
+      id: 'letter',
+      onPress: () => {
+        setTab(3);
+        navigation.navigate('/info/my-inquiry-list')
+      }, // 콜백함수 등록
+    });
+  }, [navigation]);
 
   const renderScreen = () => {
     switch (tab) {

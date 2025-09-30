@@ -23,6 +23,7 @@ function RegionSearchLoading() {
     async function fetchData() {
       try {
         const result = await postRegionSearch(storeState);
+        console.log(result);
         navigation.reset({ index: 0, routes: [{ name: `/join/result`, params: result}]});
       } catch (e: any) {
         if (e?.response?.status === 405) {
