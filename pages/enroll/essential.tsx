@@ -9,7 +9,7 @@ export const Route = createRoute('/enroll/essential', {
   component: Essential,
 });
 
-function Essential() {
+export function Essential() {
   const { nDay, essentialPlaces, day, accommodations, timeLimitArray, minuteLimitArray } =
     useAppSelector((state) => state.travelSlice);
   const navigation = useNavigation();

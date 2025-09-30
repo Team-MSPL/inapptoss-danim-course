@@ -1,13 +1,63 @@
 import React from 'react';
 import { View, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { createRoute } from '@granite-js/react-native';
+import {createRoute, useNavigation} from '@granite-js/react-native';
 import { PlaceResult } from "../../components/join/type";
 import {Badge, BottomCTA, colors, FixedBottomCTAProvider, Text} from '@toss-design-system/react-native';
+import {useAppDispatch, useAppSelector} from "../../src/store";
+import {travelSliceActions} from "../../redux/travle-slice";
+import {useRegionSearchStore} from "../../zustand/regionSearchStore";
+import {koreaCityList} from "../../utill/city-list";
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
   component: JoinResultDetail,
 });
+
+function findCityIndexByName(name: string): number {
+  // 하드코딩된 케이스: 이름이 딱 맞을 때
+  if (name.startsWith("서울")) return 0;
+  if (name.startsWith("제주")) return 0;
+  if (name.startsWith("부산")) return 0;
+  if (name.startsWith("대구")) return 1;
+  if (name.startsWith("인천")) return 2;
+  if (name.startsWith("광주")) return 3;
+  if (name.startsWith("대전")) return 4;
+  if (name.startsWith("울산")) return 5;
+  if (name.startsWith("세종")) return 6;
+
+  const [title, subTitle] = name.split(' ');
+
+  for (let i = 0; i < koreaCityList.length; i++) {
+    if (koreaCityList[i].title === title) {
+      for (let sub of koreaCityList[i].sub) {
+        if (sub.subTitle === subTitle) {
+          return i;
+        }
+      }
+    }
+  }
+
+  return -1;
+}
+function getRegionListByName(name: string): string[] {
+  switch (name) {
+    case '서울':
+      return ['서울 도심권', '서울 동남권', '서울 동북권', '서울 서남권', '서울 서북권'];
+    case '제주':
+      return ['제주 서귀포시', '제주 제주시'];
+    case '부산':
+    case '대구':
+    case '인천':
+    case '광주':
+    case '대전':
+    case '울산':
+    case '세종':
+      return [`${name} 전체`];
+    default:
+      // 나머지는 그대로
+      return [name];
+  }
+}
 
 function PopularPlaceCardBig({ place }: { place: PlaceResult }) {
   return (
@@ -39,6 +89,27 @@ function JoinResultDetail() {
   const params = Route.useParams();
   const place: PlaceResult = params.place;
   const topPopularPlaceList = place.topPopularPlaceList ?? [];
+  const navigation = useNavigation();
+  const storeState = useRegionSearchStore((state) => state);
+  const dispatch = useAppDispatch();
+
+  const handleNext = () => {
+    const regionList = getRegionListByName(place?.name ?? '');
+    const tendencyList = storeState.selectList;
+
+    const cityIndex = findCityIndexByName(place?.name ?? '');
+
+    //필드 업데이트 성향 업데이트임.
+    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
+    dispatch(travelSliceActions.updateFiled({ field: 'country', value: 0 }));
+    dispatch(travelSliceActions.updateFiled({ field: 'region', value: regionList }));
+    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
+    dispatch(travelSliceActions.updateFiled({ field: 'popular', value: 10 }));
+    dispatch(travelSliceActions.updateFiled({ field: 'distance', value: 10 }));
+    dispatch(travelSliceActions.updateFiled({ field: 'cityIndex', value: cityIndex }));
+
+    navigation.navigate('/join/enroll-route')
+  }
 
   return (
     <View style={{ flex: 1}}>
@@ -81,9 +152,7 @@ function JoinResultDetail() {
         <BottomCTA.Single
           type="primary"
           style="fill"
-          onPress={() => {
-            // ...
-          }}>
+          onPress={handleNext}>
           이 지역의 여행 일정 추천 받기
         </BottomCTA.Single>
       </FixedBottomCTAProvider>

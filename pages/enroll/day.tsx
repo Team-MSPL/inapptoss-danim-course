@@ -21,7 +21,7 @@ export const Route = createRoute('/enroll/day', {
   component: Day,
 });
 
-function Day() {
+export function Day() {
   const bottomSheet = useBottomSheet();
 
   const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
