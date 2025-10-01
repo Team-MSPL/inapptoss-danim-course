@@ -32,7 +32,7 @@ function RegionSearchLoading() {
             [
               {
                 text: '확인',
-                onPress: () => navigation.navigate('/join/who'),
+                onPress: () => navigation.navigate('/join/popular'),
               },
             ],
             { cancelable: false }
