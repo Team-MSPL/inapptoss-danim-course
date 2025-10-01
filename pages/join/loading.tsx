@@ -4,7 +4,7 @@ import NavigationBar from '../../components/navigation-bar';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import LottieView from '@granite-js/native/lottie-react-native';
 import { StepText } from '../../components/step-text';
-import { FixedBottomCTAProvider } from '@toss-design-system/react-native';
+import {FixedBottomCTAProvider, useToast} from '@toss-design-system/react-native';
 import { useRegionSearchStore } from '../../zustand/regionSearchStore';
 import { postRegionSearch } from '../../zustand/api';
 
@@ -23,23 +23,21 @@ function RegionSearchLoading() {
     async function fetchData() {
       try {
         const result = await postRegionSearch(storeState);
-        navigation.navigate('/join/result', { result });
+        navigation.reset({ index: 0, routes: [{ name: `/join/result`, params: { result }}]});
       } catch (e: any) {
         if (e?.response?.status === 405) {
-          // 405면 메인으로
           Alert.alert(
-            '서버 오류',
-            '문제가 발생하여 메인화면으로 이동합니다.',
+            '추천 지역 없음',
+            '지역의 인기도와 여행 반경을 재설정 후, 다시 시도해주세요.',
             [
               {
                 text: '확인',
-                onPress: () => navigation.navigate('/main'),
+                onPress: () => navigation.navigate('/join/popular'),
               },
             ],
             { cancelable: false }
           );
         } else {
-          // 기타 에러는 콘솔 출력
           console.error(e);
         }
       }

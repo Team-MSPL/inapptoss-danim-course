@@ -6,7 +6,7 @@ const API_ROUTE = import.meta.env.API_ROUTE;
 const API_ROUTE_RELEASE = import.meta.env.API_ROUTE_RELEASE;
 
 const axiosAuth = axios.create({
-  baseURL: API_ROUTE,
+  baseURL: API_ROUTE_RELEASE,
   headers: {
     'content-type': 'application/json',
     withCredentials: true,

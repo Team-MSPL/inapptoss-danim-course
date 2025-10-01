@@ -58,7 +58,7 @@ export const routeStack = {
   '/busy': {
     prev: '/transit',
     next: '/concept',
-    title: '원하는 여행 유형은 무엇인가요??',
+    title: '원하는 여행 유형은 무엇인가요?',
     subTitle1: '2. 여행 스타일을 알아볼게요',
     subTitle2: '* 기본값: 여유있는 일정',
   },

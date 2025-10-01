@@ -26,13 +26,12 @@ const KOREA_CENTER = { latitude: 36.5, longitude: 127.8 };
 const INPUT_WIDTH = Math.min(340, Dimensions.get('window').width - 36);
 
 function getRadiusByRange(range: number) {
-  const map = [1000, 3000, 10000, 20000, 50000, 100000, 150000, 200000, 300000, 500000];
+  const map = [50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000, 450000, 500000];
   // @ts-ignore
   return map[range - 1] * 0.00057;
 }
 function getZoomByRange(range: number) {
-  const map = [14, 13, 11.5, 10.5, 9, 8, 7.5, 7, 6.5, 6];
-  return (map[range - 1] ?? 14) * 0.9;
+  return 5 * 0.9;
 }
 
 export default function JoinDistance() {
@@ -80,10 +79,10 @@ export default function JoinDistance() {
 
   // 지도 중심 좌표 계산
   let lat: number, lng: number;
-  if (range <= 5 && selectedLocation) {
+  if (range <= 10 && selectedLocation) {
     lat = selectedLocation.lat;
     lng = selectedLocation.lng;
-  } else if (range <= 5 && location?.coords) {
+  } else if (range <= 10 && location?.coords) {
     lat = location.coords.latitude;
     lng = location.coords.longitude;
   } else {

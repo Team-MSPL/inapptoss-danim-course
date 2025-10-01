@@ -1,4 +1,4 @@
-const koreaCityList = [
+export const koreaCityList = [
   {
     id: 0,
     title: '인기',

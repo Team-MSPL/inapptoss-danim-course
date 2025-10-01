@@ -58,11 +58,13 @@ function BadgeRows({ tags }: { tags: string[] }) {
 }
 
 function PlaceCard({ place }: { place: PlaceResult }) {
+  const navigation = useNavigation();
+
   return (
     <View style={{ marginBottom: CARD_MARGIN_BOTTOM, marginTop: 80 }}>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', flex: 1 }}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flex: 1 }}>
 
-        <View style={{ position: 'absolute', top: -38, right: 0, left: 0, alignItems: 'flex-end', zIndex: 2 }}>
+        <View style={{ alignItems: 'flex-end', zIndex: 2, alignSelf: 'flex-start', left: 12 + CARD_WIDTH / 4}}>
           <Tooltip
             message={
               <View style={{ paddingHorizontal: 40, alignSelf: 'flex-end' }}>
@@ -83,7 +85,7 @@ function PlaceCard({ place }: { place: PlaceResult }) {
           </Tooltip>
         </View>
 
-        <View style={styles.card}>
+        <TouchableOpacity onPress={() => navigation.navigate('/join/result-detail', { place })} style={styles.card}>
           <Image
             source={{ uri: place.photo }}
             style={styles.cardImage}
@@ -96,7 +98,7 @@ function PlaceCard({ place }: { place: PlaceResult }) {
               <BadgeRows tags={place.tendency.slice(0, 5)} />
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

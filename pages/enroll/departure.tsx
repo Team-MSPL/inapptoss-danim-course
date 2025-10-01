@@ -15,7 +15,7 @@ export const Route = createRoute('/enroll/departure', {
   component: Departure,
 });
 
-function Departure() {
+export function Departure() {
   const {
     cityIndex,
     country,

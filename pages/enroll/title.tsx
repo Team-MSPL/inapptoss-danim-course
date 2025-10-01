@@ -17,7 +17,7 @@ export const Route = createRoute('/enroll/title', {
   component: EnrollTitle,
 });
 
-function EnrollTitle() {
+export function EnrollTitle() {
   const { travelName } = useAppSelector((state) => state.travelSlice);
   const dispatch = useAppDispatch();
   const handleChange = (e: string) => {

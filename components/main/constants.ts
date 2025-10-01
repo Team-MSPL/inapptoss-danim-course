@@ -4,7 +4,7 @@ import React from 'react';
 export const TAB_ITEMS = [
   { label: '홈', icon: 'icon-home-mono' },
   { label: '내 여행', icon: 'icon-plane-mono' },
-  { label: '여행 상품', icon: 'icon-shopping-bag-mono' },
+  // { label: '여행 상품', icon: 'icon-shopping-bag-mono' },
   { label: '내 정보', icon: 'icon-user-mono' },
 ];
 
@@ -54,30 +54,30 @@ export const DUMMY_PRODUCTS = [
 ];
 
 export const INFO_MENU = [
-  {
-    key: 'reservation',
-    label: '내 예약',
-    icon: 'icon-order-paper',
-    onPressNav: '/info/my-reservation',
-  },
-  {
-    key: 'wishlist',
-    label: '관심 상품',
-    icon: 'icon-heart-red',
-    onPressNav: '/info/my-wishlist',
-  },
+  // {
+  //   key: 'reservation',
+  //   label: '내 예약',
+  //   icon: 'icon-order-paper',
+  //   onPressNav: '/info/my-reservation',
+  // },
+  // {
+  //   key: 'wishlist',
+  //   label: '관심 상품',
+  //   icon: 'icon-heart-red',
+  //   onPressNav: '/info/my-wishlist',
+  // },
   {
     key: 'inquiry',
     label: '문의하기',
     icon: 'icon-user-two-blue-tab',
     onPressNav: '/info/my-inquiry',
   },
-  {
-    key: 'guide',
-    label: '이용 안내',
-    icon: 'icon-pencil',
-    onPressNav: '/info/my-guide',
-  },
+  // {
+  //   key: 'guide',
+  //   label: '이용 안내',
+  //   icon: 'icon-pencil',
+  //   onPressNav: '/info/my-guide',
+  // },
 ];
 
 export const INQUIRY_MENU = [

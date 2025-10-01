@@ -24,54 +24,57 @@ export const Route = createRoute('/enroll/region', {
   component: Region,
 });
 
-function Region() {
+export function Region() {
+  const dispatch = useAppDispatch();
   const { country, cityIndex, region, cityDistance } = useAppSelector((state) => state.travelSlice);
+
   const filterList = ['도심권', '동남권', '동북권', '서남권', '서북권'];
   const checkList = ['서울', '제주'];
+
   const selectPopularity = (e: { id: number; subTitle: string; subId: number }) => {
+    // 업데이트될 값 콘솔 출력
+    const nextRegion = checkList.includes(e.subTitle) ? ['전체'] : [e.subTitle];
+    const nextCityIndex = e.id;
+    const nextCityDistance = [e.subId];
+    console.log('[selectPopularity] nextRegion:', nextRegion, 'nextCityIndex:', nextCityIndex, 'nextCityDistance:', nextCityDistance);
+
     dispatch(
       travelSliceActions.selectPopularity({
-        region: checkList.includes(e.subTitle) ? ['전체'] : [e.subTitle],
-        cityIndex: e.id,
-        cityDistance: [e.subId],
+        region: nextRegion,
+        cityIndex: nextCityIndex,
+        cityDistance: nextCityDistance,
       }),
     );
   };
 
   const selectRegion = (e: any) => {
+    let nextRegion: string[] = [];
+    let nextCityDistance: number[] = [];
+
     if (e.subTitle === '전체' || region.includes('전체')) {
-      dispatch(
-        travelSliceActions.firstSelectRegion({
-          region: [e.subTitle],
-          cityDistance: [e.id],
-        }),
-      );
+      nextRegion = [e.subTitle];
+      nextCityDistance = [e.id];
     } else if (region.includes(e.subTitle)) {
-      const copy = region.filter((item) => item !== e.subTitle);
-      const copyIndex = cityDistance.filter((item) => item !== e.id);
-      dispatch(
-        travelSliceActions.firstSelectRegion({
-          region: copy,
-          cityDistance: copyIndex,
-        }),
-      );
+      nextRegion = region.filter((item) => item !== e.subTitle);
+      nextCityDistance = cityDistance.filter((item) => item !== e.id);
     } else {
-      let copy = [];
-      let copyIndex = [];
       if (!(country == 0 && cityIndex == 2)) {
-        copy = [...region];
-        copyIndex = [...cityDistance];
+        nextRegion = [...region];
+        nextCityDistance = [...cityDistance];
       }
-      copy.push(e.subTitle);
-      copyIndex.push(e.id);
-      dispatch(
-        travelSliceActions.firstSelectRegion({
-          region: copy,
-          cityDistance: copyIndex,
-        }),
-      );
+      nextRegion.push(e.subTitle);
+      nextCityDistance.push(e.id);
     }
+    console.log('[selectRegion] nextRegion:', nextRegion, 'cityIndex:', cityIndex, 'nextCityDistance:', nextCityDistance);
+
+    dispatch(
+      travelSliceActions.firstSelectRegion({
+        region: nextRegion,
+        cityDistance: nextCityDistance,
+      }),
+    );
   };
+
   const handleRegionSerarch = (e: string) => {
     return cityViewList[country]
       .map((item, index) => {
@@ -93,24 +96,29 @@ function Region() {
       ?.filter((item) => !filterList.includes(item?.subTitle))
       .filter((item, index) => item.subTitle.includes(e));
   };
+
   const [value, setValue] = useState('');
-  const dispatch = useAppDispatch();
   const [regionText, setRegionText] = useState('');
   const [regionSearchState, setRegionSearchState] = useState(false);
-  const handleRegionText = useCallback((e: string) => {
-    setValue(e);
-    setRegionMatchList(handleRegionSerarch(e));
-  }, []);
   const regionSearchRef = useRef<TextInput | null>(null);
   const [regionMatchList, setRegionMatchList] = useState<
     { id: number; lat: number; lng: number; subTitle: string }[]
   >([]);
+  const handleRegionText = useCallback((e: string) => {
+    setValue(e);
+    setRegionMatchList(handleRegionSerarch(e));
+  }, []);
+
   const selectCity = (e: number) => {
+    // cityIndex가 바뀔 때 콘솔 출력 & region 초기화
     if (region) {
+      console.log('[selectCity] region 초기화됨 (cityIndex 변경)', []);
       dispatch(travelSliceActions.updateFiled({ field: 'region', value: [] }));
     }
+    console.log('[selectCity] cityIndex:', e);
     dispatch(travelSliceActions.updateFiled({ field: 'cityIndex', value: e }));
   };
+
   return (
     <>
       <SearchField
@@ -134,21 +142,24 @@ function Region() {
                 <Pressable
                   key={index}
                   onPress={() => {
+                    const isPopular = cityViewList[country].filter((asd) => asd.title == item.subTitle)[0]?.id ? true : false;
+                    const regionVal = isPopular ? ['전체'] : [item.subTitle];
+                    const cityIndexVal =
+                      cityViewList[country]
+                        .slice(1)
+                        .filter(
+                          (asd) =>
+                            asd.sub.filter((qqq) => qqq.subTitle == item.subTitle).length >= 1,
+                        )[0]?.id ??
+                      cityViewList[country].filter((asd) => asd.title == item.subTitle)[0]?.id;
+                    const cityDistanceVal = [item.id];
+                    console.log('[searchResult] nextRegion:', regionVal, 'cityIndex:', cityIndexVal, 'cityDistance:', cityDistanceVal);
+
                     dispatch(
                       travelSliceActions.selectPopularity({
-                        region: cityViewList[country].filter((asd) => asd.title == item.subTitle)[0]
-                          ?.id
-                          ? ['전체']
-                          : [item.subTitle],
-                        cityIndex:
-                          cityViewList[country]
-                            .slice(1)
-                            .filter(
-                              (asd) =>
-                                asd.sub.filter((qqq) => qqq.subTitle == item.subTitle).length >= 1,
-                            )[0]?.id ??
-                          cityViewList[country].filter((asd) => asd.title == item.subTitle)[0]?.id,
-                        cityDistance: [item.id],
+                        region: regionVal,
+                        cityIndex: cityIndexVal,
+                        cityDistance: cityDistanceVal,
                       }),
                     );
                     regionSearchRef.current?.blur();

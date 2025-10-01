@@ -9,8 +9,10 @@ import {
 } from '@toss-design-system/react-native';
 import { resetInquiryState } from '../../redux/inquirySlice';
 import { postInquiry } from '../../redux/inquirySlice';
+import {useNavigation} from "@granite-js/react-native";
 
 export default function InfoOneOnOneInquiry() {
+  const navigation = useNavigation();
   const [value, setValue] = useState('');
   const dispatch = useAppDispatch();
   const { loading, error, success } = useAppSelector((state) => state.inquirySlice);
@@ -20,6 +22,7 @@ export default function InfoOneOnOneInquiry() {
     if (success) {
       Alert.alert('문의가 성공적으로 접수되었습니다.');
       setValue('');
+      navigation.goBack();
       dispatch(resetInquiryState());
     }
   }, [success, dispatch]);
