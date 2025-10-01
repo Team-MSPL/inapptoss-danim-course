@@ -16,6 +16,7 @@ import {
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { StepText } from '../../components/step-text';
+import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
 const PLACE_IDX = 3;
 const PLACE_PAGE_SPLIT = [
@@ -89,6 +90,7 @@ export default function JoinPlace() {
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <NavigationBar />
+      <CustomProgressBarJoin currentIndex={4} />
       <FixedBottomCTAProvider>
         <StepText
           title={'가고 싶은 장소는 어디인가요?'}

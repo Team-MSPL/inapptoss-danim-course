@@ -45,7 +45,7 @@ export default function SeasonSelect() {
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <NavigationBar />
       <FixedBottomCTAProvider>
-        <CustomProgressBarJoin currentIndex={2} />
+        <CustomProgressBarJoin currentIndex={1} />
         <View style={styles.header}>
           <Text typography="t6" color="#8A8A8A" fontWeight="medium" style={{ marginBottom: 2 }}>
             1. 여행 스타일을 알아볼게요

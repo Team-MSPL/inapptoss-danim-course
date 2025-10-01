@@ -123,7 +123,7 @@ export default function JoinWho() {
     <View style={{ flex: 1 }}>
       <NavigationBar />
       <FixedBottomCTAProvider>
-        <CustomProgressBarJoin currentIndex={1} />
+        <CustomProgressBarJoin currentIndex={0} />
         <StepText
           title={'누구와 함께 가나요?'}
           subTitle1={'1. 여행 스타일을 알아볼게요'}

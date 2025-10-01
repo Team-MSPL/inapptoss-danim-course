@@ -13,6 +13,7 @@ import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
 // Zustand store import
 import { useRegionSearchStore} from "../../zustand/regionSearchStore";
+import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
 export const Route = createRoute('/join/popular', {
   validateParams: (params) => params,
@@ -59,6 +60,7 @@ export default function PopularSensitivityScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <NavigationBar />
+      <CustomProgressBarJoin currentIndex={5} />
       <FixedBottomCTAProvider>
         <StepText
           title={'가고자 하는 여행지가\n어떤 느낌이었으면 하나요?'}

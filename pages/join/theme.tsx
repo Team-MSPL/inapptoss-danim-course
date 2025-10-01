@@ -14,6 +14,7 @@ import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
 // Zustand store import
 import { useRegionSearchStore} from "../../zustand/regionSearchStore";
+import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
 export const Route = createRoute('/join/theme', {
   validateParams: (params) => params,
@@ -44,6 +45,7 @@ export default function JoinTheme() {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <NavigationBar />
+      <CustomProgressBarJoin currentIndex={2} />
       <FixedBottomCTAProvider>
         {/* Step Header */}
         <StepText

@@ -16,6 +16,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import type { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 import { StepText } from '../../components/step-text';
 import { useRegionSearchStore} from "../../zustand/regionSearchStore";
+import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
 export const Route = createRoute('/join/distance', {
   validateParams: (params) => params,
@@ -116,6 +117,7 @@ export default function JoinDistance() {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <NavigationBar />
+      <CustomProgressBarJoin currentIndex={6} />
       <FixedBottomCTAProvider>
         {/* Step Header */}
         <StepText
