@@ -34,11 +34,25 @@ import { EnrollDistance } from './enroll/distance';
 import { getTravelAi, travelSliceActions } from '../redux/travle-slice';
 import NavigationBar from '../components/navigation-bar';
 import { EnrollTour } from './enroll/tour';
+import { useRegionModeStore } from "../zustand/modeStore";
+import { koreaCityList } from "../utill/city-list";
 
 export const Route = createRoute('/final-check', {
   validateParams: (params) => params,
   component: FinalCheck,
 });
+
+function getProvinceWithCity(region: string[]): string[] {
+  if (!region || region.length === 0) return [];
+  return region.map((cityName) => {
+    for (const cityGroup of koreaCityList) {
+      if (cityGroup.sub.some(sub => sub.subTitle === cityName)) {
+        return `${cityGroup.title} ${cityName}`;
+      }
+    }
+    return cityName;
+  });
+}
 
 function FinalCheck() {
   const {
@@ -98,6 +112,7 @@ function FinalCheck() {
   const goNext = useCallback(async () => {
     try {
       setLoading(true);
+
       if (
         travelName == '신나는 여행' &&
         tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]
@@ -112,61 +127,88 @@ function FinalCheck() {
           '여행';
         dispatch(travelSliceActions.enrollTravelName(changeName));
       }
-      let a = region.map((item) => cityViewList[country][cityIndex].title + ' ' + item);
-      if (
-        (country == 0 && cityViewList[country][cityIndex].id >= 3 && region[0] == '전체') ||
-        (country == 0 && cityViewList[country][cityIndex].id == 1 && region[0] == '전체') ||
-        (country != 0 && region[0] == '전체')
-      ) {
-        a = cityViewList[country][cityIndex].sub.map(
-          (value, idx) => cityViewList[country][cityIndex].title + ' ' + value.subTitle,
-        );
-        a.shift();
-      }
-      // //["해외/Vietnam/나트랑", "해외/Vietnam/다낭"]
-      if (country == 0 && cityIndex == 2) {
-        a = [region[0] + ' 전체'];
-      }
-      let copy = [...tendency];
-      copy[3] = [...copy[3], ...copy[4]];
-      copy.pop();
-      copy.push(season);
-      if (country != 0) {
-        a = a.map((item, idx) => {
-          return `해외/${countryList[country].en}/${item
-            .slice(
-              item.indexOf(cityViewList[country][cityIndex].title) +
+
+      const regionMode = useRegionModeStore.getState().regionMode;
+      let apiBody;
+
+      if (regionMode === 'join') {
+        // join 모드: regionList를 "도/광역시 + 시/군/구" 조합으로 생성
+        const regionList = getProvinceWithCity(region);
+        apiBody = {
+          regionList,
+          accomodationList: accommodations,
+          selectList: tendency,
+          essentialPlaceList: essentialPlaces,
+          timeLimitArray: timeLimitArray,
+          nDay: nDay + 1,
+          transit,
+          distanceSensitivity: distance,
+          bandwidth,
+          freeTicket: true,
+          version: 3,
+          password: '(주)나그네들_g5hb87r8765rt68i7ur78',
+        };
+        console.log('join mode apiBody:', apiBody);
+      } else {
+        // enroll 등 나머지 모드는 기존 방식
+        let regionList = region.map((item) => cityViewList[country][cityIndex].title + ' ' + item);
+        if (
+          (country == 0 && cityViewList[country][cityIndex].id >= 3 && region[0] == '전체') ||
+          (country == 0 && cityViewList[country][cityIndex].id == 1 && region[0] == '전체') ||
+          (country != 0 && region[0] == '전체')
+        ) {
+          regionList = cityViewList[country][cityIndex].sub.map(
+            (value, idx) => cityViewList[country][cityIndex].title + ' ' + value.subTitle,
+          );
+          regionList.shift();
+        }
+        if (country == 0 && cityIndex == 2) {
+          regionList = [region[0] + ' 전체'];
+        }
+        if (country != 0) {
+          regionList = regionList.map((item, idx) => {
+            return `해외/${countryList[country].en}/${item
+              .slice(
+                item.indexOf(cityViewList[country][cityIndex].title) +
                 cityViewList[country][cityIndex].title.length,
-            )
-            .trim()}`;
-        });
-      }
-      const result = await dispatch(
-        getTravelAi({
-          regionList: a,
+              )
+              .trim()}`;
+          });
+        }
+        let copy = [...tendency];
+        copy[3] = [...copy[3], ...copy[4]];
+        copy.pop();
+        copy.push(season);
+
+        apiBody = {
+          regionList,
           accomodationList: accommodations,
           selectList: copy,
           essentialPlaceList: essentialPlaces,
           timeLimitArray: timeLimitArray,
           nDay: nDay + 1,
-          transit: transit,
+          transit,
           distanceSensitivity: distance,
-          bandwidth: bandwidth,
+          bandwidth,
           freeTicket: true,
           version: 3,
           password: '(주)나그네들_g5hb87r8765rt68i7ur78',
-        }),
-      ).unwrap();
+        };
+      }
 
-      dispatch(travelSliceActions.selectRegion(a));
+      const result = await dispatch(getTravelAi(apiBody)).unwrap();
+
+      // 상태 region은 원본만 저장!
+      dispatch(travelSliceActions.selectRegion(region));
+
       if (result) {
-        dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: copy }));
+        dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendency }));
         navigation.popToTop();
         navigation.navigate('/preset');
         !result.data.enoughPlace &&
-          open(`해당 지역에 선택하신 성향의 \n 관광지가 부족하여,일정을 채우지 못했어요`, {
-            icon: 'icon-warning-circle',
-          });
+        open(`해당 지역에 선택하신 성향의 \n 관광지가 부족하여,일정을 채우지 못했어요`, {
+          icon: 'icon-warning-circle',
+        });
       } else {
         open(`네트워크 연결이 불안정해요${`\n`}잠시후 시도해주세요`, {
           icon: 'icon-warning-circle',
@@ -180,8 +222,27 @@ function FinalCheck() {
     } finally {
       setLoading(false);
     }
-  }, [essentialPlaces, accommodations]);
-
+  }, [
+    essentialPlaces,
+    accommodations,
+    region,
+    country,
+    cityIndex,
+    tendency,
+    season,
+    travelName,
+    nDay,
+    transit,
+    distance,
+    bandwidth,
+    timeLimitArray,
+    dispatch,
+    navigation,
+    open,
+    seasonList,
+    tendencyList,
+    countryList,
+  ]);
   return loading ? (
     <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
       <Skeleton height={60} />
@@ -195,18 +256,6 @@ function FinalCheck() {
       <Skeleton height={60} style={{ marginTop: 12 }} />
     </AnimateSkeleton>
   ) : (
-    // <Lottie
-    //   height={"100%"}
-    //   src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
-    //   autoPlay={true}
-    //   loop={true}
-    //   onAnimationFailure={() => {
-    //     console.log("Animation Failed");
-    //   }}
-    //   onAnimationFinish={() => {
-    //     console.log("Animation Finished");
-    //   }}
-    // />
     <FixedBottomCTAProvider>
       <NavigationBar />
       <View style={{ marginHorizontal: 0 }}>
@@ -225,7 +274,7 @@ function FinalCheck() {
             borderRadius: 8,
             overflow: 'hidden',
             marginHorizontal: 24,
-            height: 200, // 반드시 height 지정!
+            height: 200,
             position: 'relative',
           }}
         >
@@ -294,7 +343,7 @@ function FinalCheck() {
                 {tendency[0].find((item) => item == 1) == undefined
                   ? ''
                   : tendency[0].findIndex((item) => item == 1) == 0 ||
-                      tendency[0].findIndex((item) => item == 1) == 4
+                  tendency[0].findIndex((item) => item == 1) == 4
                     ? ' '
                     : ' 함께하는 '}
                 {seasonList[season.findIndex((item) => item == 1)].title} 여행
@@ -559,10 +608,10 @@ type ModifyBottomSheetContentProps = {
 };
 
 function ModifyBottomSheetContent({
-  startIndex,
-  onCancel,
-  allowedSteps,
-}: ModifyBottomSheetContentProps) {
+                                    startIndex,
+                                    onCancel,
+                                    allowedSteps,
+                                  }: ModifyBottomSheetContentProps) {
   // 전체 네비게이션 스택
   const navigationStack = [
     { title: 'who', component: <EnrollWho marginTop={0} contentRatio={0.8} /> },
@@ -621,3 +670,5 @@ function ModifyBottomSheetContent({
     </View>
   );
 }
+
+export default FinalCheck;

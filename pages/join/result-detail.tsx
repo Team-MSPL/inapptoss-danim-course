@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { PlaceResult } from "../../components/join/type";
@@ -7,6 +7,7 @@ import { useAppDispatch } from "../../src/store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { useRegionSearchStore } from "../../zustand/regionSearchStore";
 import { koreaCityList } from "../../utill/city-list";
+import { useRegionModeStore } from '../../zustand/modeStore';
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
@@ -125,6 +126,7 @@ function JoinResultDetail() {
     dispatch(travelSliceActions.updateFiled({ field: 'cityIndex', value: cityIndex }));
     dispatch(travelSliceActions.updateFiled({ field: 'cityDistance', value: cityDistance }));
 
+    useRegionModeStore.getState().setRegionMode('join');
     navigation.navigate('/join/enroll-route')
   };
 

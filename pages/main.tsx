@@ -7,6 +7,7 @@ import MainInfo from './main/main-info';
 import CustomBottomBar from '../components/main/custom-bottom-bar';
 import {useTopNavigation} from "@apps-in-toss/framework";
 import {useNavigation} from "@granite-js/react-native";
+import {useRegionModeStore} from "../zustand/modeStore";
 
 export default function Main() {
   const [tab, setTab] = useState(0);
@@ -24,6 +25,7 @@ export default function Main() {
         navigation.navigate('/info/my-inquiry-list')
       }, // 콜백함수 등록
     });
+    useRegionModeStore.getState().setRegionMode('enroll');
   }, [navigation]);
 
   const renderScreen = () => {
