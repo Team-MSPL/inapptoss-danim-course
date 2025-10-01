@@ -72,12 +72,12 @@ export const INFO_MENU = [
     icon: 'icon-user-two-blue-tab',
     onPressNav: '/info/my-inquiry',
   },
-  {
-    key: 'guide',
-    label: '이용 안내',
-    icon: 'icon-pencil',
-    onPressNav: '/info/my-guide',
-  },
+  // {
+  //   key: 'guide',
+  //   label: '이용 안내',
+  //   icon: 'icon-pencil',
+  //   onPressNav: '/info/my-guide',
+  // },
 ];
 
 export const INQUIRY_MENU = [
@@ -87,10 +87,10 @@ export const INQUIRY_MENU = [
     icon: 'icon-open-chat-bubble-question',
     onPressNav: '/info/one-on-one-inquiry',
   },
-  // {
-  //   key: 'my-inquiry-list',
-  //   label: '내 문의',
-  //   icon: 'icon-document-my',
-  //   onPressNav: '/info/my-inquiry-list',
-  // },
+  {
+    key: 'my-inquiry-list',
+    label: '내 문의',
+    icon: 'icon-document-my',
+    onPressNav: '/info/my-inquiry-list',
+  },
 ];
