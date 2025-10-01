@@ -24,13 +24,6 @@ export default defineConfig({
       navigationBar: {
         withBackButton: true,
         withHomeButton: true,
-        initialAccessoryButton: {
-          icon: {
-            name: 'icon-letter-mono',
-          },
-          title: 'letter',
-          id: 'letter'
-        },
       }
     }),
     env({
