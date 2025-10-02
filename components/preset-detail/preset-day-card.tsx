@@ -1,151 +1,154 @@
-import React from 'react';
-import { Stack } from '@granite-js/react-native';
-import { colors, Text } from '@toss-design-system/react-native';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text, colors } from '@toss-design-system/react-native';
 import moment from 'moment';
-// 회색 원 컴포넌트(GrayCircle)는 직접 구현하거나 기존 컴포넌트 사용
-import GrayCircle from '../design/gray-circle';
 
 type TimetableItem = {
   name: string;
   takenTime: number;
   address?: string;
+  lat?: number;
+  lng?: number;
 };
 
-type PresetDayCardProps = {
+type Props = {
   item: TimetableItem[];
   index: number;
   day: string[];
   handleItemLayout: (e: any, idx: number) => void;
 };
 
-export function PresetDayCard({ item, index, day, handleItemLayout }: PresetDayCardProps) {
-  const isLastCard = index === day.length - 1;
-  const CIRCLE_SIZE = 8;
-  const TIMELINE_WIDTH = 28;
-  const LINE_WIDTH = 1.5;
-  const ROW_HEIGHT = 56;
-  const KOREAN_WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+const GEOCODE_API_KEY = import.meta.env.GOOGLE_API_KEY;
+
+function shortenAddress(addr?: string) {
+  if (!addr) return '';
+  const regex = /(.*?[구읍면동])/;
+  const match = addr.match(regex);
+  if (match && match[1]) {
+    return match[1] + '...';
+  }
+  return addr;
+}
+
+async function fetchAddress(lat: number, lng: number): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GEOCODE_API_KEY}`,
+    );
+    const data = await res.json();
+    if (data.status === 'OK' && data.results[0]) {
+      return data.results[0].formatted_address;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function PresetDayCard({ item, index, day, handleItemLayout }: Props) {
   const dateObj = moment(day[index]);
+  const KOREAN_WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
   const weekdayKor = KOREAN_WEEKDAYS[dateObj.day()];
 
+  const [addressList, setAddressList] = useState<(string | undefined)[]>([]);
+
+  useEffect(() => {
+    Promise.all(
+      item.map(async (v) => {
+        if (v.address) return v.address;
+        if (v.lat && v.lng) {
+          const addr = await fetchAddress(v.lat, v.lng);
+          return addr ?? '';
+        }
+        return '';
+      }),
+    ).then(setAddressList);
+  }, [item]);
+
+  const getTimeText = (min: number) => {
+    const hour = Math.floor(min / 60), minute = min % 60;
+    if (hour && minute) return `${hour}시간 ${minute}분`;
+    if (hour) return `${hour}시간`;
+    if (minute) return `${minute}분`;
+    return '';
+  };
+
   return (
-    <Stack.Vertical
-      style={{
-        position: 'relative',
-        borderWidth: 1,
-        borderColor: '#eeeeee',
-        borderRadius: 13,
-        paddingHorizontal: 24,
-        paddingVertical: 20,
-        marginTop: 10,
-        marginBottom: isLastCard ? 155 : 20,
-        marginHorizontal: 24,
-        backgroundColor: 'white',
-      }}
-      onLayout={(e) => handleItemLayout(e, index)}
-    >
-      {/* 날짜/요일 */}
-      <Text typography="t5" fontWeight="medium" color={'#505A69'}>
+    <View style={styles.card} onLayout={(e) => handleItemLayout(e, index)}>
+      <Text typography="t7" fontWeight="medium" color={colors.grey600} style={{ marginBottom: 10 }}>
         {dateObj.format('YYYY-MM-DD')} ({weekdayKor})
       </Text>
-      {/* 소제목(여행지) */}
-      <Text
-        typography="t6"
-        fontWeight="bold"
-        color={'#B0B3C2'}
-        style={{ marginTop: 20, marginBottom: 18 }}
-      >
-        여행지
-      </Text>
-      {/* 타임라인 */}
-      <View style={{ flexDirection: 'column' }}>
-        {item?.map((value, idx) => {
-          const isLast = idx === item.length - 1;
-          // 시간 표시
-          const hour = Math.floor(value.takenTime / 60);
-          const minute = value.takenTime % 60;
-          let timeText = '';
-          if (hour > 0) timeText += `${hour}시간`;
-          if (minute > 0) timeText += `${hour > 0 ? ' ' : ''}${minute}분`;
-          // 예시 주소 (없으면 빈 문자열)
-          const address = value.address ?? '충남 부여군 부여읍 동남리';
-
-          return (
-            <View
-              key={idx}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                height: ROW_HEIGHT,
-              }}
+      {item.map((value, idx) => (
+        <View key={idx} style={styles.row}>
+          <View style={styles.circle}>
+            <Text style={styles.circleText}>{idx + 1}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text typography="t5" fontWeight="semiBold" color={colors.grey800}>
+              {value.name}
+            </Text>
+            <Text
+              typography="t7"
+              fontWeight="medium"
+              color={colors.grey500}
+              style={{ marginTop: 2 }}
+              numberOfLines={1}
             >
-              {/* 타임라인 왼쪽 (원+선) */}
-              <View
-                style={{
-                  width: TIMELINE_WIDTH,
-                  alignItems: 'center',
-                  position: 'relative',
-                  height: ROW_HEIGHT,
-                }}
-              >
-                <GrayCircle size={CIRCLE_SIZE} />
-                {!isLast && (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: CIRCLE_SIZE,
-                      left: (TIMELINE_WIDTH - LINE_WIDTH) / 2,
-                      width: LINE_WIDTH,
-                      height: ROW_HEIGHT - CIRCLE_SIZE,
-                      backgroundColor: '#B2B8C2',
-                    }}
-                  />
-                )}
-              </View>
-              {/* 오른쪽 - 장소/시간 */}
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  minHeight: CIRCLE_SIZE,
-                  bottom: 5,
-                  marginLeft: 12,
-                }}
-              >
-                <Text
-                  typography="t6"
-                  fontWeight="bold"
-                  color={colors.grey900}
-                  style={{ marginRight: 8 }}
-                >
-                  {value.name}
-                </Text>
-                {!!timeText && (
-                  <Text typography="t7" fontWeight="medium" color={colors.blue600}>
-                    {timeText}
-                  </Text>
-                )}
-              </View>
-              {/* 주소는 잠시 주석처리 */}
-              {/*
-              <View style={{ flex: 1 }}>
-                <Text
-                  typography="t7"
-                  fontWeight="regular"
-                  color={colors.grey300}
-                  style={{ marginTop: 2 }}
-                  numberOfLines={1}
-                >
-                  {address}
-                </Text>
-              </View>
-              */}
+              {shortenAddress(value.address ?? addressList[idx] ?? '')}
+            </Text>
+          </View>
+          {!!value.takenTime && (
+            <View style={styles.timePill}>
+              <Text style={styles.timeText}>{getTimeText(value.takenTime)}</Text>
             </View>
-          );
-        })}
-      </View>
-    </Stack.Vertical>
+          )}
+        </View>
+      ))}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: 13,
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    marginHorizontal: 24,
+    backgroundColor: '#fff',
+    marginBottom: 20,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 18,
+    minHeight: 80,
+  },
+  circle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.grey200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 20,
+  },
+  circleText: {
+    color: '#3182F6',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  timePill: {
+    backgroundColor: '#EDF3FF',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginLeft: 12,
+    minWidth: 40,
+    alignItems: 'center',
+  },
+  timeText: {
+    color: colors.blue600,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+});
