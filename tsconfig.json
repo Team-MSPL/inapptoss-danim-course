@@ -5,7 +5,10 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
     "types": ["react-native", "react-native-bedrock/env"],
     "jsx": "react-native",
     "resolveJsonModule": true,

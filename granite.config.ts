@@ -20,6 +20,14 @@ export default defineConfig({
           name: 'geolocation',
           access: 'access',
         },
+        {
+          name: "photos",
+          access : "read"
+        },
+        {
+          name : "camera",
+          access : "access"
+        }
       ],
       navigationBar: {
         withBackButton: true,
