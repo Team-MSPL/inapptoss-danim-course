@@ -60,6 +60,12 @@ export const INFO_MENU = [
   //   icon: 'icon-order-paper',
   //   onPressNav: '/info/my-reservation',
   // },
+  {
+    key: 'letter',
+    label: '쪽지함',
+    icon: 'icon-mail-mono',
+    onPressNav: '/info/my-inquiry-list',
+  },
   // {
   //   key: 'wishlist',
   //   label: '관심 상품',
@@ -87,10 +93,10 @@ export const INQUIRY_MENU = [
     icon: 'icon-open-chat-bubble-question',
     onPressNav: '/info/one-on-one-inquiry',
   },
-  {
-    key: 'my-inquiry-list',
-    label: '내 문의',
-    icon: 'icon-document-my',
-    onPressNav: '/info/my-inquiry-list',
-  },
+  // {
+  //   key: 'my-inquiry-list',
+  //   label: '내 문의',
+  //   icon: 'icon-document-my',
+  //   onPressNav: '/info/my-inquiry-list',
+  // },
 ];
