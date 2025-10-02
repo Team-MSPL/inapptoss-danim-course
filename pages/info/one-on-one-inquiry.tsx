@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, View, TextInput, StyleSheet, Platform, TouchableOpacity, Image } from 'react-native';
+import { Alert, View, TextInput, StyleSheet, Platform, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import {
   FixedBottomCTA,
@@ -7,172 +7,23 @@ import {
   Top,
   colors,
   Text, Icon,
-  useToast,
+  Button,
 } from '@toss-design-system/react-native';
 import { resetInquiryState, postInquiry } from '../../redux/inquirySlice';
 import { useNavigation } from "@granite-js/react-native";
+import {useAlbumPhotos} from "../../hooks/useAlbumPhotos";
 
-import { fetchAlbumPhotos, ImageResponse } from '@apps-in-toss/framework';
+// useAlbumPhotos, usePermissionGate 등은 기존과 동일하게 사용
 
-import { useCallback, useEffect as useEffectHook, useRef, useState as useStateHook } from 'react';
-import { PermissionStatus } from '@apps-in-toss/framework';
-import { fn } from 'moment';
-
-export interface PermissionGateConfig {
-  getPermission: () => Promise<PermissionStatus>;
-  openPermissionDialog: () => Promise<PermissionStatus>;
-  onPermissionRequested?: (status: PermissionStatus) => void;
-}
-
-interface UsePermissionGateReturn {
-  permission: PermissionStatus | null;
-  isRequestingPermission: boolean;
-  isExecuting: boolean;
-  ensureAndRun: <T>(fn: () => Promise<T>) => Promise<T | undefined>;
-  checkPermission: () => Promise<PermissionStatus>;
-  requestPermission: () => Promise<PermissionStatus>;
-}
-
-const isAllowed = (status: PermissionStatus) => status === 'allowed';
-
-function usePermissionGate(
-  config: PermissionGateConfig
-): UsePermissionGateReturn {
-  const [permission, setPermission] = useStateHook<PermissionStatus | null>(null);
-  const [isRequestingPermission, setIsRequestingPermission] = useStateHook(false);
-  const [isExecuting, setIsExecuting] = useStateHook(false);
-
-  const mountedRef = useRef<boolean>(false);
-  const execCountRef = useRef<number>(0);
-  const reqCountRef = useRef<number>(0);
-
-  const runIfMounted = useCallback((fn: () => void) => {
-    if (mountedRef.current) {
-      fn();
-    }
-  }, []);
-
-  const checkPermission = useCallback(async () => {
-    const status = await config.getPermission();
-    runIfMounted(() => setPermission(status));
-    return status;
-  }, [config, runIfMounted]);
-
-  const requestPermission = useCallback(async () => {
-    reqCountRef.current += 1;
-    runIfMounted(() => setIsRequestingPermission(true));
-    try {
-      const status = await config.openPermissionDialog();
-      runIfMounted(() => setPermission(status));
-      config.onPermissionRequested?.(status);
-      return status;
-    } finally {
-      reqCountRef.current -= 1;
-      if (reqCountRef.current === 0) {
-        runIfMounted(() => setIsRequestingPermission(false));
-      }
-    }
-  }, [config, runIfMounted]);
-
-  const ensureAndRun = useCallback(
-    async <T>(fn: () => Promise<T>) => {
-      const current = await checkPermission();
-      const allowed =
-        isAllowed(current) || isAllowed(await requestPermission());
-
-      if (!allowed) {
-        const error = new Error('권한을 거절했어요.');
-        error.name = 'PermissionDeniedError';
-        throw error;
-      }
-
-      execCountRef.current += 1;
-      runIfMounted(() => setIsExecuting(true));
-      try {
-        const result = await fn();
-        return result;
-      } finally {
-        execCountRef.current -= 1;
-
-        if (execCountRef.current === 0) {
-          runIfMounted(() => setIsExecuting(false));
-        }
-      }
-    },
-    [checkPermission, requestPermission, runIfMounted]
-  );
-
-  useEffectHook(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  return {
-    permission,
-    isRequestingPermission,
-    isExecuting,
-    ensureAndRun,
-    checkPermission,
-    requestPermission,
-  };
-}
-
-// ------ useAlbumPhotos hook -------
-export interface ImageState extends ImageResponse {
-  previewUri: string;
-}
-
-function useAlbumPhotos({ base64 = true }: { base64?: boolean }) {
-  const [albumPhotos, setAlbumPhotos] = useState<ImageState[]>([]);
-  const toast = useToast();
-  const permissionGate = usePermissionGate({
-    getPermission: () => fetchAlbumPhotos.getPermission(),
-    openPermissionDialog: () => fetchAlbumPhotos.openPermissionDialog(),
-    onPermissionRequested: (status) => console.log(`권한 요청 결과: ${status}`),
-  });
-
-  const loadPhotos = useCallback(async () => {
-    try {
-      const response = await permissionGate.ensureAndRun(() =>
-        fetchAlbumPhotos({ maxWidth: 360, base64 })
-      );
-
-      if (!response) return;
-
-      const newImages = response.map((img) => ({
-        ...img,
-        previewUri: base64
-          ? `data:image/jpeg;base64,${img.dataUri}`
-          : img.dataUri,
-      }));
-
-      setAlbumPhotos((prev) => [...prev, ...newImages]);
-    } catch (error) {
-      let errorMessage = '앨범을 가져오는 데 실패했어요';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      toast.open(`${errorMessage}`);
-    }
-  }, [base64]);
-
-  const deletePhoto = useCallback((id: string) => {
-    setAlbumPhotos((prev) => prev.filter((album) => album.id !== id));
-  }, []);
-
-  return { albumPhotos, loadPhotos, deletePhoto };
-}
-
-// ------ Main Inquiry Component -------
 export default function InfoOneOnOneInquiry() {
   const navigation = useNavigation();
   const [value, setValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const { albumPhotos, loadPhotos, deletePhoto } = useAlbumPhotos({ base64: true });
+  // 확대 이미지 상태
+  const [expandedPhoto, setExpandedPhoto] = useState<{ id: string; uri: string } | null>(null);
 
+  const { albumPhotos, loadPhotos, deletePhoto } = useAlbumPhotos({ base64: true });
   const dispatch = useAppDispatch();
   const { loading, error, success } = useAppSelector((state) => state.inquirySlice);
   const userName = 'toss_user';
@@ -200,7 +51,7 @@ export default function InfoOneOnOneInquiry() {
     dispatch(postInquiry({
       userName,
       inquire: value,
-      photos: albumPhotos.map((img) => img.previewUri), // base64 포함
+      photos: albumPhotos.map((img) => img.previewUri),
     }));
   };
 
@@ -214,25 +65,36 @@ export default function InfoOneOnOneInquiry() {
     <View>
       <Text style={styles.photoLabel}>사진 추가</Text>
       <View style={styles.photoRow}>
-        {/* "+" 버튼 */}
         {albumPhotos.length < 3 && (
           <TouchableOpacity style={styles.photoAddBox} onPress={loadPhotos} activeOpacity={0.8}>
             <Icon name="icon-plus" size={32} color={colors.blue600}/>
           </TouchableOpacity>
         )}
-        {/* 선택된 사진들 */}
         {albumPhotos.map((img) => (
-          <View key={img.id} style={styles.photoPreviewBox}>
+          <TouchableOpacity
+            key={img.id}
+            style={styles.photoPreviewBox}
+            onPress={() => setExpandedPhoto({ id: img.id, uri: img.previewUri })}
+            activeOpacity={0.93}
+          >
             <Image source={{ uri: img.previewUri }} style={styles.photoPreviewImg} />
-            <TouchableOpacity
-              style={styles.photoRemoveBtn}
-              onPress={() => deletePhoto(img.id)}
-            >
-              <Icon name="icon-close" size={18} color={colors.grey400} />
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
+    </View>
+  );
+
+  // 확대 이미지 전용 뷰
+  const renderExpandedPhoto = () => (
+    <View style={{ flex: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
+      <Image
+        source={{ uri: expandedPhoto?.uri }}
+        style={{
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height * 0.55,
+          resizeMode: 'contain',
+        }}
+      />
     </View>
   );
 
@@ -241,38 +103,66 @@ export default function InfoOneOnOneInquiry() {
       {isSubmitted ? (
         <InquirySuccessView onGoHome={handleGoHome} />
       ) : (
-        <>
-          <Top.Root
-            title={
-              <Top.TitleParagraph typography="t3" color={colors.grey900}>
-                1:1 문의하기
-              </Top.TitleParagraph>
-            }
-          />
-          <FixedBottomCTAProvider>
-            <View style={styles.container}>
-              <View style={styles.boxWrapper}>
-                <TextInput
-                  style={styles.textArea}
-                  multiline
-                  placeholder="문의하실 내용을 입력해 주세요"
-                  placeholderTextColor="#B1B6BE"
-                  value={value}
-                  onChangeText={setValue}
-                  textAlignVertical="top"
-                  underlineColorAndroid="transparent"
-                  selectionColor="#23262F"
-                  editable={!loading}
-                />
+        <FixedBottomCTAProvider>
+          {expandedPhoto ? (
+            // 확대 이미지 화면
+            <>
+              {renderExpandedPhoto()}
+              <View style={styles.bottomBar}>
+                <Button
+                  type="dark"
+                  style="weak"
+                  size="large"
+                  onPress={() => setExpandedPhoto(null)}
+                >
+                  닫기
+                </Button>
+                <Button
+                  type="danger"
+                  style="fill"
+                  size="large"
+                  onPress={() => {
+                    deletePhoto(expandedPhoto.id);
+                    setExpandedPhoto(null);
+                  }}
+                >
+                  삭제
+                </Button>
               </View>
-              {/* 사진 추가 영역 */}
-              {renderPhotoSection()}
-            </View>
-            <FixedBottomCTA onPress={onSubmit} disabled={loading || !value.trim()}>
-              {loading ? '잠시만 기다려주세요...' : '제출하기'}
-            </FixedBottomCTA>
-          </FixedBottomCTAProvider>
-        </>
+            </>
+          ) : (
+            // 기본 문의 폼 화면
+            <>
+              <Top.Root
+                title={
+                  <Top.TitleParagraph typography="t3" color={colors.grey900}>
+                    1:1 문의하기
+                  </Top.TitleParagraph>
+                }
+              />
+              <View style={styles.container}>
+                <View style={styles.boxWrapper}>
+                  <TextInput
+                    style={styles.textArea}
+                    multiline
+                    placeholder="문의하실 내용을 입력해 주세요"
+                    placeholderTextColor="#B1B6BE"
+                    value={value}
+                    onChangeText={setValue}
+                    textAlignVertical="top"
+                    underlineColorAndroid="transparent"
+                    selectionColor="#23262F"
+                    editable={!loading}
+                  />
+                </View>
+                {renderPhotoSection()}
+              </View>
+              <FixedBottomCTA onPress={onSubmit} disabled={loading || !value.trim()}>
+                {loading ? '잠시만 기다려주세요...' : '제출하기'}
+              </FixedBottomCTA>
+            </>
+          )}
+        </FixedBottomCTAProvider>
       )}
     </View>
   );
@@ -328,13 +218,21 @@ const styles = StyleSheet.create({
   },
   photoPreviewBox: {
     width: 90, height: 90, borderRadius: 18, overflow: 'hidden', marginRight: 10,
-    position: 'relative',
   },
   photoPreviewImg: {
     width: '100%', height: '100%', borderRadius: 18,
   },
-  photoRemoveBtn: {
-    position: 'absolute', top: 4, right: 4, backgroundColor: '#fff', borderRadius: 12, padding: 2,
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '100%',
+    paddingHorizontal: 32,
+    paddingVertical: 24,
+    backgroundColor: '#fff',
+  },
+  modalBtn: {
+    flex: 1,
+    marginHorizontal: 8,
   },
 });
 
@@ -351,7 +249,3 @@ const successStyles = StyleSheet.create({
   },
   buttonText: { color: '#4287f5', fontSize: 16, fontWeight: 'bold' }
 });
-
-function async<T>(fn: any, arg1: () => { new(executor: (resolve: (value: any) => void, reject: (reason?: any) => void) => void): Promise<T>; all<T>(values: Iterable<T | PromiseLike<T>>): Promise<Awaited<T>[]>; all<T extends readonly unknown[] | []>(values: T): Promise<{ -readonly [P in keyof T]: Awaited<T[P]>; }>; race<T>(values: Iterable<T | PromiseLike<T>>): Promise<Awaited<T>>; race<T extends readonly unknown[] | []>(values: T): Promise<Awaited<T[number]>>; readonly prototype: Promise<any>; reject<T = never>(reason?: any): Promise<T>; resolve(): Promise<void>; resolve<T>(value: T): Promise<Awaited<T>>; resolve<T>(value: T | PromiseLike<T>): Promise<Awaited<T>>; allSettled<T extends readonly unknown[] | []>(values: T): Promise<{ -readonly [P in keyof T]: PromiseSettledResult<Awaited<T[P]>>; }>; allSettled<T>(values: Iterable<T | PromiseLike<T>>): Promise<PromiseSettledResult<Awaited<T>>[]>; any<T extends readonly unknown[] | []>(values: T): Promise<Awaited<T[number]>>; any<T>(values: Iterable<T | PromiseLike<T>>): Promise<Awaited<T>>; withResolvers<T>(): PromiseWithResolvers<T>; try<T, U extends unknown[]>(callbackFn: (...args: U) => T | PromiseLike<T>, ...args: U): Promise<Awaited<T>>; readonly [Symbol.species]: PromiseConstructor; }): any {
-    throw new Error('Function not implemented.');
-}
