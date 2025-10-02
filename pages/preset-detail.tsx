@@ -553,7 +553,7 @@ function PresetDetail() {
           onTouchEnd={handleToggleMapHeight}
           style={{
             width: Dimensions.get('window').width,
-            height: 40,
+            height: 24,
             backgroundColor: 'white',
             alignItems: 'center',
             justifyContent: 'center',
