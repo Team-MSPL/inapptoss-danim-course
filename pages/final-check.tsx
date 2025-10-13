@@ -36,6 +36,7 @@ import NavigationBar from '../components/navigation-bar';
 import { EnrollTour } from './enroll/tour';
 import { useRegionModeStore } from "../zustand/modeStore";
 import { koreaCityList } from "../utill/city-list";
+import {patchRecentSelectList} from "../zustand/api";
 
 export const Route = createRoute('/final-check', {
   validateParams: (params) => params,
@@ -134,6 +135,7 @@ function FinalCheck() {
       if (regionMode === 'join') {
         // join 모드: regionList를 "도/광역시 + 시/군/구" 조합으로 생성
         const regionList = getProvinceWithCity(region);
+        await patchRecentSelectList(tendency);
         apiBody = {
           regionList,
           accomodationList: accommodations,
@@ -180,6 +182,7 @@ function FinalCheck() {
         copy.pop();
         copy.push(season);
 
+        await patchRecentSelectList(copy);
         apiBody = {
           regionList,
           accomodationList: accommodations,

@@ -9,9 +9,22 @@ import {
   Top,
 } from '@toss-design-system/react-native';
 import { useNavigation } from '@granite-js/react-native';
+import { getRecentSelectList } from '../../zustand/api';
 
 export default function MainHome() {
   const navigation = useNavigation();
+
+  const handleNavigate = async (route) => {
+    try {
+      const data = await getRecentSelectList();
+      console.log('API 결과:', data);
+      navigation.navigate(route);
+    } catch (error) {
+      console.error('API 에러:', error);
+      // 필요하다면 에러 발생시에도 이동 가능
+      navigation.navigate(route);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -30,7 +43,7 @@ export default function MainHome() {
         ></Top>
         <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 20, marginTop: 30 }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('/join/who')}
+            onPress={() => handleNavigate('/join/who')}
             style={{
               width: Dimensions.get('window').width - 48,
               alignSelf: 'center',
@@ -110,7 +123,7 @@ export default function MainHome() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('/enroll/title')}
+            onPress={() => handleNavigate('/enroll/title')}
             style={{
               width: Dimensions.get('window').width - 48,
               alignSelf: 'center',

@@ -6,7 +6,7 @@ import LottieView from '@granite-js/native/lottie-react-native';
 import { StepText } from '../../components/step-text';
 import {FixedBottomCTAProvider, useToast} from '@toss-design-system/react-native';
 import { useRegionSearchStore } from '../../zustand/regionSearchStore';
-import { postRegionSearch } from '../../zustand/api';
+import {getRecentSelectList, patchRecentSelectList, postRegionSearch} from '../../zustand/api';
 
 const LOTTIE_URL = "https://static.toss.im/lotties/loading/load-ripple.json";
 
@@ -22,6 +22,7 @@ function RegionSearchLoading() {
   useEffect(() => {
     async function fetchData() {
       try {
+        await patchRecentSelectList(storeState.selectList);
         const result = await postRegionSearch(storeState);
         navigation.reset({ index: 0, routes: [{ name: `/join/result`, params: { result }}]});
       } catch (e: any) {
