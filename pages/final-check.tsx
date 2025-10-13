@@ -34,7 +34,7 @@ import { EnrollDistance } from './enroll/distance';
 import { getTravelAi, travelSliceActions } from '../redux/travle-slice';
 import NavigationBar from '../components/navigation-bar';
 import { EnrollTour } from './enroll/tour';
-import { useRegionModeStore } from "../zustand/modeStore";
+import {useRecentModeStore, useRegionModeStore} from "../zustand/modeStore";
 import { koreaCityList } from "../utill/city-list";
 import {patchRecentSelectList} from "../zustand/api";
 
@@ -134,8 +134,8 @@ function FinalCheck() {
 
       if (regionMode === 'join') {
         // join 모드: regionList를 "도/광역시 + 시/군/구" 조합으로 생성
-        const regionList = getProvinceWithCity(region);
         await patchRecentSelectList(tendency);
+        const regionList = getProvinceWithCity(region);
         apiBody = {
           regionList,
           accomodationList: accommodations,
@@ -177,26 +177,49 @@ function FinalCheck() {
               .trim()}`;
           });
         }
-        let copy = [...tendency];
-        copy[3] = [...copy[3], ...copy[4]];
-        copy.pop();
-        copy.push(season);
 
-        await patchRecentSelectList(copy);
-        apiBody = {
-          regionList,
-          accomodationList: accommodations,
-          selectList: copy,
-          essentialPlaceList: essentialPlaces,
-          timeLimitArray: timeLimitArray,
-          nDay: nDay + 1,
-          transit,
-          distanceSensitivity: distance,
-          bandwidth,
-          freeTicket: true,
-          version: 3,
-          password: '(주)나그네들_g5hb87r8765rt68i7ur78',
-        };
+        const recentMode = useRecentModeStore.getState().recentMode;
+
+        if(recentMode === 'current') {
+          let copy = [...tendency];
+          copy[3] = [...copy[3], ...copy[4]];
+          copy.pop();
+          copy.push(season);
+
+          await patchRecentSelectList(copy);
+          apiBody = {
+            regionList,
+            accomodationList: accommodations,
+            selectList: copy,
+            essentialPlaceList: essentialPlaces,
+            timeLimitArray: timeLimitArray,
+            nDay: nDay + 1,
+            transit,
+            distanceSensitivity: distance,
+            bandwidth,
+            freeTicket: true,
+            version: 3,
+            password: '(주)나그네들_g5hb87r8765rt68i7ur78',
+          };
+        } else {
+          await patchRecentSelectList(tendency);
+          apiBody = {
+            regionList,
+            accomodationList: accommodations,
+            selectList: tendency,
+            essentialPlaceList: essentialPlaces,
+            timeLimitArray: timeLimitArray,
+            nDay: nDay + 1,
+            transit,
+            distanceSensitivity: distance,
+            bandwidth,
+            freeTicket: true,
+            version: 3,
+            password: '(주)나그네들_g5hb87r8765rt68i7ur78',
+          };
+        }
+
+        console.log(apiBody);
       }
 
       const result = await dispatch(getTravelAi(apiBody)).unwrap();
@@ -464,11 +487,18 @@ function FinalCheck() {
                     </Text>
                     <Stack.Horizontal gutter={4}>
                       {tendency[3].map((item, inx) => {
-                        return item ? (
-                          <Badge size="medium" type="teal" badgeStyle="weak">
-                            {tendencyList[3]?.list[inx]}
+                        let badgeLabel = '';
+                        if (inx < 6) {
+                          badgeLabel = tendencyList[3]?.list[inx];
+                        } else {
+                          badgeLabel = tendencyList[4]?.list[inx - 6];
+                        }
+                        if (!item || !badgeLabel || badgeLabel.length === 0) return null;
+                        return (
+                          <Badge key={inx} size="medium" type="teal" badgeStyle="weak">
+                            {badgeLabel}
                           </Badge>
-                        ) : null;
+                        );
                       })}
                     </Stack.Horizontal>
                   </Stack.Vertical>

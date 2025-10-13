@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { Image } from '@granite-js/react-native';
 import {
@@ -7,23 +7,98 @@ import {
   FixedBottomCTAProvider,
   Text,
   Top,
+  BottomSheet,
+  Button, useBottomSheet
 } from '@toss-design-system/react-native';
 import { useNavigation } from '@granite-js/react-native';
 import { getRecentSelectList } from '../../zustand/api';
+import { useRegionSearchStore } from '../../zustand/regionSearchStore';
+import { useDispatch } from 'react-redux';
+import { travelSliceActions } from "../../redux/travle-slice";
+import {useRecentModeStore} from "../../zustand/modeStore";
 
 export default function MainHome() {
   const navigation = useNavigation();
+  const bottomSheet = useBottomSheet();
+  const setRecentMode = useRecentModeStore((state) => state.setRecentMode);
 
-  const handleNavigate = async (route) => {
+  const setSelectList = useRegionSearchStore((state) => state.setSelectList);
+  const dispatch = useDispatch();
+
+  const handleNavigate = async (route: string) => {
     try {
       const data = await getRecentSelectList();
-      console.log('API 결과:', data);
-      navigation.navigate(route);
+      console.log(data);
+      if (data && data.recentSelectList) {
+        confirmRecommend(data, route);
+      } else {
+        navigation.navigate(route);
+      }
     } catch (error) {
       console.error('API 에러:', error);
-      // 필요하다면 에러 발생시에도 이동 가능
       navigation.navigate(route);
     }
+  };
+
+  // 바텀시트 confirmRecommend 구현
+  const confirmRecommend = (apiResult: any, route: string) => {
+    bottomSheet.open({
+      children: (
+        <>
+          <Text
+            typography="t4"
+            fontWeight="bold"
+            color={colors.grey800}
+            style={{ alignSelf: 'center', marginTop: 35 }}
+          >
+            최근에 선택하신 여행 성향들로 추천을 진행할까요?
+          </Text>
+          <Text
+            typography="t5"
+            fontWeight="regular"
+            color={colors.grey600}
+            style={{ textAlign: 'center', marginTop: 12 }}
+          >
+            네, 최근 선택대로 추천해주세요{'\n'}아니요, 다시 선택할게요
+          </Text>
+          <BottomSheet.CTA.Double
+            leftButton={
+              <Button type="dark" style="weak" display="block" onPress={() => {
+                if(route === '/join/who') {
+                  setSelectList([[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]]);
+                }
+                setRecentMode('current');
+                bottomSheet.close();
+                navigation.navigate(route);
+              }}>
+                아니요, 다시 선택할게요
+              </Button>
+            }
+            rightButton={
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                onPress={() => {
+                  setRecentMode('recent');
+                  if(route === '/join/who') {// zustand selectList 업데이트
+                    setSelectList(apiResult.recentSelectList);
+                  }
+                  else {
+                    // redux travelSlice tendency 업데이트;
+                    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: apiResult.recentSelectList }));
+                  }
+                  bottomSheet.close();
+                  navigation.navigate(route);
+                }}
+              >
+                네, 최근 선택대로 추천해주세요
+              </Button>
+            }
+          />
+        </>
+      ),
+    });
   };
 
   return (
