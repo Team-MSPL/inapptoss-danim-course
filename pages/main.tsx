@@ -34,8 +34,8 @@ export default function Main() {
         return <MainHome />;
       case 1:
         return <MainTrip />;
-      // case 2:
-      //   return <MainTravelShop />;
+      case 2:
+        return <MainTravelShop />;
       case 2:
         return <MainInfo />;
       default:
