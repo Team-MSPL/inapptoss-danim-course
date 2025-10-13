@@ -53,14 +53,6 @@ export default function MainHome() {
           >
             최근에 선택하신 여행 성향들로 추천을 진행할까요?
           </Text>
-          <Text
-            typography="t5"
-            fontWeight="regular"
-            color={colors.grey600}
-            style={{ textAlign: 'center', marginTop: 12 }}
-          >
-            네, 최근 선택대로 추천해주세요{'\n'}아니요, 다시 선택할게요
-          </Text>
           <BottomSheet.CTA.Double
             leftButton={
               <Button type="dark" style="weak" display="block" onPress={() => {
