@@ -3,15 +3,48 @@ import { View, Pressable } from 'react-native';
 import { Image } from '@granite-js/react-native';
 import { Text, Badge, Icon, colors } from '@toss-design-system/react-native';
 
-export default function ProductCard({ product, onPress }: { product: any; onPress: () => void }) {
+// Search API Product 타입에 맞게 엄격하게 정의
+type Country = {
+  id: string;
+  name: string;
+  cities: { id: string; name: string }[];
+};
+
+type ProductCategory = {
+  main: string;
+  sub: string[];
+};
+
+export type Product = {
+  prod_no: number;
+  prod_name: string;
+  prod_img_url: string;
+  b2c_price: number;
+  b2b_price: number;
+  avg_rating_star: number;
+  rating_count: number;
+  countries: Country[];
+  introduction: string;
+  prod_type: string;
+  tag?: string[];
+  instant_booking: boolean;
+  product_category: ProductCategory;
+  similarity?: number;
+};
+
+type ProductCardProps = {
+  product: Product;
+  onPress: () => void;
+};
+
+export default function ProductCard({ product, onPress }: ProductCardProps) {
   // 할인율 계산
-  const originPrice = product.sellingProductPriceDetail
-    ? Number(Object.values(Object.values(product.sellingProductPriceDetail)[0] || {})[0] || 0)
-    : product.sellingProductPrice || 0;
-  const salePrice =
-    product.sellingProductPrice ||
-    Number(Object.values(Object.values(product.sellingProductPriceDetail)[0] || {})[0] || 0);
-  const percent = originPrice > 0 ? Math.floor(100 - (salePrice / originPrice) * 100) : 0;
+  const originPrice = product.b2c_price || 0;
+  const salePrice = product.b2b_price || 0;
+  const percent =
+    originPrice > 0 && originPrice > salePrice
+      ? Math.floor(100 - (salePrice / originPrice) * 100)
+      : 0;
 
   return (
     <Pressable onPress={onPress}>
@@ -33,7 +66,7 @@ export default function ProductCard({ product, onPress }: { product: any; onPres
         <View>
           <Image
             source={{
-              uri: Array.isArray(product.sellingProductImage) ? product.sellingProductImage[0] : '',
+              uri: product.prod_img_url || '',
             }}
             style={{
               width: 90,
@@ -60,7 +93,7 @@ export default function ProductCard({ product, onPress }: { product: any; onPres
         </View>
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
           <Text typography="t4" fontWeight="bold" numberOfLines={1}>
-            {product.sellingProductName}
+            {product.prod_name}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 2 }}>
             {percent > 0 && (
@@ -84,15 +117,15 @@ export default function ProductCard({ product, onPress }: { product: any; onPres
             )}
           </View>
           <Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 2 }}>
-            {product.sellingProductContent}
+            {product.introduction}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
             <Icon name="icon-star-fill" color={colors.yellow500} size={16} />
             <Text typography="t7" color={colors.grey800} style={{ marginLeft: 3 }}>
-              {product.sellingProductRating?.toFixed(1) || '0.0'}
+              {product.avg_rating_star?.toFixed(1) ?? '0.0'}
             </Text>
             <Text typography="t7" color={colors.grey400} style={{ marginLeft: 4 }}>
-              ({product.sellingProductReviewCount?.toLocaleString('ko-KR') || 0})
+              ({product.rating_count?.toLocaleString('ko-KR') ?? 0})
             </Text>
             {typeof product.similarity === 'number' && product.similarity > 0 && (
               <Badge
@@ -105,29 +138,33 @@ export default function ProductCard({ product, onPress }: { product: any; onPres
             )}
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
-            {product.sellingProductType === 'tour' && (
+            {product.prod_type === 'M01' && (
               <Badge type="blue" badgeStyle="weak" style={{ marginRight: 3, marginBottom: 2 }}>
                 단독 투어
               </Badge>
             )}
-            {product.sellingProductType === 'package' && (
+            {product.prod_type === 'M06' && (
               <Badge type="blue" badgeStyle="weak" style={{ marginRight: 3, marginBottom: 2 }}>
                 패키지
               </Badge>
             )}
-            {product.koreanGuide === 'Y' && (
-              <Badge type="teal" badgeStyle="weak" style={{ marginRight: 3, marginBottom: 2 }}>
-                한국어 가이드
+            {/* 기타 타입/태그 등 활용해 확장 가능 */}
+            {product.countries?.[0]?.name && (
+              <Badge
+                badgeStyle="weak"
+                style={{ marginRight: 3, marginBottom: 2 }}
+              >
+                {product.countries[0].name}
               </Badge>
             )}
-            {Array.isArray(product.sellingProductRegion) &&
-              product.sellingProductRegion.map((region: string, idx: number) => (
+            {Array.isArray(product.tag) &&
+              product.tag.map((tg: string, idx: number) => (
                 <Badge
                   badgeStyle="weak"
-                  key={region + idx}
+                  key={tg + idx}
                   style={{ marginRight: 3, marginBottom: 2 }}
                 >
-                  {region}
+                  {tg}
                 </Badge>
               ))}
           </View>

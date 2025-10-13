@@ -21,202 +21,152 @@ import {
 } from '@toss-design-system/react-native';
 import ProductCard from '../../components/main/product-card';
 import { StepText } from '../../components/step-text';
-import { useProductStore } from '../../zustand/useProductStore';
-import axiosAuth from "../../redux/api";
-import {useAppSelector} from "../../src/store";
-import { buildKKdaySearchBody } from '../../kkday/kkdayBodyBuilder';
 
 const SORT_OPTIONS = [
-  { label: '추천순', value: 'recommend' },
-  { label: '높은 가격순', value: 'price_desc' },
-  { label: '낮은 가격순', value: 'price_asc' },
-  { label: '높은 평점순', value: 'score_desc' },
-  { label: '낮은 평점순', value: 'score_asc' },
-];
+  { label: '추천순', value: 'RECOMMEND' },
+  { label: '높은 가격순', value: 'PDESC' },
+  { label: '낮은 가격순', value: 'PASC' },
+  { label: '높은 평점순', value: 'SDESC' }
+] as const;
 
-const DEPART_TIME_OPTIONS = ['새벽', '오전', '오후', '야간'];
-const TOUR_TYPE_OPTIONS = ['개인', '단체', '세미'];
-const GUIDE_OPTIONS = ['한국어', '영어'];
+const DEPART_TIME_OPTIONS = ['새벽', '오전', '오후', '야간'] as const;
+const TOUR_TYPE_OPTIONS = ['개인', '단체', '세미'] as const;
+const GUIDE_OPTIONS = ['한국어', '영어'] as const;
 const PRICE_MIN = 0;
 const PRICE_MAX = 1000000;
 
-const API_URL = 'https://api-b2d.kkday.com/v4/Search';
+const SEARCH_API_URL = 'https://danimdatabase.com/kkday/Search';
+
+// 타입 정의
+type Country = {
+  id: string;
+  name: string;
+  cities: { id: string; name: string }[];
+};
+
+type ProductCategory = {
+  main: string;
+  sub: string[];
+};
+
+type Product = {
+  prod_no: number;
+  prod_name: string;
+  prod_img_url: string;
+  b2c_price: number;
+  b2b_price: number;
+  avg_rating_star: number;
+  rating_count: number;
+  countries: Country[];
+  introduction: string;
+  prod_type: string;
+  tag?: string[];
+  instant_booking: boolean;
+  product_category: ProductCategory;
+  [key: string]: unknown;
+};
+
+type SearchApiResponse = {
+  metadata: {
+    result: string;
+    result_msg: string;
+    total_count: number;
+    start: number;
+    count: number;
+  };
+  prods: Product[];
+};
 
 export default function MainTravelShop() {
   const navigation = useNavigation();
-  const {
-    productList, total, loading, error,
-    sortType, setSortType,
-    filter, setFilter,
-    setProductList, setLoading, setError,
-  } = useProductStore();
-  const jwtToken = useAppSelector(state => state.travelSlice.userJwtToken);
-
-  const [refreshing, setRefreshing] = useState(false);
   const bottomSheet = useBottomSheet();
 
-  // 가격 및 필터 입력값 state
-  const [minPriceInput, setMinPriceInput] = useState(filter.minPrice.toString());
-  const [maxPriceInput, setMaxPriceInput] = useState(filter.maxPrice.toString());
-  const [departTimeSel, setDepartTimeSel] = useState(filter.departTime[0] ?? '');
-  const [tourTypeSel, setTourTypeSel] = useState(filter.tourType[0] ?? '');
-  const [guideSel, setGuideSel] = useState(filter.guide[0] ?? '');
+  // 상태 타입 엄격히 지정
+  const [productList, setProductList] = useState<Product[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const [sortType, setSortType] = useState<typeof SORT_OPTIONS[number]['value']>('RECOMMEND');
+  const [filter, setFilter] = useState<{
+    departTime: string[];
+    tourType: string[];
+    guide: string[];
+    minPrice: number;
+    maxPrice: number;
+  }>({
+    departTime: [],
+    tourType: [],
+    guide: [],
+    minPrice: PRICE_MIN,
+    maxPrice: PRICE_MAX,
+  });
+  const [minPriceInput, setMinPriceInput] = useState<string>(String(PRICE_MIN));
+  const [maxPriceInput, setMaxPriceInput] = useState<string>(String(PRICE_MAX));
+  const [departTimeSel, setDepartTimeSel] = useState<string>('');
+  const [tourTypeSel, setTourTypeSel] = useState<string>('');
+  const [guideSel, setGuideSel] = useState<string>('');
+
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  // 상품 목록 불러오기
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // 예시 변수 (필요한 값들은 실제 상태/입력값으로 대체)
-      const countryKeys = ['VN']; // 나라 필터 (국가코드 배열)
-      const pageSize = 20; // 한 페이지에 보여줄 상품 수
-      const start = 0; // 페이징 시작점
-      const sort = 'RECOMMEND'; // 정렬 방식 (RECOMMEND, PDESC, PASC, HDESC, SDESC)
-      const priceFrom = 0;      // 가격 최소값
-      const priceTo = 1000000;  // 가격 최대값
-      const guideLangs = ['한국어']; // 가이드 언어
-      const keywords = '';      // 키워드 검색
-      const catKeys = [];       // 카테고리 태그
-      const cityKeys = [];      // 도시 태그
-      const durations = [];     // 소요시간
-      const facets = [];
-      const hasPkg = null;
-      const haveTranslate = null;
-      const instantBooking = null;
-      const locale = 'ko';
-      const productCategories = [];
-      const state = null;
-      const stats = [];
-      const tourism = null;
-      const dateFrom = null;
-      const dateTo = null;
+      const body: Record<string, unknown> = {};
+      // 실사용 시 필터/정렬 값 body에 추가
+      // body.sortType = sortType;
+      // body.minPrice = Number(minPriceInput) || PRICE_MIN;
+      // body.maxPrice = Number(maxPriceInput) || PRICE_MAX;
+      // body.departTime = departTimeSel ? [departTimeSel] : [];
+      // body.tourType = tourTypeSel ? [tourTypeSel] : [];
+      // body.guide = guideSel ? [guideSel] : [];
 
-// body 객체 생성
-      const body = buildKKdaySearchBody({
-        facets: ['tag', 'country_city', 'product_category'],
-        country_keys: ['A01-001'],
-        city_keys: ['A01-001-00001'],
-        cat_keys: ['TAG_1_1'],
-        page_size: 1000,
-        date_from: '2023-07-01',
-        date_to: '2023-07-31',
-        guide_langs: ['zh-tw', 'en'],
-        price_from: '100',
-        price_to: '10000',
-        keywords: 'Search Keywords',
-        sort: 'PDESC',
-        start: 0,
-        durations: ['0,24', '24,48', '72,*'],
-        stats: ['price'],
-        locale: 'zh-tw',
-        state: 'TW',
-        has_pkg: true,
-        tourism: true,
-        have_translate: true,
-        instant_booking: true,
-        product_categories: ['CATEGORY_012'],
+      const response = await axios.post<SearchApiResponse>(SEARCH_API_URL, body, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
       });
 
-// 빈 값(undefined) 제거
-      Object.keys(body).forEach(
-        (k) =>
-          (body[k] === undefined ||
-            body[k] === '' ||
-            (Array.isArray(body[k]) && body[k].length === 0)) &&
-          delete body[k]
-      );
-
-// body를 콘솔로 확인
-      console.log('최종 KKday API body:', body);
-
-      // 콘솔
-      console.log('[KKday API 요청 body]', body);
-
-      const response = await axios.post(
-        API_URL,
-        {
-          "facets": [
-            "tag",
-            "country_city",
-            "product_category"
-          ],
-          "country_keys": [
-            "A01-001"
-          ],
-          "city_keys": [
-            "A01-001-00001"
-          ],
-          "cat_keys": [
-            "TAG_1_1"
-          ],
-          "page_size": 1000,
-          "date_from": "2023-07-01",
-          "date_to": "2023-07-31",
-          "guide_langs": [
-            "zh-tw",
-            "en"
-          ],
-          "price_from": "100",
-          "price_to": "10000",
-          "keywords": "Search Keywords",
-          "sort": "PDESC",
-          "start": 0,
-          "durations": [
-            "0,24",
-            "24,48",
-            "72,*"
-          ],
-          "stats": [
-            "price"
-          ],
-          "locale": "zh-tw",
-          "state": "TW",
-          "has_pkg": true,
-          "tourism": true,
-          "have_translate": true,
-          "instant_booking": true,
-          "product_categories": [
-            "CATEGORY_012"
-          ]
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-            'Content-Type': 'application/json',
-            'accept': 'application/json',
-          }
-        }
-      );
-
-      console.log('[KKday API 응답]', response.data);
-
-      setProductList(response.data.prods || [], response.data.total_count || 0);
+      if (
+        response.status === 200 &&
+        response.data &&
+        Array.isArray(response.data.prods)
+      ) {
+        setProductList(response.data.prods.filter(Boolean));
+        setTotal(response.data.metadata?.total_count || response.data.prods.length);
+      } else {
+        setProductList([]);
+        setTotal(0);
+        setError('상품을 불러오는데 실패했습니다.');
+      }
       setLoading(false);
     } catch (e: any) {
-      if (e.response) {
-        console.error('[KKday API 에러]', e.response.status, e.response.data);
+      if (e?.response) {
+        setError(
+          e.response.data?.message ||
+          `오류가 발생했습니다: ${e.response.statusText}`
+        );
       } else {
-        console.error('[KKday API 에러]', e);
+        setError('상품을 불러오는데 실패했습니다.');
       }
-      setError('상품을 불러오는데 실패했습니다.');
+      setProductList([]);
+      setTotal(0);
       setLoading(false);
     }
-  }, [
-    sortType, minPriceInput, maxPriceInput,
-    departTimeSel, tourTypeSel, guideSel,
-    setProductList, setLoading, setError,
-  ]);
+  }, []);
 
   useEffect(() => {
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortType, minPriceInput, maxPriceInput, departTimeSel, tourTypeSel, guideSel]);
+  }, [fetchProducts]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchProducts().finally(() => setRefreshing(false));
   }, [fetchProducts]);
 
-  // 정렬 바텀시트 (open 함수형)
   const openSortSheet = () => {
     bottomSheet.open({
       children: (
@@ -252,9 +202,8 @@ export default function MainTravelShop() {
     });
   };
 
-  // 옵션 버튼 커스텀 (SegmentedControl 대체)
   const renderOptionRow = (
-    options: string[],
+    options: readonly string[],
     selected: string,
     onChange: (v: string) => void
   ) => (
@@ -280,9 +229,7 @@ export default function MainTravelShop() {
     </View>
   );
 
-  // 필터 바텀시트 (open 함수형, SegmentedControl 없이 커스텀)
   const openFilterSheet = () => {
-    // 내부 임시 변수(로컬 state X, 클로저로 처리)
     let tempDepart = departTimeSel;
     let tempTour = tourTypeSel;
     let tempGuide = guideSel;
@@ -408,7 +355,7 @@ export default function MainTravelShop() {
               onPress={openSortSheet}
             >
               <Text typography="t7" color={colors.blue500} style={{ marginRight: 2 }}>
-                {SORT_OPTIONS.find((opt) => opt.value === sortType)?.label || '추천순'}
+                {SORT_OPTIONS.find((opt) => opt.value === sortType)?.label || 'RECOMMEND'}
               </Text>
               <Icon name="icon-chevron-down-mono" color={colors.blue500} size={16} />
             </Pressable>
@@ -418,12 +365,7 @@ export default function MainTravelShop() {
     </View>
   );
 
-  const isNoProduct =
-    !loading &&
-    ((Array.isArray(productList) && productList.length === 0) ||
-      (productList &&
-        typeof productList === 'object' &&
-        (productList as any).message === '조건에 맞는 판매 상품이 없습니다.'));
+  const isNoProduct = !loading && (Array.isArray(productList) && productList.length === 0);
 
   if (loading && !refreshing) {
     return (
@@ -454,18 +396,18 @@ export default function MainTravelShop() {
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F8FA' }}>
       <FlatList
-        data={
-          isNoProduct
-            ? []
-            : Array.isArray(productList) && productList.length > 0
-              ? productList
-              : []
-        }
-        keyExtractor={(item) => item?.prod_no ?? item?._id ?? Math.random().toString()}
+        data={isNoProduct ? [] : productList.filter(Boolean)}
+        keyExtractor={(item) => item?.prod_no?.toString() ?? Math.random().toString()}
         renderItem={({ item }) => {
           if (!item) return null;
-          // KKday API에 맞게 상품 속성에 접근해야 함
-          return <ProductCard product={item} onPress={() => {}} />;
+          return (
+            <ProductCard
+              product={item}
+              onPress={() => {
+                // navigation.navigate('ProductDetail', { prod_no: item.prod_no });
+              }}
+            />
+          );
         }}
         ListHeaderComponent={renderHeader}
         contentContainerStyle={{ paddingBottom: 110 }}
