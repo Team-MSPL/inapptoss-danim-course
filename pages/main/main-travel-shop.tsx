@@ -22,6 +22,7 @@ import {
 } from '@toss-design-system/react-native';
 import ProductCard, { Product } from '../../components/main/product-card';
 import { StepText } from '../../components/step-text';
+import axiosAuth from "../../redux/api";
 
 const SORT_OPTIONS = [
   { label: '추천순', value: 'RECOMMEND' },
@@ -38,7 +39,7 @@ const GUIDE_OPTIONS = [
 const PRICE_MIN = 0;
 const PRICE_MAX = 100000;
 
-const SEARCH_API_URL = 'https://danimdatabase.com/kkday/Search';
+const SEARCH_API_URL = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Search`;
 
 type Country = {
   id: string;
@@ -64,7 +65,6 @@ type SearchApiResponse = {
 
 const PAGE_SIZE = 10;
 
-// 추천순/가격/평점 등 → API에 맞게 변환
 function getSortApiCode(sortType: string) {
   switch (sortType) {
     case 'RECOMMEND': return 'RECOMMEND';
@@ -95,7 +95,6 @@ export default function MainTravelShop() {
 
   const totalCountRef = useRef(0);
 
-  // === Search API 바디 변환 함수 ===
   const buildSearchBody = () => {
     const body: Record<string, any> = {
       start: page * PAGE_SIZE,
@@ -108,7 +107,6 @@ export default function MainTravelShop() {
     return body;
   };
 
-  // 상품 목록 페이징 요청
   const fetchProducts = useCallback(async (reset = false) => {
     const nextPage = reset ? 0 : page;
     if (reset) setLoading(true);
@@ -117,14 +115,11 @@ export default function MainTravelShop() {
 
     try {
       const body = buildSearchBody();
-      console.log('API 요청 body:', JSON.stringify(body, null, 2));
 
-      const response = await axios.post<SearchApiResponse>(SEARCH_API_URL, body, {
+      const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 10000,
       });
-
-      console.log('API 응답 결과:', response.data);
 
       if (
         response.status === 200 &&
@@ -138,14 +133,11 @@ export default function MainTravelShop() {
         }
         setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
         totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
-
-        console.log(`[상품] ${nextPage * PAGE_SIZE} ~ ${(nextPage + 1) * PAGE_SIZE}개`, response.data.prods.slice(0, PAGE_SIZE));
       } else {
         if (reset) setProductList([]);
         setError('상품을 불러오는데 실패했습니다.');
       }
     } catch (e: any) {
-      console.log('API 요청 에러:', e);
       setError('상품을 불러오는데 실패했습니다.');
       if (reset) setProductList([]);
     } finally {
@@ -154,7 +146,6 @@ export default function MainTravelShop() {
     }
   }, [page, sortType, minPriceInput, maxPriceInput, guideSel]);
 
-  // 최초 로딩, 필터/정렬 변경 시 새로고침
   useEffect(() => {
     setPage(0);
     fetchProducts(true);
@@ -166,11 +157,11 @@ export default function MainTravelShop() {
     fetchProducts(true).finally(() => setRefreshing(false));
   }, [fetchProducts]);
 
-  const onEndReached = useCallback(() => {
-    if (loading || isLoadingMore) return;
-    if (productList.length >= totalCountRef.current) return;
-    setPage(prev => prev + 1);
-  }, [loading, isLoadingMore, productList.length]);
+  const handleLoadMore = () => {
+    if (!loading && !isLoadingMore && productList.length < totalCountRef.current) {
+      setPage(prev => prev + 1);
+    }
+  };
 
   useEffect(() => {
     if (page === 0) return;
@@ -251,9 +242,7 @@ export default function MainTravelShop() {
     });
   };
 
-  // 필터 바텀시트 (가이드 멀티선택/가격)
   const openFilterSheet = () => {
-    // 바텀시트 컨텐츠를 컴포넌트로 만들어 내부에서 useState 사용
     function FilterSheetContent() {
       const [tempGuide, setTempGuide] = useState<string[]>(guideSel);
       const [tempMinPrice, setTempMinPrice] = useState<string>(minPriceInput);
@@ -306,7 +295,6 @@ export default function MainTravelShop() {
     bottomSheet.open({ children: <FilterSheetContent /> });
   };
 
-  // 상품 목록 상단 헤더 (StepText, 총 N개, 정렬/필터 버튼)
   const renderHeader = () => (
     <View style={{ backgroundColor: '#fff' }}>
       <StepText
@@ -407,7 +395,7 @@ export default function MainTravelShop() {
             <ProductCard
               product={item}
               onPress={() => {
-                // navigation.navigate('ProductDetail', { prod_no: item.prod_no });
+                navigation.navigate('/product/good-product', { product: item });
               }}
             />
           );
@@ -417,12 +405,12 @@ export default function MainTravelShop() {
         showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.5}
         ListFooterComponent={
-          isLoadingMore ? (
-            <View style={{ paddingVertical: 20 }}>
-              <Text typography="t6" color={colors.grey400}>상품을 불러오는 중입니다...</Text>
+          (productList.length < totalCountRef.current) ? (
+            <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+              <Button onPress={handleLoadMore} loading={isLoadingMore}>
+                더 불러오기
+              </Button>
             </View>
           ) : null
         }
