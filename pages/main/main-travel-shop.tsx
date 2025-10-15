@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import {
   View,
   FlatList,
@@ -18,8 +18,9 @@ import {
   Skeleton,
   AnimateSkeleton,
   useBottomSheet,
+  BottomSheet,
 } from '@toss-design-system/react-native';
-import ProductCard from '../../components/main/product-card';
+import ProductCard, { Product } from '../../components/main/product-card';
 import { StepText } from '../../components/step-text';
 
 const SORT_OPTIONS = [
@@ -29,15 +30,16 @@ const SORT_OPTIONS = [
   { label: '높은 평점순', value: 'SDESC' }
 ] as const;
 
-const DEPART_TIME_OPTIONS = ['새벽', '오전', '오후', '야간'] as const;
-const TOUR_TYPE_OPTIONS = ['개인', '단체', '세미'] as const;
-const GUIDE_OPTIONS = ['한국어', '영어'] as const;
+const GUIDE_OPTIONS = [
+  { label: '한국어', value: 'ko' },
+  { label: '영어', value: 'en' },
+] as const;
+
 const PRICE_MIN = 0;
-const PRICE_MAX = 1000000;
+const PRICE_MAX = 100000;
 
 const SEARCH_API_URL = 'https://danimdatabase.com/kkday/Search';
 
-// 타입 정의
 type Country = {
   id: string;
   name: string;
@@ -47,23 +49,6 @@ type Country = {
 type ProductCategory = {
   main: string;
   sub: string[];
-};
-
-type Product = {
-  prod_no: number;
-  prod_name: string;
-  prod_img_url: string;
-  b2c_price: number;
-  b2b_price: number;
-  avg_rating_star: number;
-  rating_count: number;
-  countries: Country[];
-  introduction: string;
-  prod_type: string;
-  tag?: string[];
-  instant_booking: boolean;
-  product_category: ProductCategory;
-  [key: string]: unknown;
 };
 
 type SearchApiResponse = {
@@ -77,186 +62,209 @@ type SearchApiResponse = {
   prods: Product[];
 };
 
+const PAGE_SIZE = 10;
+
+// 추천순/가격/평점 등 → API에 맞게 변환
+function getSortApiCode(sortType: string) {
+  switch (sortType) {
+    case 'RECOMMEND': return 'RECOMMEND';
+    case 'PDESC': return 'PDESC';
+    case 'PASC': return 'PASC';
+    case 'SDESC': return 'SDESC';
+    default: return 'RECOMMEND';
+  }
+}
+
 export default function MainTravelShop() {
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();
 
-  // 상태 타입 엄격히 지정
   const [productList, setProductList] = useState<Product[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [sortType, setSortType] = useState<typeof SORT_OPTIONS[number]['value']>('RECOMMEND');
-  const [filter, setFilter] = useState<{
-    departTime: string[];
-    tourType: string[];
-    guide: string[];
-    minPrice: number;
-    maxPrice: number;
-  }>({
-    departTime: [],
-    tourType: [],
-    guide: [],
-    minPrice: PRICE_MIN,
-    maxPrice: PRICE_MAX,
-  });
   const [minPriceInput, setMinPriceInput] = useState<string>(String(PRICE_MIN));
   const [maxPriceInput, setMaxPriceInput] = useState<string>(String(PRICE_MAX));
-  const [departTimeSel, setDepartTimeSel] = useState<string>('');
-  const [tourTypeSel, setTourTypeSel] = useState<string>('');
-  const [guideSel, setGuideSel] = useState<string>('');
+  const [guideSel, setGuideSel] = useState<string[]>([]); // 멀티 선택
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(0);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
-  // 상품 목록 불러오기
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
+  const totalCountRef = useRef(0);
+
+  // === Search API 바디 변환 함수 ===
+  const buildSearchBody = () => {
+    const body: Record<string, any> = {
+      start: page * PAGE_SIZE,
+      page_size: PAGE_SIZE,
+      sort: getSortApiCode(sortType),
+    };
+    if (minPriceInput) body.price_from = minPriceInput;
+    if (maxPriceInput) body.price_to = maxPriceInput;
+    if (guideSel.length > 0) body.guide_langs = guideSel;
+    return body;
+  };
+
+  // 상품 목록 페이징 요청
+  const fetchProducts = useCallback(async (reset = false) => {
+    const nextPage = reset ? 0 : page;
+    if (reset) setLoading(true);
+    else setIsLoadingMore(true);
     setError(null);
+
     try {
-      const body: Record<string, unknown> = {};
-      // 실사용 시 필터/정렬 값 body에 추가
-      // body.sortType = sortType;
-      // body.minPrice = Number(minPriceInput) || PRICE_MIN;
-      // body.maxPrice = Number(maxPriceInput) || PRICE_MAX;
-      // body.departTime = departTimeSel ? [departTimeSel] : [];
-      // body.tourType = tourTypeSel ? [tourTypeSel] : [];
-      // body.guide = guideSel ? [guideSel] : [];
+      const body = buildSearchBody();
+      console.log('API 요청 body:', JSON.stringify(body, null, 2));
 
       const response = await axios.post<SearchApiResponse>(SEARCH_API_URL, body, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         timeout: 10000,
       });
+
+      console.log('API 응답 결과:', response.data);
 
       if (
         response.status === 200 &&
         response.data &&
         Array.isArray(response.data.prods)
       ) {
-        setProductList(response.data.prods.filter(Boolean));
-        setTotal(response.data.metadata?.total_count || response.data.prods.length);
-      } else {
-        setProductList([]);
-        setTotal(0);
-        setError('상품을 불러오는데 실패했습니다.');
-      }
-      setLoading(false);
-    } catch (e: any) {
-      if (e?.response) {
-        setError(
-          e.response.data?.message ||
-          `오류가 발생했습니다: ${e.response.statusText}`
-        );
-      } else {
-        setError('상품을 불러오는데 실패했습니다.');
-      }
-      setProductList([]);
-      setTotal(0);
-      setLoading(false);
-    }
-  }, []);
+        if (reset) {
+          setProductList(response.data.prods.filter(Boolean));
+        } else {
+          setProductList(prev => [...prev, ...response.data.prods.filter(Boolean)]);
+        }
+        setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
+        totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
 
+        console.log(`[상품] ${nextPage * PAGE_SIZE} ~ ${(nextPage + 1) * PAGE_SIZE}개`, response.data.prods.slice(0, PAGE_SIZE));
+      } else {
+        if (reset) setProductList([]);
+        setError('상품을 불러오는데 실패했습니다.');
+      }
+    } catch (e: any) {
+      console.log('API 요청 에러:', e);
+      setError('상품을 불러오는데 실패했습니다.');
+      if (reset) setProductList([]);
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [page, sortType, minPriceInput, maxPriceInput, guideSel]);
+
+  // 최초 로딩, 필터/정렬 변경 시 새로고침
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    setPage(0);
+    fetchProducts(true);
+  }, [sortType, minPriceInput, maxPriceInput, guideSel]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchProducts().finally(() => setRefreshing(false));
+    setPage(0);
+    fetchProducts(true).finally(() => setRefreshing(false));
   }, [fetchProducts]);
 
+  const onEndReached = useCallback(() => {
+    if (loading || isLoadingMore) return;
+    if (productList.length >= totalCountRef.current) return;
+    setPage(prev => prev + 1);
+  }, [loading, isLoadingMore, productList.length]);
+
+  useEffect(() => {
+    if (page === 0) return;
+    fetchProducts(false);
+  }, [page, fetchProducts]);
+
+  // 멀티선택 가이드 버튼
+  const renderGuideOptions = (
+    selectedList: string[],
+    onChange: (arr: string[]) => void
+  ) => (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 }}>
+      {GUIDE_OPTIONS.map(opt => {
+        const checked = selectedList.includes(opt.value);
+        return (
+          <TouchableOpacity
+            key={opt.value}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 18,
+              borderWidth: 1,
+              borderColor: colors.grey200,
+              backgroundColor: checked ? colors.blue50 : '#fff',
+              marginRight: 8,
+              marginBottom: 8,
+            }}
+            onPress={() => {
+              let next: string[];
+              if (checked) {
+                next = selectedList.filter(v => v !== opt.value);
+              } else {
+                next = [...selectedList, opt.value];
+              }
+              onChange(next);
+            }}
+          >
+            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>{opt.label}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+
+  // 정렬 바텀시트
   const openSortSheet = () => {
     bottomSheet.open({
       children: (
-        <View style={{ padding: 24 }}>
-          {SORT_OPTIONS.map((option) => (
-            <Pressable
-              key={option.value}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: 12,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.grey200,
-              }}
-              onPress={() => {
-                setSortType(option.value);
-                bottomSheet.close();
-              }}
-            >
-              <Text typography="t4" color={colors.grey900} style={{ flex: 1 }}>
-                {option.label}
-              </Text>
-              {sortType === option.value && (
-                <Icon name="icon-check-mono" color={colors.blue500} size={18} />
-              )}
-            </Pressable>
-          ))}
-          <Button style={{ marginTop: 24 }} onPress={() => bottomSheet.close()}>
+        <View style={{ paddingVertical: 24 }}>
+          <View style={{ paddingHorizontal: 24 }}>
+            {SORT_OPTIONS.map((option) => (
+              <Pressable
+                key={option.value}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: 20,
+                }}
+                onPress={() => {
+                  setSortType(option.value);
+                  bottomSheet.close();
+                }}
+              >
+                <Text typography="t5" fontWeight="medium" color={colors.grey700} style={{ flex: 1 }}>
+                  {option.label}
+                </Text>
+                {sortType === option.value && (
+                  <Icon name="icon-check-mono" color={colors.blue500} size={24} />
+                )}
+              </Pressable>
+            ))}
+          </View>
+          <BottomSheet.CTA onPress={() => bottomSheet.close()}>
             취소
-          </Button>
+          </BottomSheet.CTA>
         </View>
       ),
     });
   };
 
-  const renderOptionRow = (
-    options: readonly string[],
-    selected: string,
-    onChange: (v: string) => void
-  ) => (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 }}>
-      {options.map(opt => (
-        <TouchableOpacity
-          key={opt}
-          style={{
-            paddingHorizontal: 16,
-            paddingVertical: 8,
-            borderRadius: 18,
-            borderWidth: selected === opt ? 2 : 1,
-            borderColor: selected === opt ? colors.blue500 : colors.grey300,
-            backgroundColor: selected === opt ? colors.blue50 : '#fff',
-            marginRight: 8,
-            marginBottom: 8,
-          }}
-          onPress={() => onChange(opt)}
-        >
-          <Text typography="t6" color={selected === opt ? colors.blue500 : colors.grey700}>{opt}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
+  // 필터 바텀시트 (가이드 멀티선택/가격)
   const openFilterSheet = () => {
-    let tempDepart = departTimeSel;
-    let tempTour = tourTypeSel;
-    let tempGuide = guideSel;
-    let tempMinPrice = minPriceInput;
-    let tempMaxPrice = maxPriceInput;
+    // 바텀시트 컨텐츠를 컴포넌트로 만들어 내부에서 useState 사용
+    function FilterSheetContent() {
+      const [tempGuide, setTempGuide] = useState<string[]>(guideSel);
+      const [tempMinPrice, setTempMinPrice] = useState<string>(minPriceInput);
+      const [tempMaxPrice, setTempMaxPrice] = useState<string>(maxPriceInput);
 
-    const setTempDepart = (v: string) => { tempDepart = v; };
-    const setTempTour = (v: string) => { tempTour = v; };
-    const setTempGuide = (v: string) => { tempGuide = v; };
-    const setTempMinPrice = (v: string) => { tempMinPrice = v; };
-    const setTempMaxPrice = (v: string) => { tempMaxPrice = v; };
-
-    bottomSheet.open({
-      children: (
+      return (
         <ScrollView style={{ padding: 24, paddingBottom: 32 }}>
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
-            출발시간
-          </Text>
-          {renderOptionRow(DEPART_TIME_OPTIONS, tempDepart, setTempDepart)}
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
-            투어 유형
-          </Text>
-          {renderOptionRow(TOUR_TYPE_OPTIONS, tempTour, setTempTour)}
           <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
             가이드
           </Text>
-          {renderOptionRow(GUIDE_OPTIONS, tempGuide, setTempGuide)}
+          {renderGuideOptions(tempGuide, setTempGuide)}
           <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
             가격
           </Text>
@@ -281,33 +289,24 @@ export default function MainTravelShop() {
               }}
             />
           </View>
-          <Button
-            type="primary"
-            style="fill"
-            display="block"
+          <BottomSheet.CTA
             onPress={() => {
-              setDepartTimeSel(tempDepart);
-              setTourTypeSel(tempTour);
               setGuideSel(tempGuide);
               setMinPriceInput(tempMinPrice);
               setMaxPriceInput(tempMaxPrice);
-              setFilter({
-                departTime: tempDepart ? [tempDepart] : [],
-                tourType: tempTour ? [tempTour] : [],
-                guide: tempGuide ? [tempGuide] : [],
-                minPrice: Number(tempMinPrice) || PRICE_MIN,
-                maxPrice: Number(tempMaxPrice) || PRICE_MAX,
-              });
+              setPage(0);
               bottomSheet.close();
             }}
           >
             적용하기
-          </Button>
+          </BottomSheet.CTA>
         </ScrollView>
-      ),
-    });
+      );
+    }
+    bottomSheet.open({ children: <FilterSheetContent /> });
   };
 
+  // 상품 목록 상단 헤더 (StepText, 총 N개, 정렬/필터 버튼)
   const renderHeader = () => (
     <View style={{ backgroundColor: '#fff' }}>
       <StepText
@@ -365,7 +364,9 @@ export default function MainTravelShop() {
     </View>
   );
 
-  const isNoProduct = !loading && (Array.isArray(productList) && productList.length === 0);
+  const isNoProduct =
+    !loading &&
+    (Array.isArray(productList) && productList.length === 0);
 
   if (loading && !refreshing) {
     return (
@@ -394,10 +395,12 @@ export default function MainTravelShop() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F8FA' }}>
+    <View style={{ flex: 1 }}>
       <FlatList
-        data={isNoProduct ? [] : productList.filter(Boolean)}
-        keyExtractor={(item) => item?.prod_no?.toString() ?? Math.random().toString()}
+        data={productList.filter(
+          (item, idx, arr) => arr.findIndex(v => v.prod_no === item.prod_no) === idx
+        )}
+        keyExtractor={(item, idx) => `${item.prod_no}_${idx}`} // 중복 키 방지
         renderItem={({ item }) => {
           if (!item) return null;
           return (
@@ -414,6 +417,15 @@ export default function MainTravelShop() {
         showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View style={{ paddingVertical: 20 }}>
+              <Text typography="t6" color={colors.grey400}>상품을 불러오는 중입니다...</Text>
+            </View>
+          ) : null
+        }
         ListEmptyComponent={
           isNoProduct ? (
             <View style={{ alignItems: 'center', marginTop: 40 }}>
