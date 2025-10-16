@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import { Image } from '@granite-js/react-native';
 import { Text, Badge, Icon, colors } from '@toss-design-system/react-native';
+import { parseKkdayCategoryKorean } from '../../kkday/kkdayCategoryToKorean';
 
 // 타입 정의 (MainTravelShop.tsx와 동일하게)
 type Country = {
@@ -120,30 +121,20 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               ({product.rating_count?.toLocaleString('ko-KR') ?? 0})
             </Text>
           </View>
-          {/* 태그 뱃지들 */}
-          {/*<View style={{ flexDirection: 'row', flexWrap: 'wrap'}}>*/}
-          {/*  {product.prod_type === 'M01' && (*/}
-          {/*    <Badge type="blue" badgeStyle="weak" style={styles.badgeStyle}>*/}
-          {/*      단독 투어*/}
-          {/*    </Badge>*/}
-          {/*  )}*/}
-          {/*  {product.prod_type === 'M06' && (*/}
-          {/*    <Badge type="blue" badgeStyle="weak" style={styles.badgeStyle}>*/}
-          {/*      단독 차량*/}
-          {/*    </Badge>*/}
-          {/*  )}*/}
-          {/*  /!* 기타 태그 *!/*/}
-          {/*  {Array.isArray(product.tag) &&*/}
-          {/*    product.tag.map((tg: string, idx: number) => (*/}
-          {/*      <Badge*/}
-          {/*        badgeStyle="weak"*/}
-          {/*        key={tg + idx}*/}
-          {/*        style={styles.badgeStyle}*/}
-          {/*      >*/}
-          {/*        {tg}*/}
-          {/*      </Badge>*/}
-          {/*    ))}*/}
-          {/*</View>*/}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 6 }}>
+            {parseKkdayCategoryKorean(product.product_category)
+              .filter(Boolean)
+              .map((cat, idx) => (
+                <Badge
+                  key={cat + idx}
+                  type="blue"
+                  badgeStyle="weak"
+                  style={styles.badgeStyle}
+                >
+                  {cat}
+                </Badge>
+              ))}
+          </View>
         </View>
       </View>
     </Pressable>
@@ -159,13 +150,14 @@ const styles = StyleSheet.create({
   cardInner: {
     flexDirection: 'row',
     padding: 14,
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#fff',
   },
   imageCol: {
     position: 'relative',
-    width: 104,
-    height: 104,
+    width: 120,
+    height: 120,
     marginRight: 14,
     borderRadius: 13,
     overflow: 'hidden',
@@ -174,8 +166,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 104,
-    height: 104,
+    width: 120,
+    height: 120,
     borderRadius: 13,
     backgroundColor: '#eee',
   },
