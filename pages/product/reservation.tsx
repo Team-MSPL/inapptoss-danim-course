@@ -22,11 +22,15 @@ function ProductReservation() {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]); // 선택한 날짜 (range)
 
+  const s_date = Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date;
+  const e_date = Array.isArray(params.online_e_date) ? params.online_e_date[0] : params.online_e_date;
+  const pkg_no = Array.isArray(params.pkg_no) ? params.pkg_no[0] : params.pkg_no;
+
   // 달력 월 이동
   const [currentMonth, setCurrentMonth] = useState(() => {
-    // 기본값: sale_s_date or today
-    let d = params.online_s_date || dayjs().format("YYYY-MM-DD");
-    return dayjs(d).startOf('month');
+    let d = Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date;
+    if (!d) d = dayjs().format("YYYY-MM-DD");
+    return dayjs(d).isValid() ? dayjs(d).startOf('month') : dayjs().startOf('month');
   });
 
   useEffect(() => {
@@ -38,9 +42,9 @@ function ProductReservation() {
           prod_no: params.prod_no,
           locale: "kr",
           state: "KR",
-          pkg_no: Array.isArray(params.pkg_no) ? params.pkg_no[0] : params.pkg_no,
-          s_date: params.online_s_date,
-          e_date: params.online_e_date,
+          pkg_no,
+          s_date,
+          e_date,
         }, {
           headers: { "Content-Type": "application/json" }
         });
@@ -61,8 +65,8 @@ function ProductReservation() {
     return {
       calendar_detail: firstSku?.calendar_detail,
       b2c_price: firstSku?.b2c_price ?? firstItem?.b2c_min_price,
-      sale_s_date: firstItem?.sale_s_date,
-      sale_e_date: firstItem?.sale_e_date,
+      sale_s_date: Array.isArray(firstItem?.sale_s_date) ? firstItem.sale_s_date[0] : firstItem.sale_s_date,
+      sale_e_date: Array.isArray(firstItem?.sale_e_date) ? firstItem.sale_e_date[0] : firstItem.sale_e_date,
     };
   }, [pkgData]);
 

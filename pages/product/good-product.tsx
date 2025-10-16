@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import { View, FlatList, TouchableOpacity, Dimensions, Image } from 'react-native';
+import { View, FlatList, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native';
 import {createRoute, useNavigation} from '@granite-js/react-native';
 import axiosAuth from "../../redux/api";
 import { FixedBottomCTAProvider, Button, Icon, Text, colors, Badge, Skeleton, AnimateSkeleton } from "@toss-design-system/react-native";
@@ -18,6 +18,7 @@ function ProductGoodProduct() {
   const params = Route.useParams();
   const [product, setProduct] = useState<any>(params.product ?? null);
   const [pkgList, setPkgList] = useState<any[]>([]);
+  const [selectedPkgNo, setSelectedPkgNo] = useState<number|null>(null);
   const [loading, setLoading] = useState(false);
 
   // 캐러셀 상태
@@ -38,7 +39,9 @@ function ProductGoodProduct() {
         });
         if (res.data && res.data.prod && res.data.pkg) {
           setProduct({ ...params.product, ...res.data.prod, detail_loaded: true });
-          setPkgList(res.data.pkg)
+          setPkgList(res.data.pkg);
+          // 기본값: 첫번째 패키지 선택
+          setSelectedPkgNo(res.data.pkg[0]?.pkg_no ?? null);
         }
       } catch (e) {
         // 에러처리
@@ -81,16 +84,16 @@ function ProductGoodProduct() {
 
   // 예약 페이지로 이동
   const goReservation = () => {
-    // 예약에 필요한 정보 추출
-    const pkgNoList = pkgList.map(pkg => pkg.pkg_no);
+    const selectedPkg = pkgList.find(pkg => pkg.pkg_no === selectedPkgNo);
+    if (!selectedPkg) return;
     navigation.navigate('/product/reservation', {
       prod_no: product?.prod_no,
       prod_name: product?.prod_name,
-      pkg_no: pkgNoList,
-      online_s_date: product?.online_s_date,
-      online_e_date: product?.online_e_date,
-      b2c_min_price: product?.b2c_min_price,
-      b2b_min_price: product?.b2b_min_price,
+      pkg_no: selectedPkg.pkg_no,
+      online_s_date: selectedPkg.sale_s_date,
+      online_e_date: selectedPkg.sale_e_date,
+      b2c_min_price: selectedPkg.b2c_min_price,
+      b2b_min_price: selectedPkg.b2b_min_price,
       // 기타 필요한 파라미터 추가
     });
   };
@@ -252,17 +255,62 @@ function ProductGoodProduct() {
           </Text>
         </View>
         <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
-        {/* 아코디언/탭 메뉴 (단순 리스트) */}
-        <View style={{ paddingHorizontal: 6 }}>
-          {["투어 정보", "포함/불포함", "투어 후기", "투어 일정"].map((item, idx) => (
-            <TouchableOpacity key={item} style={{ padding: 18, borderBottomWidth: idx < 3 ? 1 : 0, borderColor: "#eee" }}>
-              <Text style={{ fontWeight: "500", fontSize: 16 }}>{item}</Text>
+        {/* 옵션(패키지) 선택 UI */}
+        <View style={{ padding: 24 }}>
+          <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>
+            옵션 선택
+          </Text>
+          {pkgList.map((pkg) => (
+            <TouchableOpacity
+              key={pkg.pkg_no}
+              onPress={() => setSelectedPkgNo(pkg.pkg_no)}
+              style={{
+                borderWidth: 1,
+                borderColor: selectedPkgNo === pkg.pkg_no ? colors.blue500 : colors.grey200,
+                borderRadius: 12,
+                backgroundColor: selectedPkgNo === pkg.pkg_no ? colors.blue50 : "#fafbfc",
+                marginBottom: 16,
+                padding: 18,
+              }}
+              activeOpacity={0.8}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+                <Text typography="t5" fontWeight="bold" style={{ flex: 1 }}>
+                  {pkg.pkg_name}
+                </Text>
+                <Text typography="t4" fontWeight="bold" color={colors.blue500}>
+                  {pkg.b2b_min_price?.toLocaleString()}원
+                </Text>
+              </View>
+              <Text color={colors.grey500} style={{ marginBottom: 8 }}>
+                판매기간: {pkg.sale_s_date} ~ {pkg.sale_e_date}
+              </Text>
+              {pkg.description_module?.PMDL_INC_NINC?.content?.properties?.include_item?.list?.map((inc, idx) => (
+                <Text key={idx} color={colors.grey700} style={{ fontSize: 13, marginBottom: 2 }}>• {inc.desc}</Text>
+              ))}
+              <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
+                <Button
+                  type={selectedPkgNo === pkg.pkg_no ? "primary" : "dark"}
+                  size="medium"
+                  style="fill"
+                  onPress={() => setSelectedPkgNo(pkg.pkg_no)}
+                >
+                  {selectedPkgNo === pkg.pkg_no ? "선택됨" : "선택"}
+                </Button>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
         {/* 하단 예약 CTA */}
         <View style={{ padding: 20, backgroundColor: "#fff", borderTopWidth: 1, borderColor: "#eee" }}>
-          <Button type="primary" style="fill" display="block" size="large" onPress={goReservation}>
+          <Button
+            type="primary"
+            style="fill"
+            display="block"
+            size="large"
+            disabled={!selectedPkgNo}
+            onPress={goReservation}
+          >
             예약하기
           </Button>
         </View>
