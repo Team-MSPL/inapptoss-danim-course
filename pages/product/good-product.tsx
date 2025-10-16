@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react';
 import { View, FlatList, TouchableOpacity, Dimensions, Image } from 'react-native';
-import { createRoute } from '@granite-js/react-native';
+import {createRoute, useNavigation} from '@granite-js/react-native';
 import axiosAuth from "../../redux/api";
 import { FixedBottomCTAProvider, Button, Icon, Text, colors, Badge, Skeleton, AnimateSkeleton } from "@toss-design-system/react-native";
 import { parseKkdayCategoryKorean } from '../../kkday/kkdayCategoryToKorean';
@@ -13,8 +13,11 @@ export const Route = createRoute('/product/good-product', {
 });
 
 function ProductGoodProduct() {
+  const navigation = useNavigation();
+
   const params = Route.useParams();
   const [product, setProduct] = useState<any>(params.product ?? null);
+  const [pkgList, setPkgList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   // 캐러셀 상태
@@ -33,8 +36,9 @@ function ProductGoodProduct() {
         }, {
           headers: { "Content-Type": "application/json" }
         });
-        if (res.data && res.data.prod) {
+        if (res.data && res.data.prod && res.data.pkg) {
           setProduct({ ...params.product, ...res.data.prod, detail_loaded: true });
+          setPkgList(res.data.pkg)
         }
       } catch (e) {
         // 에러처리
@@ -74,6 +78,22 @@ function ProductGoodProduct() {
     : [product?.prod_img_url || "https://via.placeholder.com/400x240?text=No+Image"];
 
   const categoryList = parseKkdayCategoryKorean(product?.product_category).filter(Boolean);
+
+  // 예약 페이지로 이동
+  const goReservation = () => {
+    // 예약에 필요한 정보 추출
+    const pkgNoList = pkgList.map(pkg => pkg.pkg_no);
+    navigation.navigate('/product/reservation', {
+      prod_no: product?.prod_no,
+      prod_name: product?.prod_name,
+      pkg_no: pkgNoList,
+      online_s_date: product?.online_s_date,
+      online_e_date: product?.online_e_date,
+      b2c_min_price: product?.b2c_min_price,
+      b2b_min_price: product?.b2b_min_price,
+      // 기타 필요한 파라미터 추가
+    });
+  };
 
   // 캐러셀 indicator 렌더
   const renderDots = () => (
@@ -233,7 +253,7 @@ function ProductGoodProduct() {
         </View>
         <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
         {/* 아코디언/탭 메뉴 (단순 리스트) */}
-        <View style={{ borderRadius: 12, borderWidth: 1, borderColor: "#eee", backgroundColor: "#f9f9f9", marginHorizontal: 24 }}>
+        <View style={{ paddingHorizontal: 6 }}>
           {["투어 정보", "포함/불포함", "투어 후기", "투어 일정"].map((item, idx) => (
             <TouchableOpacity key={item} style={{ padding: 18, borderBottomWidth: idx < 3 ? 1 : 0, borderColor: "#eee" }}>
               <Text style={{ fontWeight: "500", fontSize: 16 }}>{item}</Text>
@@ -242,7 +262,7 @@ function ProductGoodProduct() {
         </View>
         {/* 하단 예약 CTA */}
         <View style={{ padding: 20, backgroundColor: "#fff", borderTopWidth: 1, borderColor: "#eee" }}>
-          <Button type="primary" style="fill" display="block" size="large" onPress={() => {}}>
+          <Button type="primary" style="fill" display="block" size="large" onPress={goReservation}>
             예약하기
           </Button>
         </View>

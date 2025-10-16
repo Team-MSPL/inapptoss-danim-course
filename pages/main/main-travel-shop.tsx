@@ -116,6 +116,7 @@ export default function MainTravelShop() {
     try {
       const body = buildSearchBody();
 
+      console.log(body);
       const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 10000,
