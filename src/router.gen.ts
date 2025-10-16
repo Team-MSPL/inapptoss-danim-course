@@ -38,6 +38,7 @@ import { Route as _MyTravleListRoute } from '../pages/my-travle-list';
 import { Route as _PresetDetailRoute } from '../pages/preset-detail';
 import { Route as _PresetRoute } from '../pages/preset';
 import { Route as _ProductGoodProductRoute } from '../pages/product/good-product';
+import { Route as _ProductPeopleRoute } from '../pages/product/people';
 import { Route as _ProductReservationRoute } from '../pages/product/reservation';
 import { Route as _RecommendPlaceRoute } from '../pages/recommend-place';
 import { Route as _TimetableRoute } from '../pages/timetable';
@@ -82,6 +83,7 @@ declare module '@granite-js/react-native' {
     '/preset-detail': ReturnType<typeof _PresetDetailRoute.useParams>;
     '/preset': ReturnType<typeof _PresetRoute.useParams>;
     '/product/good-product': ReturnType<typeof _ProductGoodProductRoute.useParams>;
+    '/product/people': ReturnType<typeof _ProductPeopleRoute.useParams>;
     '/product/reservation': ReturnType<typeof _ProductReservationRoute.useParams>;
     '/recommend-place': ReturnType<typeof _RecommendPlaceRoute.useParams>;
     '/timetable': ReturnType<typeof _TimetableRoute.useParams>;

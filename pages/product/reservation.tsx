@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, ActivityIndicator, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import { createRoute } from '@granite-js/react-native';
+import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
 import { FixedBottomCTAProvider, Button, colors, Text } from "@toss-design-system/react-native";
 import dayjs from 'dayjs';
-import {formatPrice, getMonthMatrix, makeCalendarData, WEEKDAYS} from "../../components/product/reservation-calander"; // for date manipulation
+import { formatPrice, getMonthMatrix, makeCalendarData, WEEKDAYS } from "../../components/product/reservation-calander";
+import { useReservationStore } from "../../zustand/useReservationStore";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
@@ -14,21 +15,20 @@ export const Route = createRoute('/product/reservation', {
   component: ProductReservation,
 });
 
-
 function ProductReservation() {
+  const navigation = useNavigation();
   const params = Route.useParams();
+  const { prod_no, pkg_no, setSDate, setEDate, s_date, e_date } = useReservationStore();
+
   const [loading, setLoading] = useState(true);
   const [pkgData, setPkgData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]); // 선택한 날짜 (range)
 
-  const s_date = Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date;
-  const e_date = Array.isArray(params.online_e_date) ? params.online_e_date[0] : params.online_e_date;
-  const pkg_no = Array.isArray(params.pkg_no) ? params.pkg_no[0] : params.pkg_no;
-
   // 달력 월 이동
   const [currentMonth, setCurrentMonth] = useState(() => {
-    let d = Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date;
+    let d = s_date || params.online_s_date;
+    if (Array.isArray(d)) d = d[0];
     if (!d) d = dayjs().format("YYYY-MM-DD");
     return dayjs(d).isValid() ? dayjs(d).startOf('month') : dayjs().startOf('month');
   });
@@ -39,12 +39,12 @@ function ProductReservation() {
       setError(null);
       try {
         const res = await axios.post(QUERY_PACKAGE_API, {
-          prod_no: params.prod_no,
+          prod_no,
           locale: "kr",
           state: "KR",
           pkg_no,
-          s_date,
-          e_date,
+          s_date: s_date || (Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date),
+          e_date: e_date || (Array.isArray(params.online_e_date) ? params.online_e_date[0] : params.online_e_date),
         }, {
           headers: { "Content-Type": "application/json" }
         });
@@ -55,7 +55,7 @@ function ProductReservation() {
       setLoading(false);
     }
     fetchPkg();
-  }, [params]);
+  }, [prod_no, pkg_no, s_date, e_date, params]);
 
   // calendar data 추출 (가장 첫 번째 item/sku 기준)
   const calInfo = useMemo(() => {
@@ -109,6 +109,20 @@ function ProductReservation() {
   // 선택 여부
   const isSelected = (date) => selected.includes(date);
 
+  // 날짜 선택 후 상태 저장
+  useEffect(() => {
+    if (selected.length === 1) {
+      setSDate(selected[0]);
+      setEDate(selected[0]);
+    } else if (selected.length === 2) {
+      // 항상 오름차순으로 저장
+      const [a, b] = selected;
+      const [start, end] = dayjs(a).isBefore(dayjs(b)) ? [a, b] : [b, a];
+      setSDate(start);
+      setEDate(end);
+    }
+  }, [selected, setSDate, setEDate]);
+
   // 로딩/에러 처리
   if (loading) {
     return (
@@ -129,6 +143,11 @@ function ProductReservation() {
   // 달력 제목
   const monthLabel = currentMonth.format("YYYY년 M월");
 
+  // 다음 페이지 이동
+  const goNext = () => {
+    navigation.navigate('/product/people'); // 상태는 전역 store에서 읽도록
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <FixedBottomCTAProvider>
@@ -144,59 +163,61 @@ function ProductReservation() {
           </View>
           <Text style={{ color: colors.blue500, fontSize: 16, marginHorizontal: 8 }}>최저가/할인중</Text>
         </View>
-        {/* 요일 */}
-        <View style={{ flexDirection: 'row', width: SCREEN_WIDTH, justifyContent: 'space-around', marginBottom: 8 }}>
-          {WEEKDAYS.map((w, i) => (
-            <Text key={w} style={{ width: 34, textAlign: 'center', color: colors.grey400, fontWeight: 'bold', fontSize: 15 }}>{w}</Text>
-          ))}
+        <View style={{ paddingHorizontal: 28 }}>
+          {/* 요일 */}
+          <View style={{ flexDirection: 'row', width: SCREEN_WIDTH - 56, justifyContent: 'space-around', marginBottom: 8 }}>
+            {WEEKDAYS.map((w, i) => (
+              <Text key={w} style={{ width: 34, textAlign: 'center', color: colors.grey400, fontWeight: 'bold', fontSize: 15 }}>{w}</Text>
+            ))}
+          </View>
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            {monthMatrix.map((week, i) => (
+              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 2 }}>
+                {week.map((cell, j) => {
+                  if (!cell) {
+                    return <View key={j} style={{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center' }} />;
+                  }
+                  // 예약 불가
+                  if (cell.soldOut) {
+                    return (
+                      <View key={j} style={{
+                        width: 34, height: 56, alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <Text style={{ color: colors.grey300, fontSize: 15 }}>{cell.day}</Text>
+                        <Text style={{ color: colors.grey300, fontSize: 13 }}>매진</Text>
+                      </View>
+                    );
+                  }
+                  // 선택됨 or in range
+                  const selectedStyle = isSelected(cell.date)
+                    ? styles.selectedDay
+                    : isInRange(cell.date)
+                      ? styles.rangeDay
+                      : {};
+                  return (
+                    <TouchableOpacity
+                      key={j}
+                      style={[{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 8 }, selectedStyle]}
+                      onPress={() => onDayPress(cell)}
+                    >
+                      <Text style={{
+                        fontWeight: isSelected(cell.date) ? 'bold' : 'normal',
+                        color: isSelected(cell.date) ? '#fff' : colors.grey800,
+                        fontSize: 15,
+                      }}>{cell.day}</Text>
+                      <Text style={{
+                        color: isSelected(cell.date) ? '#fff' : colors.blue500,
+                        fontWeight: isSelected(cell.date) ? 'bold' : 'normal',
+                        fontSize: 13,
+                      }}>{cell.price}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ))}
+          </ScrollView>
         </View>
         {/* 달력 */}
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          {monthMatrix.map((week, i) => (
-            <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 2 }}>
-              {week.map((cell, j) => {
-                if (!cell) {
-                  return <View key={j} style={{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center' }} />;
-                }
-                // 예약 불가
-                if (cell.soldOut) {
-                  return (
-                    <View key={j} style={{
-                      width: 34, height: 56, alignItems: 'center', justifyContent: 'center'
-                    }}>
-                      <Text style={{ color: colors.grey300, fontSize: 15 }}>{cell.day}</Text>
-                      <Text style={{ color: colors.grey300, fontSize: 13 }}>매진</Text>
-                    </View>
-                  );
-                }
-                // 선택됨 or in range
-                const selectedStyle = isSelected(cell.date)
-                  ? styles.selectedDay
-                  : isInRange(cell.date)
-                    ? styles.rangeDay
-                    : {};
-                return (
-                  <TouchableOpacity
-                    key={j}
-                    style={[{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 8 }, selectedStyle]}
-                    onPress={() => onDayPress(cell)}
-                  >
-                    <Text style={{
-                      fontWeight: isSelected(cell.date) ? 'bold' : 'normal',
-                      color: isSelected(cell.date) ? '#fff' : colors.grey800,
-                      fontSize: 15,
-                    }}>{cell.day}</Text>
-                    <Text style={{
-                      color: isSelected(cell.date) ? '#fff' : colors.blue500,
-                      fontWeight: isSelected(cell.date) ? 'bold' : 'normal',
-                      fontSize: 13,
-                    }}>{cell.price}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
-        </ScrollView>
         {/* 하단 CTA */}
         <View style={{ padding: 24, backgroundColor: '#fff' }}>
           <Button
@@ -205,9 +226,7 @@ function ProductReservation() {
             display="block"
             size="large"
             disabled={selected.length === 0}
-            onPress={() => {
-              // 다음 단계로 이동
-            }}
+            onPress={goNext}
           >
             다음으로
           </Button>
