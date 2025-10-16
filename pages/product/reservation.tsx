@@ -39,15 +39,20 @@ function ProductReservation() {
       setError(null);
       try {
         const res = await axios.post(QUERY_PACKAGE_API, {
-          prod_no,
+          prod_no: params.prod_no,
           locale: "kr",
           state: "KR",
-          pkg_no,
-          s_date: s_date || (Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date),
-          e_date: e_date || (Array.isArray(params.online_e_date) ? params.online_e_date[0] : params.online_e_date),
+          pkg_no : params.pkg_no,
         }, {
           headers: { "Content-Type": "application/json" }
         });
+        console.log({
+          prod_no: params.prod_no,
+          locale: "kr",
+          state: "KR",
+          pkg_no : params.pkg_no,
+        })
+        console.log(res.data);
         setPkgData(res.data);
       } catch (e: any) {
         setError("패키지 정보를 불러오는데 실패했습니다.");
