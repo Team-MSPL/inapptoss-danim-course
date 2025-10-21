@@ -23,152 +23,109 @@ function toNumber(v: any): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-/**
- * Given a calendar object (may have b2b_price or b2c_price keyed by time),
- * return the lowest numeric price available on that date for that sku.
- */
-function lowestPriceFromCalendarEntry(entry: any) {
-  if (!entry) return undefined;
-  // entry might be { b2b_price: { "09:10": 100 }, b2c_price: { "09:10": 200 } }
-  const candidates: number[] = [];
+/* ---- Helpers (SKU/calendar price extraction) ---- */
 
-  if (entry.b2b_price && typeof entry.b2b_price === 'object') {
-    Object.values(entry.b2b_price).forEach(v => {
-      const n = toNumber(v);
-      if (n !== undefined) candidates.push(n);
-    });
+function safeNum(v: any): number | undefined {
+  if (v === null || v === undefined) return undefined;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  if (typeof v === 'string') {
+    const n = Number(v.replace(/,/g, ''));
+    return Number.isFinite(n) ? n : undefined;
   }
-  if (entry.b2c_price && typeof entry.b2c_price === 'object') {
-    Object.values(entry.b2c_price).forEach(v => {
-      const n = toNumber(v);
+  return undefined;
+}
+
+function lowestPriceFromEntry(entry: any) {
+  if (!entry) return undefined;
+  const candidates: number[] = [];
+  const keys = ['b2b_price', 'b2c_price', 'price', 'sale_price', 'original_price'];
+  keys.forEach(k => {
+    const val = entry?.[k];
+    if (val == null) return;
+    if (typeof val === 'number' || typeof val === 'string') {
+      const n = safeNum(val);
       if (n !== undefined) candidates.push(n);
-    });
-  }
-  // some APIs may provide direct numeric fields
-  if (entry.b2b_price && typeof entry.b2b_price === 'number') candidates.push(entry.b2b_price);
-  if (entry.b2c_price && typeof entry.b2c_price === 'number') candidates.push(entry.b2c_price);
-  if (entry.price && typeof entry.price === 'number') candidates.push(entry.price);
+    } else if (typeof val === 'object') {
+      Object.values(val).forEach((vv: any) => {
+        const n = safeNum(vv);
+        if (n !== undefined) candidates.push(n);
+      });
+    }
+  });
   if (candidates.length === 0) return undefined;
   return Math.min(...candidates);
 }
 
-/**
- * Build a map of ticket-type -> sku object for easier lookups.
- * We try multiple heuristics to map SKU -> "adult" / "child" / other.
- */
 function buildSkuMap(item: any) {
-  const map: Record<string, any[]> = {}; // e.g., { adult: [sku], child: [sku] }
+  const map: Record<string, any[]> = {};
   if (!item || !Array.isArray(item.skus)) return map;
-
   item.skus.forEach((sku: any) => {
-    // Heuristics:
-    // - ticket_rule_spec_item (e.g., 'child', 'adult')
-    // - spec values (e.g., sku.spec['Ticket Type'] === 'Child')
-    // - spec_desc contains "(Ages 6–11)" etc (less reliable)
-    const keyCandidates: string[] = [];
-
-    if (sku?.ticket_rule_spec_item) keyCandidates.push(String(sku.ticket_rule_spec_item).toLowerCase());
+    const keys: string[] = [];
+    if (sku?.ticket_rule_spec_item) keys.push(String(sku.ticket_rule_spec_item).toLowerCase());
     if (sku?.spec) {
-      // spec is object with key->value, take values
       Object.values(sku.spec).forEach((v: any) => {
-        if (typeof v === 'string') keyCandidates.push(String(v).toLowerCase());
+        if (typeof v === 'string') keys.push(String(v).toLowerCase());
       });
     }
-    if (sku?.spec_desc) keyCandidates.push(String(sku.spec_desc).toLowerCase());
     if (sku?.specs_ref && Array.isArray(sku.specs_ref)) {
       sku.specs_ref.forEach((r: any) => {
-        if (r?.spec_value_id) keyCandidates.push(String(r.spec_value_id).toLowerCase());
-        if (r?.spec_item_id) keyCandidates.push(String(r.spec_item_id).toLowerCase());
+        if (r?.spec_value_id) keys.push(String(r.spec_value_id).toLowerCase());
+        if (r?.spec_item_id) keys.push(String(r.spec_item_id).toLowerCase());
       });
     }
-
-    // Normalize candidate to 'child' or 'adult' if contains keywords
     let mapped = 'other';
-    for (const c of keyCandidates) {
+    for (const c of keys) {
       if (!c) continue;
-      if (c.includes('child') || c.includes('kid') || c.includes('6') || c.includes('11') || c.includes('y')) {
+      if (c.includes('child') || c.includes('kid') || c.includes('6') || c.includes('11')) {
         mapped = 'child';
         break;
       }
-      if (c.includes('adult') || c.includes('adult') || c.includes('man') || c.includes('woman')) {
+      if (c.includes('adult') || c.includes('man') || c.includes('woman')) {
         mapped = 'adult';
         break;
       }
-      // also use 'ticket' names like 'child' from sample
       if (c === 'child' || c === 'adult') {
         mapped = c;
         break;
       }
     }
-
-    // fallback: if only one sku and it has 'Child' in spec value then map to child, else adult
     if (mapped === 'other' && item.skus.length === 1) {
       const v = Object.values(item.skus[0].spec ?? {})[0];
       if (typeof v === 'string' && String(v).toLowerCase().includes('child')) mapped = 'child';
       else mapped = 'adult';
     }
-
     if (!map[mapped]) map[mapped] = [];
     map[mapped].push(sku);
   });
-
   return map;
 }
 
-/**
- * Get unit price for a given date and ticketType ('adult' | 'child').
- * Priority:
- * 1) calendar_detail per SKU (use lowest available time price)
- * 2) sku-level b2b_price / b2c_price / b2b_price field
- * 3) item-level b2b_min_price / b2c_min_price
- * 4) pkg-level b2b_min_price / b2c_min_price
- */
 function getUnitPriceForDateByType(pkgData: any, selectedDate: string, ticketType: 'adult' | 'child') {
   if (!pkgData || !selectedDate) return undefined;
-
-  // find item (first)
   const item = pkgData?.item?.[0];
   if (!item) {
-    // fallback to pkg top-level
     return toNumber(pkgData?.pkg?.[0]?.b2b_min_price ?? pkgData?.pkg?.[0]?.b2c_min_price);
   }
-
   const skuMap = buildSkuMap(item);
-
-  // choose relevant skus for ticketType
   const skus = skuMap[ticketType] ?? skuMap['child'] ?? skuMap['adult'] ?? item?.skus ?? [];
-
-  // try calendar_detail on each sku and get lowest price
   const perSkuPrices: number[] = [];
   for (const sku of skus) {
-    // calendar detail might be nested under sku.calendar_detail
     const cal = sku?.calendar_detail ?? sku?.calendar ?? item?.calendar_detail ?? pkgData?.calendar_detail ?? null;
     const entry = cal?.[selectedDate];
-    const low = lowestPriceFromCalendarEntry(entry);
+    const low = lowestPriceFromEntry(entry);
     if (low !== undefined) perSkuPrices.push(low);
-
-    // also check sku.b2b_price (number) or sku.b2c_price
-    const skuNum = toNumber(sku?.b2b_price ?? sku?.b2c_price ?? sku?.b2b_price);
+    const skuNum = safeNum(sku?.b2b_price ?? sku?.b2c_price ?? sku?.b2b_price);
     if (skuNum !== undefined) perSkuPrices.push(skuNum);
-    // sku might have arrays or nested; skip otherwise
   }
-
-  if (perSkuPrices.length > 0) {
-    return Math.min(...perSkuPrices);
-  }
-
-  // fallback: item-level prices
+  if (perSkuPrices.length > 0) return Math.min(...perSkuPrices);
   const itemPrice = toNumber(item?.b2b_min_price ?? item?.b2c_min_price);
   if (itemPrice !== undefined) return itemPrice;
-
-  // fallback: pkg-level
   const pkgLevel = toNumber(pkgData?.pkg?.[0]?.b2b_min_price ?? pkgData?.pkg?.[0]?.b2c_min_price ?? pkgData?.b2b_min_price ?? pkgData?.b2c_min_price);
   if (pkgLevel !== undefined) return pkgLevel;
-
   return undefined;
 }
 
-/* Counter component (same UX as before) */
+/* Counter UI */
 function Counter({ label, subLabel, price, value, setValue, min = 0, max = 10, disabled = false }: any) {
   const onMinus = () => {
     if (disabled) return;
@@ -233,6 +190,7 @@ function Counter({ label, subLabel, price, value, setValue, min = 0, max = 10, d
   );
 }
 
+/* Component */
 function ProductPeople() {
   const navigation = useNavigation();
   const params = Route.useParams();
@@ -245,7 +203,6 @@ function ProductPeople() {
   const [loadingPkg, setLoadingPkg] = useState(false);
   const [pkgError, setPkgError] = useState<string | null>(null);
 
-  // ensure store has selected_date if params provided
   useEffect(() => {
     if (params?.selected_date && !s_date) {
       setSDate(params.selected_date);
@@ -257,7 +214,6 @@ function ProductPeople() {
   const prod = prod_no ?? params?.prod_no;
   const pkg = pkg_no ?? params?.pkg_no;
 
-  // fetch package data once
   useEffect(() => {
     if (!prod || !pkg) return;
     let mounted = true;
@@ -277,8 +233,30 @@ function ProductPeople() {
       const firstItem = data.item?.[0];
       const firstSku = firstItem?.skus?.[0];
       const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? data.calendar_detail ?? null;
-      setPkgData({ ...data, calendar_detail });
-      console.log('[ProductPeople] fetched pkgData', { prod, pkg, hasCalendar: !!calendar_detail });
+
+      // create merged calendar map
+      const merged: Record<string, any> = {};
+      (data.item ?? []).forEach((it: any) => {
+        (it.skus ?? []).forEach((sku: any) => {
+          const cal = sku?.calendar_detail ?? sku?.calendar ?? {};
+          Object.entries(cal ?? {}).forEach(([dateStr, entry]: any) => {
+            const low = lowestPriceFromEntry(entry);
+            if (low === undefined) return;
+            const ex = merged[dateStr]?.price;
+            if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+          });
+        });
+      });
+      // top-level fallback
+      Object.entries(calendar_detail ?? {}).forEach(([dateStr, entry]: any) => {
+        const low = lowestPriceFromEntry(entry);
+        if (low === undefined) return;
+        const ex = merged[dateStr]?.price;
+        if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+      });
+
+      setPkgData({ ...data, calendar_detail, calendar_detail_merged: merged });
+      console.log('[ProductPeople] fetched pkgData', { prod, pkg, mergedDatesCount: Object.keys(merged).length });
     }).catch(err => {
       if (!mounted) return;
       console.error('[ProductPeople] fetch err', err);
@@ -293,10 +271,8 @@ function ProductPeople() {
 
   const selectedDate = s_date ?? params?.selected_date ?? null;
 
-  // derive adult/child unit prices using SKU-level calendar where possible
   const adultUnit = useMemo(() => {
     if (!selectedDate) return undefined;
-    // priority: pkgData calendar -> params.display/adult_price -> item sku fallback -> pkg-level
     const fromPkg = pkgData ? getUnitPriceForDateByType(pkgData, selectedDate, 'adult') : undefined;
     const fromParams = toNumber(params?.display_price) ?? toNumber(params?.adult_price) ?? undefined;
     return fromPkg ?? fromParams;
@@ -309,7 +285,6 @@ function ProductPeople() {
     return fromPkg ?? fromParams ?? adultUnit;
   }, [pkgData, selectedDate, params?.child_price, adultUnit]);
 
-  // fallback unit (item-level -> pkg-level)
   const fallbackUnit = useMemo(() => {
     const paramFallback = toNumber(params?.b2b_min_price) ?? toNumber(params?.b2c_min_price);
     if (paramFallback) return paramFallback;
@@ -341,6 +316,8 @@ function ProductPeople() {
       adult_price: adultPrice,
       child_price: childPrice,
       total,
+      // pass the pkgData so ProductPay can render tour/pickup/description details
+      pkgData,
     });
   };
 
@@ -350,16 +327,9 @@ function ProductPeople() {
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FixedBottomCTAProvider>
         <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-            <View>
-              <Text typography="t3" fontWeight="bold">여행 인원</Text>
-              <Text style={{ marginTop: 6, color: colors.grey500 }}>
-                {selectedDate ? `선택일: ${selectedDate}` : '달력에서 출발일을 선택하세요.'}
-              </Text>
-            </View>
-            <TouchableOpacity onPress={() => navigation.navigate('/product/reservation')}>
-              <Text style={{ color: colors.blue500 }}>날짜 변경</Text>
-            </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
+            <Text typography="t3" fontWeight="bold">여행 인원</Text>
+            <Text style={{ marginLeft: 8, color: colors.red400, fontSize: 15 }}>(필수)</Text>
           </View>
 
           {loadingPkg ? (
