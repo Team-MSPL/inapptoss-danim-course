@@ -68,11 +68,6 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
           >
             최저가
           </Badge>
-          {/* 하트 */}
-          <View style={styles.heartBox}>
-            <Icon name="icon-heart-line" color={colors.grey300} size={28} />
-            {/* 찜 상태면 icon-heart-fill, 색상변경 */}
-          </View>
         </View>
         {/* 상품 정보 */}
         <View style={styles.infoCol}>

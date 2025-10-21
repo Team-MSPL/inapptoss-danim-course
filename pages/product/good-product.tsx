@@ -4,6 +4,7 @@ import {createRoute, useNavigation} from '@granite-js/react-native';
 import axiosAuth from "../../redux/api";
 import { FixedBottomCTAProvider, Button, Icon, Text, colors, Badge, Skeleton, AnimateSkeleton } from "@toss-design-system/react-native";
 import { parseKkdayCategoryKorean } from '../../kkday/kkdayCategoryToKorean';
+import { getRefundTag, firstNLinesFromPackageDesc, formatPrice, getPriceInfo, earliestBookingText } from "../../components/product/good-product-function";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -11,6 +12,13 @@ export const Route = createRoute('/product/good-product', {
   validateParams: (params) => params,
   component: ProductGoodProduct,
 });
+
+
+function PlanLabel({ index, pkg_name }: { index: number, pkg_name: string }) {
+  // Map 0 -> A, 1 -> B, 2 -> C ...
+  const letter = String.fromCharCode(65 + index);
+  return <Text numberOfLines={1} fontWeight="semibold" typography='t4' style={{ textAlign: 'left' }}>{`플랜 ${letter}: ${pkg_name}`}</Text>;
+}
 
 function ProductGoodProduct() {
   const navigation = useNavigation();
@@ -260,10 +268,13 @@ function ProductGoodProduct() {
           <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>
             옵션 선택
           </Text>
-          {pkgList.map((pkg) => (
+          {pkgList.map((pkg, idx) => (
             <TouchableOpacity
               key={pkg.pkg_no}
-              onPress={() => setSelectedPkgNo(pkg.pkg_no)}
+              onPress={() => {
+                setSelectedPkgNo(pkg.pkg_no)
+                console.log(pkg);
+              }}
               style={{
                 borderWidth: 1,
                 borderColor: selectedPkgNo === pkg.pkg_no ? colors.blue500 : colors.grey200,
@@ -275,27 +286,66 @@ function ProductGoodProduct() {
               activeOpacity={0.8}
             >
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <Text typography="t5" fontWeight="bold" style={{ flex: 1 }}>
-                  {pkg.pkg_name}
-                </Text>
-                <Text typography="t4" fontWeight="bold" color={colors.blue500}>
-                  {pkg.b2b_min_price?.toLocaleString()}원
-                </Text>
+                <PlanLabel index={idx} pkg_name={pkg.pkg_name} />
               </View>
-              <Text color={colors.grey500} style={{ marginBottom: 8 }}>
-                판매기간: {pkg.sale_s_date} ~ {pkg.sale_e_date}
-              </Text>
-              {pkg.description_module?.PMDL_INC_NINC?.content?.properties?.include_item?.list?.map((inc, idx) => (
-                <Text key={idx} color={colors.grey700} style={{ fontSize: 13, marginBottom: 2 }}>• {inc.desc}</Text>
-              ))}
-              <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
+              <View style={{ marginTop: 10 }}>
+                {/* Refund tag */}
+                {getRefundTag(pkg) && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                    <Icon name="icon-check" size={24} color={colors.blue500} />
+                    <Text style={{ marginLeft: 8, color: colors.grey600 }}>{getRefundTag(pkg)}</Text>
+                  </View>
+                )}
+
+                {/* Earliest booking */}
+                {earliestBookingText(pkg) && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    <Icon name="icon-calendar-clock" size={24} />
+                    <Text style={{ marginLeft: 8, color: colors.grey600 }}>{earliestBookingText(pkg)}</Text>
+                  </View>
+                )}
+
+                {/* Bulleted short lines */}
+                {firstNLinesFromPackageDesc(pkg, 3).length > 0 && (
+                  <View style={{ marginTop: 6 }}>
+                    {firstNLinesFromPackageDesc(pkg, 3).map((line, i) => (
+                      <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>
+                        <Icon name="" size={24} />
+                        <Text style={{ marginRight: 8, color: colors.grey600 }}>•</Text>
+                        <Text style={{ flex: 1, color: colors.grey600 }}>{line}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 8 }}>
+                <View style={{ alignItems: 'flex-start' }}>
+                  {getPriceInfo(pkg).hasDiscount ? (
+                    <>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ color: colors.grey300, textDecorationLine: 'line-through', marginRight: 8 }}>
+                          {formatPrice(getPriceInfo(pkg).original)}원
+                        </Text>
+                        <Text style={{ color: '#3b5afe', fontWeight: '600' }}>
+                          {discountAmount >= 10000
+                            ? `${formatPrice(discountAmount)}원 할인`
+                            : `${getPriceInfo(pkg).discountPercent}% 할인`}
+                        </Text>
+                      </View>
+                      <Text style={{ fontSize: 18, fontWeight: '700', marginTop: 6 }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
+                    </>
+                  ) : (
+                    <Text style={{ fontSize: 18, fontWeight: '700' }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
+                  )}
+                </View>
+
                 <Button
-                  type={selectedPkgNo === pkg.pkg_no ? "primary" : "dark"}
+                  type={'primary'}
                   size="medium"
                   style="fill"
                   onPress={() => setSelectedPkgNo(pkg.pkg_no)}
                 >
-                  {selectedPkgNo === pkg.pkg_no ? "선택됨" : "선택"}
+                  {selectedPkgNo === pkg.pkg_no ? '선택됨' : '선택하기'}
                 </Button>
               </View>
             </TouchableOpacity>
