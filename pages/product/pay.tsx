@@ -10,7 +10,8 @@ import {
   Text as RNText,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
-import { FixedBottomCTAProvider, Button, Text, colors, Icon } from "@toss-design-system/react-native";
+import { Image } from "@granite-js/react-native";
+import { FixedBottomCTAProvider, Button, Text, colors, Icon, Badge } from "@toss-design-system/react-native";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -25,99 +26,7 @@ function formatPrice(n?: number | null) {
   return Math.floor(Number(n)).toLocaleString();
 }
 
-/* ----------------- Helpers for formatting payment details ----------------- */
-
-// Strip HTML tags, keep anchor text and href in parentheses
-function stripHtmlAndLinks(html: string | undefined | null) {
-  if (!html) return "";
-  let s = String(html);
-
-  // Replace anchor tags with "text (href)"
-  s = s.replace(/<a[^>]*href=(?:'|")([^'"]+)(?:'|")[^>]*>(.*?)<\/a>/gi, (_m, href, text) => {
-    return `${text} (${href})`;
-  });
-
-  // Replace common tags like <p>, <br> with newline or space
-  s = s.replace(/<\/p>/gi, "\n");
-  s = s.replace(/<br\s*\/?>/gi, "\n");
-
-  // Remove remaining tags
-  s = s.replace(/<\/?[^>]+(>|$)/g, "");
-
-  // Decode basic HTML entities (extend if necessary)
-  s = s.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").trim();
-
-  // collapse multiple newlines/spaces
-  s = s.replace(/\n{2,}/g, "\n").replace(/[ \t]{2,}/g, " ");
-
-  return s;
-}
-
-// Attempt to find JSON objects in text and pretty-format them
-function replaceJsonWithReadable(s: string) {
-  if (!s) return s;
-  return s.replace(/(\{[\s\S]*?\})/g, (m) => {
-    try {
-      const obj = JSON.parse(m);
-      // create simple readable representation
-      const parts: string[] = [];
-      Object.entries(obj).forEach(([k, v]) => {
-        parts.push(`${k}: ${String(v)}`);
-      });
-      return `(${parts.join(", ")})`;
-    } catch {
-      // if not JSON, return original
-      return m;
-    }
-  });
-}
-
-// Format refund_policy_v2 into user-friendly lines
-function formatRefundPolicyV2(rpv2: any) {
-  const lines: string[] = [];
-  if (!rpv2) return lines;
-
-  lines.push("환불 정책(요약):");
-
-  const partial = rpv2.partial_refund ?? [];
-  partial.forEach((rule: any, idx: number) => {
-    try {
-      const feeType = rule.fee_type ?? `rule_${idx + 1}`;
-      const displayParts: string[] = [];
-
-      if (Array.isArray(rule.fee) && rule.fee.length > 0) {
-        rule.fee.forEach((f: any) => {
-          if (f.value !== undefined) {
-            const unit = f.calculate_type === "FIX" ? "원" : "%";
-            displayParts.push(`${f.value}${unit}`);
-          }
-        });
-      } else if (rule.display_rule && (rule.display_rule.value !== undefined)) {
-        displayParts.push(`${rule.display_rule.value}`);
-      }
-
-      const dayRule = rule.day_time_rule ? (() => {
-        const dr = rule.day_time_rule;
-        if (dr.min !== undefined && dr.max !== undefined) return `time window: ${dr.min}-${dr.max} hrs`;
-        if (dr.min !== undefined) return `min time: ${dr.min} hrs`;
-        if (dr.max !== undefined) return `max time: ${dr.max} hrs`;
-        return "";
-      })() : "";
-
-      let line = `• ${feeType}`;
-      if (displayParts.length > 0) line += ` — ${displayParts.join(", ")}`;
-      if (dayRule) line += ` ${dayRule}`;
-      lines.push(line);
-    } catch {
-      // ignore single rule errors
-    }
-  });
-
-  return lines;
-}
-
-/* ----------------- Collapsible UI ----------------- */
-
+/* ----------------- Collapsible section ----------------- */
 function CollapsibleSection({
                               title,
                               open,
@@ -145,27 +54,100 @@ function CollapsibleSection({
   );
 }
 
-/* ----------------- Component ----------------- */
+/* ----------------- Mini product card used in payment details ----------------- */
+function MiniProductCard({
+                           image,
+                           title,
+                           originPrice,
+                           salePrice,
+                           percent,
+                           perPersonText,
+                         }: {
+  image?: string | null;
+  title: string;
+  originPrice?: number;
+  salePrice?: number;
+  percent?: number;
+  perPersonText?: string;
+}) {
+  return (
+    <View style={miniCardStyles.cardWrap}>
+      <View style={miniCardStyles.cardInner}>
+        <View style={miniCardStyles.imageCol}>
+          <Image
+            source={{ uri: image ?? "" }}
+            style={miniCardStyles.image}
+            resizeMode="cover"
+          />
+          <Badge
+            type={"red"}
+            badgeStyle="fill"
+            size="tiny"
+            style={{
+              position: 'absolute',
+              left: 6,
+              bottom: 8,
+              paddingHorizontal: 2,
+              paddingVertical: 2,
+              zIndex: 2,
+            }}
+          >
+            최저가
+          </Badge>
+        </View>
+
+        <View style={miniCardStyles.infoCol}>
+          <Text typography="t6" fontWeight="medium" color={colors.grey800} numberOfLines={1}>
+            {title}
+          </Text>
+
+          <View style={miniCardStyles.priceRow}>
+            {percent && percent > 0 ? (
+              <Text style={miniCardStyles.percentText} typography="t4">{percent}%</Text>
+            ) : null}
+            <View style={{ flexDirection: 'column' }}>
+              {originPrice !== undefined && originPrice > 0 && originPrice > (salePrice ?? 0) ? (
+                <Text typography="t7" color={colors.grey300} style={{ textDecorationLine: 'line-through' }}>
+                  {formatPrice(originPrice)}원
+                </Text>
+              ) : null}
+              <Text typography="t6" fontWeight="bold" color={colors.grey900} style={{ marginTop: 4 }}>
+                {salePrice ? `${formatPrice(salePrice)}원` : "-"}
+                {perPersonText ? <Text typography="t7" color={colors.grey500}>{` ${perPersonText}`}</Text> : null}
+              </Text>
+            </View>
+          </View>
+
+          <Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 6 }}>
+            {perPersonText ?? ""}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+/* ----------------- Main component ----------------- */
 
 function ProductPay() {
   const navigation = useNavigation();
-  const params = Route.useParams(); // incoming params from previous screen
+  const params = Route.useParams();
   const pkgData = params?.pkgData ?? null;
 
   const totalPriceCalc = params?.total ?? (params?.adult && params?.adult_price ? (params.adult * params.adult_price + (params.child ?? 0) * (params.child_price ?? params.adult_price)) : 0);
 
-  // independent open state per section; booker expanded by default
+  // openSections map: independent toggles; booking (1) open by default
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({ 1: true });
   const [completedSections, setCompletedSections] = useState<Record<number, boolean>>({});
 
-  // Booker
+  // Booker fields
   const [lastNameEng, setLastNameEng] = useState<string>(params?.booker?.lastNameEng ?? "");
   const [firstNameEng, setFirstNameEng] = useState<string>(params?.booker?.firstNameEng ?? "");
   const [nationality, setNationality] = useState<string>(params?.booker?.nationality ?? "대한민국");
   const [phone, setPhone] = useState<string>(params?.booker?.phone ?? "");
   const [email, setEmail] = useState<string>(params?.booker?.email ?? "");
 
-  // Traveler & contact/pickup states (kept same as earlier)
+  // Traveler fields (kept)
   const [travelerSameAsBooker, setTravelerSameAsBooker] = useState<boolean>(true);
   const [travelerLastName, setTravelerLastName] = useState<string>("");
   const [travelerFirstName, setTravelerFirstName] = useState<string>("");
@@ -174,6 +156,7 @@ function ProductPay() {
   const [travelerPassport, setTravelerPassport] = useState<string>("");
   const [travelerContactDuring, setTravelerContactDuring] = useState<"none" | "has" | null>("none");
 
+  // Contact
   const contactOptions: ContactMethod[] = ["WhatsApp", "WeChat", "Messenger", "Line", "Instagram", "KakaoTalk"];
   const [contactMethod, setContactMethod] = useState<ContactMethod>("");
   const [contactId, setContactId] = useState<string>("");
@@ -181,10 +164,11 @@ function ProductPay() {
   const [contactVerified, setContactVerified] = useState<boolean>(false);
   const [contactError, setContactError] = useState<string>("");
 
+  // Pickup
   const [pickupPlace, setPickupPlace] = useState<string>(params?.pickup?.pickupPlace ?? "");
   const [dropoffPlace, setDropoffPlace] = useState<string>(params?.pickup?.dropoffPlace ?? "");
 
-  // Payment / agreements
+  // Payment & agreements
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("toss");
   const [agreeAll, setAgreeAll] = useState<boolean>(false);
   const [agreePersonal, setAgreePersonal] = useState<boolean>(false);
@@ -303,75 +287,31 @@ function ProductPay() {
     }
   }
 
-  // --- BUILD payment details lines from API data with better parsing ---
-  const paymentDetailsLines = useMemo(() => {
-    const lines: string[] = [];
+  // derive product thumbnail and names from pkgData
+  const thumbnail = pkgData?.prod_img_url ?? pkgData?.item?.[0]?.skus?.[0]?.image_url ?? pkgData?.pkg_img_url ?? "";
+  const title = pkgData?.pkg_name ?? pkgData?.prod_name ?? params?.prod_name ?? "상품명";
 
-    // 1) structured refund_policy_v2
-    const rpv2 = pkgData?.refund_policy_v2 ?? pkgData?.refund_policy_v2;
-    if (rpv2) {
-      lines.push(...formatRefundPolicyV2(rpv2));
-    }
+  // compute per-person prices and totals (prefer params, fallback to pkgData)
+  const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
+  const childPrice = params?.child_price ?? adultPrice;
+  const adultCount = Number(params?.adult ?? 1);
+  const childCount = Number(params?.child ?? 0);
+  const adultTotal = adultPrice * adultCount;
+  const childTotal = childPrice * childCount;
+  const productAmount = adultTotal + childTotal;
 
-    // 2) legacy refund policy content
-    const rawRefund = pkgData?.description_module?.PMDL_REFUND_POLICY?.content;
-    if (rawRefund) {
-      if (typeof rawRefund === "string") {
-        const cleaned = replaceJsonWithReadable(stripHtmlAndLinks(rawRefund));
-        lines.push(cleaned);
-      } else if (typeof rawRefund === "object") {
-        const txt = replaceJsonWithReadable(stripHtmlAndLinks(JSON.stringify(rawRefund)));
-        lines.push(txt);
-      }
-    }
+  // compute original per-person if available to show discount percent
+  const originalPerPerson = params?.original_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? undefined;
+  const salePerPerson = params?.display_price ?? adultPrice;
+  const percent = (originalPerPerson && salePerPerson && originalPerPerson > salePerPerson)
+    ? Math.floor(100 - (salePerPerson / originalPerPerson) * 100)
+    : 0;
 
-    // 3) package description / purchase info (strip tags and links)
-    const pkgDescList = pkgData?.description_module?.PMDL_PACKAGE_DESC?.content?.list;
-    if (Array.isArray(pkgDescList) && pkgDescList.length > 0) {
-      pkgDescList.forEach((it: any) => {
-        const raw = it?.desc ?? "";
-        const cleaned = replaceJsonWithReadable(stripHtmlAndLinks(raw));
-        if (cleaned) lines.push(cleaned);
-      });
-    }
+  const productDiscount = (originalPerPerson && salePerPerson && originalPerPerson > salePerPerson)
+    ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
+    : 0;
 
-    // 4) custom purchase_info (more likely payment/purchase text)
-    const purchaseInfo = pkgData?.custom_description_module?.purchase_info;
-    if (Array.isArray(purchaseInfo) && purchaseInfo.length > 0) {
-      purchaseInfo.forEach((module: any) => {
-        const list = module?.content?.list ?? [];
-        list.forEach((it: any) => {
-          const raw = it?.desc ?? "";
-          const cleaned = replaceJsonWithReadable(stripHtmlAndLinks(raw));
-          if (cleaned) lines.push(cleaned);
-        });
-      });
-    }
-
-    // 5) fallback price info
-    const b2c = pkgData?.b2c_min_price ?? pkgData?.pkg?.[0]?.b2c_min_price;
-    const b2b = pkgData?.b2b_min_price ?? pkgData?.pkg?.[0]?.b2b_min_price;
-    if (b2c !== undefined || b2b !== undefined) {
-      lines.push(`가격 정보: ${b2c ? `판매가: ${formatPrice(b2c)}원` : ""}${b2b ? ` / 도매가: ${formatPrice(b2b)}원` : ""}`);
-    }
-
-    // 6) If any lines contain JSON-like fragments (e.g. FULL_REFUND:{"value":0,"day_min":3}), clean them
-    const cleanedLines = lines.map(l => replaceJsonWithReadable(l));
-
-    // Remove duplicates and empty lines
-    const unique = Array.from(new Set(cleanedLines.map(x => x.trim()))).filter(Boolean);
-
-    return unique;
-  }, [pkgData]);
-
-  // ------------------------------------------------------------------------
-
-  // Tour info extracted
-  const tourTitle = pkgData?.pkg_name ?? params?.prod_name ?? "상품명";
-  const packageName = pkgData?.pkg_name ?? params?.pkg_name ?? "";
-  const saleStart = pkgData?.sale_s_date ?? pkgData?.item?.[0]?.sale_s_date ?? params?.sale_s_date ?? null;
-  const saleEnd = pkgData?.sale_e_date ?? pkgData?.item?.[0]?.sale_e_date ?? params?.sale_e_date ?? null;
-
+  // render
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FixedBottomCTAProvider>
@@ -384,16 +324,38 @@ function ProductPay() {
               <Text typography="t3" style={{ marginLeft: 12 }}>예약/결제하기</Text>
             </View>
 
-            {/* Tour info */}
-            <CollapsibleSection title="투어 정보" open={!!openSections[0]} onToggle={() => toggleSection(0)} completed={!!completedSections[0]}>
-              <Text typography="t5" fontWeight="bold">{tourTitle}</Text>
-              <Text style={{ marginTop: 6, color: colors.grey500 }}>선택일: {params?.selected_date ?? "-"}</Text>
-              {packageName ? <Text style={{ marginTop: 6, color: colors.grey700 }}>{packageName}</Text> : null}
-              {saleStart || saleEnd ? (<Text style={{ marginTop: 6, color: colors.grey500 }}>이용기간: {saleStart ?? '-'} {saleEnd ? `~ ${saleEnd}` : ''}</Text>) : null}
+            {/* Tour info (use big image + date/time/people lines similar to mock) */}
+            <CollapsibleSection
+              title="투어 정보"
+              open={!!openSections[0]}
+              onToggle={() => toggleSection(0)}
+              completed={!!completedSections[0]}
+            >
+              <Text typography="t4" fontWeight="bold" style={{ marginBottom: 12 }}>{title}</Text>
+              <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
+              <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
+                <Icon name="icon-calendar" size={20} color={colors.blue500} />
+                <Text style={{ marginLeft: 8 }}>{params?.selected_date ?? "-"}</Text>
+
+                <View style={{ width: 24 }} />
+
+                <Icon name="icon-clock" size={20} color={colors.blue500} />
+                <Text style={{ marginLeft: 8 }}>{params?.selected_time ?? params?.selected_time_slot ?? "-"}</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
+                <Icon name="icon-user" size={20} color={colors.blue500} />
+                <Text style={{ marginLeft: 8 }}>{`인원수 성인 ${adultCount}명${childCount ? `, 아동 ${childCount}명` : ''}`}</Text>
+              </View>
             </CollapsibleSection>
 
             {/* Booker */}
-            <CollapsibleSection title="예약자 정보" open={!!openSections[1]} onToggle={() => toggleSection(1)} completed={!!completedSections[1]}>
+            <CollapsibleSection
+              title="예약자 정보"
+              open={!!openSections[1]}
+              onToggle={() => toggleSection(1)}
+              completed={!!completedSections[1]}
+            >
               <View>
                 <Text typography="t6" color={colors.grey500}>성(영문) *</Text>
                 <TextInput placeholder="예) HONG" value={lastNameEng} onChangeText={setLastNameEng} style={styles.input} />
@@ -409,7 +371,12 @@ function ProductPay() {
             </CollapsibleSection>
 
             {/* Traveler */}
-            <CollapsibleSection title="여행자 정보" open={!!openSections[2]} onToggle={() => toggleSection(2)} completed={!!completedSections[2]}>
+            <CollapsibleSection
+              title="여행자 정보"
+              open={!!openSections[2]}
+              onToggle={() => toggleSection(2)}
+              completed={!!completedSections[2]}
+            >
               <View style={{ marginBottom: 12 }}>
                 <TouchableOpacity onPress={() => setTravelerSameAsBooker(!travelerSameAsBooker)} style={{
                   borderRadius: 10, borderWidth: 1, borderColor: travelerSameAsBooker ? colors.blue500 : colors.grey300, padding: 12, flexDirection: 'row', alignItems: 'center'
@@ -485,7 +452,7 @@ function ProductPay() {
               <Button type="primary" style="fill" display="block" size="medium" disabled={!travelerCompleted} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
             </CollapsibleSection>
 
-            {/* Pickup info */}
+            {/* Pickup */}
             <CollapsibleSection title="픽업 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
               <Text typography="t6" color={colors.grey500}>픽업 장소 *</Text>
               <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" value={pickupPlace} onChangeText={setPickupPlace} style={styles.input} />
@@ -501,19 +468,40 @@ function ProductPay() {
               <Button type="primary" style="ghost" display="block" size="medium" onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
             </CollapsibleSection>
 
-            {/* Payment details (new) */}
+            {/* Payment details UI (mini card + breakdown) */}
             <CollapsibleSection title="결제 세부 내역" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
-              {paymentDetailsLines.length > 0 ? (
-                paymentDetailsLines.map((line, idx) => <Text key={idx} style={{ marginBottom: 6 }}>{line}</Text>)
-              ) : (
-                <Text color={colors.grey500}>결제 세부 내역이 제공되지 않습니다.</Text>
-              )}
+              <MiniProductCard
+                image={thumbnail}
+                title={title}
+                originPrice={originalPerPerson}
+                salePrice={salePerPerson}
+                percent={percent}
+                perPersonText={`${formatPrice(salePerPerson)}원 X ${adultCount + childCount}명`}
+              />
+
+              <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
+                <View style={styles.row}>
+                  <Text>상품 금액</Text>
+                  <Text>{formatPrice(productAmount)}원</Text>
+                </View>
+                <View style={styles.row}>
+                  <Text>상품 할인</Text>
+                  <Text>{formatPrice(productDiscount)}원</Text>
+                </View>
+              </View>
+
+              <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
+                <View style={styles.row}>
+                  <Text typography="t6" fontWeight="bold" style={{ color: colors.purple500 }}>총 결제 금액</Text>
+                  <Text typography="t2" fontWeight="bold" style={{ color: colors.purple500 }}>{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
+                </View>
+              </View>
             </CollapsibleSection>
 
-            {/* Separator */}
+            {/* separator */}
             <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
 
-            {/* Payment area - standalone */}
+            {/* Payment area (standalone) */}
             <View style={[styles.sectionContainer, { paddingHorizontal: 20, paddingVertical: 12 }]}>
               <Text typography="t5" style={{ marginBottom: 12 }}>결제 수단</Text>
               <View style={styles.paymentRow}>
@@ -548,15 +536,15 @@ function ProductPay() {
             <View style={{ height: 120 }} />
           </ScrollView>
 
-          {/* Bottom CTA */}
+          {/* bottom CTA */}
           <View style={styles.bottomBar}>
             <View style={{ flex: 1 }}>
               <Text typography="t6" color={colors.grey500}>총 금액</Text>
-              <Text typography="t2" fontWeight="bold">{formatPrice(totalPriceCalc)}원</Text>
+              <Text typography="t2" fontWeight="bold">{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
             </View>
             <View style={{ width: 180 }}>
               <Button type="primary" style="fill" display="block" size="large" disabled={!paymentCompleted || submitting} onPress={onPay}>
-                {submitting ? "결제중..." : `${formatPrice(totalPriceCalc)}원 결제하기`}
+                {submitting ? "결제중..." : `${formatPrice(Math.max(0, productAmount - productDiscount))}원 결제하기`}
               </Button>
             </View>
           </View>
@@ -566,7 +554,8 @@ function ProductPay() {
   );
 }
 
-/* styles */
+/* ----------------- Styles ----------------- */
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
@@ -653,6 +642,18 @@ const styles = StyleSheet.create({
     borderColor: colors.blue500,
     backgroundColor: colors.blue50,
   },
+  tourImage: {
+    width: "100%",
+    height: 140,
+    borderRadius: 12,
+    backgroundColor: "#eee",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
   bottomBar: {
     position: "absolute",
     left: 0,
@@ -665,6 +666,55 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
+  },
+});
+
+/* ----------------- Mini card styles (based on provided ProductCard) ----------------- */
+const miniCardStyles = StyleSheet.create({
+  cardWrap: {
+    marginHorizontal: 0,
+    marginVertical: 6,
+    overflow: "hidden",
+  },
+  cardInner: {
+    flexDirection: "row",
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  imageCol: {
+    position: "relative",
+    width: 72,
+    height: 72,
+    marginRight: 12,
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#eee",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: 72,
+    height: 72,
+    borderRadius: 8,
+    backgroundColor: "#eee",
+  },
+  infoCol: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    paddingVertical: 0,
+  },
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+  },
+  percentText: {
+    color: colors.red500,
+    fontWeight: "bold",
+    marginRight: 8,
+    alignSelf: "center",
   },
 });
 
