@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { View, ActivityIndicator, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, ActivityIndicator, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Text as RNText } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
 import { FixedBottomCTAProvider, Button, colors, Text } from "@toss-design-system/react-native";
@@ -15,20 +15,97 @@ export const Route = createRoute('/product/reservation', {
   component: ProductReservation,
 });
 
-/**
- * Compact price formatting rules:
- * - price <= 0 or missing: return empty string
- * - price >= 10,000:
- *   - man < 10: show one-decimal manwon truncated (floor to 0.1만) e.g. 32,000 -> 3.2만원
- *   - else show integer 만원 e.g. 423,000 -> 42만원
- * - 1,000 <= price < 10,000: "X천원"
- * - 100 <= price < 1,000: "X백원"
- * - <100: "N원"
+/* ------------------------- Helpers ------------------------- */
+
+/** safe number conversion (handles numbers and numeric strings) */
+function safeNum(v: any): number | undefined {
+  if (v === null || v === undefined) return undefined;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  if (typeof v === 'string') {
+    const n = Number(v.replace(/,/g, ''));
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
+/** extract the lowest numeric price from an entry that might contain
+ *  time-keyed price objects (e.g. { "09:10": 100 }) or direct numeric fields
  */
+function lowestPriceFromEntry(entry: any): number | undefined {
+  if (!entry) return undefined;
+  const candidates: number[] = [];
+
+  const keysToCheck = ['b2b_price', 'b2c_price', 'price', 'sale_price', 'original_price'];
+  keysToCheck.forEach((k) => {
+    const val = entry?.[k];
+    if (val === undefined || val === null) return;
+    if (typeof val === 'number' || typeof val === 'string') {
+      const n = safeNum(val);
+      if (n !== undefined) candidates.push(n);
+    } else if (typeof val === 'object') {
+      // time-keyed map or nested object
+      Object.values(val).forEach((vv: any) => {
+        const n = safeNum(vv);
+        if (n !== undefined) candidates.push(n);
+      });
+    }
+  });
+
+  if (candidates.length === 0) return undefined;
+  return Math.min(...candidates);
+}
+
+/** Merge SKU calendars into a date -> { price } map (take lowest across SKUs and times) */
+function mergeSkuCalendars(pkgData: any) {
+  if (!pkgData) return {};
+  const merged: Record<string, { price: number } > = {};
+
+  const items = Array.isArray(pkgData.item) ? pkgData.item : [];
+  items.forEach((item: any) => {
+    const skus = Array.isArray(item.skus) ? item.skus : [];
+    skus.forEach((sku: any) => {
+      const cal = sku?.calendar_detail ?? sku?.calendar ?? null;
+      if (!cal || typeof cal !== 'object') return;
+      Object.entries(cal).forEach(([dateStr, entry]: any) => {
+        const price = lowestPriceFromEntry(entry);
+        if (price === undefined) return;
+        const existing = merged[dateStr]?.price;
+        if (existing === undefined || price < existing) merged[dateStr] = { price };
+      });
+    });
+
+    // item-level calendar fallback
+    const itemCal = item?.calendar_detail ?? null;
+    if (itemCal && typeof itemCal === 'object') {
+      Object.entries(itemCal).forEach(([dateStr, entry]: any) => {
+        const price = lowestPriceFromEntry(entry);
+        if (price === undefined) return;
+        const existing = merged[dateStr]?.price;
+        if (existing === undefined || price < existing) merged[dateStr] = { price };
+      });
+    }
+  });
+
+  // top-level calendar_detail fallback
+  const topCal = pkgData?.calendar_detail ?? null;
+  if (topCal && typeof topCal === 'object') {
+    Object.entries(topCal).forEach(([dateStr, entry]: any) => {
+      const price = lowestPriceFromEntry(entry);
+      if (price === undefined) return;
+      const existing = merged[dateStr]?.price;
+      if (existing === undefined || price < existing) merged[dateStr] = { price };
+    });
+  }
+
+  return merged;
+}
+
+/* -------------------- compact price format -------------------- */
+
 function formatCompactPrice(price?: number | null): string {
   if (price === null || price === undefined || Number.isNaN(Number(price))) return '';
-  const p = Math.floor(Number(price)); // use floor as baseline for compact display
-  if (p <= 0) return ''; // do not show "0원"
+  const p = Math.floor(Number(price));
+  if (p <= 0) return '';
 
   if (p >= 10000) {
     const man = p / 10000;
@@ -44,23 +121,20 @@ function formatCompactPrice(price?: number | null): string {
     }
   }
 
-  if (p >= 1000) {
-    return `${Math.floor(p / 1000)}천원`;
-  }
-
-  if (p >= 100) {
-    return `${Math.floor(p / 100)}백원`;
-  }
-
+  if (p >= 1000) return `${Math.floor(p / 1000)}천원`;
+  if (p >= 100) return `${Math.floor(p / 100)}백원`;
   return `${p}원`;
 }
 
-function toNumber(v: any): number | undefined {
-  if (v === null || v === undefined) return undefined;
-  const n = Number(String(v).replace(/,/g, ''));
-  return Number.isFinite(n) ? n : undefined;
-}
+/* -------------------- calendar builder -------------------- */
 
+/**
+ * Build month matrix reading prices from calendarData map.
+ * calendarData expected to be a map keyed by 'YYYY-MM-DD' with either:
+ *  - numeric-ish value (price)
+ *  - object with .price numeric
+ *  - other structures (we attempt safeNum)
+ */
 function buildMonthMatrixLocal(year: number, month: number, calendarData: any, sale_s_date?: string, sale_e_date?: string) {
   const firstDay = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
   const startWeekday = firstDay.day(); // 0..6
@@ -81,15 +155,21 @@ function buildMonthMatrixLocal(year: number, month: number, calendarData: any, s
     const isAfterMax = maxDay ? dayjs(dateStr).isAfter(maxDay, 'day') : false;
 
     const cal = calendarData?.[dateStr] ?? null;
-    // normalize candidate price fields
-    const priceNum = toNumber(cal?.b2c_price ?? cal?.b2b_price ?? cal?.price ?? cal?.sale_price ?? null);
+
+    // extract price robustly
+    let priceNum = safeNum(cal?.price ?? cal ?? cal?.b2c_price ?? cal?.b2b_price ?? cal?.sale_price ?? null);
+    // if cal is object with nested time-keyed price, check lowestPriceFromEntry
+    if (priceNum === undefined && cal && typeof cal === 'object') {
+      const maybe = lowestPriceFromEntry(cal);
+      priceNum = safeNum(maybe);
+    }
 
     const cell = {
       date: dateStr,
       day,
       price: priceNum,
       soldOut: !!(cal?.soldOut) || isBeforeMin || isAfterMax,
-      inRange: !(isBeforeMin || isAfterMax), // available dates for selection
+      inRange: !(isBeforeMin || isAfterMax),
       rawCal: cal ?? null,
     };
     week.push(cell);
@@ -109,17 +189,19 @@ function buildMonthMatrixLocal(year: number, month: number, calendarData: any, s
   return matrix;
 }
 
+/* -------------------- Component -------------------- */
+
 function ProductReservation() {
   const navigation = useNavigation();
   const params = Route.useParams();
-  const { prod_no, pkg_no, setSDate, setEDate, s_date, e_date } = useReservationStore();
+  const { prod_no, pkg_no, setSDate, setEDate, s_date } = useReservationStore();
 
   const [loading, setLoading] = useState(true);
   const [pkgData, setPkgData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null); // single selected date
 
-  // 달력 월 이동
+  // calendar month
   const [currentMonth, setCurrentMonth] = useState(() => {
     let d = s_date || (Array.isArray(params.online_s_date) ? params.online_s_date[0] : params.online_s_date);
     if (!d) d = dayjs().format("YYYY-MM-DD");
@@ -139,49 +221,90 @@ function ProductReservation() {
         }, {
           headers: { "Content-Type": "application/json" }
         });
-        // normalize calendar_detail into pkgData for easier lookup
+
         const data = res.data ?? {};
         const firstItem = data.item?.[0];
         const firstSku = firstItem?.skus?.[0];
         const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? data.calendar_detail ?? null;
-        setPkgData({ ...data, calendar_detail });
-        // Debug log (dev only)
-        console.log('[ProductReservation] fetched pkgData:', res.data);
+
+        // create merged calendar map from all SKUs/items/top-level
+        const mergedCalendar = mergeSkuCalendars(data);
+
+        const pkgDataWithCalendar = {
+          ...data,
+          calendar_detail,
+          calendar_detail_merged: mergedCalendar,
+        };
+
+        setPkgData(pkgDataWithCalendar);
+
+        console.log('[ProductReservation] fetched pkgData (sample):', {
+          prod_no: params.prod_no,
+          pkg_no: params.pkg_no,
+          hasCalendarDetail: !!calendar_detail,
+          mergedDatesCount: Object.keys(mergedCalendar || {}).length,
+        });
       } catch (e: any) {
         console.error('[ProductReservation] fetch error', e);
         setError("패키지 정보를 불러오는데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
-    // fetch on mount / when params change only (don't refetch on date select)
+
     fetchPkg();
+    // only on param changes
   }, [params.prod_no, params.pkg_no]);
 
-  // calendar data 추출 (가장 첫 번째 item/sku 기준)
+  // build calInfo - prefer merged calendar map if present
   const calInfo = useMemo(() => {
-    if (!pkgData?.item) return {};
+    if (!pkgData?.item) {
+      return {};
+    }
     const firstItem = pkgData.item[0];
     const firstSku = firstItem?.skus?.[0];
+
+    const calendar_detail = pkgData?.calendar_detail_merged ?? firstSku?.calendar_detail ?? pkgData?.calendar_detail ?? {};
+
+    const b2c_price = firstSku?.b2c_price ?? firstItem?.b2c_min_price;
+    const sale_s_date = Array.isArray(firstItem?.sale_s_date) ? firstItem.sale_s_date[0] : firstItem.sale_s_date;
+    const sale_e_date = Array.isArray(firstItem?.sale_e_date) ? firstItem.sale_e_date[0] : firstItem.sale_e_date;
+
     return {
-      calendar_detail: firstSku?.calendar_detail ?? pkgData?.calendar_detail ?? {},
-      b2c_price: firstSku?.b2c_price ?? firstItem?.b2c_min_price,
-      sale_s_date: Array.isArray(firstItem?.sale_s_date) ? firstItem.sale_s_date[0] : firstItem.sale_s_date,
-      sale_e_date: Array.isArray(firstItem?.sale_e_date) ? firstItem.sale_e_date[0] : firstItem.sale_e_date,
+      calendar_detail,
+      b2c_price,
+      sale_s_date,
+      sale_e_date,
     };
   }, [pkgData]);
 
-  const calendarData = useMemo(() => makeCalendarData(calInfo), [calInfo]);
+  // calendarData: if we have merged calendar map use it directly, otherwise fall back to makeCalendarData
+  const calendarData = useMemo(() => {
+    if (!calInfo) return {};
+    if (calInfo.calendar_detail && Object.keys(calInfo.calendar_detail).length > 0) {
+      return calInfo.calendar_detail;
+    }
+    // fallback: try use makeCalendarData (if calendar_detail is not usable)
+    try {
+      return makeCalendarData(calInfo);
+    } catch (e) {
+      // fallback to empty map
+      console.warn('[ProductReservation] makeCalendarData failed, using empty calendar map', e);
+      return {};
+    }
+  }, [calInfo]);
+
   const sale_s_date = calInfo.sale_s_date;
   const sale_e_date = calInfo.sale_e_date;
 
-  // month bounds for navigation
+  // month bounds
   const earliestMonth = sale_s_date ? dayjs(sale_s_date).startOf('month') : null;
   const latestMonth = sale_e_date ? dayjs(sale_e_date).startOf('month') : null;
 
   const prevDisabled = earliestMonth ? (currentMonth.year() === earliestMonth.year() && currentMonth.month() === earliestMonth.month()) : false;
   const nextDisabled = latestMonth ? (currentMonth.year() === latestMonth.year() && currentMonth.month() === latestMonth.month()) : false;
 
-  // build matrix for rendering months but mark days outside sale range as soldOut (disabled)
+  // build matrix using calendarData (merged or derived)
   const monthMatrix = useMemo(() => {
     return buildMonthMatrixLocal(
       currentMonth.year(),
@@ -192,29 +315,30 @@ function ProductReservation() {
     );
   }, [currentMonth, calendarData, sale_s_date, sale_e_date]);
 
-  // helper: get price info for any date string (YYYY-MM-DD)
+  // get price info for a date (display/original/discount)
   function getPriceForDate(dateStr: string) {
     const cal = calendarData?.[dateStr] ?? null;
-    const display = toNumber(cal?.b2b_price ?? cal?.b2c_price ?? cal?.price ?? cal?.sale_price) ??
-      toNumber(calInfo?.b2c_price) ??
-      toNumber(pkgData?.pkg?.[0]?.b2b_min_price) ??
-      toNumber(pkgData?.pkg?.[0]?.b2c_min_price);
-    const original = toNumber(cal?.original_price ?? cal?.b2c_price ?? pkgData?.pkg?.[0]?.b2c_min_price);
+
+    // display: prefer merged map price or cal price / b2b/b2c
+    const display = safeNum(cal?.price ?? cal?.b2b_price ?? cal?.b2c_price ?? cal) ??
+      safeNum(calInfo?.b2c_price) ??
+      safeNum(pkgData?.pkg?.[0]?.b2b_min_price) ??
+      safeNum(pkgData?.pkg?.[0]?.b2c_min_price);
+
+    const original = safeNum(cal?.original_price ?? cal?.b2c_price ?? pkgData?.pkg?.[0]?.b2c_min_price);
     const discountAmount = (original !== undefined && display !== undefined && original > display) ? Math.floor(original - display) : 0;
     return { display, original, discountAmount };
   }
 
-  // single-date selection behavior
-  const onDayPress = (cell) => {
+  // selection
+  const onDayPress = (cell: any) => {
     if (!cell || cell.soldOut) return;
-    // set single selected date
     setSelected(cell.date);
-    // immediately persist to store
     setSDate(cell.date);
     setEDate(cell.date);
   };
 
-  // 로딩/에러 처리
+  // loading / error
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -231,15 +355,11 @@ function ProductReservation() {
     );
   }
 
-  // 달력 제목
+  // month label
   const monthLabel = currentMonth.format("YYYY년 M월");
 
-  // 다음 페이지 이동
   const goNext = () => {
-    // require a single selected date
     if (!selected) return;
-
-    // compute price info for selected date and include in params
     const priceInfo = getPriceForDate(selected);
     navigation.navigate('/product/people', {
       prod_no: params.prod_no,
@@ -249,9 +369,8 @@ function ProductReservation() {
       display_price: priceInfo.display ?? null,
       original_price: priceInfo.original ?? null,
       discount_amount: priceInfo.discountAmount ?? 0,
-      // you can include other pkgData fields if needed:
-      b2b_min_price: toNumber(pkgData?.pkg?.[0]?.b2b_min_price) ?? null,
-      b2c_min_price: toNumber(pkgData?.pkg?.[0]?.b2c_min_price) ?? null,
+      b2b_min_price: safeNum(pkgData?.pkg?.[0]?.b2b_min_price) ?? null,
+      b2c_min_price: safeNum(pkgData?.pkg?.[0]?.b2c_min_price) ?? null,
     });
   };
 
@@ -265,7 +384,7 @@ function ProductReservation() {
               disabled={prevDisabled}
               style={{ marginHorizontal: 16 }}
             >
-              <Text style={{ fontSize: 24, color: prevDisabled ? colors.grey200 : colors.grey800 }}>{'<'}</Text>
+              <RNText style={{ fontSize: 24, color: prevDisabled ? colors.grey200 : colors.grey800 }}>{'<'}</RNText>
             </TouchableOpacity>
             <Text style={{ fontSize: 19, fontWeight: 'bold', letterSpacing: -1 }}>{monthLabel}</Text>
             <TouchableOpacity
@@ -273,14 +392,13 @@ function ProductReservation() {
               disabled={nextDisabled}
               style={{ marginHorizontal: 16 }}
             >
-              <Text style={{ fontSize: 24, color: nextDisabled ? colors.grey200 : colors.grey800 }}>{'>'}</Text>
+              <RNText style={{ fontSize: 24, color: nextDisabled ? colors.grey200 : colors.grey800 }}>{'>'}</RNText>
             </TouchableOpacity>
           </View>
           <Text style={{ color: colors.blue500, fontSize: 16, marginHorizontal: 8 }}>최저가/할인중</Text>
         </View>
 
         <View style={{ paddingHorizontal: 28 }}>
-          {/* 요일 */}
           <View style={{ flexDirection: 'row', width: SCREEN_WIDTH - 56, justifyContent: 'space-around', marginBottom: 8 }}>
             {WEEKDAYS.map((w, i) => (
               <Text key={w} style={{ width: 34, textAlign: 'center', color: colors.grey400, fontWeight: 'bold', fontSize: 15 }}>{w}</Text>
@@ -290,13 +408,11 @@ function ProductReservation() {
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             {monthMatrix.map((week, i) => (
               <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 2 }}>
-                {week.map((cell, j) => {
+                {week.map((cell: any, j: number) => {
                   if (!cell) {
-                    // leading / trailing empty slot (not a date)
                     return <View key={j} style={{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center' }} />;
                   }
 
-                  // show disabled style for soldOut or out-of-sale-range days (they appear faded with "매진")
                   if (cell.soldOut) {
                     return (
                       <View key={j} style={{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center' }}>
@@ -334,7 +450,6 @@ function ProductReservation() {
           </ScrollView>
         </View>
 
-        {/* 하단 CTA */}
         <View style={{ padding: 24, backgroundColor: '#fff' }}>
           <Button
             type="primary"
