@@ -25,6 +25,136 @@ function formatPrice(n?: number | null) {
   return Math.floor(Number(n)).toLocaleString();
 }
 
+function generateGuid() {
+  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+}
+
+/**
+ * Minimal mapping from UI nationality label (한글) to API locale/state/tel code.
+ * Extend this map if you support more countries or different codes.
+ */
+function mapNationalityToLocaleState(nat?: string) {
+  const map: Record<string, { locale: string; state: string; telCode: string }> = {
+    "미국": { locale: "en", state: "US", telCode: "1" },
+    "베트남": { locale: "vi", state: "VN", telCode: "84" },
+    "태국": { locale: "th", state: "TH", telCode: "66" },
+    "일본": { locale: "ja", state: "JP", telCode: "81" },
+    "대한민국": { locale: "ko", state: "KR", telCode: "82" },
+    "중국": { locale: "zh-cn", state: "CN", telCode: "86" },
+    "대만": { locale: "zh-tw", state: "TW", telCode: "886" },
+    "홍콩": { locale: "zh-hk", state: "HK", telCode: "852" },
+  };
+  return map[nat ?? "대한민국"] ?? { locale: "ko", state: "KR", telCode: "82" };
+}
+
+/**
+ * Helper to build skus array from pkgData and params, attempting to split adult/child SKUs when possible.
+ * - Returns array of { sku_id, qty, price } (only these three fields per your request)
+ * - price is total price for that SKU (unit * qty)
+ */
+function buildSkusFromPkg_v2(pkgData: any, params: any, adultCount: number, childCount: number, salePerPerson: number, totalPriceCalc: number, originalPerPerson?: number) {
+  // 1) use params.skus if present (normalize to only sku_id/qty/price)
+  if (params?.skus && Array.isArray(params.skus) && params.skus.length > 0) {
+    return params.skus.map((s: any) => ({
+      sku_id: s.sku_id ?? null,
+      qty: Number(s.qty ?? 1),
+      price: s.price !== undefined && s.price !== null ? Number(s.price) : 0,
+    }));
+  }
+
+  // 2) try pkgData.item[0].skus
+  const items = pkgData?.item;
+  if (Array.isArray(items) && items.length > 0) {
+    const item = items[0];
+    const candidateSkus = Array.isArray(item.skus) ? item.skus : [];
+
+    if (candidateSkus.length > 0) {
+      // helper: extract ticket-kind text from sku object
+      const getTicketKindText = (s: any) => {
+        const parts: string[] = [];
+        if (s.spec && typeof s.spec === 'object') {
+          Object.values(s.spec).forEach(v => { if (v) parts.push(String(v)); });
+        }
+        if (s.specs_ref && Array.isArray(s.specs_ref)) {
+          s.specs_ref.forEach((r: any) => {
+            if (r.spec_value_desc) parts.push(String(r.spec_value_desc));
+            if (r.spec_title_desc) parts.push(String(r.spec_title_desc));
+          });
+        }
+        if (s.title) parts.push(String(s.title));
+        if (s.name) parts.push(String(s.name));
+        if (s.spec_desc) parts.push(String(s.spec_desc));
+        return parts.join(' ').toLowerCase();
+      };
+
+      let adultSku: any = null;
+      let childSku: any = null;
+
+      for (const s of candidateSkus) {
+        const text = getTicketKindText(s);
+        // adult detection
+        if (!adultSku && (text.includes("성인") || text.includes("adult") || text.includes("어른"))) {
+          adultSku = s;
+          continue;
+        }
+        // child detection (includes 중,초 and common korean keywords)
+        if (!childSku && (text.includes("아동") || text.includes("어린이") || text.includes("child") || text.includes("중,초") || text.includes("초") || text.includes("중") || text.includes("kid"))) {
+          childSku = s;
+          continue;
+        }
+        // treat "고등학생" as child by default
+        if (!childSku && text.includes("고등학생")) {
+          childSku = s;
+          continue;
+        }
+      }
+
+      const skus: any[] = [];
+      const pushSku = (s: any, qty: number) => {
+        if (!s || qty <= 0) return;
+        const unit = (s.b2b_price ?? s.b2c_price ?? s.price ?? item.b2b_min_price ?? item.b2c_min_price ?? salePerPerson ?? 0);
+        skus.push({
+          sku_id: s.sku_id ?? null,
+          qty,
+          price: Math.round(Number(unit) * qty),
+        });
+      };
+
+      if (adultSku) pushSku(adultSku, adultCount);
+      if (childSku) pushSku(childSku, childCount);
+
+      // if found at least one of adult/child SKUs, fill missing group with fallback first candidate if needed
+      if (skus.length > 0) {
+        if (!adultSku && adultCount > 0) pushSku(candidateSkus[0], adultCount);
+        if (!childSku && childCount > 0) pushSku(candidateSkus[0], childCount);
+        return skus;
+      }
+
+      // if only one sku exists, use combined qty
+      if (candidateSkus.length === 1) {
+        const s = candidateSkus[0];
+        const unit = (s.b2b_price ?? s.b2c_price ?? s.price ?? item.b2b_min_price ?? item.b2c_min_price ?? salePerPerson ?? 0);
+        const qty = Math.max(1, adultCount + childCount);
+        return [{ sku_id: s.sku_id ?? null, qty, price: Math.round(Number(unit) * qty) }];
+      }
+
+      // if multiple SKUs exist but detection failed -> fallback to first sku with combined qty
+      if (candidateSkus.length > 0) {
+        const s = candidateSkus[0];
+        const unit = (s.b2b_price ?? s.b2c_price ?? s.price ?? item.b2b_min_price ?? item.b2c_min_price ?? salePerPerson ?? 0);
+        const qty = Math.max(1, adultCount + childCount);
+        return [{ sku_id: s.sku_id ?? null, qty, price: Math.round(Number(unit) * qty) }];
+      }
+    }
+  }
+
+  // ultimate fallback
+  const totalQty = Math.max(1, adultCount + childCount);
+  const unitFallback = salePerPerson ?? Math.round((totalPriceCalc ?? 0) / totalQty) ?? 0;
+  return [{ sku_id: params?.sku_id ?? null, qty: totalQty, price: Math.round(unitFallback * totalQty) }];
+}
+
 type PaymentMethod = "toss" | "naver" | "kakao" | "card" | null;
 type ContactMethod = "WhatsApp" | "WeChat" | "Messenger" | "Line" | "Instagram" | "KakaoTalk" | "";
 
@@ -32,6 +162,9 @@ function ProductPay() {
   const navigation = useNavigation();
   const params = Route.useParams();
   const pkgData = params?.pkgData ?? null;
+
+  // safe debug log (guarded)
+  console.log(pkgData?.item?.[0]?.skus);
 
   const { pdt } = useProductStore();
   if (!pdt) return null;
@@ -94,6 +227,9 @@ function ProductPay() {
   const [pickupPlace, setPickupPlace] = useState<string>(params?.pickup?.pickupPlace ?? "");
   const [dropoffPlace, setDropoffPlace] = useState<string>(params?.pickup?.dropoffPlace ?? "");
 
+  // Requests / order note (bind this to the Requests TextInput)
+  const [orderNote, setOrderNote] = useState<string>(params?.order_note ?? "");
+
   // Payment & agreements
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("toss");
   const [agreeAll, setAgreeAll] = useState<boolean>(false);
@@ -151,9 +287,15 @@ function ProductPay() {
     return !!(travelerLastName && travelerFirstName && travelerGender && travelerNationality && travelerPassport && (travelerContactDuring === "none" || (travelerContactDuring === "has" && contactVerified)));
   }, [travelerSameAsBooker, travelerLastName, travelerFirstName, travelerGender, travelerNationality, travelerPassport, travelerContactDuring, contactVerified]);
 
+  // paymentCompleted now requires:
+  // - a payment method selected
+  // - required agreements (personal + service)
+  // - booker fields completed
+  // - traveler fields completed
+  // - pickup & dropoff provided
   const paymentCompleted = useMemo(() => {
-    return !!selectedPayment && agreePersonal && agreeService;
-  }, [selectedPayment, agreePersonal, agreeService]);
+    return !!selectedPayment && agreePersonal && agreeService && bookerCompleted && travelerCompleted && !!pickupPlace && !!dropoffPlace;
+  }, [selectedPayment, agreePersonal, agreeService, bookerCompleted, travelerCompleted, pickupPlace, dropoffPlace]);
 
   useEffect(() => {
     if (agreePersonal && agreeService && agreeMarketing) setAgreeAll(true);
@@ -208,28 +350,69 @@ function ProductPay() {
     setContactMethod("");
   }
 
+  // Builds an API-friendly reservation payload using params, pkgData/pdt and user inputs.
+  // This follows the API rules you provided:
+  // - include only fields the app controls/supplies
+  // - guide_lang will be null
+  // - skus will contain only sku_id, qty and price (as you requested)
+  const buildReservationPayload = () => {
+    const guid = params?.guid ?? generateGuid();
+    const partner_order_no = params?.partner_order_no ?? "";
+
+    // buyer locale/state/telcode derived from selected nationality (booker)
+    const mapped = mapNationalityToLocaleState(nationality);
+
+    // Build skus using robust helper that maps adult/child SKUs when available
+    const skus = buildSkusFromPkg_v2(pkgData, params, adultCount, childCount, salePerPerson, totalPriceCalc, originalPerPerson);
+
+    // mobile_device: include values if present, otherwise nulls as in API example
+    const mobile_device = {
+      mobile_model_no: params?.mobile_device?.mobile_model_no ?? null,
+      IMEI: params?.mobile_device?.IMEI ?? null,
+      active_date: params?.mobile_device?.active_date ?? params?.selected_date ?? null,
+    };
+
+    // pay_type mapping: keep simple mapping (adapt if API expects different codes)
+    const pay_type = selectedPayment === "toss" ? "01" : selectedPayment === "naver" ? "02" : selectedPayment === "kakao" ? "03" : "01";
+
+    const payload: any = {
+      guid,
+      partner_order_no,
+      prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
+      pkg_no: params?.pkg_no ?? null,
+      item_no: (Array.isArray(skus) && skus.length > 0) ? skus[0].sku_id : (params?.item_no ?? null),
+      locale: mapped.locale,
+      state: mapped.state,
+      buyer_first_name: firstNameEng || "",
+      buyer_last_name: lastNameEng || "",
+      buyer_email: email || "",
+      buyer_tel_country_code: mapped.telCode,
+      buyer_tel_number: phone || "",
+      buyer_country: mapped.state,
+      s_date: params?.selected_date ?? null,
+      e_date: params?.selected_date ?? null,
+      event_time: null, // as requested
+      guide_lang: null, // explicitly null as you asked
+      skus: skus ?? null,
+      mobile_device,
+      order_note: orderNote || "",
+      total_price: totalPriceCalc ?? 0,
+      pay_type,
+    };
+
+    return payload;
+  };
+
   async function onPay() {
     if (!paymentCompleted) return;
     setSubmitting(true);
     try {
-      const payload = {
-        prod_no: params?.prod_no,
-        pkg_no: params?.pkg_no,
-        selected_date: params?.selected_date,
-        booker: { lastNameEng, firstNameEng, nationality, phone, email },
-        traveler: {
-          sameAsBooker: travelerSameAsBooker,
-          lastName: travelerLastName,
-          firstName: travelerFirstName,
-          gender: travelerGender,
-          nationality: travelerNationality,
-          passport: travelerPassport,
-          contactDuringTravel: travelerContactDuring === "has" ? { method: contactMethod, id: contactId } : null,
-        },
-        pickup: (pickupPlace || dropoffPlace) ? { pickupPlace, dropoffPlace } : null,
-        paymentMethod: selectedPayment,
-        total: totalPriceCalc,
-      };
+      const payload = buildReservationPayload();
+
+      // Console log the payload (as requested)
+      console.log("Reservation API body:", JSON.stringify(payload, null, 2));
+
+      // keep existing behavior: simulate, then navigate to confirmation
       await new Promise(r => setTimeout(r, 700));
       navigation.navigate('/product/confirmation', { order: payload });
     } catch (e) {
@@ -615,7 +798,7 @@ function ProductPay() {
 
         {/* Requests */}
         <CollapsibleSection title="요청 사항" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
-          <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} style={styles.input} />
+          <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} value={orderNote} onChangeText={setOrderNote} style={[styles.input]} multiline />
           <View style={{ height: 12 }} />
           <Button type="primary" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
         </CollapsibleSection>
