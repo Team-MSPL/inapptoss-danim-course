@@ -54,24 +54,24 @@ export const DUMMY_PRODUCTS = [
 ];
 
 export const INFO_MENU = [
-  // {
-  //   key: 'reservation',
-  //   label: '내 예약',
-  //   icon: 'icon-order-paper',
-  //   onPressNav: '/info/my-reservation',
-  // },
+  {
+    key: 'reservation',
+    label: '내 예약',
+    icon: 'icon-order-paper',
+    onPressNav: '/info/my-reservation',
+  },
   {
     key: 'letter',
     label: '쪽지함',
     icon: 'icon-mail-mono',
     onPressNav: '/info/my-inquiry-list',
   },
-  // {
-  //   key: 'wishlist',
-  //   label: '관심 상품',
-  //   icon: 'icon-heart-red',
-  //   onPressNav: '/info/my-wishlist',
-  // },
+  {
+    key: 'wishlist',
+    label: '관심 상품',
+    icon: 'icon-heart-red',
+    onPressNav: '/info/my-wishlist',
+  },
   {
     key: 'inquiry',
     label: '문의하기',

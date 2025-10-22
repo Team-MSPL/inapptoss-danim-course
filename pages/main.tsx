@@ -36,7 +36,7 @@ export default function Main() {
         return <MainTrip />;
       case 2:
         return <MainTravelShop />;
-      case 2:
+      case 3:
         return <MainInfo />;
       default:
         return null;
