@@ -5,6 +5,7 @@ import axiosAuth from "../../redux/api";
 import { FixedBottomCTAProvider, Button, Icon, Text, colors, Badge, Skeleton, AnimateSkeleton } from "@toss-design-system/react-native";
 import { parseKkdayCategoryKorean } from '../../kkday/kkdayCategoryToKorean';
 import { getRefundTag, firstNLinesFromPackageDesc, formatPrice, getPriceInfo, earliestBookingText } from "../../components/product/good-product-function";
+import {useProductStore} from "../../zustand/useProductStore";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -29,6 +30,8 @@ function ProductGoodProduct() {
   const [selectedPkgNo, setSelectedPkgNo] = useState<number|null>(null);
   const [loading, setLoading] = useState(false);
 
+  const setPdt = useProductStore(state => state.setPdt);
+
   // 캐러셀 상태
   const [imgIndex, setImgIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -50,6 +53,7 @@ function ProductGoodProduct() {
           setPkgList(res.data.pkg);
           // 기본값: 첫번째 패키지 선택
           setSelectedPkgNo(res.data.pkg[0]?.pkg_no ?? null);
+          try { setPdt({ ...params.product, ...res.data.prod, detail_loaded: true }); } catch (e) { /* ignore */ }
         }
       } catch (e) {
         // 에러처리

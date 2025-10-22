@@ -12,6 +12,7 @@ import {
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
 import { FixedBottomCTAProvider, Button, Text, colors, Icon, Badge } from "@toss-design-system/react-native";
+import {useProductStore} from "../../zustand/useProductStore";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -44,10 +45,10 @@ function CollapsibleSection({
     <View style={styles.sectionContainer}>
       <TouchableOpacity activeOpacity={0.85} onPress={onToggle} style={styles.sectionHeader}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text typography="t5" style={{ marginRight: 8 }}>{title}</Text>
+          <Text typography="t5" color={colors.grey800} style={{ marginRight: 8 }}>{title}</Text>
           {completed && <Icon name="icon-check" size={16} color={colors.blue500} />}
         </View>
-        <Icon name={open ? "icon-chevron-up" : "icon-chevron-down"} size={20} color={colors.grey400} />
+        <Icon name={open ? "icon-arrow-up-mono" : "icon-arrow-down-mono"} size={24} color={colors.grey400} />
       </TouchableOpacity>
       {open ? <View style={styles.sectionBody}>{children}</View> : null}
     </View>
@@ -133,6 +134,12 @@ function ProductPay() {
   const navigation = useNavigation();
   const params = Route.useParams();
   const pkgData = params?.pkgData ?? null;
+
+  const { pdt } = useProductStore();
+  if (!pdt) return null;
+
+  const thumbnail = pdt?.prod_img_url ?? (pdt?.img_list && pdt.img_list[0]) ?? '';
+  const title = pdt?.prod_name || pdt?.name;
 
   const totalPriceCalc = params?.total ?? (params?.adult && params?.adult_price ? (params.adult * params.adult_price + (params.child ?? 0) * (params.child_price ?? params.adult_price)) : 0);
 
@@ -287,10 +294,6 @@ function ProductPay() {
     }
   }
 
-  // derive product thumbnail and names from pkgData
-  const thumbnail = pkgData?.prod_img_url ?? pkgData?.item?.[0]?.skus?.[0]?.image_url ?? pkgData?.pkg_img_url ?? "";
-  const title = pkgData?.pkg_name ?? pkgData?.prod_name ?? params?.prod_name ?? "상품명";
-
   // compute per-person prices and totals (prefer params, fallback to pkgData)
   const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
   const childPrice = params?.child_price ?? adultPrice;
@@ -315,240 +318,232 @@ function ProductPay() {
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FixedBottomCTAProvider>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
-            <View style={styles.container}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Icon name="icon-arrow-left" size={20} color={colors.grey800} />
+        <View style={styles.container}>
+          <Text typography="t5" color={colors.grey800}>예약/결제하기</Text>
+        </View>
+
+        {/* Tour info (use big image + date/time/people lines similar to mock) */}
+        <CollapsibleSection
+          title="투어 정보"
+          open={!!openSections[0]}
+          onToggle={() => toggleSection(0)}
+          completed={!!completedSections[0]}
+        >
+          <Text typography="t4" fontWeight="bold" style={{ marginBottom: 12 }}>{title}</Text>
+          <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
+          <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
+            <Icon name="icon-calendar" size={20} color={colors.blue500} />
+            <Text style={{ marginLeft: 8 }}>{params?.selected_date ?? "-"}</Text>
+
+            <View style={{ width: 24 }} />
+
+            <Icon name="icon-clock" size={20} color={colors.blue500} />
+            <Text style={{ marginLeft: 8 }}>{params?.selected_time ?? params?.selected_time_slot ?? "-"}</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
+            <Icon name="icon-user" size={20} color={colors.blue500} />
+            <Text style={{ marginLeft: 8 }}>{`인원수 성인 ${adultCount}명${childCount ? `, 아동 ${childCount}명` : ''}`}</Text>
+          </View>
+        </CollapsibleSection>
+
+        {/* Booker */}
+        <CollapsibleSection
+          title="예약자 정보"
+          open={!!openSections[1]}
+          onToggle={() => toggleSection(1)}
+          completed={!!completedSections[1]}
+        >
+          <View>
+            <Text typography="t6" color={colors.grey500}>성(영문) *</Text>
+            <TextInput placeholder="예) HONG" value={lastNameEng} onChangeText={setLastNameEng} style={styles.input} />
+            <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>이름(영문) *</Text>
+            <TextInput placeholder="예) GILDONG" value={firstNameEng} onChangeText={setFirstNameEng} style={styles.input} />
+            <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>전화번호 *</Text>
+            <TextInput placeholder="예) 01012345678" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
+            <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>이메일 *</Text>
+            <TextInput placeholder="예) email@gmail.com" value={email} onChangeText={setEmail} keyboardType="email-address" style={styles.input} />
+            <View style={{ height: 8 }} />
+            <Button type="primary" style="fill" display="block" size="medium" disabled={!bookerCompleted} onPress={() => markCompleteAndNext(1)}>작성 완료</Button>
+          </View>
+        </CollapsibleSection>
+
+        {/* Traveler */}
+        <CollapsibleSection
+          title="여행자 정보"
+          open={!!openSections[2]}
+          onToggle={() => toggleSection(2)}
+          completed={!!completedSections[2]}
+        >
+          <View style={{ marginBottom: 12 }}>
+            <TouchableOpacity onPress={() => setTravelerSameAsBooker(!travelerSameAsBooker)} style={{
+              borderRadius: 10, borderWidth: 1, borderColor: travelerSameAsBooker ? colors.blue500 : colors.grey300, padding: 12, flexDirection: 'row', alignItems: 'center'
+            }}>
+              <Text style={{ marginLeft: 8 }}>{travelerSameAsBooker ? '예약자와 여행자가 같아요' : '예약자와 다릅니다'}</Text>
+            </TouchableOpacity>
+            <Text style={{ color: colors.red400, marginTop: 8 }}>여권 정보와 정확히 일치하도록 입력해 주세요</Text>
+          </View>
+
+          <Text typography="t6" color={colors.grey500}>성(영문) *</Text>
+          <TextInput placeholder="예) HONG" value={travelerLastName} onChangeText={setTravelerLastName} style={styles.input} />
+          <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>이름(영문) *</Text>
+          <TextInput placeholder="예) GILDONG" value={travelerFirstName} onChangeText={setTravelerFirstName} style={styles.input} />
+
+          <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>성별 *</Text>
+          <View style={{ flexDirection: 'row', marginTop: 8 }}>
+            <TouchableOpacity onPress={() => setTravelerGender('female')} style={[styles.smallOption, travelerGender === 'female' && styles.smallOptionActive]}><Text>여성</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => setTravelerGender('male')} style={[styles.smallOption, travelerGender === 'male' && styles.smallOptionActive, { marginLeft: 8 }]}><Text>남성</Text></TouchableOpacity>
+          </View>
+
+          <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>국적 *</Text>
+          <TouchableOpacity style={styles.select}><Text>{travelerNationality}</Text></TouchableOpacity>
+
+          <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>여권 번호 *</Text>
+          <TextInput placeholder="예) M12345678" value={travelerPassport} onChangeText={setTravelerPassport} style={styles.input} />
+
+          <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>여행 중 연락 수단 *</Text>
+          <View style={{ flexDirection: 'row', marginTop: 8 }}>
+            <TouchableOpacity onPress={() => setTravelerContactDuring('none')} style={[styles.smallOption, travelerContactDuring === 'none' && styles.smallOptionActive]}><Text>없음</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => setTravelerContactDuring('has')} style={[styles.smallOption, travelerContactDuring === 'has' && styles.smallOptionActive, { marginLeft: 8 }]}><Text>있음</Text></TouchableOpacity>
+          </View>
+
+          {travelerContactDuring === 'has' && (
+            <View style={{ marginTop: 12 }}>
+              <Text typography="t6" color={colors.grey500}>연락 수단 이름 *</Text>
+              <TouchableOpacity style={styles.select} onPress={() => {}}>
+                <Text>{contactMethod || '선택하세요'}</Text>
               </TouchableOpacity>
-              <Text typography="t3" style={{ marginLeft: 12 }}>예약/결제하기</Text>
-            </View>
 
-            {/* Tour info (use big image + date/time/people lines similar to mock) */}
-            <CollapsibleSection
-              title="투어 정보"
-              open={!!openSections[0]}
-              onToggle={() => toggleSection(0)}
-              completed={!!completedSections[0]}
-            >
-              <Text typography="t4" fontWeight="bold" style={{ marginBottom: 12 }}>{title}</Text>
-              <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
-              <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
-                <Icon name="icon-calendar" size={20} color={colors.blue500} />
-                <Text style={{ marginLeft: 8 }}>{params?.selected_date ?? "-"}</Text>
-
-                <View style={{ width: 24 }} />
-
-                <Icon name="icon-clock" size={20} color={colors.blue500} />
-                <Text style={{ marginLeft: 8 }}>{params?.selected_time ?? params?.selected_time_slot ?? "-"}</Text>
-              </View>
-
-              <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
-                <Icon name="icon-user" size={20} color={colors.blue500} />
-                <Text style={{ marginLeft: 8 }}>{`인원수 성인 ${adultCount}명${childCount ? `, 아동 ${childCount}명` : ''}`}</Text>
-              </View>
-            </CollapsibleSection>
-
-            {/* Booker */}
-            <CollapsibleSection
-              title="예약자 정보"
-              open={!!openSections[1]}
-              onToggle={() => toggleSection(1)}
-              completed={!!completedSections[1]}
-            >
-              <View>
-                <Text typography="t6" color={colors.grey500}>성(영문) *</Text>
-                <TextInput placeholder="예) HONG" value={lastNameEng} onChangeText={setLastNameEng} style={styles.input} />
-                <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>이름(영문) *</Text>
-                <TextInput placeholder="예) GILDONG" value={firstNameEng} onChangeText={setFirstNameEng} style={styles.input} />
-                <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>전화번호 *</Text>
-                <TextInput placeholder="예) 01012345678" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
-                <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>이메일 *</Text>
-                <TextInput placeholder="예) email@gmail.com" value={email} onChangeText={setEmail} keyboardType="email-address" style={styles.input} />
-                <View style={{ height: 8 }} />
-                <Button type="primary" style="fill" display="block" size="medium" disabled={!bookerCompleted} onPress={() => markCompleteAndNext(1)}>작성 완료</Button>
-              </View>
-            </CollapsibleSection>
-
-            {/* Traveler */}
-            <CollapsibleSection
-              title="여행자 정보"
-              open={!!openSections[2]}
-              onToggle={() => toggleSection(2)}
-              completed={!!completedSections[2]}
-            >
-              <View style={{ marginBottom: 12 }}>
-                <TouchableOpacity onPress={() => setTravelerSameAsBooker(!travelerSameAsBooker)} style={{
-                  borderRadius: 10, borderWidth: 1, borderColor: travelerSameAsBooker ? colors.blue500 : colors.grey300, padding: 12, flexDirection: 'row', alignItems: 'center'
-                }}>
-                  <Text style={{ marginLeft: 8 }}>{travelerSameAsBooker ? '예약자와 여행자가 같아요' : '예약자와 다릅니다'}</Text>
-                </TouchableOpacity>
-                <Text style={{ color: colors.red400, marginTop: 8 }}>여권 정보와 정확히 일치하도록 입력해 주세요</Text>
-              </View>
-
-              <Text typography="t6" color={colors.grey500}>성(영문) *</Text>
-              <TextInput placeholder="예) HONG" value={travelerLastName} onChangeText={setTravelerLastName} style={styles.input} />
-              <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>이름(영문) *</Text>
-              <TextInput placeholder="예) GILDONG" value={travelerFirstName} onChangeText={setTravelerFirstName} style={styles.input} />
-
-              <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>성별 *</Text>
-              <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                <TouchableOpacity onPress={() => setTravelerGender('female')} style={[styles.smallOption, travelerGender === 'female' && styles.smallOptionActive]}><Text>여성</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => setTravelerGender('male')} style={[styles.smallOption, travelerGender === 'male' && styles.smallOptionActive, { marginLeft: 8 }]}><Text>남성</Text></TouchableOpacity>
-              </View>
-
-              <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>국적 *</Text>
-              <TouchableOpacity style={styles.select}><Text>{travelerNationality}</Text></TouchableOpacity>
-
-              <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>여권 번호 *</Text>
-              <TextInput placeholder="예) M12345678" value={travelerPassport} onChangeText={setTravelerPassport} style={styles.input} />
-
-              <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>여행 중 연락 수단 *</Text>
-              <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                <TouchableOpacity onPress={() => setTravelerContactDuring('none')} style={[styles.smallOption, travelerContactDuring === 'none' && styles.smallOptionActive]}><Text>없음</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => setTravelerContactDuring('has')} style={[styles.smallOption, travelerContactDuring === 'has' && styles.smallOptionActive, { marginLeft: 8 }]}><Text>있음</Text></TouchableOpacity>
-              </View>
-
-              {travelerContactDuring === 'has' && (
-                <View style={{ marginTop: 12 }}>
-                  <Text typography="t6" color={colors.grey500}>연락 수단 이름 *</Text>
-                  <TouchableOpacity style={styles.select} onPress={() => {}}>
-                    <Text>{contactMethod || '선택하세요'}</Text>
-                  </TouchableOpacity>
-
-                  {!contactMethod && (
-                    <View style={{ marginTop: 8, borderRadius: 8, backgroundColor: colors.grey50, padding: 8 }}>
-                      {contactOptions.map((m) => (
-                        <TouchableOpacity key={m} onPress={() => setContactMethod(m)} style={{ paddingVertical: 10 }}>
-                          <Text>{m}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
-
-                  {contactMethod && !contactVerified && (
-                    <View style={{ marginTop: 12 }}>
-                      <Text typography="t6" color={colors.grey500}>아이디</Text>
-                      <TextInput placeholder="아이디 입력" value={contactId} onChangeText={setContactId} style={styles.input} />
-                      <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>아이디 재확인</Text>
-                      <TextInput placeholder="아이디 재확인" value={contactIdConfirm} onChangeText={setContactIdConfirm} style={styles.input} />
-                      {contactError ? <Text style={{ color: colors.red400, marginTop: 6 }}>{contactError}</Text> : null}
-                      <View style={{ height: 12 }} />
-                      <Button type="primary" style="fill" display="block" size="medium" disabled={!contactId || !contactIdConfirm} onPress={verifyContactId}>입력 완료</Button>
-                    </View>
-                  )}
-
-                  {contactMethod && contactVerified && (
-                    <View style={{ marginTop: 12 }}>
-                      <Text style={{ marginBottom: 8 }}>{contactMethod}</Text>
-                      <Text style={{ marginBottom: 8 }}>{contactId}</Text>
-                      <Button type="primary" style="ghost" display="block" size="small" onPress={resetContact}>수정하기</Button>
-                    </View>
-                  )}
+              {!contactMethod && (
+                <View style={{ marginTop: 8, borderRadius: 8, backgroundColor: colors.grey50, padding: 8 }}>
+                  {contactOptions.map((m) => (
+                    <TouchableOpacity key={m} onPress={() => setContactMethod(m)} style={{ paddingVertical: 10 }}>
+                      <Text>{m}</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
               )}
 
-              <View style={{ height: 12 }} />
-              <Button type="primary" style="fill" display="block" size="medium" disabled={!travelerCompleted} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
-            </CollapsibleSection>
-
-            {/* Pickup */}
-            <CollapsibleSection title="픽업 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
-              <Text typography="t6" color={colors.grey500}>픽업 장소 *</Text>
-              <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" value={pickupPlace} onChangeText={setPickupPlace} style={styles.input} />
-              <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>드랍 장소 *</Text>
-              <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" value={dropoffPlace} onChangeText={setDropoffPlace} style={styles.input} />
-              <View style={{ height: 12 }} />
-              <Button type="primary" style="fill" display="block" size="medium" disabled={!pickupPlace || !dropoffPlace} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
-            </CollapsibleSection>
-
-            {/* Requests */}
-            <CollapsibleSection title="요청 사항" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
-              <TextInput placeholder="요청사항을 입력하세요" style={[styles.input, { height: 80 }]} multiline />
-              <Button type="primary" style="ghost" display="block" size="medium" onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
-            </CollapsibleSection>
-
-            {/* Payment details UI (mini card + breakdown) */}
-            <CollapsibleSection title="결제 세부 내역" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
-              <MiniProductCard
-                image={thumbnail}
-                title={title}
-                originPrice={originalPerPerson}
-                salePrice={salePerPerson}
-                percent={percent}
-                perPersonText={`${formatPrice(salePerPerson)}원 X ${adultCount + childCount}명`}
-              />
-
-              <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
-                <View style={styles.row}>
-                  <Text>상품 금액</Text>
-                  <Text>{formatPrice(productAmount)}원</Text>
+              {contactMethod && !contactVerified && (
+                <View style={{ marginTop: 12 }}>
+                  <Text typography="t6" color={colors.grey500}>아이디</Text>
+                  <TextInput placeholder="아이디 입력" value={contactId} onChangeText={setContactId} style={styles.input} />
+                  <Text typography="t6" color={colors.grey500} style={{ marginTop: 8 }}>아이디 재확인</Text>
+                  <TextInput placeholder="아이디 재확인" value={contactIdConfirm} onChangeText={setContactIdConfirm} style={styles.input} />
+                  {contactError ? <Text style={{ color: colors.red400, marginTop: 6 }}>{contactError}</Text> : null}
+                  <View style={{ height: 12 }} />
+                  <Button type="primary" style="fill" display="block" size="medium" disabled={!contactId || !contactIdConfirm} onPress={verifyContactId}>입력 완료</Button>
                 </View>
-                <View style={styles.row}>
-                  <Text>상품 할인</Text>
-                  <Text>{formatPrice(productDiscount)}원</Text>
+              )}
+
+              {contactMethod && contactVerified && (
+                <View style={{ marginTop: 12 }}>
+                  <Text style={{ marginBottom: 8 }}>{contactMethod}</Text>
+                  <Text style={{ marginBottom: 8 }}>{contactId}</Text>
+                  <Button type="primary" style="ghost" display="block" size="small" onPress={resetContact}>수정하기</Button>
                 </View>
-              </View>
-
-              <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
-                <View style={styles.row}>
-                  <Text typography="t6" fontWeight="bold" style={{ color: colors.purple500 }}>총 결제 금액</Text>
-                  <Text typography="t2" fontWeight="bold" style={{ color: colors.purple500 }}>{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
-                </View>
-              </View>
-            </CollapsibleSection>
-
-            {/* separator */}
-            <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
-
-            {/* Payment area (standalone) */}
-            <View style={[styles.sectionContainer, { paddingHorizontal: 20, paddingVertical: 12 }]}>
-              <Text typography="t5" style={{ marginBottom: 12 }}>결제 수단</Text>
-              <View style={styles.paymentRow}>
-                <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "toss" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("toss")}><Text>tosspay</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "naver" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("naver")}><Text>npay</Text></TouchableOpacity>
-              </View>
-              <View style={styles.paymentRow}>
-                <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "kakao" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("kakao")}><Text>kpay</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "card" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("card")}><Text>신용카드/체크카드</Text></TouchableOpacity>
-              </View>
-
-              <View style={{ paddingVertical: 8 }}>
-                <TouchableOpacity onPress={toggleAgreeAll} style={styles.agreeRow}>
-                  <View style={styles.checkbox}>{agreeAll && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
-                  <Text>전체 동의하기</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setAgreePersonal(s => !s)} style={styles.agreeRow}>
-                  <View style={styles.checkbox}>{agreePersonal && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
-                  <Text style={{ marginLeft: 8 }}>(필수) 개인정보 처리방침 동의</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setAgreeService(s => !s)} style={styles.agreeRow}>
-                  <View style={styles.checkbox}>{agreeService && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
-                  <Text style={{ marginLeft: 8 }}>(필수) 서비스 이용 약관 동의</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setAgreeMarketing(s => !s)} style={styles.agreeRow}>
-                  <View style={styles.checkbox}>{agreeMarketing && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
-                  <Text style={{ marginLeft: 8 }}>(선택) 마케팅 수신 동의</Text>
-                </TouchableOpacity>
-              </View>
+              )}
             </View>
+          )}
 
-            <View style={{ height: 120 }} />
-          </ScrollView>
+          <View style={{ height: 12 }} />
+          <Button type="primary" style="fill" display="block" size="medium" disabled={!travelerCompleted} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
+        </CollapsibleSection>
 
-          {/* bottom CTA */}
-          <View style={styles.bottomBar}>
-            <View style={{ flex: 1 }}>
-              <Text typography="t6" color={colors.grey500}>총 금액</Text>
-              <Text typography="t2" fontWeight="bold">{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
+        {/* Pickup */}
+        <CollapsibleSection title="픽업 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
+          <Text typography="t6" color={colors.grey500}>픽업 장소 *</Text>
+          <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" value={pickupPlace} onChangeText={setPickupPlace} style={styles.input} />
+          <Text typography="t6" color={colors.grey500} style={{ marginTop: 12 }}>드랍 장소 *</Text>
+          <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" value={dropoffPlace} onChangeText={setDropoffPlace} style={styles.input} />
+          <View style={{ height: 12 }} />
+          <Button type="primary" style="fill" display="block" size="medium" disabled={!pickupPlace || !dropoffPlace} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
+        </CollapsibleSection>
+
+        {/* Requests */}
+        <CollapsibleSection title="요청 사항" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
+          <TextInput placeholder="요청사항을 입력하세요" style={[styles.input, { height: 80 }]} multiline />
+          <Button type="primary" style="ghost" display="block" size="medium" onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
+        </CollapsibleSection>
+
+        {/* Payment details UI (mini card + breakdown) */}
+        <CollapsibleSection title="결제 세부 내역" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
+          <MiniProductCard
+            image={thumbnail}
+            title={title}
+            originPrice={originalPerPerson}
+            salePrice={salePerPerson}
+            percent={percent}
+            perPersonText={`${formatPrice(salePerPerson)}원 X ${adultCount + childCount}명`}
+          />
+
+          <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
+            <View style={styles.row}>
+              <Text>상품 금액</Text>
+              <Text>{formatPrice(productAmount)}원</Text>
             </View>
-            <View style={{ width: 180 }}>
-              <Button type="primary" style="fill" display="block" size="large" disabled={!paymentCompleted || submitting} onPress={onPay}>
-                {submitting ? "결제중..." : `${formatPrice(Math.max(0, productAmount - productDiscount))}원 결제하기`}
-              </Button>
+            <View style={styles.row}>
+              <Text>상품 할인</Text>
+              <Text>{formatPrice(productDiscount)}원</Text>
             </View>
           </View>
-        </KeyboardAvoidingView>
+
+          <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
+            <View style={styles.row}>
+              <Text typography="t6" fontWeight="bold" style={{ color: colors.purple500 }}>총 결제 금액</Text>
+              <Text typography="t2" fontWeight="bold" style={{ color: colors.purple500 }}>{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
+            </View>
+          </View>
+        </CollapsibleSection>
+
+        {/* separator */}
+        <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
+
+        {/* Payment area (standalone) */}
+        <View style={[styles.sectionContainer, { paddingHorizontal: 20, paddingVertical: 12 }]}>
+          <Text typography="t5" style={{ marginBottom: 12 }}>결제 수단</Text>
+          <View style={styles.paymentRow}>
+            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "toss" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("toss")}><Text>tosspay</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "naver" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("naver")}><Text>npay</Text></TouchableOpacity>
+          </View>
+          <View style={styles.paymentRow}>
+            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "kakao" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("kakao")}><Text>kpay</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "card" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("card")}><Text>신용카드/체크카드</Text></TouchableOpacity>
+          </View>
+
+          <View style={{ paddingVertical: 8 }}>
+            <TouchableOpacity onPress={toggleAgreeAll} style={styles.agreeRow}>
+              <View style={styles.checkbox}>{agreeAll && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
+              <Text>전체 동의하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setAgreePersonal(s => !s)} style={styles.agreeRow}>
+              <View style={styles.checkbox}>{agreePersonal && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
+              <Text style={{ marginLeft: 8 }}>(필수) 개인정보 처리방침 동의</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setAgreeService(s => !s)} style={styles.agreeRow}>
+              <View style={styles.checkbox}>{agreeService && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
+              <Text style={{ marginLeft: 8 }}>(필수) 서비스 이용 약관 동의</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setAgreeMarketing(s => !s)} style={styles.agreeRow}>
+              <View style={styles.checkbox}>{agreeMarketing && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
+              <Text style={{ marginLeft: 8 }}>(선택) 마케팅 수신 동의</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={{ height: 120 }} />
+        {/* bottom CTA */}
+        <View style={styles.bottomBar}>
+          <View style={{ flex: 1 }}>
+            <Text typography="t6" color={colors.grey500}>총 금액</Text>
+            <Text typography="t2" fontWeight="bold">{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
+          </View>
+          <View style={{ width: 180 }}>
+            <Button type="primary" style="fill" display="block" size="large" disabled={!paymentCompleted || submitting} onPress={onPay}>
+              {submitting ? "결제중..." : `${formatPrice(Math.max(0, productAmount - productDiscount))}원 결제하기`}
+            </Button>
+          </View>
+        </View>
       </FixedBottomCTAProvider>
     </View>
   );
@@ -560,9 +555,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingTop: 18,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.grey100,
+    paddingBottom: 20,
     flexDirection: "row",
     alignItems: "center",
   },
