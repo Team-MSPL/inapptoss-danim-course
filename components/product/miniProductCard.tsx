@@ -1,7 +1,7 @@
-import {StyleSheet, View} from "react-native";
-import {Image} from "@granite-js/react-native";
-import {Badge, colors, Text} from "@toss-design-system/react-native";
 import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Image } from "@granite-js/react-native";
+import { Badge, colors, Text } from "@toss-design-system/react-native";
 
 function formatPrice(n?: number | null) {
   if (n === null || n === undefined) return "";
@@ -9,13 +9,13 @@ function formatPrice(n?: number | null) {
 }
 
 export function MiniProductCard({
-                           image,
-                           title,
-                           originPrice,
-                           salePrice,
-                           percent,
-                           perPersonText,
-                         }: {
+                                  image,
+                                  title,
+                                  originPrice,
+                                  salePrice,
+                                  percent,
+                                  perPersonText,
+                                }: {
   image?: string | null;
   title: string;
   originPrice?: number;
@@ -24,20 +24,16 @@ export function MiniProductCard({
   perPersonText?: string;
 }) {
   return (
-    <View style={miniCardStyles.cardWrap}>
-      <View style={miniCardStyles.cardInner}>
-        <View style={miniCardStyles.imageCol}>
-          <Image
-            source={{ uri: image ?? "" }}
-            style={miniCardStyles.image}
-            resizeMode="cover"
-          />
+    <View style={styles.cardWrap}>
+      <View style={styles.cardInner}>
+        <View style={styles.imageCol}>
+          <Image source={{ uri: image ?? "" }} style={styles.image} resizeMode="cover" />
           <Badge
             type={"red"}
             badgeStyle="fill"
             size="tiny"
             style={{
-              position: 'absolute',
+              position: "absolute",
               left: 6,
               bottom: 8,
               paddingHorizontal: 2,
@@ -49,24 +45,25 @@ export function MiniProductCard({
           </Badge>
         </View>
 
-        <View style={miniCardStyles.infoCol}>
+        <View style={styles.infoCol}>
           <Text typography="t6" fontWeight="medium" color={colors.grey800} numberOfLines={1}>
             {title}
           </Text>
 
-          <View style={miniCardStyles.priceRow}>
-            {percent && percent > 0 ? (
-              <Text style={miniCardStyles.percentText} typography="t4">{percent}%</Text>
+          <View style={styles.priceRow}>
+            {percent !== undefined && percent > 0 ? (
+              <Text style={styles.percentText} typography="t4">
+                {percent}%
+              </Text>
             ) : null}
-            <View style={{ flexDirection: 'column' }}>
+            <View style={{ flexDirection: "column" }}>
               {originPrice !== undefined && originPrice > 0 && originPrice > (salePrice ?? 0) ? (
-                <Text typography="t7" color={colors.grey300} style={{ textDecorationLine: 'line-through' }}>
+                <Text typography="t7" color={colors.grey300} style={{ textDecorationLine: "line-through" }}>
                   {formatPrice(originPrice)}원
                 </Text>
               ) : null}
-              <Text typography="t6" fontWeight="bold" color={colors.grey900} style={{ marginTop: 4 }}>
-                {salePrice ? `${formatPrice(salePrice)}원` : "-"}
-                {perPersonText ? <Text typography="t7" color={colors.grey500}>{` ${perPersonText}`}</Text> : null}
+              <Text typography="t6" fontWeight="bold" color={colors.grey900} style={{ marginRight: 8 }}>
+                {salePrice ? `${formatPrice(salePrice)}원~` : "-"}
               </Text>
             </View>
           </View>
@@ -80,34 +77,33 @@ export function MiniProductCard({
   );
 }
 
-const miniCardStyles = StyleSheet.create({
+const styles = StyleSheet.create({
+  // Styles aligned to ProductCard exactly (sizes/paddings/borderRadius/etc)
   cardWrap: {
-    marginHorizontal: 0,
-    marginVertical: 6,
+    marginVertical: 8,
     overflow: "hidden",
   },
   cardInner: {
     flexDirection: "row",
-    padding: 10,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
   },
   imageCol: {
     position: "relative",
-    width: 72,
-    height: 72,
-    marginRight: 12,
-    borderRadius: 8,
+    width: 120,
+    height: 120,
+    marginRight: 14,
+    borderRadius: 13,
     overflow: "hidden",
     backgroundColor: "#eee",
     justifyContent: "center",
     alignItems: "center",
   },
   image: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
+    width: 120,
+    height: 120,
+    borderRadius: 13,
     backgroundColor: "#eee",
   },
   infoCol: {
@@ -123,7 +119,9 @@ const miniCardStyles = StyleSheet.create({
   percentText: {
     color: colors.red500,
     fontWeight: "bold",
-    marginRight: 8,
+    marginRight: 7,
     alignSelf: "center",
   },
 });
+
+export default MiniProductCard;

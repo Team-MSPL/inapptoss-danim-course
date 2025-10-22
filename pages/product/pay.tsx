@@ -56,7 +56,7 @@ function ProductPay() {
   const [phone, setPhone] = useState<string>(params?.booker?.phone ?? "");
   const [email, setEmail] = useState<string>(params?.booker?.email ?? "");
 
-  // nationality dropdown state (country labels)
+  // nationality lists (country labels)
   const [countries] = useState<string[]>([
     "미국",
     "베트남",
@@ -67,7 +67,9 @@ function ProductPay() {
     "대만",
     "홍콩",
   ]);
-  const [showNationalityOptions, setShowNationalityOptions] = useState<boolean>(false);
+  // separate dropdown visibility states to avoid focus conflict
+  const [showBookerNationalityOptions, setShowBookerNationalityOptions] = useState<boolean>(false);
+  const [showTravelerNationalityOptions, setShowTravelerNationalityOptions] = useState<boolean>(false);
 
   // Traveler fields
   // DEFAULT: unchecked (false)
@@ -82,6 +84,7 @@ function ProductPay() {
   // Contact
   const contactOptions: ContactMethod[] = ["WhatsApp", "WeChat", "Messenger", "Line", "Instagram", "KakaoTalk"];
   const [contactMethod, setContactMethod] = useState<ContactMethod>("");
+  const [showContactMethodOptions, setShowContactMethodOptions] = useState<boolean>(false);
   const [contactId, setContactId] = useState<string>("");
   const [contactIdConfirm, setContactIdConfirm] = useState<string>("");
   const [contactVerified, setContactVerified] = useState<boolean>(false);
@@ -320,19 +323,23 @@ function ProductPay() {
                   style={styles.input}
                 />
 
-                {/* 국적 (셀렉터) */}
+                {/* 국적 (Booker dropdown) */}
                 <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>
                   국적 <Text style={{ color: colors.red400 }}>*</Text>
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.85}
-                  onPress={() => setShowNationalityOptions(prev => !prev)}
+                  onPress={() => {
+                    setShowBookerNationalityOptions(prev => !prev);
+                    setShowTravelerNationalityOptions(false);
+                    setShowContactMethodOptions(false);
+                  }}
                   style={[styles.input, { justifyContent: 'center' }]}
                 >
                   <Text style={{ color: colors.grey800 }}>{nationality}</Text>
                 </TouchableOpacity>
 
-                {showNationalityOptions && (
+                {showBookerNationalityOptions && (
                   <View style={[styles.dropdown, { maxHeight: 220 }]}>
                     <ScrollView nestedScrollEnabled>
                       {countries.map((c) => (
@@ -340,7 +347,7 @@ function ProductPay() {
                           key={c}
                           onPress={() => {
                             setNationality(c);
-                            setShowNationalityOptions(false);
+                            setShowBookerNationalityOptions(false);
                           }}
                           style={{ paddingVertical: 12, paddingHorizontal: 10 }}
                         >
@@ -455,23 +462,28 @@ function ProductPay() {
 
                 <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>성별 <Text style={{ color: colors.red400 }}>*</Text></Text>
                 <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                  <TouchableOpacity onPress={() => setTravelerGender('female')} style={[styles.smallOption, travelerGender === 'female' && styles.smallOptionActive, { marginRight: 8 }]}><Text>여성</Text></TouchableOpacity>
-                  <TouchableOpacity onPress={() => setTravelerGender('male')} style={[styles.smallOption, travelerGender === 'male' && styles.smallOptionActive]}><Text>남성</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={() => setTravelerGender('female')} style={[styles.smallOption, travelerGender === 'female' && styles.smallOptionActive, { marginRight: 8 }]}>
+                    <Text style={[travelerGender === 'female' && styles.smallOptionActiveText]}>여성</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setTravelerGender('male')} style={[styles.smallOption, travelerGender === 'male' && styles.smallOptionActive]}>
+                    <Text style={[travelerGender === 'male' && styles.smallOptionActiveText]}>남성</Text>
+                  </TouchableOpacity>
                 </View>
 
                 <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>국적 <Text style={{ color: colors.red400 }}>*</Text></Text>
                 <TouchableOpacity
                   activeOpacity={0.85}
                   onPress={() => {
-                    // reuse booker nationality dropdown if you want; here we toggle local dropdown
-                    setShowNationalityOptions(prev => !prev);
+                    setShowTravelerNationalityOptions(prev => !prev);
+                    setShowBookerNationalityOptions(false);
+                    setShowContactMethodOptions(false);
                   }}
                   style={[styles.input, { justifyContent: 'center' }]}
                 >
                   <Text style={{ color: colors.grey800 }}>{travelerNationality}</Text>
                 </TouchableOpacity>
 
-                {showNationalityOptions && (
+                {showTravelerNationalityOptions && (
                   <View style={[styles.dropdown, { maxHeight: 220 }]}>
                     <ScrollView nestedScrollEnabled>
                       {countries.map((c) => (
@@ -479,7 +491,7 @@ function ProductPay() {
                           key={c}
                           onPress={() => {
                             setTravelerNationality(c);
-                            setShowNationalityOptions(false);
+                            setShowTravelerNationalityOptions(false);
                           }}
                           style={{ paddingVertical: 12, paddingHorizontal: 10 }}
                         >
@@ -500,25 +512,66 @@ function ProductPay() {
                 />
 
                 <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>여행 중 연락 수단 <Text style={{ color: colors.red400 }}>*</Text></Text>
-                <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                  <TouchableOpacity onPress={() => setTravelerContactDuring('none')} style={[styles.smallOption, travelerContactDuring === 'none' && styles.smallOptionActive]}><Text>없음</Text></TouchableOpacity>
-                  <TouchableOpacity onPress={() => setTravelerContactDuring('has')} style={[styles.smallOption, travelerContactDuring === 'has' && styles.smallOptionActive, { marginLeft: 8 }]}><Text>있음</Text></TouchableOpacity>
+
+                {/* two buttons side-by-side filling width */}
+                <View style={{ flexDirection: 'row', marginTop: 8, gap: 8 }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTravelerContactDuring('none');
+                      setShowContactMethodOptions(false);
+                    }}
+                    style={[styles.smallOption, travelerContactDuring === 'none' && styles.smallOptionActive, { marginRight: 8 }]}
+                  >
+                    <Text style={[travelerContactDuring === 'none' && styles.smallOptionActiveText]}>없음</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTravelerContactDuring('has');
+                      // open contact method dropdown when selecting 'has'
+                      setShowContactMethodOptions(true);
+                      setShowBookerNationalityOptions(false);
+                      setShowTravelerNationalityOptions(false);
+                    }}
+                    style={[styles.smallOption, travelerContactDuring === 'has' && styles.smallOptionActive]}
+                  >
+                    <Text style={[travelerContactDuring === 'has' && styles.smallOptionActiveText]}>있음</Text>
+                  </TouchableOpacity>
                 </View>
 
                 {travelerContactDuring === 'has' && (
                   <View style={{ marginTop: 12 }}>
                     <Text typography="t6" color={colors.grey800}>연락 수단 이름 <Text style={{ color: colors.red400 }}>*</Text></Text>
-                    <TouchableOpacity style={[styles.input, { justifyContent: 'center' }]} onPress={() => {}}>
-                      <Text>{contactMethod || '선택하세요'}</Text>
+
+                    {/* Contact method dropdown (independent) */}
+                    <TouchableOpacity
+                      activeOpacity={0.85}
+                      onPress={() => {
+                        setShowContactMethodOptions(prev => !prev);
+                        setShowBookerNationalityOptions(false);
+                        setShowTravelerNationalityOptions(false);
+                      }}
+                      style={[styles.input, { justifyContent: 'center' }]}
+                    >
+                      <Text style={{ color: colors.grey800 }}>{contactMethod || '선택하세요'}</Text>
                     </TouchableOpacity>
 
-                    {!contactMethod && (
-                      <View style={{ marginTop: 8, borderRadius: 8, backgroundColor: colors.grey50, padding: 8 }}>
-                        {contactOptions.map((m) => (
-                          <TouchableOpacity key={m} onPress={() => setContactMethod(m)} style={{ paddingVertical: 10 }}>
-                            <Text>{m}</Text>
-                          </TouchableOpacity>
-                        ))}
+                    {showContactMethodOptions && (
+                      <View style={[styles.dropdown, { maxHeight: 220 }]}>
+                        <ScrollView nestedScrollEnabled>
+                          {contactOptions.map((m) => (
+                            <TouchableOpacity
+                              key={m}
+                              onPress={() => {
+                                setContactMethod(m);
+                                setShowContactMethodOptions(false);
+                              }}
+                              style={{ paddingVertical: 12, paddingHorizontal: 10 }}
+                            >
+                              <Text>{m}</Text>
+                            </TouchableOpacity>
+                          ))}
+                        </ScrollView>
                       </View>
                     )}
 
@@ -528,17 +581,20 @@ function ProductPay() {
                         <TextInput placeholder="아이디 입력" placeholderTextColor={colors.grey400} value={contactId} onChangeText={setContactId} style={styles.input} />
                         <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>아이디 재확인</Text>
                         <TextInput placeholder="아이디 재확인" placeholderTextColor={colors.grey400} value={contactIdConfirm} onChangeText={setContactIdConfirm} style={styles.input} />
-                        {contactError ? <Text style={{ color: colors.red400, marginTop: 6 }}>{contactError}</Text> : null}
+                        {contactError ? <Text typography="t6" style={{ color: colors.red400, marginTop: 6 }}>{contactError}</Text> : null}
                         <View style={{ height: 12 }} />
-                        <Button type="primary" style="fill" display="block" size="medium" disabled={!contactId || !contactIdConfirm} onPress={verifyContactId}>입력 완료</Button>
+                        <Button type="primary" style="fill" display="block" size="large" disabled={!contactId || !contactIdConfirm} onPress={verifyContactId} containerStyle={{ width: 130, alignSelf: "center", height: 50, marginVertical: 12 }}>입력 완료</Button>
                       </View>
                     )}
 
                     {contactMethod && contactVerified && (
                       <View style={{ marginTop: 12 }}>
-                        <Text style={{ marginBottom: 8 }}>{contactMethod}</Text>
-                        <Text style={{ marginBottom: 8 }}>{contactId}</Text>
-                        <Button type="primary" style="ghost" display="block" size="small" onPress={resetContact}>수정하기</Button>
+                        <View
+                          style={[styles.input, { justifyContent: 'center' }]}
+                        >
+                          <Text style={{ color: colors.grey800 }}>{contactId}</Text>
+                        </View>
+                        <Button type="primary" containerStyle={{ width: 130, alignSelf: "center", height: 50, marginVertical: 12 }} display="block" size="large" onPress={resetContact}>수정하기</Button>
                       </View>
                     )}
                   </View>
@@ -561,9 +617,9 @@ function ProductPay() {
 
             {/* Requests */}
             <CollapsibleSection title="요청 사항" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
-              <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} style={[styles.input, { height: 120 }]} multiline />
+              <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} style={styles.input} />
               <View style={{ height: 12 }} />
-              <Button type="primary" style="ghost" display="block" size="medium" containerStyle={{ alignSelf: 'center', width: 130 }} onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
+              <Button type="primary" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
             </CollapsibleSection>
 
             {/* Payment details */}
@@ -579,19 +635,19 @@ function ProductPay() {
 
               <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
                 <View style={styles.row}>
-                  <Text>상품 금액</Text>
-                  <Text>{formatPrice(productAmount)}원</Text>
+                  <Text typography='t5'>상품 금액</Text>
+                  <Text typography='t5'>{formatPrice(productAmount)}원</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text>상품 할인</Text>
-                  <Text>{formatPrice(productDiscount)}원</Text>
+                  <Text typography='t5'>상품 할인</Text>
+                  <Text typography='t5'>{formatPrice(productDiscount)}원</Text>
                 </View>
               </View>
 
               <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
                 <View style={styles.row}>
-                  <Text typography="t6" fontWeight="bold" style={{ color: colors.purple500 }}>총 결제 금액</Text>
-                  <Text typography="t2" fontWeight="bold" style={{ color: colors.purple500 }}>{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
+                  <Text typography="t4" fontWeight="bold" style={{ color: '#5350FF' }}>총 결제 금액</Text>
+                  <Text typography="t4" fontWeight="bold" style={{ color: '#5350FF' }}>{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
                 </View>
               </View>
             </CollapsibleSection>
@@ -728,15 +784,23 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   smallOption: {
+    flex: 1,
+    height: 56,
+    borderRadius: 12,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.greyOpacity100,
     backgroundColor: colors.grey50,
   },
   smallOptionActive: {
     borderWidth: 1,
     borderColor: colors.blue500,
-    backgroundColor: colors.blue50,
+  },
+  smallOptionActiveText: {
+    color: colors.blue500,
   },
   tourImage: {
     width: "100%",
