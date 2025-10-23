@@ -7,13 +7,23 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
-import {FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA} from "@toss-design-system/react-native";
+import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } from "@toss-design-system/react-native";
 import { useProductStore } from "../../zustand/useProductStore";
 import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
+import {
+  buildSkusFromPkg_v2,
+  buildSkusFromPkg_v3,
+  mapNationalityToLocaleState
+} from "../../components/product/good-product-function";
+import axios from "axios";
+import axiosAuth from "../../redux/api";
+
+const BOOKING_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Booking`;
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -31,128 +41,91 @@ function generateGuid() {
 }
 
 /**
- * Minimal mapping from UI nationality label (한글) to API locale/state/tel code.
- * Extend this map if you support more countries or different codes.
+ * params 기반으로 skus를 간단히 구성합니다.
+ * - params.adult_price / params.child_price 가 주어지면 이 값을 단가로 사용해 skus를 만든다.
+ * - sku_id는 pkgData.item[0].skus에서 성인/아동을 판별해 할당(없으면 첫 sku로 fallback).
  */
-function mapNationalityToLocaleState(nat?: string) {
-  const map: Record<string, { locale: string; state: string; telCode: string }> = {
-    "미국": { locale: "en", state: "US", telCode: "1" },
-    "베트남": { locale: "vi", state: "VN", telCode: "84" },
-    "태국": { locale: "th", state: "TH", telCode: "66" },
-    "일본": { locale: "ja", state: "JP", telCode: "81" },
-    "대한민국": { locale: "ko", state: "KR", telCode: "82" },
-    "중국": { locale: "zh-cn", state: "CN", telCode: "86" },
-    "대만": { locale: "zh-tw", state: "TW", telCode: "886" },
-    "홍콩": { locale: "zh-hk", state: "HK", telCode: "852" },
+function buildSkusFromParams(pkgData: any, params: any, selectedDate: string | null, adultCount: number, childCount: number, adultPriceParam?: number, childPriceParam?: number) {
+  const normalizedAdultPrice = adultPriceParam !== undefined ? Number(adultPriceParam) : undefined;
+  const normalizedChildPrice = childPriceParam !== undefined ? Number(childPriceParam) : undefined;
+
+  // 둘 다 없는 경우 params 기반 빌드 불가
+  if (normalizedAdultPrice === undefined && normalizedChildPrice === undefined) return null;
+
+  const items = pkgData?.item;
+  const item = Array.isArray(items) && items.length > 0 ? items[0] : null;
+  const candidateSkus = item && Array.isArray(item.skus) ? item.skus : [];
+
+  const extractText = (s: any) => {
+    const parts: string[] = [];
+    if (!s) return "";
+    if (s.spec && typeof s.spec === "object") Object.values(s.spec).forEach((v: any) => v && parts.push(String(v)));
+    if (s.specs_ref && Array.isArray(s.specs_ref)) {
+      s.specs_ref.forEach((r: any) => {
+        if (r?.spec_value_desc) parts.push(String(r.spec_value_desc));
+        if (r?.spec_title_desc) parts.push(String(r.spec_title_desc));
+        if (r?.spec_value_oid) parts.push(String(r.spec_value_oid));
+      });
+    }
+    if (s.ticket_rule_spec_item) parts.push(String(s.ticket_rule_spec_item));
+    if (s.title) parts.push(String(s.title));
+    if (s.name) parts.push(String(s.name));
+    if (s.spec_desc) parts.push(String(s.spec_desc));
+    return parts.join(" ").toLowerCase();
   };
-  return map[nat ?? "대한민국"] ?? { locale: "ko", state: "KR", telCode: "82" };
+
+  let adultSkuObj: any = null;
+  let childSkuObj: any = null;
+
+  for (const s of candidateSkus) {
+    const txt = extractText(s);
+    if (!adultSkuObj && (txt.includes("성인") || txt.includes("어른") || txt.includes("adult"))) adultSkuObj = s;
+    if (!childSkuObj && (txt.includes("아동") || txt.includes("어린이") || txt.includes("child") || txt.includes("kid") || txt.includes("초") || txt.includes("중") || txt.includes("유아"))) childSkuObj = s;
+    if (!childSkuObj && txt.includes("고등학생")) childSkuObj = s;
+  }
+
+  const firstSku = candidateSkus[0] ?? null;
+  const skus: any[] = [];
+
+  if (adultCount > 0) {
+    const skuId = (adultSkuObj && adultSkuObj.sku_id) ? adultSkuObj.sku_id : (firstSku && firstSku.sku_id ? firstSku.sku_id : null);
+    const unit = normalizedAdultPrice ?? normalizedChildPrice ?? 0;
+    skus.push({ sku_id: skuId, qty: adultCount, price: Math.round(unit * adultCount) });
+  }
+  if (childCount > 0) {
+    const skuId = (childSkuObj && childSkuObj.sku_id) ? childSkuObj.sku_id : (firstSku && firstSku.sku_id ? firstSku.sku_id : null);
+    const unit = normalizedChildPrice ?? normalizedAdultPrice ?? 0;
+    skus.push({ sku_id: skuId, qty: childCount, price: Math.round(unit * childCount) });
+  }
+
+  return skus;
 }
 
 /**
- * Helper to build skus array from pkgData and params, attempting to split adult/child SKUs when possible.
- * - Returns array of { sku_id, qty, price } (only these three fields per your request)
- * - price is total price for that SKU (unit * qty)
+ * 기본 검증기: payload 전송 전에 필요한 최소 필드 확인
  */
-function buildSkusFromPkg_v2(pkgData: any, params: any, adultCount: number, childCount: number, salePerPerson: number, totalPriceCalc: number, originalPerPerson?: number) {
-  // 1) use params.skus if present (normalize to only sku_id/qty/price)
-  if (params?.skus && Array.isArray(params.skus) && params.skus.length > 0) {
-    return params.skus.map((s: any) => ({
-      sku_id: s.sku_id ?? null,
-      qty: Number(s.qty ?? 1),
-      price: s.price !== undefined && s.price !== null ? Number(s.price) : 0,
-    }));
+function validatePayload(payload: any) {
+  const errors: string[] = [];
+  if (!payload) {
+    errors.push("payload가 비어있음");
+    return errors;
   }
-
-  // 2) try pkgData.item[0].skus
-  const items = pkgData?.item;
-  if (Array.isArray(items) && items.length > 0) {
-    const item = items[0];
-    const candidateSkus = Array.isArray(item.skus) ? item.skus : [];
-
-    if (candidateSkus.length > 0) {
-      // helper: extract ticket-kind text from sku object
-      const getTicketKindText = (s: any) => {
-        const parts: string[] = [];
-        if (s.spec && typeof s.spec === 'object') {
-          Object.values(s.spec).forEach(v => { if (v) parts.push(String(v)); });
-        }
-        if (s.specs_ref && Array.isArray(s.specs_ref)) {
-          s.specs_ref.forEach((r: any) => {
-            if (r.spec_value_desc) parts.push(String(r.spec_value_desc));
-            if (r.spec_title_desc) parts.push(String(r.spec_title_desc));
-          });
-        }
-        if (s.title) parts.push(String(s.title));
-        if (s.name) parts.push(String(s.name));
-        if (s.spec_desc) parts.push(String(s.spec_desc));
-        return parts.join(' ').toLowerCase();
-      };
-
-      let adultSku: any = null;
-      let childSku: any = null;
-
-      for (const s of candidateSkus) {
-        const text = getTicketKindText(s);
-        // adult detection
-        if (!adultSku && (text.includes("성인") || text.includes("adult") || text.includes("어른"))) {
-          adultSku = s;
-          continue;
-        }
-        // child detection (includes 중,초 and common korean keywords)
-        if (!childSku && (text.includes("아동") || text.includes("어린이") || text.includes("child") || text.includes("중,초") || text.includes("초") || text.includes("중") || text.includes("kid"))) {
-          childSku = s;
-          continue;
-        }
-        // treat "고등학생" as child by default
-        if (!childSku && text.includes("고등학생")) {
-          childSku = s;
-          continue;
-        }
-      }
-
-      const skus: any[] = [];
-      const pushSku = (s: any, qty: number) => {
-        if (!s || qty <= 0) return;
-        const unit = (s.b2b_price ?? s.b2c_price ?? s.price ?? item.b2b_min_price ?? item.b2c_min_price ?? salePerPerson ?? 0);
-        skus.push({
-          sku_id: s.sku_id ?? null,
-          qty,
-          price: Math.round(Number(unit) * qty),
-        });
-      };
-
-      if (adultSku) pushSku(adultSku, adultCount);
-      if (childSku) pushSku(childSku, childCount);
-
-      // if found at least one of adult/child SKUs, fill missing group with fallback first candidate if needed
-      if (skus.length > 0) {
-        if (!adultSku && adultCount > 0) pushSku(candidateSkus[0], adultCount);
-        if (!childSku && childCount > 0) pushSku(candidateSkus[0], childCount);
-        return skus;
-      }
-
-      // if only one sku exists, use combined qty
-      if (candidateSkus.length === 1) {
-        const s = candidateSkus[0];
-        const unit = (s.b2b_price ?? s.b2c_price ?? s.price ?? item.b2b_min_price ?? item.b2c_min_price ?? salePerPerson ?? 0);
-        const qty = Math.max(1, adultCount + childCount);
-        return [{ sku_id: s.sku_id ?? null, qty, price: Math.round(Number(unit) * qty) }];
-      }
-
-      // if multiple SKUs exist but detection failed -> fallback to first sku with combined qty
-      if (candidateSkus.length > 0) {
-        const s = candidateSkus[0];
-        const unit = (s.b2b_price ?? s.b2c_price ?? s.price ?? item.b2b_min_price ?? item.b2c_min_price ?? salePerPerson ?? 0);
-        const qty = Math.max(1, adultCount + childCount);
-        return [{ sku_id: s.sku_id ?? null, qty, price: Math.round(Number(unit) * qty) }];
-      }
-    }
+  if (!payload.prod_no) errors.push("prod_no 누락");
+  if (!payload.pkg_no) errors.push("pkg_no 누락");
+  if (!payload.item_no) errors.push("item_no 누락");
+  if (!payload.buyer_first_name) errors.push("예약자 이름(buyer_first_name) 누락");
+  if (!payload.buyer_last_name) errors.push("예약자 성(buyer_last_name) 누락");
+  if (!payload.buyer_email) errors.push("이메일(buyer_email) 누락");
+  if (!payload.buyer_tel_number) errors.push("전화번호(buyer_tel_number) 누락");
+  if (!Array.isArray(payload.skus) || payload.skus.length === 0) errors.push("skus가 비어있거나 형식이 올바르지 않음");
+  else {
+    payload.skus.forEach((s: any, i: number) => {
+      if (!s.sku_id) errors.push(`skus[${i}].sku_id 누락`);
+      if (!Number.isFinite(s.qty)) errors.push(`skus[${i}].qty가 숫자가 아님`);
+      if (!Number.isFinite(s.price)) errors.push(`skus[${i}].price가 숫자가 아님`);
+    });
   }
-
-  // ultimate fallback
-  const totalQty = Math.max(1, adultCount + childCount);
-  const unitFallback = salePerPerson ?? Math.round((totalPriceCalc ?? 0) / totalQty) ?? 0;
-  return [{ sku_id: params?.sku_id ?? null, qty: totalQty, price: Math.round(unitFallback * totalQty) }];
+  return errors;
 }
 
 type PaymentMethod = "toss" | "naver" | "kakao" | "card" | null;
@@ -162,9 +135,6 @@ function ProductPay() {
   const navigation = useNavigation();
   const params = Route.useParams();
   const pkgData = params?.pkgData ?? null;
-
-  // safe debug log (guarded)
-  console.log(pkgData?.item?.[0]?.skus);
 
   const { pdt } = useProductStore();
   if (!pdt) return null;
@@ -178,7 +148,7 @@ function ProductPay() {
       ? params.adult * params.adult_price + (params.child ?? 0) * (params.child_price ?? params.adult_price)
       : 0);
 
-  // openSections map: independent toggles; booking (1) open by default
+  // openSections map
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({ 1: true });
   const [completedSections, setCompletedSections] = useState<Record<number, boolean>>({});
 
@@ -189,7 +159,7 @@ function ProductPay() {
   const [phone, setPhone] = useState<string>(params?.booker?.phone ?? "");
   const [email, setEmail] = useState<string>(params?.booker?.email ?? "");
 
-  // nationality lists (country labels)
+  // nationality lists
   const [countries] = useState<string[]>([
     "미국",
     "베트남",
@@ -200,12 +170,10 @@ function ProductPay() {
     "대만",
     "홍콩",
   ]);
-  // separate dropdown visibility states to avoid focus conflict
   const [showBookerNationalityOptions, setShowBookerNationalityOptions] = useState<boolean>(false);
   const [showTravelerNationalityOptions, setShowTravelerNationalityOptions] = useState<boolean>(false);
 
-  // Traveler fields
-  // DEFAULT: unchecked (false)
+  // Traveler
   const [travelerSameAsBooker, setTravelerSameAsBooker] = useState<boolean>(false);
   const [travelerLastName, setTravelerLastName] = useState<string>("");
   const [travelerFirstName, setTravelerFirstName] = useState<string>("");
@@ -227,7 +195,7 @@ function ProductPay() {
   const [pickupPlace, setPickupPlace] = useState<string>(params?.pickup?.pickupPlace ?? "");
   const [dropoffPlace, setDropoffPlace] = useState<string>(params?.pickup?.dropoffPlace ?? "");
 
-  // Requests / order note (bind this to the Requests TextInput)
+  // Requests
   const [orderNote, setOrderNote] = useState<string>(params?.order_note ?? "");
 
   // Payment & agreements
@@ -242,16 +210,12 @@ function ProductPay() {
   const isValidEmail = (v: string) => /\S+@\S+\.\S+/.test(v);
   const isValidPhone = (v: string) => v.replace(/\D/g, "").length >= 8;
 
-  // When travelerSameAsBooker toggles:
-  // - if set to true: copy from booker
-  // - if set to false: clear traveler fields
   useEffect(() => {
     if (travelerSameAsBooker) {
       setTravelerLastName(lastNameEng);
       setTravelerFirstName(firstNameEng);
       setTravelerNationality(nationality);
     } else {
-      // clear traveler fields when unchecked
       setTravelerLastName("");
       setTravelerFirstName("");
       setTravelerGender(null);
@@ -267,7 +231,6 @@ function ProductPay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [travelerSameAsBooker]);
 
-  // Also if booker changes while "same" is true, keep traveler in sync:
   useEffect(() => {
     if (travelerSameAsBooker) {
       setTravelerLastName(lastNameEng);
@@ -287,12 +250,7 @@ function ProductPay() {
     return !!(travelerLastName && travelerFirstName && travelerGender && travelerNationality && travelerPassport && (travelerContactDuring === "none" || (travelerContactDuring === "has" && contactVerified)));
   }, [travelerSameAsBooker, travelerLastName, travelerFirstName, travelerGender, travelerNationality, travelerPassport, travelerContactDuring, contactVerified]);
 
-  // paymentCompleted now requires:
-  // - a payment method selected
-  // - required agreements (personal + service)
-  // - booker fields completed
-  // - traveler fields completed
-  // - pickup & dropoff provided
+  // paymentCompleted requires all mandatory fields (except orderNote)
   const paymentCompleted = useMemo(() => {
     return !!selectedPayment && agreePersonal && agreeService && bookerCompleted && travelerCompleted && !!pickupPlace && !!dropoffPlace;
   }, [selectedPayment, agreePersonal, agreeService, bookerCompleted, travelerCompleted, pickupPlace, dropoffPlace]);
@@ -350,79 +308,7 @@ function ProductPay() {
     setContactMethod("");
   }
 
-  // Builds an API-friendly reservation payload using params, pkgData/pdt and user inputs.
-  // This follows the API rules you provided:
-  // - include only fields the app controls/supplies
-  // - guide_lang will be null
-  // - skus will contain only sku_id, qty and price (as you requested)
-  const buildReservationPayload = () => {
-    const guid = params?.guid ?? generateGuid();
-    const partner_order_no = params?.partner_order_no ?? "";
-
-    // buyer locale/state/telcode derived from selected nationality (booker)
-    const mapped = mapNationalityToLocaleState(nationality);
-
-    // Build skus using robust helper that maps adult/child SKUs when available
-    const skus = buildSkusFromPkg_v2(pkgData, params, adultCount, childCount, salePerPerson, totalPriceCalc, originalPerPerson);
-
-    // mobile_device: include values if present, otherwise nulls as in API example
-    const mobile_device = {
-      mobile_model_no: params?.mobile_device?.mobile_model_no ?? null,
-      IMEI: params?.mobile_device?.IMEI ?? null,
-      active_date: params?.mobile_device?.active_date ?? params?.selected_date ?? null,
-    };
-
-    // pay_type mapping: keep simple mapping (adapt if API expects different codes)
-    const pay_type = selectedPayment === "toss" ? "01" : selectedPayment === "naver" ? "02" : selectedPayment === "kakao" ? "03" : "01";
-
-    const payload: any = {
-      guid,
-      partner_order_no,
-      prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
-      pkg_no: params?.pkg_no ?? null,
-      item_no: (Array.isArray(skus) && skus.length > 0) ? skus[0].sku_id : (params?.item_no ?? null),
-      locale: mapped.locale,
-      state: mapped.state,
-      buyer_first_name: firstNameEng || "",
-      buyer_last_name: lastNameEng || "",
-      buyer_email: email || "",
-      buyer_tel_country_code: mapped.telCode,
-      buyer_tel_number: phone || "",
-      buyer_country: mapped.state,
-      s_date: params?.selected_date ?? null,
-      e_date: params?.selected_date ?? null,
-      event_time: null, // as requested
-      guide_lang: null, // explicitly null as you asked
-      skus: skus ?? null,
-      mobile_device,
-      order_note: orderNote || "",
-      total_price: totalPriceCalc ?? 0,
-      pay_type,
-    };
-
-    return payload;
-  };
-
-  async function onPay() {
-    if (!paymentCompleted) return;
-    setSubmitting(true);
-    try {
-      const payload = buildReservationPayload();
-
-      // Console log the payload (as requested)
-      console.log("Reservation API body:", JSON.stringify(payload, null, 2));
-
-      // keep existing behavior: simulate, then navigate to confirmation
-      await new Promise(r => setTimeout(r, 700));
-      navigation.navigate('/product/confirmation', { order: payload });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  // compute per-person prices and totals (prefer params, fallback to pkgData)
+  // compute per-person prices and totals
   const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
   const childPrice = params?.child_price ?? adultPrice;
   const adultCount = Number(params?.adult ?? 1);
@@ -431,7 +317,6 @@ function ProductPay() {
   const childTotal = childPrice * childCount;
   const productAmount = adultTotal + childTotal;
 
-  // compute original per-person if available to show discount percent
   const originalPerPerson = params?.original_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? undefined;
   const salePerPerson = params?.display_price ?? adultPrice;
   const percent = (originalPerPerson && salePerPerson && originalPerPerson > salePerPerson)
@@ -442,7 +327,133 @@ function ProductPay() {
     ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
     : 0;
 
-  // render
+  // Builds an API-friendly reservation payload
+  const buildReservationPayload = () => {
+    const guid = params?.guid ?? generateGuid();
+    const partner_order_no = params?.partner_order_no ?? "";
+
+    const mapped = mapNationalityToLocaleState(nationality);
+
+    // If params contain explicit adult_price/child_price, prefer params-based simple builder
+    const selectedDate = params?.selected_date ?? null;
+    let skus = null;
+    if (params?.adult_price !== undefined || params?.child_price !== undefined) {
+      skus = buildSkusFromParams(pkgData, params, selectedDate, adultCount, childCount, params?.adult_price, params?.child_price);
+    }
+    // If params-based builder couldn't produce skus, fallback to v3
+    if (!Array.isArray(skus) || skus.length === 0) {
+      skus = buildSkusFromPkg_v3(pkgData, params, selectedDate, adultCount, childCount, salePerPerson, totalPriceCalc);
+    }
+
+    // as extra fallback, attempt v2 if still single combined SKU while user selected both adult+child
+    if (adultCount > 0 && childCount > 0 && Array.isArray(skus) && skus.length === 1) {
+      try {
+        const alt = buildSkusFromPkg_v2(pkgData, params, adultCount, childCount, salePerPerson, totalPriceCalc, originalPerPerson);
+        if (Array.isArray(alt) && alt.length > 1) skus = alt;
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    // normalize
+    const normalizedSkus = (Array.isArray(skus) ? skus : []).map((s: any) => ({
+      sku_id: s?.sku_id ?? null,
+      qty: Number(s?.qty ?? 1),
+      price: Math.round(Number(s?.price ?? 0)),
+    }));
+
+    const computedTotal = normalizedSkus.reduce((sum: number, s: any) => sum + (Number(s.price) || 0), 0) || 0;
+
+    const mobile_device = {
+      mobile_model_no: params?.mobile_device?.mobile_model_no ?? null,
+      IMEI: params?.mobile_device?.IMEI ?? null,
+      active_date: params?.mobile_device?.active_date ?? params?.selected_date ?? null,
+    };
+
+    const pay_type = selectedPayment === "toss" ? "01" : selectedPayment === "naver" ? "02" : selectedPayment === "kakao" ? "03" : "01";
+
+    const payload: any = {
+      guid,
+      partner_order_no,
+      prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
+      pkg_no: params?.pkg_no ?? null,
+      item_no: params?.item_no ?? (normalizedSkus.length > 0 ? normalizedSkus[0].sku_id : null),
+      locale: mapped.locale,
+      state: mapped.state,
+      buyer_first_name: firstNameEng || "",
+      buyer_last_name: lastNameEng || "",
+      buyer_email: email || "",
+      buyer_tel_country_code: mapped.telCode,
+      buyer_tel_number: phone || "",
+      buyer_country: mapped.state,
+      s_date: params?.selected_date ?? null,
+      e_date: params?.selected_date ?? null,
+      event_time: null,
+      guide_lang: null,
+      skus: normalizedSkus,
+      mobile_device,
+      order_note: orderNote || "",
+      total_price: computedTotal ?? 0,
+      pay_type,
+    };
+
+    return payload;
+  };
+
+  // onPay uses axiosAuth and does detailed logging only for the request/response (no render-time logs)
+  async function onPay() {
+    if (!paymentCompleted) return;
+    setSubmitting(true);
+    try {
+      const payload = buildReservationPayload();
+
+      // (개발용) 서버 전송 전 payload 요약 로그 — 실제 배포시 제거 가능
+      console.log("[PAYLOAD SUMMARY] selected_date:", params?.selected_date, "adult:", params?.adult, "child:", params?.child);
+      console.log("[PAYLOAD SUMMARY] skus:", payload.skus, "total_price:", payload.total_price);
+
+      // client-side validation
+      const validationErrors = validatePayload(payload);
+      if (validationErrors.length) {
+        Alert.alert("입력 오류", `필수 항목이 누락되었거나 형식이 잘못되었습니다:\n- ${validationErrors.join("\n- ")}`);
+        setSubmitting(false);
+        return;
+      }
+
+      if (!BOOKING_API) {
+        console.warn("BOOKING_API is not configured. Skipping API call.");
+        await new Promise(r => setTimeout(r, 700));
+        navigation.navigate('/product/confirmation', { order: payload });
+        return;
+      }
+
+      // send using axiosAuth (keeps project auth wrapper)
+      const response = await axiosAuth.post(`/kkday/Booking`, payload, {
+        timeout: 60000,
+      });
+
+      if (response.status >= 500) {
+        console.error("Server 5xx response:", response.status, response.data);
+        Alert.alert("서버 오류", `서버 내부 오류가 발생했습니다 (status ${response.status}). 관리자에게 문의하세요.`);
+        return;
+      }
+
+      if (response.status >= 400) {
+        console.error("Booking API error:", response.status, response.data);
+        Alert.alert("예약 실패", `예약 요청이 실패했습니다 (status ${response.status}).\n${response.data?.message ?? JSON.stringify(response.data)}`);
+        return;
+      }
+
+      // success
+      navigation.navigate('/product/confirmation', { order: payload, bookingResponse: response.data });
+    } catch (err: any) {
+      console.error("onPay unexpected error:", err);
+      Alert.alert("오류", `예약 중 오류가 발생했습니다: ${err?.message ?? String(err)}`);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  // render (unchanged UI)
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FixedBottomCTAProvider>
@@ -504,7 +515,6 @@ function ProductPay() {
               style={styles.input}
             />
 
-            {/* 국적 (Booker dropdown) */}
             <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>
               국적 <Text style={{ color: colors.red400 }}>*</Text>
             </Text>
@@ -513,7 +523,6 @@ function ProductPay() {
               onPress={() => {
                 setShowBookerNationalityOptions(prev => !prev);
                 setShowTravelerNationalityOptions(false);
-                setShowContactMethodOptions(false);
               }}
               style={[styles.input, { justifyContent: 'center' }]}
             >
@@ -563,7 +572,6 @@ function ProductPay() {
             />
             <View style={{ height: 8 }} />
 
-            {/* 이메일/전화 안내 (빨간글씨) */}
             <Text typography="t6" style={{ color: colors.red500, marginTop: 12, lineHeight: 20 }}>
               입력하신 이메일과 전화번호는 주문 내역 및 바우처 전달을 위해 사용됩니다.
             </Text>
@@ -694,7 +702,6 @@ function ProductPay() {
 
             <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>여행 중 연락 수단 <Text style={{ color: colors.red400 }}>*</Text></Text>
 
-            {/* two buttons side-by-side filling width */}
             <View style={{ flexDirection: 'row', marginTop: 8, gap: 8 }}>
               <TouchableOpacity
                 onPress={() => {
@@ -709,7 +716,6 @@ function ProductPay() {
               <TouchableOpacity
                 onPress={() => {
                   setTravelerContactDuring('has');
-                  // open contact method dropdown when selecting 'has'
                   setShowContactMethodOptions(true);
                   setShowBookerNationalityOptions(false);
                   setShowTravelerNationalityOptions(false);
@@ -724,7 +730,6 @@ function ProductPay() {
               <View style={{ marginTop: 12 }}>
                 <Text typography="t6" color={colors.grey800}>연락 수단 이름 <Text style={{ color: colors.red400 }}>*</Text></Text>
 
-                {/* Contact method dropdown (independent) */}
                 <TouchableOpacity
                   activeOpacity={0.85}
                   onPress={() => {
@@ -852,9 +857,9 @@ function ProductPay() {
         {/* separator */}
         <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
 
-        <View style={{ paddingVertical: 8, paddingHorizontal: 20}}>
+        <View style={{ paddingVertical: 8, paddingHorizontal: 20 }}>
           <Text typography="t3" fontWeight='bold' style={{ marginVertical: 6, padding: 8 }}>개인 정보 수집  ·  이용 약관 동의</Text>
-          <TouchableOpacity onPress={toggleAgreeAll} style={{flexDirection: "row", alignItems: "center", paddingVertical: 8,}}>
+          <TouchableOpacity onPress={toggleAgreeAll} style={{ flexDirection: "row", alignItems: "center", paddingVertical: 8, }}>
             <View style={styles.checkbox}>{agreeAll && <Icon name="icon-check" size={14} color={colors.blue500} />}</View>
             <Text>전체 동의하기</Text>
           </TouchableOpacity>
@@ -880,7 +885,6 @@ function ProductPay() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
