@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import {create} from "zustand";
 
 type BookingState = {
   guideLangCode: string | null;
@@ -9,7 +9,8 @@ type BookingState = {
   setCustomGroup: (cusType: string, values: Record<string, any>) => void;
   resetCustomGroup: (cusType: string) => void;
 
-  // returns array suitable for API: [{ cus_type: 'cus_01', ...fields }, ...]
+  resetAll: () => void;
+
   getCustomArray: () => Array<Record<string, any>>;
 };
 
@@ -34,16 +35,19 @@ const useBookingStore = create<BookingState>((set, get) => ({
       return { customMap: next };
     }),
 
+  resetAll: () =>
+    set(() => ({
+      guideLangCode: null,
+      customMap: {},
+    })),
+
   getCustomArray: () => {
     const map = get().customMap ?? {};
-    // Build array but skip groups with no meaningful keys/values
     const arr: Array<Record<string, any>> = [];
     Object.entries(map).forEach(([cusType, fields]) => {
       if (!fields) return;
-      // Remove empty-string-only fields
       const cleaned: Record<string, any> = {};
       Object.entries(fields).forEach(([k, v]) => {
-        // consider non-empty values only (you can customize this rule)
         if (v !== undefined && v !== null && String(v).trim() !== "") {
           cleaned[k] = v;
         }

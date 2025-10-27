@@ -13,10 +13,17 @@ import { useProductStore } from "../../zustand/useProductStore";
 import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
 import { formatPrice } from "../../components/product/pay-function";
-import {useBookingFields} from "../../kkday/kkdayBookingField";
+// Todo BookingField 실제로 변경
+import {useBookingFieldsMock as useBookingFields} from "../../kkday/useBookingFieldsMock";
 import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
 import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
+import EngFirstNameInput from "../../components/product/payfield/EngFirstNameInput";
 import useBookingStore from "../../zustand/useBookingStore";
+import GenderSelector from "../../components/product/payfield/GenderSelector";
+import NationalitySelector from "../../components/product/payfield/NationalitySelector";
+import MtpNoInput from "../../components/product/payfield/MtpNoInput";
+import IdNoInput from "../../components/product/payfield/IdNoInput";
+import PassportNoInput from "../../components/product/payfield/PassportNoInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -30,13 +37,17 @@ function ProductPay() {
   const params = Route.useParams();
   const pkgData = params?.pkgData ?? null;
 
+  useEffect(() => {
+    useBookingStore.getState().resetAll();
+  }, [params?.prod_no, params?.pkg_no]);
+
   const { pdt } = useProductStore();
   if (!pdt) return null;
 
   const thumbnail = pdt?.prod_img_url ?? (pdt?.img_list && pdt.img_list[0]) ?? "";
   const title = pdt?.prod_name || pdt?.name;
 
-  // BookingField
+  // Todo BookingField 실제로 변경
   const { fields: rawFields, loading: bfLoading, error: bfError } = useBookingFields({
     prod_no: params?.prod_no ?? pdt?.prod_no,
     pkg_no: params?.pkg_no ?? null,
@@ -113,13 +124,22 @@ function ProductPay() {
     ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
     : 0;
 
-  // Determine whether english_last_name exists and which groups it applies to
+  // Determine whether english_last_name / english_first_name exist and which groups they apply to
   const engLastSpec = rawFields?.custom?.english_last_name ?? null;
   const engLastUse: string[] = engLastSpec && Array.isArray(engLastSpec.use) ? engLastSpec.use : [];
 
+  const engFirstSpec = rawFields?.custom?.english_first_name ?? null;
+  const engFirstUse: string[] = engFirstSpec && Array.isArray(engFirstSpec.use) ? engFirstSpec.use : [];
+
+  const genderSpec = rawFields?.custom?.gender ?? null;
+  const genderUse: string[] = genderSpec && Array.isArray(genderSpec.use) ? genderSpec.use : [];
+
+  const nationalitySpec = rawFields?.custom?.nationality ?? null;
+  const nationalityOptions = nationalitySpec?.list_option ?? []; // array of {code?, id?, name?}
+  const nationalityUse: string[] = nationalitySpec && Array.isArray(nationalitySpec.use) ? nationalitySpec.use : [];
+
   // Build reservation payload — read custom array from zustand
   const buildReservationPayload = () => {
-    // other payload fields omitted for brevity; focus on custom
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
     const payload: any = {
@@ -127,19 +147,17 @@ function ProductPay() {
       pkg_no: params?.pkg_no ?? null,
       // include guide_lang only when present in store
       ...(store.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
-      // ... other required fields ...
+      // include custom array if exists
       custom: customArray.length ? customArray : undefined,
     };
     return payload;
   };
 
   async function onPay() {
-    // Example simple validation: if a required custom field exists, ensure some value
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
-    // simple check: if cus_01 exists in uses, ensure it is present in customArray
     if (uses.includes("cus_01") && !customArray.some(c => c.cus_type === "cus_01")) {
-      Alert.alert("입력 오류", "예약자 정보(성 등)를 입력해주세요.");
+      Alert.alert("입력 오류", "예약자 정보(필수)를 입력해주세요.");
       return;
     }
     const payload = buildReservationPayload();
@@ -171,15 +189,26 @@ function ProductPay() {
           </CollapsibleSection>
         )}
 
-        {/* cus_01 -> 예약자 정보 (renders EngLastNameInput if english_last_name applies) */}
+        {/* cus_01 -> 예약자 정보 (renders EngLastNameInput/EngFirstNameInput if specs apply) */}
         {hasCus01 && (
           <CollapsibleSection title="예약자 정보" open={!!openSections[2]} onToggle={() => toggleSection(2)} completed={!!completedSections[2]}>
             <View>
-              {engLastUse.includes("cus_01") && (
-                <EngLastNameInput
-                  cusType="cus_01"
-                  required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"}
-                />
+              {engLastUse.includes("cus_01") && <EngLastNameInput cusType="cus_01" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {engFirstUse.includes("cus_01") && <EngFirstNameInput cusType="cus_01" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {genderUse.includes("cus_01") && (
+                <GenderSelector cusType="cus_01" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {nationalityUse.includes("cus_01") && (
+                <NationalitySelector cusType="cus_01" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_01") && (
+                <MtpNoInput cusType="cus_01" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.id_no && Array.isArray(rawFields.custom.id_no.use) && rawFields.custom.id_no.use.includes("cus_01") && (
+                <IdNoInput cusType="cus_01" required={String(rawFields.custom.id_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_01") && (
+                <PassportNoInput cusType="cus_01" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />
               )}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
             </View>
@@ -190,11 +219,22 @@ function ProductPay() {
         {hasCus02 && (
           <CollapsibleSection title="여행자 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
             <View>
-              {engLastUse.includes("cus_02") && (
-                <EngLastNameInput
-                  cusType="cus_02"
-                  required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"}
-                />
+              {engLastUse.includes("cus_02") && <EngLastNameInput cusType="cus_02" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {engFirstUse.includes("cus_02") && <EngFirstNameInput cusType="cus_02" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {genderUse.includes("cus_02") && (
+                <GenderSelector cusType="cus_02" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {nationalityUse.includes("cus_02") && (
+                <NationalitySelector cusType="cus_02" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_02") && (
+                <MtpNoInput cusType="cus_02" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.id_no && Array.isArray(rawFields.custom.id_no.use) && rawFields.custom.id_no.use.includes("cus_02") && (
+                <IdNoInput cusType="cus_02" required={String(rawFields.custom.id_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_02") && (
+                <PassportNoInput cusType="cus_02" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />
               )}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
             </View>

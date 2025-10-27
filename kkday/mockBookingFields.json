@@ -1,0 +1,1178 @@
+{
+  "prod_no": 0,
+  "guide_lang": {
+    "is_require": "True",
+    "is_visible": "True",
+    "ref_source": "list_option.code",
+    "type": "list",
+    "list_option": [
+      {
+        "code": "zh-tw",
+        "name": "中文"
+      },
+      {
+        "code": "en",
+        "name": "English"
+      }
+    ]
+  },
+  "custom": {
+    "cus_type": {
+      "is_require": "True",
+      "type": "array",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_send_used": "True",
+      "is_contact_used": "True",
+      "list_option": [
+        "cus_01",
+        "cus_02",
+        "contact",
+        "send"
+      ],
+      "use": [
+        "cus_01",
+        "cus_02",
+        "contact",
+        "send"
+      ]
+    },
+    "english_last_name": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "english_first_name": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "gender": {
+      "is_require": "True",
+      "type": "list",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "list_option": [
+        {
+          "id": "M",
+          "name": "Male"
+        },
+        {
+          "id": "F",
+          "name": "Female"
+        }
+      ],
+      "use": [
+        "cus_01",
+        "cus_02"
+      ],
+      "ref_source": "list_option.id"
+    },
+    "nationality": {
+      "is_require": "True",
+      "type": "list",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "list_option": [
+        {
+          "code": "JP",
+          "name": "Japan"
+        },
+        {
+          "id": "KR",
+          "name": "Korea"
+        }
+      ],
+      "ref_source": "list_option.code",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "mtp_no": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "id_no": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "passport_no": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "passport_expdate": {
+      "is_require": "True",
+      "type": "date",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "birth": {
+      "is_require": "True",
+      "type": "date",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ],
+      "spec_items": {
+        "adult": {
+          "age_rule": {
+            "max": 45,
+            "min": 18
+          }
+        },
+        "youth": {
+          "age_rule": {
+            "max": 14,
+            "min": 13
+          }
+        },
+        "child": {
+          "age_rule": {
+            "max": 10,
+            "min": 5
+          }
+        },
+        "young-child": {
+          "age_rule": {
+            "max": 4,
+            "min": 2
+          }
+        },
+        "infant": {
+          "age_rule": {
+            "max": 1,
+            "min": 0
+          }
+        },
+        "senior": {
+          "age_rule": {
+            "max": 100,
+            "min": 70
+          }
+        },
+        "student": {
+          "age_rule": {}
+        }
+      }
+    },
+    "native_last_name": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "is_contact_used": "True",
+      "use": [
+        "cus_01",
+        "cus_02",
+        "contact",
+        "send"
+      ]
+    },
+    "native_first_name": {
+      "is_require": "True",
+      "type": "string",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "is_contact_used": "True",
+      "use": [
+        "cus_01",
+        "cus_02",
+        "contact",
+        "send"
+      ]
+    },
+    "tel_country_code": {
+      "is_require": "True",
+      "type": "list",
+      "list_option": [
+        {
+          "code": 886,
+          "info": "Taiwan"
+        }
+      ],
+      "is_visible": "True",
+      "is_send_used": "True",
+      "is_contact_used": "True",
+      "ref_source": "list_option.code",
+      "use": [
+        "contact",
+        "send"
+      ]
+    },
+    "tel_number": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "is_contact_used": "True",
+      "use": [
+        "contact",
+        "send"
+      ]
+    },
+    "country_cities": {
+      "is_require": "True",
+      "type": "list_option.id",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "list_option": [
+        {
+          "id": "A01-001",
+          "name": "Taiwan",
+          "cities": [
+            {
+              "city_code": "A01-001-00001",
+              "name": "Taipei"
+            }
+          ]
+        }
+      ],
+      "use": [
+        "send"
+      ]
+    },
+    "zipcode": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "address": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "hotel_name": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "hotel_tel_number": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "booking_order_no": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "check_in_date": {
+      "is_require": "True",
+      "type": "date",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "check_out_date": {
+      "is_require": "True",
+      "type": "date",
+      "is_visible": "True",
+      "is_send_used": "True",
+      "use": [
+        "send"
+      ]
+    },
+    "contact_app": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_contact_used": "True",
+      "ref_source": "list_option.app_type",
+      "list_option": [
+        {
+          "supported": true,
+          "app_type": "0006",
+          "app_name": "SnapChat"
+        },
+        {
+          "supported": true,
+          "app_type": "0007",
+          "app_name": "Facebook\nMessenger"
+        },
+        {
+          "supported": false,
+          "app_type": "0004",
+          "app_name": "Kakao"
+        },
+        {
+          "supported": false,
+          "app_type": "0005",
+          "app_name": "Viber"
+        },
+        {
+          "supported": false,
+          "app_type": "0002",
+          "app_name": "WhatsApp"
+        },
+        {
+          "supported": false,
+          "app_type": "0003",
+          "app_name": "WeChat"
+        },
+        {
+          "supported": false,
+          "app_type": "0001",
+          "app_name": "Line"
+        },
+        {
+          "supported": false,
+          "app_type": "0008",
+          "app_name": "Twitter"
+        }
+      ],
+      "use": [
+        "contact"
+      ]
+    },
+    "contact_app_account": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_contact_used": "True",
+      "use": [
+        "contact"
+      ]
+    },
+    "have_app": {
+      "is_require": "True",
+      "type": "bool",
+      "is_visible": "True",
+      "is_contact_used": "True",
+      "use": [
+        "contact"
+      ]
+    },
+    "height": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "height_unit": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "id": "01",
+          "name": "cm"
+        },
+        {
+          "id": "02",
+          "name": "ft"
+        }
+      ],
+      "ref_source": "list_option.id",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "weight": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "weight_unit": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "id": "01",
+          "name": "kg"
+        },
+        {
+          "id": "02",
+          "name": "lb"
+        }
+      ],
+      "ref_source": "list_option.id",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "shoe": {
+      "is_require": "True",
+      "type": "string",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "man": [
+            {
+              "unit_name": "United\nState\nSize",
+              "unit_code": "US",
+              "size_range_start": 6,
+              "size_range_end": 13,
+              "interval": 0.5
+            },
+            {
+              "unit_name": "Centimeter",
+              "unit_code": "CM",
+              "size_range_start": 26,
+              "size_range_end": 40,
+              "interval": 1
+            }
+          ]
+        },
+        {
+          "woman": [
+            {
+              "unit_name": "United\nState\nSize",
+              "unit_code": "US",
+              "size_range_start": 4,
+              "size_range_end": 9,
+              "interval": 0.5
+            },
+            {
+              "unit_name": "Centimeter",
+              "unit_code": "CM",
+              "size_range_start": 20,
+              "size_range_end": 26,
+              "interval": 1
+            }
+          ]
+        },
+        {
+          "child": [
+            {
+              "unit_name": "United\nState\nSize",
+              "unit_code": "US",
+              "size_range_start": 1,
+              "size_range_end": 5,
+              "interval": 0.5
+            },
+            {
+              "unit_name": "Centimeter",
+              "unit_code": "CM",
+              "size_range_start": 10,
+              "size_range_end": 25,
+              "interval": 1
+            }
+          ]
+        }
+      ],
+      "ref_source": "list_option.size_range",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "shoe_unit": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "id": "01",
+          "name": "US"
+        },
+        {
+          "id": "02",
+          "name": "EU"
+        },
+        {
+          "id": "03",
+          "name": "JP/CM"
+        }
+      ],
+      "ref_source": "list_option.id",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "shoe_type": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "id": "M",
+          "name": "Man"
+        },
+        {
+          "id": "W",
+          "name": "Woman"
+        },
+        {
+          "id": "C",
+          "name": "Child"
+        }
+      ],
+      "ref_source": "list_option.id",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "glass_degree": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "range": "100~1000",
+          "interval": 100
+        }
+      ],
+      "ref_source": "list_option.range",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "meal": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "meal_type": "01",
+          "meal_type_name": "vegetarian",
+          "is_provided": "True"
+        }
+      ],
+      "ref_source": "list_option.meal_type",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    },
+    "allergy_food": {
+      "is_require": "True",
+      "type": "list",
+      "is_visible": "True",
+      "is_lead_used": "True",
+      "is_perParticipant": "True",
+      "list_option": [
+        {
+          "meal_type": "01",
+          "meal_type_name": "vegetarian",
+          "is_provided": "True"
+        }
+      ],
+      "ref_source": "list_option.meal_type",
+      "use": [
+        "cus_01",
+        "cus_02"
+      ]
+    }
+  },
+  "traffics": [
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "flght"
+      },
+      "arrival_flightType": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "ref_source": "list_option.id",
+        "list_option": [
+          {
+            "id": "01",
+            "name": "Domestic"
+          },
+          {
+            "id": "02",
+            "name": "International"
+          }
+        ]
+      },
+      "arrival_airport": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "ref_source": "list_option.code",
+        "list_option": [
+          {
+            "code": "DPS",
+            "name": "Ngurah Rai International Airport (DPS)",
+            "area": "A01-012-00001"
+          }
+        ]
+      },
+      "arrival_airlineName": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "arrival_flightNo": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "arrival_terminalNo": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "arrival_visa": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "bool"
+      },
+      "arrival_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "date"
+      },
+      "arrival_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "departure_flightType": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "ref_source": "list_option.id",
+        "list_option": [
+          {
+            "id": "01",
+            "name": "Domestic"
+          },
+          {
+            "id": "02",
+            "name": "International"
+          }
+        ]
+      },
+      "departure_airport": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "ref_source": "list_option.code",
+        "list_option": [
+          {
+            "code": "DPS",
+            "name": "Ngurah Rai International Airport(DPS)",
+            "area": "A01-012-00001"
+          }
+        ]
+      },
+      "departure_airlineName": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "departure_flightNo": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "departure_terminalNo": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "departure_haveBeenInCountry": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      },
+      "departure_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "date"
+      },
+      "departure_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "is_flight_used": "True",
+        "type": "string"
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "psg_qty"
+      },
+      "carpsg_adult": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "carpsg_child": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "carpsg_infant": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "safetyseat_sup_child": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "safetyseat_self_child": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "safetyseat_sup_infant": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "safetyseat_self_infant": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "luggage_carry": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      },
+      "luggage_check": {
+        "is_require": "True",
+        "type": "Int",
+        "is_visible": "True"
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "voucher"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "list_option": [
+          {
+            "traffic_type": "voucher",
+            "id": "123123123213123123",
+            "name": "sample voucher location",
+            "address": "location sample",
+            "note": "",
+            "businessHours": [
+              {
+                "to": {
+                  "hour": 20,
+                  "minute": 30
+                },
+                "from": {
+                  "hour": 17,
+                  "minute": 0
+                },
+                "weekDays": "Y,N,N,N,N,N,N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "rentcar_01"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "location": [
+          {
+            "traffic_type": "rentcar_01",
+            "sort": 0,
+            "id": "123123123213123123",
+            "code": "A01-001-00023",
+            "name": "samplerenta location",
+            "address": "location sample",
+            "interval": 30,
+            "s_time": "8: 0",
+            "e_time": "16: 30"
+          }
+        ]
+      },
+      "e_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "location": [
+          {
+            "traffic_type": "rentcar_01",
+            "sort": 0,
+            "id": "123123123213123123",
+            "code": "A01-001-00023",
+            "name": "sample renta location",
+            "address": "location sample",
+            "interval": 30,
+            "s_time": "8: 0",
+            "e_time": "16: 30"
+          }
+        ]
+      },
+      "s_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "s_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "time"
+      },
+      "e_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "e_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "time"
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "rentcar_02"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "location": [
+          {
+            "traffic_type": "rentcar_02",
+            "sort": 0,
+            "id": "123123123213123123",
+            "code": "A01-001-00023",
+            "name": "sample renta location",
+            "address": "location sample",
+            "interval": 30,
+            "s_time": "8: 0",
+            "e_time": "16: 30"
+          }
+        ]
+      },
+      "e_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "location": [
+          {
+            "traffic_type": "rentcar_02",
+            "sort": 0,
+            "id": "11111111111",
+            "code": "A01-001-00025",
+            "name": "sample rentb location",
+            "address": "location sample",
+            "interval": 30,
+            "s_time": "8: 0",
+            "e_time": "16: 30"
+          }
+        ]
+      },
+      "s_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "s_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "time"
+      },
+      "e_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "e_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "time"
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "rentcar_03"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "location": [
+          {
+            "traffic_type": "rentcar_03",
+            "sort": 0,
+            "id": "123123123213123123",
+            "code": "A01-001-00023",
+            "name": "sample renta location",
+            "address": "location sample",
+            "interval": 30,
+            "s_time": "8: 0",
+            "e_time": "16: 30"
+          },
+          {
+            "traffic_type": "rentcar_03",
+            "sort": 2,
+            "id": "customize",
+            "route_eng": "Customize your route",
+            "route_local": "自訂行程"
+          }
+        ]
+      },
+      "s_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "is_rent_customize": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "bool"
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "pickup_03"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "list_option.id",
+        "is_visible": "True",
+        "location": [
+          {
+            "traffic_type": "pickup_03",
+            "sort": 0,
+            "id": "123123123213123123",
+            "code": "A01-001-00023",
+            "name": "sample renta location",
+            "address": "location sample",
+            "interval": 30,
+            "s_time": "8: 0",
+            "e_time": "16: 30"
+          }
+        ]
+      },
+      "s_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "pickup_04"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "string",
+        "is_visible": "True"
+      },
+      "s_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "s_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "time",
+        "list_option": [
+          {
+            "time_range": "7:0~10:0"
+          }
+        ],
+        "use": [
+          "pickup_04"
+        ]
+      }
+    },
+    {
+      "traffic_type": {
+        "is_require": "True",
+        "type": "string",
+        "traffic_type_value": "pickup_04"
+      },
+      "s_location": {
+        "is_require": "True",
+        "type": "string",
+        "is_visible": "True"
+      },
+      "s_date": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "date"
+      },
+      "s_time": {
+        "is_require": "True",
+        "is_visible": "True",
+        "type": "string",
+        "ref_source": "list_option.id",
+        "list_option": [
+          {
+            "id": "63c84525cd06f91a02577bcfab56eb68",
+            "hour": "8",
+            "min": "0"
+          },
+          {
+            "id": "4400063bc7c1ac8dc7bef750ab3e63db",
+            "hour": "11",
+            "min": "0"
+          },
+          {
+            "id": "39bbbb8a88f7eb2330d2d0f52a921452",
+            "hour": "15",
+            "min": "0"
+          },
+          {
+            "id": "2a9dee962a65e072495def90b2394baa",
+            "hour": "18",
+            "min": "0"
+          }
+        ],
+        "use": [
+          "pickup_04"
+        ]
+      }
+    }
+  ],
+  "mobile_device": {
+    "mobile_model_no": {
+      "is_require": "true",
+      "is_visible": "true",
+      "type": "string"
+    },
+    "IMEI": {
+      "is_require": "true",
+      "is_visible": "true",
+      "type": "string"
+    },
+    "active_date": {
+      "is_require": "true",
+      "is_visible": "true",
+      "type": "date"
+    }
+  },
+  "result": "string",
+  "result_msg": "string"
+}
