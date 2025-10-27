@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
@@ -13,6 +14,9 @@ import { CollapsibleSection } from "../../components/product/collapsibleSection"
 import { MiniProductCard } from "../../components/product/miniProductCard";
 import { formatPrice } from "../../components/product/pay-function";
 import {useBookingFields} from "../../kkday/kkdayBookingField";
+import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
+import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
+import useBookingStore from "../../zustand/useBookingStore";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -32,26 +36,37 @@ function ProductPay() {
   const thumbnail = pdt?.prod_img_url ?? (pdt?.img_list && pdt.img_list[0]) ?? "";
   const title = pdt?.prod_name || pdt?.name;
 
+  // BookingField
+  const { fields: rawFields, loading: bfLoading, error: bfError } = useBookingFields({
+    prod_no: params?.prod_no ?? pdt?.prod_no,
+    pkg_no: params?.pkg_no ?? null,
+  });
 
-  //BookingField
-  const { fields: rawFields, loading: bfLoading, error: bfError } = useBookingFields({ prod_no: params?.prod_no ?? pdt?.prod_no, pkg_no: params?.pkg_no ?? null });
-  console.log(rawFields);
+  // derive uses from rawFields.custom.custom_type.use (or custom.cus_type)
+  const uses: string[] = useMemo(() => {
+    if (!rawFields || !rawFields.custom) return [];
+    const cust = rawFields.custom.custom_type ?? rawFields.custom.cus_type ?? null;
+    if (!cust) return [];
+    if (Array.isArray(cust.use)) return cust.use;
+    return [];
+  }, [rawFields]);
+
+  const hasCus01 = uses.includes("cus_01");
+  const hasCus02 = uses.includes("cus_02");
+  const hasContact = uses.includes("contact");
+  const hasSend = uses.includes("send");
 
   // openSections map
-  const [openSections, setOpenSections] = useState<Record<number, boolean>>({ 1: true });
+  const [openSections, setOpenSections] = useState<Record<number, boolean>>({ 0: true });
   const [completedSections, setCompletedSections] = useState<Record<number, boolean>>({});
 
-  // Requests
+  // Requests & payment / agreements (kept minimal)
   const [orderNote, setOrderNote] = useState<string>(params?.order_note ?? "");
-
-  // Payment & agreements
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("toss");
   const [agreeAll, setAgreeAll] = useState<boolean>(false);
   const [agreePersonal, setAgreePersonal] = useState<boolean>(false);
   const [agreeService, setAgreeService] = useState<boolean>(false);
   const [agreeMarketing, setAgreeMarketing] = useState<boolean>(false);
-
-  const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     if (agreePersonal && agreeService && agreeMarketing) setAgreeAll(true);
@@ -73,6 +88,10 @@ function ProductPay() {
   function markCompleteAndNext(sectionIndex: number) {
     setCompletedSections((prev) => ({ ...prev, [sectionIndex]: true }));
     setOpenSections((prev) => ({ ...prev, [sectionIndex + 1]: true }));
+    const store = useBookingStore.getState();
+    console.log("[BookingStore] guideLangCode:", store.guideLangCode);
+    console.log("[BookingStore] customMap:", store.customMap);
+    console.log("[BookingStore] customArray:", store.getCustomArray());
   }
 
   // compute per-person prices and totals
@@ -94,7 +113,39 @@ function ProductPay() {
     ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
     : 0;
 
-  // render (unchanged UI)
+  // Determine whether english_last_name exists and which groups it applies to
+  const engLastSpec = rawFields?.custom?.english_last_name ?? null;
+  const engLastUse: string[] = engLastSpec && Array.isArray(engLastSpec.use) ? engLastSpec.use : [];
+
+  // Build reservation payload — read custom array from zustand
+  const buildReservationPayload = () => {
+    // other payload fields omitted for brevity; focus on custom
+    const store = useBookingStore.getState();
+    const customArray = store.getCustomArray();
+    const payload: any = {
+      prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
+      pkg_no: params?.pkg_no ?? null,
+      // include guide_lang only when present in store
+      ...(store.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
+      // ... other required fields ...
+      custom: customArray.length ? customArray : undefined,
+    };
+    return payload;
+  };
+
+  async function onPay() {
+    // Example simple validation: if a required custom field exists, ensure some value
+    const store = useBookingStore.getState();
+    const customArray = store.getCustomArray();
+    // simple check: if cus_01 exists in uses, ensure it is present in customArray
+    if (uses.includes("cus_01") && !customArray.some(c => c.cus_type === "cus_01")) {
+      Alert.alert("입력 오류", "예약자 정보(성 등)를 입력해주세요.");
+      return;
+    }
+    const payload = buildReservationPayload();
+    Alert.alert("테스트 페이로드", JSON.stringify(payload, null, 2));
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FixedBottomCTAProvider>
@@ -111,32 +162,67 @@ function ProductPay() {
         >
           <Text typography="t4" fontWeight="bold" style={{ marginBottom: 12 }}>{title}</Text>
           <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
-          <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
-            <Icon name="icon-calendar-timetable" size={20} color={colors.blue500} />
-            <Text style={{ marginLeft: 8 }}>{params?.selected_date ?? "-"}</Text>
-
-            <View style={{ width: 24 }} />
-
-            <Icon name="icon-clock" size={20} color={colors.blue500} />
-            <Text style={{ marginLeft: 8 }}>{params?.selected_time ?? params?.selected_time_slot ?? "-"}</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center' }}>
-            <Icon name="icon-user-two-blue-tab" size={20} color={colors.blue500} />
-            <Text style={{ marginLeft: 8 }}>{`인원수 성인 ${adultCount}명${childCount ? `, 아동 ${childCount}명` : ''}`}</Text>
-          </View>
         </CollapsibleSection>
 
+        {/* Guide language: render only when rawFields.guide_lang exists */}
+        {rawFields?.guide_lang && (
+          <CollapsibleSection title={"가이드 언어"} open={!!openSections[1]} onToggle={() => toggleSection(1)}  completed={!!completedSections[1]}>
+            <GuideLangSelector rawFields={rawFields} onSelect={(code) => console.log("selected guide_lang code:", code)} />
+          </CollapsibleSection>
+        )}
+
+        {/* cus_01 -> 예약자 정보 (renders EngLastNameInput if english_last_name applies) */}
+        {hasCus01 && (
+          <CollapsibleSection title="예약자 정보" open={!!openSections[2]} onToggle={() => toggleSection(2)} completed={!!completedSections[2]}>
+            <View>
+              {engLastUse.includes("cus_01") && (
+                <EngLastNameInput
+                  cusType="cus_01"
+                  required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
+            </View>
+          </CollapsibleSection>
+        )}
+
+        {/* cus_02 -> 여행자 정보 */}
+        {hasCus02 && (
+          <CollapsibleSection title="여행자 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
+            <View>
+              {engLastUse.includes("cus_02") && (
+                <EngLastNameInput
+                  cusType="cus_02"
+                  required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
+            </View>
+          </CollapsibleSection>
+        )}
+
+        {/* contact & send sections (kept as placeholders) */}
+        {hasContact && (
+          <CollapsibleSection title="연락 수단" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
+            <View />
+          </CollapsibleSection>
+        )}
+
+        {hasSend && (
+          <CollapsibleSection title="투숙 정보" open={!!openSections[5]} onToggle={() => toggleSection(5)} completed={!!completedSections[5]}>
+            <View />
+          </CollapsibleSection>
+        )}
 
         {/* Requests */}
-        <CollapsibleSection title="요청 사항" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
+        <CollapsibleSection title="요청 사항" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
           <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} value={orderNote} onChangeText={setOrderNote} style={[styles.input]} multiline />
           <View style={{ height: 12 }} />
-          <Button type="primary" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(4)}>작성 완료</Button>
+          <Button type="primary" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(6)}>작성 완료</Button>
         </CollapsibleSection>
 
         {/* Payment details */}
-        <CollapsibleSection title="결제 세부 내역" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
+        <CollapsibleSection title="결제 세부 내역" open={!!openSections[7]} onToggle={() => toggleSection(7)} completed={!!completedSections[7]}>
           <MiniProductCard
             image={thumbnail}
             title={title}
@@ -145,7 +231,6 @@ function ProductPay() {
             percent={percent}
             perPersonText={`${formatPrice(salePerPerson)}원 X ${adultCount + childCount}명`}
           />
-
           <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
             <View style={styles.row}>
               <Text typography='t5'>상품 금액</Text>
@@ -156,19 +241,11 @@ function ProductPay() {
               <Text typography='t5'>{formatPrice(productDiscount)}원</Text>
             </View>
           </View>
-
-          <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
-            <View style={styles.row}>
-              <Text typography="t4" fontWeight="bold" style={{ color: '#5350FF' }}>총 결제 금액</Text>
-              <Text typography="t4" fontWeight="bold" style={{ color: '#5350FF' }}>{formatPrice(Math.max(0, productAmount - productDiscount))}원</Text>
-            </View>
-          </View>
         </CollapsibleSection>
 
-        {/* separator */}
+        {/* separator and payment CTA */}
         <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
 
-        {/* Payment area (standalone) */}
         <View style={[styles.sectionContainer, { paddingHorizontal: 24, paddingVertical: 24 }]}>
           <Text typography="t3" fontWeight='bold' style={{ marginBottom: 12 }}>결제 수단</Text>
           <View style={styles.paymentRow}>
@@ -180,9 +257,6 @@ function ProductPay() {
             <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "card" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("card")}><Text>신용카드/체크카드</Text></TouchableOpacity>
           </View>
         </View>
-
-        {/* separator */}
-        <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
 
         <View style={{ paddingVertical: 8, paddingHorizontal: 20 }}>
           <Text typography="t3" fontWeight='bold' style={{ marginVertical: 6, padding: 8 }}>개인 정보 수집  ·  이용 약관 동의</Text>
@@ -204,9 +278,8 @@ function ProductPay() {
           </TouchableOpacity>
         </View>
 
-        {/* bottom CTA */}
-        <FixedBottomCTA onPress={() => {}} disabled={!false || submitting}>
-          {submitting ? "결제중..." : `${formatPrice(Math.max(0, productAmount - productDiscount))}원 결제하기`}
+        <FixedBottomCTA onPress={onPay} disabled={false}>
+          {"결제하기"}
         </FixedBottomCTA>
       </FixedBottomCTAProvider>
     </View>
