@@ -23,6 +23,7 @@ import {
 import ProductCard, { Product } from '../../components/main/product-card';
 import { StepText } from '../../components/step-text';
 import axiosAuth from "../../redux/api";
+import {getRecentSelectList} from "../../zustand/api";
 
 const SORT_OPTIONS = [
   { label: '추천순', value: 'RECOMMEND' },
@@ -114,28 +115,55 @@ export default function MainTravelShop() {
     setError(null);
 
     try {
-      const body = buildSearchBody();
+      const recent = await getRecentSelectList();
 
-      const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 10000,
-      });
+      if (recent && recent.recentSelectList) {
+        //TODO : Recommend로 변경
+        const body = buildSearchBody();
+        const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 10000,
+        });
 
-      if (
-        response.status === 200 &&
-        response.data &&
-        Array.isArray(response.data.prods)
-      ) {
-        if (reset) {
-          setProductList(response.data.prods.filter(Boolean));
+        if (
+          response.status === 200 &&
+          response.data &&
+          Array.isArray(response.data.prods)
+        ) {
+          if (reset) {
+            setProductList(response.data.prods.filter(Boolean));
+          } else {
+            setProductList(prev => [...prev, ...response.data.prods.filter(Boolean)]);
+          }
+          setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
+          totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
         } else {
-          setProductList(prev => [...prev, ...response.data.prods.filter(Boolean)]);
+          if (reset) setProductList([]);
+          setError('상품을 불러오는데 실패했습니다.');
         }
-        setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
-        totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
       } else {
-        if (reset) setProductList([]);
-        setError('상품을 불러오는데 실패했습니다.');
+        const body = buildSearchBody();
+        const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 10000,
+        });
+
+        if (
+          response.status === 200 &&
+          response.data &&
+          Array.isArray(response.data.prods)
+        ) {
+          if (reset) {
+            setProductList(response.data.prods.filter(Boolean));
+          } else {
+            setProductList(prev => [...prev, ...response.data.prods.filter(Boolean)]);
+          }
+          setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
+          totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
+        } else {
+          if (reset) setProductList([]);
+          setError('상품을 불러오는데 실패했습니다.');
+        }
       }
     } catch (e: any) {
       setError('상품을 불러오는데 실패했습니다.');
@@ -396,6 +424,7 @@ export default function MainTravelShop() {
               product={item}
               onPress={() => {
                 navigation.navigate('/product/good-product', { product: item });
+                console.log(item.prod_no);
               }}
             />
           );

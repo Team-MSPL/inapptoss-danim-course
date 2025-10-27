@@ -1,13 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
@@ -15,121 +11,15 @@ import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } fr
 import { useProductStore } from "../../zustand/useProductStore";
 import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
-import {
-  buildSkusFromPkg_v2,
-  buildSkusFromPkg_v3,
-  mapNationalityToLocaleState
-} from "../../components/product/good-product-function";
-import axios from "axios";
-import axiosAuth from "../../redux/api";
-
-const BOOKING_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Booking`;
+import { formatPrice } from "../../components/product/pay-function";
+import {useBookingFields} from "../../kkday/kkdayBookingField";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
   component: ProductPay,
 });
 
-function formatPrice(n?: number | null) {
-  if (n === null || n === undefined) return "";
-  return Math.floor(Number(n)).toLocaleString();
-}
-
-function generateGuid() {
-  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-  return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
-}
-
-/**
- * params 기반으로 skus를 간단히 구성합니다.
- * - params.adult_price / params.child_price 가 주어지면 이 값을 단가로 사용해 skus를 만든다.
- * - sku_id는 pkgData.item[0].skus에서 성인/아동을 판별해 할당(없으면 첫 sku로 fallback).
- */
-function buildSkusFromParams(pkgData: any, params: any, selectedDate: string | null, adultCount: number, childCount: number, adultPriceParam?: number, childPriceParam?: number) {
-  const normalizedAdultPrice = adultPriceParam !== undefined ? Number(adultPriceParam) : undefined;
-  const normalizedChildPrice = childPriceParam !== undefined ? Number(childPriceParam) : undefined;
-
-  // 둘 다 없는 경우 params 기반 빌드 불가
-  if (normalizedAdultPrice === undefined && normalizedChildPrice === undefined) return null;
-
-  const items = pkgData?.item;
-  const item = Array.isArray(items) && items.length > 0 ? items[0] : null;
-  const candidateSkus = item && Array.isArray(item.skus) ? item.skus : [];
-
-  const extractText = (s: any) => {
-    const parts: string[] = [];
-    if (!s) return "";
-    if (s.spec && typeof s.spec === "object") Object.values(s.spec).forEach((v: any) => v && parts.push(String(v)));
-    if (s.specs_ref && Array.isArray(s.specs_ref)) {
-      s.specs_ref.forEach((r: any) => {
-        if (r?.spec_value_desc) parts.push(String(r.spec_value_desc));
-        if (r?.spec_title_desc) parts.push(String(r.spec_title_desc));
-        if (r?.spec_value_oid) parts.push(String(r.spec_value_oid));
-      });
-    }
-    if (s.ticket_rule_spec_item) parts.push(String(s.ticket_rule_spec_item));
-    if (s.title) parts.push(String(s.title));
-    if (s.name) parts.push(String(s.name));
-    if (s.spec_desc) parts.push(String(s.spec_desc));
-    return parts.join(" ").toLowerCase();
-  };
-
-  let adultSkuObj: any = null;
-  let childSkuObj: any = null;
-
-  for (const s of candidateSkus) {
-    const txt = extractText(s);
-    if (!adultSkuObj && (txt.includes("성인") || txt.includes("어른") || txt.includes("adult"))) adultSkuObj = s;
-    if (!childSkuObj && (txt.includes("아동") || txt.includes("어린이") || txt.includes("child") || txt.includes("kid") || txt.includes("초") || txt.includes("중") || txt.includes("유아"))) childSkuObj = s;
-    if (!childSkuObj && txt.includes("고등학생")) childSkuObj = s;
-  }
-
-  const firstSku = candidateSkus[0] ?? null;
-  const skus: any[] = [];
-
-  if (adultCount > 0) {
-    const skuId = (adultSkuObj && adultSkuObj.sku_id) ? adultSkuObj.sku_id : (firstSku && firstSku.sku_id ? firstSku.sku_id : null);
-    const unit = normalizedAdultPrice ?? normalizedChildPrice ?? 0;
-    skus.push({ sku_id: skuId, qty: adultCount, price: Math.round(unit * adultCount) });
-  }
-  if (childCount > 0) {
-    const skuId = (childSkuObj && childSkuObj.sku_id) ? childSkuObj.sku_id : (firstSku && firstSku.sku_id ? firstSku.sku_id : null);
-    const unit = normalizedChildPrice ?? normalizedAdultPrice ?? 0;
-    skus.push({ sku_id: skuId, qty: childCount, price: Math.round(unit * childCount) });
-  }
-
-  return skus;
-}
-
-/**
- * 기본 검증기: payload 전송 전에 필요한 최소 필드 확인
- */
-function validatePayload(payload: any) {
-  const errors: string[] = [];
-  if (!payload) {
-    errors.push("payload가 비어있음");
-    return errors;
-  }
-  if (!payload.prod_no) errors.push("prod_no 누락");
-  if (!payload.pkg_no) errors.push("pkg_no 누락");
-  if (!payload.item_no) errors.push("item_no 누락");
-  if (!payload.buyer_first_name) errors.push("예약자 이름(buyer_first_name) 누락");
-  if (!payload.buyer_last_name) errors.push("예약자 성(buyer_last_name) 누락");
-  if (!payload.buyer_email) errors.push("이메일(buyer_email) 누락");
-  if (!payload.buyer_tel_number) errors.push("전화번호(buyer_tel_number) 누락");
-  if (!Array.isArray(payload.skus) || payload.skus.length === 0) errors.push("skus가 비어있거나 형식이 올바르지 않음");
-  else {
-    payload.skus.forEach((s: any, i: number) => {
-      if (!s.sku_id) errors.push(`skus[${i}].sku_id 누락`);
-      if (!Number.isFinite(s.qty)) errors.push(`skus[${i}].qty가 숫자가 아님`);
-      if (!Number.isFinite(s.price)) errors.push(`skus[${i}].price가 숫자가 아님`);
-    });
-  }
-  return errors;
-}
-
 type PaymentMethod = "toss" | "naver" | "kakao" | "card" | null;
-type ContactMethod = "WhatsApp" | "WeChat" | "Messenger" | "Line" | "Instagram" | "KakaoTalk" | "";
 
 function ProductPay() {
   const navigation = useNavigation();
@@ -142,58 +32,14 @@ function ProductPay() {
   const thumbnail = pdt?.prod_img_url ?? (pdt?.img_list && pdt.img_list[0]) ?? "";
   const title = pdt?.prod_name || pdt?.name;
 
-  const totalPriceCalc =
-    params?.total ??
-    (params?.adult && params?.adult_price
-      ? params.adult * params.adult_price + (params.child ?? 0) * (params.child_price ?? params.adult_price)
-      : 0);
+
+  //BookingField
+  const { fields: rawFields, loading: bfLoading, error: bfError } = useBookingFields({ prod_no: params?.prod_no ?? pdt?.prod_no, pkg_no: params?.pkg_no ?? null });
+  console.log(rawFields);
 
   // openSections map
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({ 1: true });
   const [completedSections, setCompletedSections] = useState<Record<number, boolean>>({});
-
-  // Booker fields
-  const [lastNameEng, setLastNameEng] = useState<string>(params?.booker?.lastNameEng ?? "");
-  const [firstNameEng, setFirstNameEng] = useState<string>(params?.booker?.firstNameEng ?? "");
-  const [nationality, setNationality] = useState<string>(params?.booker?.nationality ?? "대한민국");
-  const [phone, setPhone] = useState<string>(params?.booker?.phone ?? "");
-  const [email, setEmail] = useState<string>(params?.booker?.email ?? "");
-
-  // nationality lists
-  const [countries] = useState<string[]>([
-    "미국",
-    "베트남",
-    "태국",
-    "일본",
-    "대한민국",
-    "중국",
-    "대만",
-    "홍콩",
-  ]);
-  const [showBookerNationalityOptions, setShowBookerNationalityOptions] = useState<boolean>(false);
-  const [showTravelerNationalityOptions, setShowTravelerNationalityOptions] = useState<boolean>(false);
-
-  // Traveler
-  const [travelerSameAsBooker, setTravelerSameAsBooker] = useState<boolean>(false);
-  const [travelerLastName, setTravelerLastName] = useState<string>("");
-  const [travelerFirstName, setTravelerFirstName] = useState<string>("");
-  const [travelerGender, setTravelerGender] = useState<"female" | "male" | null>(null);
-  const [travelerNationality, setTravelerNationality] = useState<string>("대한민국");
-  const [travelerPassport, setTravelerPassport] = useState<string>("");
-  const [travelerContactDuring, setTravelerContactDuring] = useState<"none" | "has" | null>("none");
-
-  // Contact
-  const contactOptions: ContactMethod[] = ["WhatsApp", "WeChat", "Messenger", "Line", "Instagram", "KakaoTalk"];
-  const [contactMethod, setContactMethod] = useState<ContactMethod>("");
-  const [showContactMethodOptions, setShowContactMethodOptions] = useState<boolean>(false);
-  const [contactId, setContactId] = useState<string>("");
-  const [contactIdConfirm, setContactIdConfirm] = useState<string>("");
-  const [contactVerified, setContactVerified] = useState<boolean>(false);
-  const [contactError, setContactError] = useState<string>("");
-
-  // Pickup
-  const [pickupPlace, setPickupPlace] = useState<string>(params?.pickup?.pickupPlace ?? "");
-  const [dropoffPlace, setDropoffPlace] = useState<string>(params?.pickup?.dropoffPlace ?? "");
 
   // Requests
   const [orderNote, setOrderNote] = useState<string>(params?.order_note ?? "");
@@ -206,54 +52,6 @@ function ProductPay() {
   const [agreeMarketing, setAgreeMarketing] = useState<boolean>(false);
 
   const [submitting, setSubmitting] = useState<boolean>(false);
-
-  const isValidEmail = (v: string) => /\S+@\S+\.\S+/.test(v);
-  const isValidPhone = (v: string) => v.replace(/\D/g, "").length >= 8;
-
-  useEffect(() => {
-    if (travelerSameAsBooker) {
-      setTravelerLastName(lastNameEng);
-      setTravelerFirstName(firstNameEng);
-      setTravelerNationality(nationality);
-    } else {
-      setTravelerLastName("");
-      setTravelerFirstName("");
-      setTravelerGender(null);
-      setTravelerNationality("대한민국");
-      setTravelerPassport("");
-      setTravelerContactDuring("none");
-      setContactMethod("");
-      setContactId("");
-      setContactIdConfirm("");
-      setContactVerified(false);
-      setContactError("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [travelerSameAsBooker]);
-
-  useEffect(() => {
-    if (travelerSameAsBooker) {
-      setTravelerLastName(lastNameEng);
-      setTravelerFirstName(firstNameEng);
-      setTravelerNationality(nationality);
-    }
-  }, [lastNameEng, firstNameEng, nationality, travelerSameAsBooker]);
-
-  const bookerCompleted = useMemo(() => {
-    return !!(lastNameEng && firstNameEng && nationality && isValidPhone(phone) && isValidEmail(email));
-  }, [lastNameEng, firstNameEng, nationality, phone, email]);
-
-  const travelerCompleted = useMemo(() => {
-    if (travelerSameAsBooker) {
-      return !!(travelerPassport && (travelerContactDuring === "none" || (travelerContactDuring === "has" && contactVerified)));
-    }
-    return !!(travelerLastName && travelerFirstName && travelerGender && travelerNationality && travelerPassport && (travelerContactDuring === "none" || (travelerContactDuring === "has" && contactVerified)));
-  }, [travelerSameAsBooker, travelerLastName, travelerFirstName, travelerGender, travelerNationality, travelerPassport, travelerContactDuring, contactVerified]);
-
-  // paymentCompleted requires all mandatory fields (except orderNote)
-  const paymentCompleted = useMemo(() => {
-    return !!selectedPayment && agreePersonal && agreeService && bookerCompleted && travelerCompleted && !!pickupPlace && !!dropoffPlace;
-  }, [selectedPayment, agreePersonal, agreeService, bookerCompleted, travelerCompleted, pickupPlace, dropoffPlace]);
 
   useEffect(() => {
     if (agreePersonal && agreeService && agreeMarketing) setAgreeAll(true);
@@ -277,37 +75,6 @@ function ProductPay() {
     setOpenSections((prev) => ({ ...prev, [sectionIndex + 1]: true }));
   }
 
-  function verifyContactId() {
-    setContactError("");
-    setContactVerified(false);
-    if (!contactMethod) {
-      setContactError("연락 수단을 선택하세요.");
-      return;
-    }
-    if (!contactId) {
-      setContactError("아이디를 입력하세요.");
-      return;
-    }
-    if (!contactIdConfirm) {
-      setContactError("아이디 재확인을 입력하세요.");
-      return;
-    }
-    if (contactId !== contactIdConfirm) {
-      setContactError("아이디가 일치하지 않습니다.");
-      return;
-    }
-    setContactVerified(true);
-    setContactError("");
-  }
-
-  function resetContact() {
-    setContactVerified(false);
-    setContactId("");
-    setContactIdConfirm("");
-    setContactError("");
-    setContactMethod("");
-  }
-
   // compute per-person prices and totals
   const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
   const childPrice = params?.child_price ?? adultPrice;
@@ -326,132 +93,6 @@ function ProductPay() {
   const productDiscount = (originalPerPerson && salePerPerson && originalPerPerson > salePerPerson)
     ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
     : 0;
-
-  // Builds an API-friendly reservation payload
-  const buildReservationPayload = () => {
-    const guid = params?.guid ?? generateGuid();
-    const partner_order_no = params?.partner_order_no ?? "";
-
-    const mapped = mapNationalityToLocaleState(nationality);
-
-    // If params contain explicit adult_price/child_price, prefer params-based simple builder
-    const selectedDate = params?.selected_date ?? null;
-    let skus = null;
-    if (params?.adult_price !== undefined || params?.child_price !== undefined) {
-      skus = buildSkusFromParams(pkgData, params, selectedDate, adultCount, childCount, params?.adult_price, params?.child_price);
-    }
-    // If params-based builder couldn't produce skus, fallback to v3
-    if (!Array.isArray(skus) || skus.length === 0) {
-      skus = buildSkusFromPkg_v3(pkgData, params, selectedDate, adultCount, childCount, salePerPerson, totalPriceCalc);
-    }
-
-    // as extra fallback, attempt v2 if still single combined SKU while user selected both adult+child
-    if (adultCount > 0 && childCount > 0 && Array.isArray(skus) && skus.length === 1) {
-      try {
-        const alt = buildSkusFromPkg_v2(pkgData, params, adultCount, childCount, salePerPerson, totalPriceCalc, originalPerPerson);
-        if (Array.isArray(alt) && alt.length > 1) skus = alt;
-      } catch (e) {
-        /* ignore */
-      }
-    }
-
-    // normalize
-    const normalizedSkus = (Array.isArray(skus) ? skus : []).map((s: any) => ({
-      sku_id: s?.sku_id ?? null,
-      qty: Number(s?.qty ?? 1),
-      price: Math.round(Number(s?.price ?? 0)),
-    }));
-
-    const computedTotal = normalizedSkus.reduce((sum: number, s: any) => sum + (Number(s.price) || 0), 0) || 0;
-
-    const mobile_device = {
-      mobile_model_no: params?.mobile_device?.mobile_model_no ?? null,
-      IMEI: params?.mobile_device?.IMEI ?? null,
-      active_date: params?.mobile_device?.active_date ?? params?.selected_date ?? null,
-    };
-
-    const pay_type = selectedPayment === "toss" ? "01" : selectedPayment === "naver" ? "02" : selectedPayment === "kakao" ? "03" : "01";
-
-    const payload: any = {
-      guid,
-      partner_order_no,
-      prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
-      pkg_no: params?.pkg_no ?? null,
-      item_no: params?.item_no ?? (normalizedSkus.length > 0 ? normalizedSkus[0].sku_id : null),
-      locale: mapped.locale,
-      state: mapped.state,
-      buyer_first_name: firstNameEng || "",
-      buyer_last_name: lastNameEng || "",
-      buyer_email: email || "",
-      buyer_tel_country_code: mapped.telCode,
-      buyer_tel_number: phone || "",
-      buyer_country: mapped.state,
-      s_date: params?.selected_date ?? null,
-      e_date: params?.selected_date ?? null,
-      event_time: null,
-      guide_lang: null,
-      skus: normalizedSkus,
-      mobile_device,
-      order_note: orderNote || "",
-      total_price: computedTotal ?? 0,
-      pay_type,
-    };
-
-    return payload;
-  };
-
-  // onPay uses axiosAuth and does detailed logging only for the request/response (no render-time logs)
-  async function onPay() {
-    if (!paymentCompleted) return;
-    setSubmitting(true);
-    try {
-      const payload = buildReservationPayload();
-
-      // (개발용) 서버 전송 전 payload 요약 로그 — 실제 배포시 제거 가능
-      console.log("[PAYLOAD SUMMARY] selected_date:", params?.selected_date, "adult:", params?.adult, "child:", params?.child);
-      console.log("[PAYLOAD SUMMARY] skus:", payload.skus, "total_price:", payload.total_price);
-
-      // client-side validation
-      const validationErrors = validatePayload(payload);
-      if (validationErrors.length) {
-        Alert.alert("입력 오류", `필수 항목이 누락되었거나 형식이 잘못되었습니다:\n- ${validationErrors.join("\n- ")}`);
-        setSubmitting(false);
-        return;
-      }
-
-      if (!BOOKING_API) {
-        console.warn("BOOKING_API is not configured. Skipping API call.");
-        await new Promise(r => setTimeout(r, 700));
-        navigation.navigate('/product/confirmation', { order: payload });
-        return;
-      }
-
-      // send using axiosAuth (keeps project auth wrapper)
-      const response = await axiosAuth.post(`/kkday/Booking`, payload, {
-        timeout: 60000,
-      });
-
-      if (response.status >= 500) {
-        console.error("Server 5xx response:", response.status, response.data);
-        Alert.alert("서버 오류", `서버 내부 오류가 발생했습니다 (status ${response.status}). 관리자에게 문의하세요.`);
-        return;
-      }
-
-      if (response.status >= 400) {
-        console.error("Booking API error:", response.status, response.data);
-        Alert.alert("예약 실패", `예약 요청이 실패했습니다 (status ${response.status}).\n${response.data?.message ?? JSON.stringify(response.data)}`);
-        return;
-      }
-
-      // success
-      navigation.navigate('/product/confirmation', { order: payload, bookingResponse: response.data });
-    } catch (err: any) {
-      console.error("onPay unexpected error:", err);
-      Alert.alert("오류", `예약 중 오류가 발생했습니다: ${err?.message ?? String(err)}`);
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   // render (unchanged UI)
   return (
@@ -486,320 +127,6 @@ function ProductPay() {
           </View>
         </CollapsibleSection>
 
-        {/* Booker */}
-        <CollapsibleSection
-          title="예약자 정보"
-          open={!!openSections[1]}
-          onToggle={() => toggleSection(1)}
-          completed={!!completedSections[1]}
-        >
-          <View>
-            <Text typography="t6" color={colors.grey800}>
-              성(영문) <Text style={{ color: colors.red400 }}>*</Text>
-            </Text>
-            <TextInput
-              placeholder="예) HONG"
-              placeholderTextColor={colors.grey400}
-              value={lastNameEng}
-              onChangeText={setLastNameEng}
-              style={styles.input}
-            />
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>
-              이름(영문) <Text style={{ color: colors.red400 }}>*</Text>
-            </Text>
-            <TextInput
-              placeholder="예) GILDONG"
-              placeholderTextColor={colors.grey400}
-              value={firstNameEng}
-              onChangeText={setFirstNameEng}
-              style={styles.input}
-            />
-
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>
-              국적 <Text style={{ color: colors.red400 }}>*</Text>
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={() => {
-                setShowBookerNationalityOptions(prev => !prev);
-                setShowTravelerNationalityOptions(false);
-              }}
-              style={[styles.input, { justifyContent: 'center' }]}
-            >
-              <Text style={{ color: colors.grey800 }}>{nationality}</Text>
-            </TouchableOpacity>
-
-            {showBookerNationalityOptions && (
-              <View style={[styles.dropdown, { maxHeight: 220 }]}>
-                <ScrollView nestedScrollEnabled>
-                  {countries.map((c) => (
-                    <TouchableOpacity
-                      key={c}
-                      onPress={() => {
-                        setNationality(c);
-                        setShowBookerNationalityOptions(false);
-                      }}
-                      style={{ paddingVertical: 12, paddingHorizontal: 10 }}
-                    >
-                      <Text>{c}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>
-              전화번호 <Text style={{ color: colors.red400 }}>*</Text>
-            </Text>
-            <TextInput
-              placeholder="예) 01012345678"
-              placeholderTextColor={colors.grey400}
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              style={styles.input}
-            />
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>
-              이메일 <Text style={{ color: colors.red400 }}>*</Text>
-            </Text>
-            <TextInput
-              placeholder="예) email@gmail.com"
-              placeholderTextColor={colors.grey400}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              style={styles.input}
-            />
-            <View style={{ height: 8 }} />
-
-            <Text typography="t6" style={{ color: colors.red500, marginTop: 12, lineHeight: 20 }}>
-              입력하신 이메일과 전화번호는 주문 내역 및 바우처 전달을 위해 사용됩니다.
-            </Text>
-
-            <View style={{ height: 8 }} />
-            <Button
-              type="primary"
-              style="fill"
-              display="block"
-              size="large"
-              containerStyle={{ width: 130, alignSelf: "center", height: 50, marginTop: 8 }}
-              disabled={!bookerCompleted}
-              onPress={() => markCompleteAndNext(1)}
-            >
-              작성 완료
-            </Button>
-          </View>
-        </CollapsibleSection>
-
-        {/* Traveler */}
-        <CollapsibleSection
-          title="여행자 정보"
-          open={!!openSections[2]}
-          onToggle={() => toggleSection(2)}
-          completed={!!completedSections[2]}
-        >
-          <View>
-            <View style={{ marginBottom: 12 }}>
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={() => setTravelerSameAsBooker(prev => !prev)}
-                style={[
-                  styles.sameBox,
-                  travelerSameAsBooker ? { borderColor: colors.blue500 } : undefined,
-                ]}
-                accessibilityRole="button"
-                accessibilityState={{ checked: travelerSameAsBooker }}
-                accessibilityLabel="예약자와 여행자가 같은지 여부"
-              >
-                <Text typography="t5" style={{ flex: 1, color: colors.grey800 }}>
-                  예약자와 여행자가 같아요
-                </Text>
-
-                <View
-                  style={[
-                    styles.checkboxBox,
-                    travelerSameAsBooker ? styles.checkboxBoxChecked : undefined,
-                  ]}
-                >
-                  {travelerSameAsBooker ? (
-                    <Icon name="icon-check" size={14} color="#fff" />
-                  ) : null}
-                </View>
-              </TouchableOpacity>
-
-              <Text style={{ color: colors.red400, marginTop: 8 }}>
-                여권 정보와 정확히 일치하도록 입력해 주세요
-              </Text>
-            </View>
-
-            <Text typography="t6" color={colors.grey800}>성(영문) <Text style={{ color: colors.red400 }}>*</Text></Text>
-            <TextInput
-              placeholder="예) HONG"
-              placeholderTextColor={colors.grey400}
-              value={travelerLastName}
-              onChangeText={setTravelerLastName}
-              style={styles.input}
-            />
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>이름(영문) <Text style={{ color: colors.red400 }}>*</Text></Text>
-            <TextInput
-              placeholder="예) GILDONG"
-              placeholderTextColor={colors.grey400}
-              value={travelerFirstName}
-              onChangeText={setTravelerFirstName}
-              style={styles.input}
-            />
-
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>성별 <Text style={{ color: colors.red400 }}>*</Text></Text>
-            <View style={{ flexDirection: 'row', marginTop: 8 }}>
-              <TouchableOpacity onPress={() => setTravelerGender('female')} style={[styles.smallOption, travelerGender === 'female' && styles.smallOptionActive, { marginRight: 8 }]}>
-                <Text style={[travelerGender === 'female' && styles.smallOptionActiveText]}>여성</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setTravelerGender('male')} style={[styles.smallOption, travelerGender === 'male' && styles.smallOptionActive]}>
-                <Text style={[travelerGender === 'male' && styles.smallOptionActiveText]}>남성</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>국적 <Text style={{ color: colors.red400 }}>*</Text></Text>
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={() => {
-                setShowTravelerNationalityOptions(prev => !prev);
-                setShowBookerNationalityOptions(false);
-                setShowContactMethodOptions(false);
-              }}
-              style={[styles.input, { justifyContent: 'center' }]}
-            >
-              <Text style={{ color: colors.grey800 }}>{travelerNationality}</Text>
-            </TouchableOpacity>
-
-            {showTravelerNationalityOptions && (
-              <View style={[styles.dropdown, { maxHeight: 220 }]}>
-                <ScrollView nestedScrollEnabled>
-                  {countries.map((c) => (
-                    <TouchableOpacity
-                      key={c}
-                      onPress={() => {
-                        setTravelerNationality(c);
-                        setShowTravelerNationalityOptions(false);
-                      }}
-                      style={{ paddingVertical: 12, paddingHorizontal: 10 }}
-                    >
-                      <Text>{c}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>여권 번호 <Text style={{ color: colors.red400 }}>*</Text></Text>
-            <TextInput
-              placeholder="예) M12345678"
-              placeholderTextColor={colors.grey400}
-              value={travelerPassport}
-              onChangeText={setTravelerPassport}
-              style={styles.input}
-            />
-
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>여행 중 연락 수단 <Text style={{ color: colors.red400 }}>*</Text></Text>
-
-            <View style={{ flexDirection: 'row', marginTop: 8, gap: 8 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setTravelerContactDuring('none');
-                  setShowContactMethodOptions(false);
-                }}
-                style={[styles.smallOption, travelerContactDuring === 'none' && styles.smallOptionActive, { marginRight: 8 }]}
-              >
-                <Text style={[travelerContactDuring === 'none' && styles.smallOptionActiveText]}>없음</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => {
-                  setTravelerContactDuring('has');
-                  setShowContactMethodOptions(true);
-                  setShowBookerNationalityOptions(false);
-                  setShowTravelerNationalityOptions(false);
-                }}
-                style={[styles.smallOption, travelerContactDuring === 'has' && styles.smallOptionActive]}
-              >
-                <Text style={[travelerContactDuring === 'has' && styles.smallOptionActiveText]}>있음</Text>
-              </TouchableOpacity>
-            </View>
-
-            {travelerContactDuring === 'has' && (
-              <View style={{ marginTop: 12 }}>
-                <Text typography="t6" color={colors.grey800}>연락 수단 이름 <Text style={{ color: colors.red400 }}>*</Text></Text>
-
-                <TouchableOpacity
-                  activeOpacity={0.85}
-                  onPress={() => {
-                    setShowContactMethodOptions(prev => !prev);
-                    setShowBookerNationalityOptions(false);
-                    setShowTravelerNationalityOptions(false);
-                  }}
-                  style={[styles.input, { justifyContent: 'center' }]}
-                >
-                  <Text style={{ color: colors.grey800 }}>{contactMethod || '선택하세요'}</Text>
-                </TouchableOpacity>
-
-                {showContactMethodOptions && (
-                  <View style={[styles.dropdown, { maxHeight: 220 }]}>
-                    <ScrollView nestedScrollEnabled>
-                      {contactOptions.map((m) => (
-                        <TouchableOpacity
-                          key={m}
-                          onPress={() => {
-                            setContactMethod(m);
-                            setShowContactMethodOptions(false);
-                          }}
-                          style={{ paddingVertical: 12, paddingHorizontal: 10 }}
-                        >
-                          <Text>{m}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                  </View>
-                )}
-
-                {contactMethod && !contactVerified && (
-                  <View style={{ marginTop: 12 }}>
-                    <Text typography="t6" color={colors.grey800}>아이디</Text>
-                    <TextInput placeholder="아이디 입력" placeholderTextColor={colors.grey400} value={contactId} onChangeText={setContactId} style={styles.input} />
-                    <Text typography="t6" color={colors.grey800} style={{ marginTop: 8 }}>아이디 재확인</Text>
-                    <TextInput placeholder="아이디 재확인" placeholderTextColor={colors.grey400} value={contactIdConfirm} onChangeText={setContactIdConfirm} style={styles.input} />
-                    {contactError ? <Text typography="t6" style={{ color: colors.red400, marginTop: 6 }}>{contactError}</Text> : null}
-                    <View style={{ height: 12 }} />
-                    <Button type="primary" style="fill" display="block" size="large" disabled={!contactId || !contactIdConfirm} onPress={verifyContactId} containerStyle={{ width: 130, alignSelf: "center", height: 50, marginVertical: 12 }}>입력 완료</Button>
-                  </View>
-                )}
-
-                {contactMethod && contactVerified && (
-                  <View style={{ marginTop: 12 }}>
-                    <View
-                      style={[styles.input, { justifyContent: 'center' }]}
-                    >
-                      <Text style={{ color: colors.grey800 }}>{contactId}</Text>
-                    </View>
-                    <Button type="primary" containerStyle={{ width: 130, alignSelf: "center", height: 50, marginVertical: 12 }} display="block" size="large" onPress={resetContact}>수정하기</Button>
-                  </View>
-                )}
-              </View>
-            )}
-
-            <View style={{ height: 12 }} />
-            <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} disabled={!travelerCompleted} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
-          </View>
-        </CollapsibleSection>
-
-        {/* Pickup */}
-        <CollapsibleSection title="픽업 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
-          <Text typography="t6" color={colors.grey800}>픽업 장소 <Text style={{ color: colors.red400 }}>*</Text></Text>
-          <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" placeholderTextColor={colors.grey400} value={pickupPlace} onChangeText={setPickupPlace} style={styles.input} />
-          <Text typography="t6" color={colors.grey800} style={{ marginTop: 12 }}>드랍 장소 <Text style={{ color: colors.red400 }}>*</Text></Text>
-          <TextInput placeholder="영문 장소명과 영문 주소를 입력해 주세요" placeholderTextColor={colors.grey400} value={dropoffPlace} onChangeText={setDropoffPlace} style={styles.input} />
-          <View style={{ height: 12 }} />
-          <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} disabled={!pickupPlace || !dropoffPlace} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
-        </CollapsibleSection>
 
         {/* Requests */}
         <CollapsibleSection title="요청 사항" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
@@ -878,7 +205,7 @@ function ProductPay() {
         </View>
 
         {/* bottom CTA */}
-        <FixedBottomCTA onPress={onPay} disabled={!paymentCompleted || submitting}>
+        <FixedBottomCTA onPress={() => {}} disabled={!false || submitting}>
           {submitting ? "결제중..." : `${formatPrice(Math.max(0, productAmount - productDiscount))}원 결제하기`}
         </FixedBottomCTA>
       </FixedBottomCTAProvider>
