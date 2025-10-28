@@ -46,6 +46,9 @@ import HotelTelNumberInput from "../../components/product/payfield/HotelNumberIn
 import BookingOrderNoInput from "../../components/product/payfield/BookingOrderNoInput";
 import CheckInDateInput from "../../components/product/payfield/CheckInDateInput";
 import CheckOutDateInput from "../../components/product/payfield/CheckOutDateInput";
+import ContactAppSelector from "../../components/product/payfield/ContactAppSelector";
+import ContactAppAccountInput from "../../components/product/payfield/ContactAppAccountInput";
+import HaveAppToggle from "../../components/product/payfield/HaveAppToggle";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -381,6 +384,19 @@ function ProductPay() {
                 cusType="contact"
                 required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"}
               />
+            )}
+            {rawFields?.custom?.contact_app && Array.isArray(rawFields.custom.contact_app.list_option) && rawFields.custom.contact_app.use?.includes("contact") && (
+              <ContactAppSelector
+                cusType="contact"
+                options={rawFields.custom.contact_app.list_option}
+                required={String(rawFields.custom.contact_app.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields?.custom?.contact_app_account && Array.isArray(rawFields.custom.contact_app_account.use) && rawFields.custom.contact_app_account.use.includes("contact") && (
+              <ContactAppAccountInput cusType="contact" required={String(rawFields.custom.contact_app_account.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.have_app && Array.isArray(rawFields.custom.have_app.use) && rawFields.custom.have_app.use.includes("contact") && (
+              <HaveAppToggle cusType="contact" label="연락 앱 설치 여부" />
             )}
           </CollapsibleSection>
         )}
