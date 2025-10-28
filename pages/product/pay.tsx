@@ -37,6 +37,15 @@ import MealSelector from "../../components/product/payfield/MealSelector";
 import AllergyFoodSelector from "../../components/product/payfield/AllergyFoodSelector";
 import NativeLastNameInput from "../../components/product/payfield/NativeLastNameInput";
 import NativeFirstNameInput from "../../components/product/payfield/NativeFirstNameInput";
+import TelCountryCodeSelector from "../../components/product/payfield/TelCountryCodeSelector";
+import TelNumberInput from "../../components/product/payfield/TelNumberInput";
+import CountryCitiesSelector from "../../components/product/payfield/CountryCitiesSelector";
+import AddressInput from "../../components/product/payfield/AddressInput";
+import HotelNameInput from "../../components/product/payfield/HotelNameInput";
+import HotelTelNumberInput from "../../components/product/payfield/HotelNumberInput";
+import BookingOrderNoInput from "../../components/product/payfield/BookingOrderNoInput";
+import CheckInDateInput from "../../components/product/payfield/CheckInDateInput";
+import CheckOutDateInput from "../../components/product/payfield/CheckOutDateInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -359,6 +368,20 @@ function ProductPay() {
                 required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
               />
             )}
+            {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("contact") && (
+              <TelCountryCodeSelector
+                cusType="contact"
+                options={rawFields.custom.tel_country_code.list_option}
+                required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+
+            {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("contact") && (
+              <TelNumberInput
+                cusType="contact"
+                required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
           </CollapsibleSection>
         )}
 
@@ -374,6 +397,43 @@ function ProductPay() {
               <NativeFirstNameInput
                 cusType="send"
                 required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("send") && (
+              <TelCountryCodeSelector cusType="send" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("send") && (
+              <TelNumberInput cusType="send" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.country_cities && Array.isArray(rawFields.custom.country_cities.list_option) && rawFields.custom.country_cities.use?.includes("send") && (
+              <CountryCitiesSelector
+                cusType="send"
+                options={rawFields.custom.country_cities.list_option}
+                required={String(rawFields.custom.country_cities.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields?.custom?.address && Array.isArray(rawFields.custom.address.use) && rawFields.custom.address.use.includes("send") && (
+              <AddressInput cusType="send" required={String(rawFields.custom.address.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.hotel_name && Array.isArray(rawFields.custom.hotel_name.use) && rawFields.custom.hotel_name.use.includes("send") && (
+              <HotelNameInput cusType="send" required={String(rawFields.custom.hotel_name.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.hotel_tel_number && Array.isArray(rawFields.custom.hotel_tel_number.use) && rawFields.custom.hotel_tel_number.use.includes("send") && (
+              <HotelTelNumberInput cusType="send" required={String(rawFields.custom.hotel_tel_number.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.booking_order_no && Array.isArray(rawFields.custom.booking_order_no.use) && rawFields.custom.booking_order_no.use.includes("send") && (
+              <BookingOrderNoInput cusType="send" required={String(rawFields.custom.booking_order_no.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields?.custom?.check_in_date && Array.isArray(rawFields.custom.check_in_date.use) && rawFields.custom.check_in_date.use.includes("send") && (
+              <CheckInDateInput
+                cusType="send"
+                required={String(rawFields.custom.check_in_date.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields?.custom?.check_out_date && Array.isArray(rawFields.custom.check_out_date.use) && rawFields.custom.check_out_date.use.includes("send") && (
+              <CheckOutDateInput
+                cusType="send"
+                required={String(rawFields.custom.check_out_date.is_require ?? "").toLowerCase() === "true"}
               />
             )}
           </CollapsibleSection>
