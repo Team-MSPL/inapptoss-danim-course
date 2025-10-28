@@ -3,26 +3,47 @@ import { View, TouchableOpacity, ScrollView, StyleSheet, TextInput } from "react
 import { Text, colors } from "@toss-design-system/react-native";
 import useBookingStore from "../../../zustand/useBookingStore";
 
-type LocationOption = { id?: string; code?: string; name?: string; address?: string; [k: string]: any; };
+type LocationOption = {
+  id?: string;
+  code?: string;
+  name?: string;
+  address?: string;
+  [k: string]: any;
+};
 
 type Props = {
-  trafficType: string;
+  trafficType: string; // ex "pickup_03"
   field: "s_location" | "e_location";
   rawFields?: any;
-  specIndex?: number;
+  specIndex?: number; // optional: when pickup spec duplicated, pass this
   label?: string;
   required?: boolean;
   onValueChange?: (v: string) => void;
 };
 
-export default function RentcarLocationSelector({ trafficType, field, rawFields, specIndex, label, required = false, onValueChange }: Props) {
+/**
+ * PickupLocationInput
+ * - 기본적으로는 문자열 입력.
+ * - 만약 rawFields.traffics 에 해당 spec의 field.location 배열이 존재하면 목록(dropdown)으로 선택.
+ * - location 옵션 중 id === "customize" 가 있으면 그 option 자체가 직접입력 트리거. 선택 시 텍스트 입력이 노출되고 입력값을 저장.
+ * - 선택 시 저장되는 값은 option.address (없으면 option.name).
+ */
+export default function PickupLocationInput({
+                                              trafficType,
+                                              field,
+                                              rawFields,
+                                              specIndex,
+                                              label,
+                                              required = false,
+                                              onValueChange,
+                                            }: Props) {
   const trafficSpec = Array.isArray(rawFields?.traffics)
-    ? rawFields.traffics[specIndex ?? rawFields.traffics.findIndex((t: any) => t?.traffic_type?.traffic_type_value === trafficType)] ?? null
+    ? rawFields.traffics[specIndex ?? rawFields.traffics.findIndex((t:any) => t?.traffic_type?.traffic_type_value === trafficType)] ?? null
     : null;
 
   const locationOptions: LocationOption[] = trafficSpec?.[field]?.location ?? [];
-  const allowCustomizeOption = locationOptions.some((o) => String(o.id) === "customize");
 
+  // read stored value for this trafficType (+ specIndex if provided)
   const stored = useBookingStore((s) =>
     (s.trafficArray ?? []).find((it) => {
       if (String(it?.traffic_type) !== String(trafficType)) return false;
@@ -32,10 +53,13 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
   );
   const setTrafficField = useBookingStore((s) => s.setTrafficField);
 
+  const allowCustomizeOption = locationOptions.some((o) => String(o.id) === "customize");
+
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [customAddress, setCustomAddress] = useState<string>("");
 
+  // derive initial selectedId / customAddress from stored
   useEffect(() => {
     if (!Array.isArray(locationOptions) || locationOptions.length === 0) {
       setSelectedId(null);
@@ -43,32 +67,47 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
       return;
     }
 
-    const byAddress = locationOptions.find((opt) => opt?.address && String(opt.address) === String(stored));
-    if (byAddress) { setSelectedId(String(byAddress.id ?? byAddress.code ?? "")); setCustomAddress(""); return; }
-
-    const byId = locationOptions.find((opt) => String(opt.id) === String(stored) || String(opt.code) === String(stored));
-    if (byId) { setSelectedId(String(byId.id ?? byId.code ?? "")); setCustomAddress(""); return; }
-
-    if (allowCustomizeOption && stored && String(stored).trim() !== "") {
-      setSelectedId("customize"); setCustomAddress(String(stored)); return;
+    const byAddress = locationOptions.find(opt => opt?.address && String(opt.address) === String(stored));
+    if (byAddress) {
+      setSelectedId(String(byAddress.id ?? byAddress.code ?? ""));
+      setCustomAddress("");
+      return;
     }
 
+    const byId = locationOptions.find(opt => String(opt.id) === String(stored) || String(opt.code) === String(stored));
+    if (byId) {
+      setSelectedId(String(byId.id ?? byId.code ?? ""));
+      setCustomAddress("");
+      return;
+    }
+
+    if (allowCustomizeOption && stored && String(stored).trim() !== "") {
+      setSelectedId("customize");
+      setCustomAddress(String(stored));
+      return;
+    }
+
+    // fallback: treat stored as plain text if no options matched
     setSelectedId(null);
     setCustomAddress(String(stored ?? ""));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stored, JSON.stringify(locationOptions), allowCustomizeOption]);
 
+  // write to store when selectedId changes
   useEffect(() => {
     if (selectedId === null) {
       setTrafficField(trafficType, field, customAddress ? customAddress : "", specIndex);
       onValueChange?.(customAddress ?? "");
       return;
     }
+
     if (selectedId === "customize") {
       setTrafficField(trafficType, field, customAddress ?? "", specIndex);
       onValueChange?.(customAddress ?? "");
       return;
     }
+
+    // normal option
     const opt = locationOptions.find((o) => String(o.id) === String(selectedId) || String(o.code) === String(selectedId));
     const addr = opt?.address ?? opt?.name ?? "";
     setTrafficField(trafficType, field, addr, specIndex);
@@ -76,24 +115,33 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
+  // write to store when customAddress changes while customize selected
   useEffect(() => {
     if (selectedId === "customize") {
       setTrafficField(trafficType, field, customAddress ?? "", specIndex);
       onValueChange?.(customAddress ?? "");
     } else if (!locationOptions || locationOptions.length === 0) {
+      // if no options at all, always write typed string
       setTrafficField(trafficType, field, customAddress ?? "", specIndex);
       onValueChange?.(customAddress ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customAddress]);
 
+  // If there are no location options, render a simple TextInput (string input)
   if (!Array.isArray(locationOptions) || locationOptions.length === 0) {
     return (
       <View style={{ marginBottom: 12 }}>
         <Text typography="t6" color={colors.grey800} style={{ marginBottom: 6 }}>
           {label ?? (field === "s_location" ? "픽업" : "하차")} {required ? <Text style={{ color: colors.red400 }}>*</Text> : null}
         </Text>
-        <TextInput placeholder="주소를 입력하세요" placeholderTextColor={colors.grey400} value={customAddress} onChangeText={setCustomAddress} style={[styles.input]} />
+        <TextInput
+          placeholder="주소를 입력하세요"
+          placeholderTextColor={colors.grey400}
+          value={customAddress}
+          onChangeText={setCustomAddress}
+          style={[styles.input]}
+        />
       </View>
     );
   }
@@ -107,7 +155,7 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
         {label ?? (field === "s_location" ? "픽업" : "하차")} {required ? <Text style={{ color: colors.red400 }}>*</Text> : null}
       </Text>
 
-      <TouchableOpacity activeOpacity={0.85} onPress={() => setOpen((p) => !p)} style={styles.input}>
+      <TouchableOpacity activeOpacity={0.85} onPress={() => setOpen(p => !p)} style={styles.input}>
         <Text style={{ color: displayLabel ? colors.grey800 : colors.grey400 }}>{displayLabel ?? "선택하세요"}</Text>
       </TouchableOpacity>
 
@@ -137,8 +185,28 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
 }
 
 const styles = StyleSheet.create({
-  input: { height: 54, borderRadius: 14, backgroundColor: colors.greyOpacity100, paddingHorizontal: 12, justifyContent: "center" },
-  dropdown: { backgroundColor: "#fff", borderWidth: 1, borderColor: colors.grey200, borderRadius: 10, marginTop: 8, maxHeight: 220 },
-  optionRow: { paddingVertical: 12, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: colors.grey100 },
-  optionRowActive: { backgroundColor: colors.blue500 },
+  input: {
+    height: 54,
+    borderRadius: 14,
+    backgroundColor: colors.greyOpacity100,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+  },
+  dropdown: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: colors.grey200,
+    borderRadius: 10,
+    marginTop: 8,
+    maxHeight: 220,
+  },
+  optionRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grey100,
+  },
+  optionRowActive: {
+    backgroundColor: colors.blue500,
+  },
 });

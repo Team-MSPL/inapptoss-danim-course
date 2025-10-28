@@ -12,7 +12,7 @@ type BookingState = {
   // traffic array (simple type-keyed entries)
   trafficArray: Array<Record<string, any>>;
   setTrafficArray: (arr: Array<Record<string, any>>) => void;
-  setTrafficField: (trafficTypeValue: string, fieldId: string, value: any) => void;
+  setTrafficField: (trafficTypeValue: string, fieldId: string, value: any, specIndex?: number) => void;
   removeTrafficByType: (trafficTypeValue: string) => void;
   resetAll: () => void;
 
@@ -52,30 +52,76 @@ const useBookingStore = create<BookingState>((set, get) => ({
    * - value: value to set
    *
    * Behavior:
-   * - If an entry with traffic_type === trafficTypeValue exists, update that entry's field.
-   * - Otherwise push a new entry { traffic_type: trafficTypeValue, [fieldId]: value }.
+   * - If an entry with traffic_type === trafficTypeValue exists (and spec_index matches when provided), update that entry's field.
+   * - Otherwise push a new entry { traffic_type: trafficTypeValue, spec_index?: specIndex, [fieldId]: value }.
+   *
+   * Safety:
+   * - If the requested update would not change the stored value (same value), do nothing to avoid unnecessary re-renders/loops.
+   * - If attempting to create a new entry with an empty value (""/null/undefined), do nothing.
    */
-  setTrafficField: (trafficTypeValue: string, fieldId: string, value: any) =>
+  setTrafficField: (trafficTypeValue: string, fieldId: string, value: any, specIndex?: number) =>
     set((state) => {
       const next = [...(state.trafficArray || [])];
-      const idx = next.findIndex((it) => String(it?.traffic_type) === String(trafficTypeValue));
+
+      // find by type + spec_index (if specIndex provided) otherwise fallback to first matching type
+      let idx = -1;
+      if (typeof specIndex === "number") {
+        idx = next.findIndex((it) => String(it?.traffic_type) === String(trafficTypeValue) && Number(it?.spec_index) === specIndex);
+      } else {
+        idx = next.findIndex((it) => String(it?.traffic_type) === String(trafficTypeValue));
+      }
+
+      // helper to test emptiness
+      const isEmpty = (v: any) => v === "" || v === null || typeof v === "undefined";
+
       if (idx >= 0) {
+        const existing = next[idx] ?? {};
+        const existingVal = existing[fieldId];
+
+        // If no-op (existing value equals requested), do nothing
+        // Compare as strings for lenient equality on primitives; handle undefined/null/empty uniformly
+        const existingIsEmpty = isEmpty(existingVal);
+        const requestedIsEmpty = isEmpty(value);
+
+        if (existingIsEmpty && requestedIsEmpty) {
+          // nothing to change
+          return { trafficArray: state.trafficArray };
+        }
+        if (!existingIsEmpty && !requestedIsEmpty && String(existingVal) === String(value)) {
+          // value identical, nothing to change
+          return { trafficArray: state.trafficArray };
+        }
+
+        // perform update (modify only if truly changed)
         const item = { ...(next[idx] ?? {}) };
-        if (value === "" || value === null || typeof value === "undefined") {
-          // remove field if empty string/null/undefined
-          delete item[fieldId];
+        if (requestedIsEmpty) {
+          // delete field if requested to clear
+          if (Object.prototype.hasOwnProperty.call(item, fieldId)) {
+            delete item[fieldId];
+            next[idx] = item;
+            return { trafficArray: next };
+          } else {
+            // field not present, nothing to change
+            return { trafficArray: state.trafficArray };
+          }
         } else {
           item[fieldId] = value;
+          next[idx] = item;
+          return { trafficArray: next };
         }
-        next[idx] = item;
       } else {
-        const newItem: Record<string, any> = { traffic_type: trafficTypeValue };
-        if (!(value === "" || value === null || typeof value === "undefined")) {
-          newItem[fieldId] = value;
+        // creating new item
+        // If requested value is empty, do nothing (avoid creating empty entries)
+        const isValEmpty = isEmpty(value);
+        if (isValEmpty) {
+          return { trafficArray: state.trafficArray };
         }
+        const newItem: Record<string, any> = { traffic_type: trafficTypeValue };
+        if (typeof specIndex === "number") newItem.spec_index = specIndex;
+        newItem[fieldId] = value;
         next.push(newItem);
+        return { trafficArray: next };
       }
-      return { trafficArray: next };
     }),
 
   removeTrafficByType: (trafficTypeValue: string) =>

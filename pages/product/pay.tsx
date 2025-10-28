@@ -75,6 +75,10 @@ import LuggageCheckInput from "../../components/product/traffic/LuggageCheckInpu
 import RentcarLocationSelector from "../../components/product/traffic/RentcarLocationSelector";
 import RentcarDateInput from "../../components/product/traffic/RentcarDateInput";
 import RentcarTimeInput from "../../components/product/traffic/RentcarTimeInput";
+import PickupLocationInput from "../../components/product/traffic/PickupLocationInput";
+import PickupDateInput from "../../components/product/traffic/PickupDateInput";
+import PickupTimeInput from "../../components/product/traffic/PickupTimeInput";
+import VoucherLocationInput from "../../components/product/traffic/VoucherLocationInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -591,7 +595,6 @@ function ProductPay() {
               onPress={() => {
                 const arr = useBookingStore.getState().getTrafficArray();
                 console.log("[trafficArray]", arr);
-                Alert.alert("현재 traffics", JSON.stringify(arr, null, 2));
               }}
             >
               작성 완료
@@ -634,7 +637,6 @@ function ProductPay() {
               onPress={() => {
                 const arr = useBookingStore.getState().getTrafficArray();
                 console.log("[trafficArray]", arr);
-                Alert.alert("현재 traffics", JSON.stringify(arr, null, 2));
               }}
             >
               작성 완료
@@ -643,59 +645,97 @@ function ProductPay() {
         )}
 
         {(hasRentcar01 || hasRentcar02 || hasRentcar03) && (
-          <CollapsibleSection title="렌터카 정보" open={!!openSections[10]} onToggle={() => toggleSection(10)} completed={!!completedSections[10]}>
+          <CollapsibleSection
+            title="렌터카 정보"
+            open={!!openSections[10]}
+            onToggle={() => toggleSection(10)}
+            completed={!!completedSections[10]}
+          >
             <View>
-              {(() => {
-                const types = ["rentcar_01", "rentcar_02", "rentcar_03"];
-                let cnt = 0;
-                return types.map((t) => {
-                  if (!availableTrafficTypes.includes(t)) return null;
-                  cnt += 1;
-                  return (
-                    <View key={t} style={{ marginBottom: 12 }}>
-                      <Text typography="t5" color={colors.grey800} style={{marginBottom: 8}} >{`렌터카 정보 ${cnt}`}</Text>
-                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_location && (
-                        <RentcarLocationSelector
-                          trafficType={t}
-                          field="s_location"
-                          rawFields={rawFields}
-                          required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_location?.is_require ?? "").toLowerCase() === "true"}
-                        />
-                      )}
-                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_location && (
-                        <RentcarLocationSelector
-                          trafficType={t}
-                          field="e_location"
-                          rawFields={rawFields}
-                          required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_location?.is_require ?? "").toLowerCase() === "true"}
-                        />
-                      )}
-                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_date && (
-                        <RentcarDateInput trafficType={t} field="s_date" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_date?.is_require ?? "").toLowerCase() === "true"} />
-                      )}
-                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_time && (
-                        <RentcarTimeInput trafficType={t} field="s_time" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_time?.is_require ?? "").toLowerCase() === "true"} />
-                      )}
-                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_date && (
-                        <RentcarDateInput trafficType={t} field="e_date" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_date?.is_require ?? "").toLowerCase() === "true"} />
-                      )}
-                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_time && (
-                        <RentcarTimeInput trafficType={t} field="e_time" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_time?.is_require ?? "").toLowerCase() === "true"} />
-                      )}
-                    </View>
-                  );
-                });
-              })()}
+              {Array.isArray(rawFields?.traffics) &&
+                rawFields.traffics
+                  .map((spec: any, specIndex: number) => ({ spec, specIndex }))
+                  .filter(({ spec }) => {
+                    const t = spec?.traffic_type?.traffic_type_value;
+                    return !!t && ["rentcar_01", "rentcar_02", "rentcar_03"].includes(t) && availableTrafficTypes.includes(t);
+                  })
+                  .map(({ spec, specIndex }, renderedIdx) => {
+                    const tValue = spec?.traffic_type?.traffic_type_value;
+                    return (
+                      <View key={`${tValue}__${specIndex}`} style={{ marginBottom: 12 }}>
+                        <Text typography="t5" color={colors.grey800} style={{ marginBottom: 8 }}>{`렌터카 정보 ${renderedIdx + 1}`}</Text>
+
+                        {spec?.s_location && (
+                          <RentcarLocationSelector
+                            trafficType={tValue}
+                            field="s_location"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+
+                        {spec?.e_location && (
+                          <RentcarLocationSelector
+                            trafficType={tValue}
+                            field="e_location"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.e_location?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+
+                        {spec?.s_date && (
+                          <RentcarDateInput
+                            trafficType={tValue}
+                            field="s_date"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_date?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+
+                        {spec?.s_time && (
+                          <RentcarTimeInput
+                            trafficType={tValue}
+                            field="s_time"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_time?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+
+                        {spec?.e_date && (
+                          <RentcarDateInput
+                            trafficType={tValue}
+                            field="e_date"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.e_date?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+
+                        {spec?.e_time && (
+                          <RentcarTimeInput
+                            trafficType={tValue}
+                            field="e_time"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                      </View>
+                    );
+                  })}
               <Button
                 type="primary"
                 style="fill"
                 display="block"
                 size="large"
-                containerStyle={{ alignSelf: 'center', width: 140, height: 48, marginTop: 8 }}
+                containerStyle={{ alignSelf: "center", width: 140, height: 48, marginTop: 8 }}
                 onPress={() => {
                   const arr = useBookingStore.getState().getTrafficArray();
                   console.log("[trafficArray]", arr);
-                  Alert.alert("현재 traffics", JSON.stringify(arr, null, 2));
                 }}
               >
                 작성 완료
@@ -705,33 +745,137 @@ function ProductPay() {
         )}
 
         {(hasPickup03 || hasPickup04) && (
-          <CollapsibleSection title="픽업 정보" open={!!openSections[11]} onToggle={() => toggleSection(11)} completed={!!completedSections[11]}>
+          <CollapsibleSection
+            title="픽업 정보"
+            open={!!openSections[11]}
+            onToggle={() => toggleSection(11)}
+            completed={!!completedSections[11]}
+          >
             <View>
-              {(() => {
-                const types = ["pickup_03", "pickup_04"];
-                let cnt = 0;
-                return types.map((t) => {
-                  if (!availableTrafficTypes.includes(t)) return null;
-                  cnt += 1;
-                  return (
-                    <View key={t} style={{ marginBottom: 12 }}>
-                      <Text typography="t6" color={colors.grey800}>{`픽업 정보 ${cnt}`}</Text>
-                      <View />
-                    </View>
-                  );
-                });
-              })()}
+              {Array.isArray(rawFields?.traffics) &&
+                rawFields.traffics
+                  .map((spec: any, specIndex: number) => ({ spec, specIndex }))
+                  .filter(({ spec }) => {
+                    const t = spec?.traffic_type?.traffic_type_value;
+                    return (
+                      !!t &&
+                      (t === "pickup_03" || t === "pickup_04") &&
+                      availableTrafficTypes.includes(t)
+                    );
+                  })
+                  .map(({ spec, specIndex }, renderedIdx) => {
+                    const tValue = spec?.traffic_type?.traffic_type_value;
+                    return (
+                      <View key={`${tValue}__${specIndex}`} style={{ marginBottom: 12 }}>
+                        <Text typography="t5" color={colors.grey800} style={{marginBottom: 8}}>{`픽업 정보 ${renderedIdx + 1}`}</Text>
+                        {spec?.s_location && (
+                          <PickupLocationInput
+                            trafficType={tValue}
+                            field="s_location"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                        {spec?.s_date && (
+                          <PickupDateInput
+                            trafficType={tValue}
+                            field="s_date"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_date?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                        {spec?.s_time && (
+                          <PickupTimeInput
+                            trafficType={tValue}
+                            field="s_time"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_time?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                        {spec?.e_location && (
+                          <PickupLocationInput
+                            trafficType={tValue}
+                            field="e_location"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.e_location?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                        {spec?.e_date && (
+                          <PickupDateInput
+                            trafficType={tValue}
+                            field="e_date"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.e_date?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                        {spec?.e_time && (
+                          <PickupTimeInput
+                            trafficType={tValue}
+                            field="e_time"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                      </View>
+                    );
+                  })}
             </View>
           </CollapsibleSection>
         )}
 
         {hasVoucher && (
-          <CollapsibleSection title="바우처/픽업 위치" open={!!openSections[12]} onToggle={() => toggleSection(12)} completed={!!completedSections[12]}>
+          <CollapsibleSection
+            title="바우처/픽업 위치"
+            open={!!openSections[12]}
+            onToggle={() => toggleSection(12)}
+            completed={!!completedSections[12]}
+          >
             <View>
+              {Array.isArray(rawFields?.traffics) &&
+                rawFields.traffics
+                  .map((spec: any, specIndex: number) => ({ spec, specIndex }))
+                  .filter(({ spec }) => {
+                    const t = spec?.traffic_type?.traffic_type_value;
+                    return !!t && t === "voucher" && availableTrafficTypes.includes(t);
+                  })
+                  .map(({ spec, specIndex }, renderedIdx) => {
+                    const tValue = spec?.traffic_type?.traffic_type_value;
+                    return (
+                      <View key={`${tValue}__${specIndex}`} style={{ marginBottom: 12 }}>
+                        {spec?.s_location && (
+                          <VoucherLocationInput
+                            trafficType={tValue}
+                            field="s_location"
+                            rawFields={rawFields}
+                            specIndex={specIndex}
+                            required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"}
+                          />
+                        )}
+                      </View>
+                    );
+                  })}
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: "center", width: 140, height: 48, marginTop: 8 }}
+                onPress={() => {
+                  const arr = useBookingStore.getState().getTrafficArray();
+                  console.log("[trafficArray]", arr);
+                }}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
-
         <CollapsibleSection title="요청 사항" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
           <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} value={orderNote} onChangeText={setOrderNote} style={[styles.input]} multiline />
           <View style={{ height: 12 }} />
