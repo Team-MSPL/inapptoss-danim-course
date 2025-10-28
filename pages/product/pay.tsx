@@ -56,6 +56,14 @@ import ArrivalTerminalInput from "../../components/product/traffic/ArrivalTermin
 import ArrivalVisaToggle from "../../components/product/traffic/ArrivalVisaToggle";
 import ArrivalDateInput from "../../components/product/traffic/ArrivalDateInput";
 import ArrivalTimeInput from "../../components/product/traffic/ArrivalTimeInput";
+import DepartureFlightTypeSelector from "../../components/product/traffic/DepartureFlightTypeSelector";
+import DepartureAirportSelector from "../../components/product/traffic/DepartureAirportSelector";
+import DepartureAirlineInput from "../../components/product/traffic/DepartureAirlineInput";
+import DepartureFlightNoInput from "../../components/product/traffic/DepartureFlightNoInput";
+import DepartureTerminalInput from "../../components/product/traffic/DepartureTerminalInput";
+import DepartureHaveBeenInCountryInput from "../../components/product/traffic/DepartureHaveBeenInCountryInput";
+import DepartureDateInput from "../../components/product/traffic/DepartureDateInput";
+import DepartureTimeInput from "../../components/product/traffic/DepartureTimeInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -529,6 +537,54 @@ function ProductPay() {
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_time && (
               <ArrivalTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_time?.is_require ?? "").toLowerCase() === "true"} />
             )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_flightType && (
+              <DepartureFlightTypeSelector
+                trafficType="flight"
+                rawFields={rawFields}
+                trafficTypeValue="flight"
+                required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_flightType?.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_airport && (
+              <DepartureAirportSelector
+                trafficType="flight"
+                rawFields={rawFields}
+                trafficTypeValue="flight"
+                required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_airport?.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_airlineName && (
+              <DepartureAirlineInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_airlineName?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_flightNo && (
+              <DepartureFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_flightNo?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_terminalNo && (
+              <DepartureTerminalInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_terminalNo?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_haveBeenInCountry && (
+              <DepartureHaveBeenInCountryInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_haveBeenInCountry?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_date && (
+              <DepartureDateInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_date?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_time && (
+              <DepartureTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_time?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            <Button
+              type="primary"
+              style="fill"
+              display="block"
+              size="large"
+              containerStyle={{ alignSelf: 'center', width: 140, height: 48, marginTop: 8 }}
+              onPress={() => {
+                const arr = useBookingStore.getState().getTrafficArray();
+                console.log("[trafficArray]", arr);
+                Alert.alert("현재 traffics", JSON.stringify(arr, null, 2));
+              }}
+            >
+              작성 완료
+            </Button>
           </CollapsibleSection>
         )}
 
