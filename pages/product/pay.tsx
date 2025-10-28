@@ -130,6 +130,19 @@ function ProductPay() {
   const [agreeService, setAgreeService] = useState<boolean>(false);
   const [agreeMarketing, setAgreeMarketing] = useState<boolean>(false);
 
+  const buyerFirstName = useBookingStore((s) => s.buyer_first_name);
+  const setBuyerFirstName = useBookingStore((s) => s.setBuyerFirstName);
+  const buyerLastName = useBookingStore((s) => s.buyer_last_name);
+  const setBuyerLastName = useBookingStore((s) => s.setBuyerLastName);
+  const buyerEmail = useBookingStore((s) => s.buyer_Email);
+  const setBuyerEmail = useBookingStore((s) => s.setBuyerEmail);
+  const buyerTelCountryCode = useBookingStore((s) => s.buyer_tel_country_code);
+  const setBuyerTelCountryCode = useBookingStore((s) => s.setBuyerTelCountryCode);
+  const buyerTelNumber = useBookingStore((s) => s.buyer_tel_number);
+  const setBuyerTelNumber = useBookingStore((s) => s.setBuyerTelNumber);
+  const buyerCountry = useBookingStore((s) => s.buyer_country);
+  const setBuyerCountry = useBookingStore((s) => s.setBuyerCountry);
+
   useEffect(() => {
     if (agreePersonal && agreeService && agreeMarketing) setAgreeAll(true);
     else if (agreeAll) setAgreeAll(false);
@@ -226,7 +239,7 @@ function ProductPay() {
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
     const trafficArr = store.getTrafficArray();
-    const buyer = store.getBuyerObject ? store.getBuyerObject() : {
+    const buyerObj = store.getBuyerObject ? store.getBuyerObject() : {
       buyer_first_name: (store as any).buyer_first_name,
       buyer_last_name: (store as any).buyer_last_name,
       buyer_Email: (store as any).buyer_Email,
@@ -241,44 +254,11 @@ function ProductPay() {
         ? params.item_no[0]
         : pkgData?.item?.[0]?.item_no ?? undefined;
 
-    // build skus using helper
-    const adultCount = Number(params?.adult ?? 1);
-    const childCount = Number(params?.child ?? 0);
+    // skus already handled elsewhere and included via params or pkgData
+    // s_date / e_date come from params.selected_date
     const selectedDate = params?.selected_date ?? null;
-    const adultPriceParam = params?.adult_price ?? params?.display_price;
-    const childPriceParam = params?.child_price;
 
-    let skus = buildSkusFromParams(pkgData, params, selectedDate, adultCount, childCount, adultPriceParam, childPriceParam);
-
-    // fallback: if helper returned null or empty, try to create sensible skus array
-    if (!skus || !Array.isArray(skus) || skus.length === 0) {
-      // try to use pkgData.item[0].skus to form minimal sku entries
-      const firstItem = pkgData?.item?.[0];
-      const firstSku = firstItem?.skus?.[0];
-      const fallbackSkuId = firstSku?.sku_id ?? null;
-      const fallbackAdultUnit = Number(adultPriceParam ?? adultPriceParam ?? 0);
-      const fallbackChildUnit = Number(childPriceParam ?? adultPriceParam ?? 0);
-
-      const tmp: any[] = [];
-      if (adultCount > 0 && fallbackSkuId) tmp.push({ sku_id: fallbackSkuId, qty: adultCount, price: Math.round((fallbackAdultUnit || 0) * adultCount) });
-      if (childCount > 0 && fallbackSkuId) tmp.push({ sku_id: fallbackSkuId, qty: childCount, price: Math.round((fallbackChildUnit || 0) * childCount) });
-
-      // if still empty and there is at least one sku entry in pkgData, push single entry combining counts
-      if (tmp.length === 0 && fallbackSkuId) {
-        const totalQty = adultCount + childCount;
-        const unit = Number(adultPriceParam ?? childPriceParam ?? 0);
-        tmp.push({ sku_id: fallbackSkuId, qty: totalQty, price: Math.round(unit * totalQty) });
-      }
-
-      skus = tmp;
-    }
-
-    const skusSanitized = Array.isArray(skus) ? skus.map((s) => ({
-      sku_id: s?.sku_id ?? null,
-      qty: Number(s?.qty ?? 0),
-      price: Number(s?.price ?? 0),
-    })) : [];
-
+    // build payload base
     const payload: Record<string, any> = {
       guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
       partner_order_no: "1",
@@ -287,21 +267,45 @@ function ProductPay() {
       item_no: itemNo,
       locale: "ko",
       state: "KR",
-      // buyer fields
-      ...buyer,
+      // buyer fields (we'll normalize buyer_Email -> buyer_email below)
+      ...buyerObj,
       // dates / times
-      s_date: params?.selected_date ?? undefined,
-      e_date: params?.selected_date ?? undefined,
+      s_date: selectedDate ?? undefined,
+      e_date: selectedDate ?? undefined,
       event_time: null,
+      // guide language if set
       ...(store.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
-      ...(skusSanitized.length ? { skus: skusSanitized } : {}),
+      // skus / custom / traffic
+      ...(params?.skus ? { skus: params.skus } : {}),
       ...(customArray && customArray.length ? { custom: customArray } : {}),
       ...(trafficArr && trafficArr.length ? { traffic: trafficArr } : {}),
+      // order_note, total_price, pay_type filled below
       ...(orderNote ? { order_note: orderNote } : {}),
-      ...(params?.total_price ? { total_price: params.total_price } : {}),
-      ...(params?.pay_type ? { pay_type: params.pay_type } : {}),
     };
 
+    // mobile_device: IMEI/mobile_model_no -> null, active_date -> today (YYYY-MM-DD)
+    const todayISO = new Date().toISOString().split("T")[0];
+    payload.mobile_device = {
+      mobile_model_no: null,
+      IMEI: null,
+      active_date: todayISO,
+    };
+
+    // total_price: prefer params.total (from ProductPeople) then params.total_price
+    if (typeof params?.total === "number") payload.total_price = params.total;
+    else if (typeof params?.total_price === "number") payload.total_price = params.total_price;
+
+    // pay_type: hardcode "01"
+    payload.pay_type = "01";
+
+    // Normalize buyer email key: server expects buyer_email (lowercase) in example
+    if (payload.buyer_Email && !payload.buyer_email) {
+      payload.buyer_email = payload.buyer_Email;
+      // optional: remove uppercase variant to avoid ambiguity
+      delete payload.buyer_Email;
+    }
+
+    // sanitize: remove undefined / null / empty-string string fields
     Object.keys(payload).forEach((k) => {
       const v = payload[k];
       if (v === undefined || v === null) delete payload[k];
@@ -346,6 +350,71 @@ function ProductPay() {
     // }
   }
 
+
+  // ProductPay 내부: countryOptions + CountrySelector 컴포넌트
+  const countryOptions = [
+    { code: "KR", dial: "82", label: "한국 (KR) +82", lang: "ko" },
+    { code: "JP", dial: "81", label: "日本 (JP) +81", lang: "ja" },
+    { code: "US", dial: "1",  label: "United States (US) +1", lang: "en" },
+    { code: "VN", dial: "84", label: "Việt Nam (VN) +84", lang: "vi" },
+    { code: "TH", dial: "66", label: "ไทย (TH) +66", lang: "th" },
+    { code: "CN", dial: "86", label: "中国 (CN) +86", lang: "zh-cn" },
+    { code: "TW", dial: "886",label: "台灣 (TW) +886", lang: "zh-tw" },
+    { code: "HK", dial: "852",label: "香港 (HK) +852", lang: "zh-hk" },
+  ];
+
+  function CountrySelector({
+                             valueCode,
+                             onSelect,
+                             label,
+                           }: {
+    valueCode?: string | null;
+    onSelect: (opt: { code: string; dial: string }) => void;
+    label?: string;
+  }) {
+    const [open, setOpen] = useState(false);
+    const selected = countryOptions.find((c) => c.code === valueCode) ?? null;
+
+    return (
+      <View style={{ marginBottom: 8 }}>
+        {label ? <Text typography="t6" color={colors.grey800} style={{ marginBottom: 6 }}>{label}</Text> : null}
+
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => setOpen((s) => !s)}
+          style={styles.countrySelect} // 일관된 스타일
+        >
+          <Text style={{ color: selected ? colors.grey800 : colors.grey400 }}>
+            {selected ? selected.label : "국가를 선택하세요"}
+          </Text>
+          <Icon name="icon-arrow-down" size={18} color={colors.grey400} />
+        </TouchableOpacity>
+
+        {open && (
+          <View style={[styles.dropdown, { maxHeight: 240 }]}>
+            <ScrollView nestedScrollEnabled>
+              {countryOptions.map((opt) => {
+                const active = opt.code === valueCode;
+                return (
+                  <TouchableOpacity
+                    key={opt.code}
+                    onPress={() => {
+                      onSelect({ code: opt.code, dial: opt.dial });
+                      setOpen(false);
+                    }}
+                    style={[styles.optionRow, active ? styles.optionRowActive : undefined]}
+                  >
+                    <Text style={active ? { color: "#fff" } : undefined}>{opt.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+      </View>
+    );
+  }
+
   if (bfLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -386,67 +455,87 @@ function ProductPay() {
           completed={!!completedSections[1]}
         >
           <View>
-            {/* 성 / 이름 */}
             <Text typography="t6" color={colors.grey800} style={{ marginBottom: 6 }}>구매자 성</Text>
             <TextInput
               placeholder="Last name"
               placeholderTextColor={colors.grey400}
-              value={useBookingStore.getState().buyer_last_name}
-              onChangeText={(t) => useBookingStore.getState().setBuyerLastName(t)}
+              value={buyerLastName}
+              onChangeText={setBuyerLastName}
               style={styles.input}
             />
+
             <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>구매자 이름</Text>
             <TextInput
               placeholder="First name"
               placeholderTextColor={colors.grey400}
-              value={useBookingStore.getState().buyer_first_name}
-              onChangeText={(t) => useBookingStore.getState().setBuyerFirstName(t)}
+              value={buyerFirstName}
+              onChangeText={setBuyerFirstName}
               style={styles.input}
             />
 
-            {/* 이메일 */}
             <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>이메일</Text>
             <TextInput
               placeholder="email@example.com"
               placeholderTextColor={colors.grey400}
-              value={useBookingStore.getState().buyer_Email}
-              onChangeText={(t) => useBookingStore.getState().setBuyerEmail(t)}
+              value={buyerEmail}
+              onChangeText={setBuyerEmail}
               style={styles.input}
               keyboardType="email-address"
               autoCapitalize="none"
             />
 
-            {/* 전화번호: 국가 코드 + 번호 */}
+            {/* 전화번호: 국가(드롭다운) + 번호 입력 */}
             <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>전화번호</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {/* reuse TelCountryCodeSelector if it fits; otherwise a simple TextInput */}
-              <TelCountryCodeSelector
-                cusType="buyer" // component 내부 사용에 무해하면 넘김
-                options={[ /* reuse options from your existing selector or pass nothing to show defaults */ ]}
-                required={false}
-                // If your TelCountryCodeSelector doesn't accept direct onChange to store, use a simple TextInput:
-                // value and onChangeText need to be passed; if not supported, use a small TextInput for the code.
-              />
-              <View style={{ width: 12 }} />
-              <TextInput
-                placeholder="01012345678"
-                placeholderTextColor={colors.grey400}
-                value={String(useBookingStore.getState().buyer_tel_number ?? "")}
-                onChangeText={(t) => useBookingStore.getState().setBuyerTelNumber(t)}
-                style={[styles.input, { flex: 1 }]}
-                keyboardType="phone-pad"
-              />
-            </View>
 
-            {/* 국가 (buyer_country) */}
-            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>국가 코드</Text>
-            <TextInput
-              placeholder="TW"
-              placeholderTextColor={colors.grey400}
-              value={useBookingStore.getState().buyer_country}
-              onChangeText={(t) => useBookingStore.getState().setBuyerCountry(t)}
-              style={styles.input}
-            />
+            {/* 위쪽에서 useBookingStore selector로 바인딩 되어 있어야 함:
+   const buyerTelCountryCode = useBookingStore((s) => s.buyer_tel_country_code);
+   const setBuyerTelCountryCode = useBookingStore((s) => s.setBuyerTelCountryCode);
+   const buyerTelNumber = useBookingStore((s) => s.buyer_tel_number);
+   const setBuyerTelNumber = useBookingStore((s) => s.setBuyerTelNumber);
+   const buyerCountry = useBookingStore((s) => s.buyer_country);
+   const setBuyerCountry = useBookingStore((s) => s.setBuyerCountry);
+*/}
+
+            <View>
+              <CountrySelector
+                valueCode={buyerCountry}
+                label="국가 선택"
+                onSelect={({ code, dial }) => {
+                  setBuyerCountry(code);
+                  setBuyerTelCountryCode(String(dial));
+                }}
+              />
+
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {/* 전화 국가코드 박스: 시각/수직 중앙 정렬 유지 */}
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={() => {
+                    // 선택 재노출: 간단하게 CountrySelector 재사용을 유도할 수 있음.
+                    // (선택 UI 로직이 필요하면 여기에 핸들러 추가)
+                  }}
+                  style={styles.countryDialBox}
+                >
+                  <Text style={styles.countryDialText}>{buyerTelCountryCode ? `+${String(buyerTelCountryCode)}` : "+82"}</Text>
+                </TouchableOpacity>
+
+                <View style={{ width: 12 }} />
+
+                <TextInput
+                  placeholder="01012345678"
+                  placeholderTextColor={colors.grey400}
+                  value={String(buyerTelNumber ?? "")}
+                  onChangeText={setBuyerTelNumber}
+                  style={[styles.input, { flex: 1 }]}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>국가 코드</Text>
+              <TouchableOpacity activeOpacity={0.85} style={styles.countrySelect}>
+                <Text style={{ color: buyerCountry ? colors.grey800 : colors.grey400 }}>{buyerCountry ?? "KR"}</Text>
+              </TouchableOpacity>
+            </View>
 
             <Button
               type="primary"
@@ -1283,6 +1372,32 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
     backgroundColor: "#fff",
+  },
+  // styles 객체 안에 추가하세요
+  countrySelect: {
+    height: 54, // input과 같은 높이로 맞춤
+    borderRadius: 14,
+    backgroundColor: colors.greyOpacity100,
+    paddingHorizontal: 12,
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  countryDialBox: {
+    height: 54,
+    width: 90,
+    borderRadius: 14,
+    backgroundColor: colors.greyOpacity100,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  countryDialText: {
+    color: colors.grey800,
+  },
+// 재사용 가능한 optionRowActive 스타일이 이미 있; 없다면 아래 추가:
+  optionRowActive: {
+    backgroundColor: colors.blue500,
   },
 });
 
