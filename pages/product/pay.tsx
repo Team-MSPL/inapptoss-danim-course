@@ -72,6 +72,9 @@ import SafetyseatSelfChildInput from "../../components/product/traffic/Safetysea
 import SafetyseatSupInfantInput from "../../components/product/traffic/SafetyseatSupInfantInput";
 import LuggageCarryInput from "../../components/product/traffic/LuggageCarryInput";
 import LuggageCheckInput from "../../components/product/traffic/LuggageCheckInput";
+import RentcarLocationSelector from "../../components/product/traffic/RentcarLocationSelector";
+import RentcarDateInput from "../../components/product/traffic/RentcarDateInput";
+import RentcarTimeInput from "../../components/product/traffic/RentcarTimeInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -622,6 +625,20 @@ function ProductPay() {
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_check && (
               <LuggageCheckInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_check?.is_require ?? "").toLowerCase() === "true"} />
             )}
+            <Button
+              type="primary"
+              style="fill"
+              display="block"
+              size="large"
+              containerStyle={{ alignSelf: 'center', width: 140, height: 48, marginTop: 8 }}
+              onPress={() => {
+                const arr = useBookingStore.getState().getTrafficArray();
+                console.log("[trafficArray]", arr);
+                Alert.alert("현재 traffics", JSON.stringify(arr, null, 2));
+              }}
+            >
+              작성 완료
+            </Button>
           </CollapsibleSection>
         )}
 
@@ -636,12 +653,53 @@ function ProductPay() {
                   cnt += 1;
                   return (
                     <View key={t} style={{ marginBottom: 12 }}>
-                      <Text typography="t6" color={colors.grey800} >{`렌터카 정보 ${cnt}`}</Text>
-                      <View />
+                      <Text typography="t5" color={colors.grey800} style={{marginBottom: 8}} >{`렌터카 정보 ${cnt}`}</Text>
+                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_location && (
+                        <RentcarLocationSelector
+                          trafficType={t}
+                          field="s_location"
+                          rawFields={rawFields}
+                          required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_location?.is_require ?? "").toLowerCase() === "true"}
+                        />
+                      )}
+                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_location && (
+                        <RentcarLocationSelector
+                          trafficType={t}
+                          field="e_location"
+                          rawFields={rawFields}
+                          required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_location?.is_require ?? "").toLowerCase() === "true"}
+                        />
+                      )}
+                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_date && (
+                        <RentcarDateInput trafficType={t} field="s_date" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_date?.is_require ?? "").toLowerCase() === "true"} />
+                      )}
+                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_time && (
+                        <RentcarTimeInput trafficType={t} field="s_time" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.s_time?.is_require ?? "").toLowerCase() === "true"} />
+                      )}
+                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_date && (
+                        <RentcarDateInput trafficType={t} field="e_date" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_date?.is_require ?? "").toLowerCase() === "true"} />
+                      )}
+                      {rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_time && (
+                        <RentcarTimeInput trafficType={t} field="e_time" required={String(rawFields.traffics.find((x:any) => x?.traffic_type?.traffic_type_value === t)?.e_time?.is_require ?? "").toLowerCase() === "true"} />
+                      )}
                     </View>
                   );
                 });
               })()}
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: 'center', width: 140, height: 48, marginTop: 8 }}
+                onPress={() => {
+                  const arr = useBookingStore.getState().getTrafficArray();
+                  console.log("[trafficArray]", arr);
+                  Alert.alert("현재 traffics", JSON.stringify(arr, null, 2));
+                }}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
