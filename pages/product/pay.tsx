@@ -64,6 +64,14 @@ import DepartureTerminalInput from "../../components/product/traffic/DepartureTe
 import DepartureHaveBeenInCountryInput from "../../components/product/traffic/DepartureHaveBeenInCountryInput";
 import DepartureDateInput from "../../components/product/traffic/DepartureDateInput";
 import DepartureTimeInput from "../../components/product/traffic/DepartureTimeInput";
+import CarPsgAdultInput from "../../components/product/traffic/CarPsgAdultInput";
+import CarPsgChildInput from "../../components/product/traffic/CarPsgChildInput";
+import CarPsgInfantInput from "../../components/product/traffic/CarPsgInfantInput";
+import SafetyseatSupChildInput from "../../components/product/traffic/SafetyseatSupChildInput";
+import SafetyseatSelfChildInput from "../../components/product/traffic/SafetyseatSelfChildInput";
+import SafetyseatSupInfantInput from "../../components/product/traffic/SafetyseatSupInfantInput";
+import LuggageCarryInput from "../../components/product/traffic/LuggageCarryInput";
+import LuggageCheckInput from "../../components/product/traffic/LuggageCheckInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -590,8 +598,30 @@ function ProductPay() {
 
         {hasPsgQty && (
           <CollapsibleSection title="탑승자 수 (psg_qty)" open={!!openSections[9]} onToggle={() => toggleSection(9)} completed={!!completedSections[9]}>
-            <View>
-            </View>
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_adult && (
+              <CarPsgAdultInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_adult?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_child && (
+              <CarPsgChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_child?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_infant && (
+              <CarPsgInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_infant?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_child && (
+              <SafetyseatSupChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_child?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_self_child && (
+              <SafetyseatSelfChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_self_child?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_infant && (
+              <SafetyseatSupInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_infant?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_carry && (
+              <LuggageCarryInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_carry?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_check && (
+              <LuggageCheckInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_check?.is_require ?? "").toLowerCase() === "true"} />
+            )}
           </CollapsibleSection>
         )}
 
