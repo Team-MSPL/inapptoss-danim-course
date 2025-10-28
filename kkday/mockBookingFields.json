@@ -660,7 +660,7 @@
       "traffic_type": {
         "is_require": "True",
         "type": "string",
-        "traffic_type_value": "flght"
+        "traffic_type_value": "flight"
       },
       "arrival_flightType": {
         "is_require": "True",

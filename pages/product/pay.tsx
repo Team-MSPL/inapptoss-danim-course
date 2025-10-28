@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ScrollView,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
@@ -13,7 +14,6 @@ import { useProductStore } from "../../zustand/useProductStore";
 import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
 import { formatPrice } from "../../components/product/pay-function";
-// Todo BookingField 실제로 변경
 import {useBookingFieldsMock as useBookingFields} from "../../kkday/useBookingFieldsMock";
 import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
 import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
@@ -49,6 +49,13 @@ import CheckOutDateInput from "../../components/product/payfield/CheckOutDateInp
 import ContactAppSelector from "../../components/product/payfield/ContactAppSelector";
 import ContactAppAccountInput from "../../components/product/payfield/ContactAppAccountInput";
 import HaveAppToggle from "../../components/product/payfield/HaveAppToggle";
+import ArrivalFlightTypeSelector from "../../components/product/traffic/ArrivalFlightTypeSelector"; // 기존
+import ArrivalAirportSelector from "../../components/product/traffic/ArrivalAirportSelector"; // 기존
+import ArrivalFlightNoInput from "../../components/product/traffic/ArrivalFlightNoInput";
+import ArrivalTerminalInput from "../../components/product/traffic/ArrivalTerminalInput";
+import ArrivalVisaToggle from "../../components/product/traffic/ArrivalVisaToggle";
+import ArrivalDateInput from "../../components/product/traffic/ArrivalDateInput";
+import ArrivalTimeInput from "../../components/product/traffic/ArrivalTimeInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -72,13 +79,11 @@ function ProductPay() {
   const thumbnail = pdt?.prod_img_url ?? (pdt?.img_list && pdt.img_list[0]) ?? "";
   const title = pdt?.prod_name || pdt?.name;
 
-  // Todo BookingField 실제로 변경
   const { fields: rawFields, loading: bfLoading, error: bfError } = useBookingFields({
     prod_no: params?.prod_no ?? pdt?.prod_no,
     pkg_no: params?.pkg_no ?? null,
   });
 
-  // derive uses from rawFields.custom.custom_type.use (or custom.cus_type)
   const uses: string[] = useMemo(() => {
     if (!rawFields || !rawFields.custom) return [];
     const cust = rawFields.custom.custom_type ?? rawFields.custom.cus_type ?? null;
@@ -92,11 +97,9 @@ function ProductPay() {
   const hasContact = uses.includes("contact");
   const hasSend = uses.includes("send");
 
-  // openSections map
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({ 0: true });
   const [completedSections, setCompletedSections] = useState<Record<number, boolean>>({});
 
-  // Requests & payment / agreements (kept minimal)
   const [orderNote, setOrderNote] = useState<string>(params?.order_note ?? "");
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>("toss");
   const [agreeAll, setAgreeAll] = useState<boolean>(false);
@@ -128,9 +131,9 @@ function ProductPay() {
     console.log("[BookingStore] guideLangCode:", store.guideLangCode);
     console.log("[BookingStore] customMap:", store.customMap);
     console.log("[BookingStore] customArray:", store.getCustomArray());
+    console.log("[BookingStore] trafficArray:", store.getTrafficArray());
   }
 
-  // compute per-person prices and totals
   const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
   const childPrice = params?.child_price ?? adultPrice;
   const adultCount = Number(params?.adult ?? 1);
@@ -149,7 +152,6 @@ function ProductPay() {
     ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
     : 0;
 
-  // Determine whether english_last_name / english_first_name exist and which groups they apply to
   const engLastSpec = rawFields?.custom?.english_last_name ?? null;
   const engLastUse: string[] = engLastSpec && Array.isArray(engLastSpec.use) ? engLastSpec.use : [];
 
@@ -160,20 +162,53 @@ function ProductPay() {
   const genderUse: string[] = genderSpec && Array.isArray(genderSpec.use) ? genderSpec.use : [];
 
   const nationalitySpec = rawFields?.custom?.nationality ?? null;
-  const nationalityOptions = nationalitySpec?.list_option ?? []; // array of {code?, id?, name?}
+  const nationalityOptions = nationalitySpec?.list_option ?? [];
   const nationalityUse: string[] = nationalitySpec && Array.isArray(nationalitySpec.use) ? nationalitySpec.use : [];
 
-  // Build reservation payload — read custom array from zustand
+  const trafficSpec = rawFields?.traffics ?? [];
+  const availableTrafficTypes: string[] = useMemo(() => {
+    if (!Array.isArray(trafficSpec)) return [];
+    return Array.from(
+      new Set(
+        trafficSpec
+          .map((t: any) => t?.traffic_type?.traffic_type_value)
+          .filter(Boolean)
+      )
+    );
+  }, [rawFields]);
+
+  const hasFlight = availableTrafficTypes.includes("flight");
+  const hasPsgQty = availableTrafficTypes.includes("psg_qty");
+  const hasVoucher = availableTrafficTypes.includes("voucher");
+  const hasRentcar01 = availableTrafficTypes.includes("rentcar_01");
+  const hasRentcar02 = availableTrafficTypes.includes("rentcar_02");
+  const hasRentcar03 = availableTrafficTypes.includes("rentcar_03");
+  const hasPickup03 = availableTrafficTypes.includes("pickup_03");
+  const hasPickup04 = availableTrafficTypes.includes("pickup_04");
+
+  const trafficArray = useBookingStore((s) => s.trafficArray);
+  const addTraffic = useBookingStore((s) => s.addTraffic);
+  const updateTrafficField = useBookingStore((s) => s.updateTrafficField);
+  const removeTraffic = useBookingStore((s) => s.removeTraffic);
+
+  function getTrafficIndicesByType(type: string) {
+    const indices: number[] = [];
+    (trafficArray || []).forEach((item, idx) => {
+      if (String(item?.traffic_type) === String(type)) indices.push(idx);
+    });
+    return indices;
+  }
+
   const buildReservationPayload = () => {
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
+    const trafficArr = store.getTrafficArray();
     const payload: any = {
       prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
       pkg_no: params?.pkg_no ?? null,
-      // include guide_lang only when present in store
       ...(store.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
-      // include custom array if exists
       custom: customArray.length ? customArray : undefined,
+      traffic: trafficArr.length ? trafficArr : undefined,
     };
     return payload;
   };
@@ -185,8 +220,33 @@ function ProductPay() {
       Alert.alert("입력 오류", "예약자 정보(필수)를 입력해주세요.");
       return;
     }
+    const sendGroup = store.customMap?.["send"] ?? {};
+    if (sendGroup?.check_in_date && sendGroup?.check_out_date) {
+      const inT = new Date(sendGroup.check_in_date).getTime();
+      const outT = new Date(sendGroup.check_out_date).getTime();
+      if (!isNaN(inT) && !isNaN(outT) && inT > outT) {
+        Alert.alert("입력 오류", "체크인 날짜는 체크아웃 날짜 이전이어야 합니다.");
+        return;
+      }
+    }
+
     const payload = buildReservationPayload();
     Alert.alert("테스트 페이로드", JSON.stringify(payload, null, 2));
+  }
+
+  if (bfLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>필드를 불러오는 중...</Text>
+      </View>
+    );
+  }
+  if (bfError) {
+    return (
+      <View style={{ flex: 1, padding: 20 }}>
+        <Text color={colors.red500}>필드 로드 실패</Text>
+      </View>
+    );
   }
 
   return (
@@ -196,7 +256,6 @@ function ProductPay() {
           <Text typography="t5" color={colors.grey800}>예약/결제하기</Text>
         </View>
 
-        {/* Tour info */}
         <CollapsibleSection
           title="투어 정보"
           open={!!openSections[0]}
@@ -207,25 +266,19 @@ function ProductPay() {
           <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
         </CollapsibleSection>
 
-        {/* Guide language: render only when rawFields.guide_lang exists */}
         {rawFields?.guide_lang && (
           <CollapsibleSection title={"가이드 언어"} open={!!openSections[1]} onToggle={() => toggleSection(1)}  completed={!!completedSections[1]}>
             <GuideLangSelector rawFields={rawFields} onSelect={(code) => console.log("selected guide_lang code:", code)} />
           </CollapsibleSection>
         )}
 
-        {/* cus_01 -> 예약자 정보 (renders EngLastNameInput/EngFirstNameInput if specs apply) */}
         {hasCus01 && (
           <CollapsibleSection title="예약자 정보" open={!!openSections[2]} onToggle={() => toggleSection(2)} completed={!!completedSections[2]}>
             <View>
               {engLastUse.includes("cus_01") && <EngLastNameInput cusType="cus_01" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
               {engFirstUse.includes("cus_01") && <EngFirstNameInput cusType="cus_01" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {genderUse.includes("cus_01") && (
-                <GenderSelector cusType="cus_01" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />
-              )}
-              {nationalityUse.includes("cus_01") && (
-                <NationalitySelector cusType="cus_01" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />
-              )}
+              {genderUse.includes("cus_01") && <GenderSelector cusType="cus_01" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {nationalityUse.includes("cus_01") && <NationalitySelector cusType="cus_01" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />}
               {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_01") && (
                 <MtpNoInput cusType="cus_01" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />
               )}
@@ -285,18 +338,13 @@ function ProductPay() {
           </CollapsibleSection>
         )}
 
-        {/* cus_02 -> 여행자 정보 */}
         {hasCus02 && (
           <CollapsibleSection title="여행자 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
             <View>
               {engLastUse.includes("cus_02") && <EngLastNameInput cusType="cus_02" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
               {engFirstUse.includes("cus_02") && <EngFirstNameInput cusType="cus_02" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {genderUse.includes("cus_02") && (
-                <GenderSelector cusType="cus_02" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />
-              )}
-              {nationalityUse.includes("cus_02") && (
-                <NationalitySelector cusType="cus_02" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />
-              )}
+              {genderUse.includes("cus_02") && <GenderSelector cusType="cus_02" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {nationalityUse.includes("cus_02") && <NationalitySelector cusType="cus_02" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />}
               {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_02") && (
                 <MtpNoInput cusType="cus_02" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />
               )}
@@ -356,113 +404,196 @@ function ProductPay() {
           </CollapsibleSection>
         )}
 
-        {/* contact & send sections (kept as placeholders) */}
         {hasContact && (
           <CollapsibleSection title="연락 수단" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
-            {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("contact") && (
-              <NativeLastNameInput
-                cusType="contact"
-                required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
-              />
-            )}
-            {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("contact") && (
-              <NativeFirstNameInput
-                cusType="contact"
-                required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
-              />
-            )}
-            {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("contact") && (
-              <TelCountryCodeSelector
-                cusType="contact"
-                options={rawFields.custom.tel_country_code.list_option}
-                required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"}
-              />
-            )}
+            <View>
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("contact") && (
+                <NativeLastNameInput
+                  cusType="contact"
+                  required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("contact") && (
+                <NativeFirstNameInput
+                  cusType="contact"
+                  required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("contact") && (
+                <TelCountryCodeSelector
+                  cusType="contact"
+                  options={rawFields.custom.tel_country_code.list_option}
+                  required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
 
-            {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("contact") && (
-              <TelNumberInput
-                cusType="contact"
-                required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"}
-              />
-            )}
-            {rawFields?.custom?.contact_app && Array.isArray(rawFields.custom.contact_app.list_option) && rawFields.custom.contact_app.use?.includes("contact") && (
-              <ContactAppSelector
-                cusType="contact"
-                options={rawFields.custom.contact_app.list_option}
-                required={String(rawFields.custom.contact_app.is_require ?? "").toLowerCase() === "true"}
-              />
-            )}
-            {rawFields?.custom?.contact_app_account && Array.isArray(rawFields.custom.contact_app_account.use) && rawFields.custom.contact_app_account.use.includes("contact") && (
-              <ContactAppAccountInput cusType="contact" required={String(rawFields.custom.contact_app_account.is_require ?? "").toLowerCase() === "true"} />
-            )}
-            {rawFields?.custom?.have_app && Array.isArray(rawFields.custom.have_app.use) && rawFields.custom.have_app.use.includes("contact") && (
-              <HaveAppToggle cusType="contact" label="연락 앱 설치 여부" />
-            )}
+              {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("contact") && (
+                <TelNumberInput
+                  cusType="contact"
+                  required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.contact_app && Array.isArray(rawFields.custom.contact_app.list_option) && rawFields.custom.contact_app.use?.includes("contact") && (
+                <ContactAppSelector
+                  cusType="contact"
+                  options={rawFields.custom.contact_app.list_option}
+                  required={String(rawFields.custom.contact_app.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.contact_app_account && Array.isArray(rawFields.custom.contact_app_account.use) && rawFields.custom.contact_app_account.use.includes("contact") && (
+                <ContactAppAccountInput cusType="contact" required={String(rawFields.custom.contact_app_account.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.have_app && Array.isArray(rawFields.custom.have_app.use) && rawFields.custom.have_app.use.includes("contact") && (
+                <HaveAppToggle cusType="contact" label="연락 앱 설치 여부" />
+              )}
+            </View>
           </CollapsibleSection>
         )}
 
         {hasSend && (
           <CollapsibleSection title="투숙 정보" open={!!openSections[5]} onToggle={() => toggleSection(5)} completed={!!completedSections[5]}>
-            {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("send") && (
-              <NativeLastNameInput
-                cusType="send"
-                required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
-              />
+            <View>
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("send") && (
+                <NativeLastNameInput
+                  cusType="send"
+                  required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("send") && (
+                <NativeFirstNameInput
+                  cusType="send"
+                  required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("send") && (
+                <TelCountryCodeSelector cusType="send" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("send") && (
+                <TelNumberInput cusType="send" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.country_cities && Array.isArray(rawFields.custom.country_cities.list_option) && rawFields.custom.country_cities.use?.includes("send") && (
+                <CountryCitiesSelector
+                  cusType="send"
+                  options={rawFields.custom.country_cities.list_option}
+                  required={String(rawFields.custom.country_cities.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.address && Array.isArray(rawFields.custom.address.use) && rawFields.custom.address.use.includes("send") && (
+                <AddressInput cusType="send" required={String(rawFields.custom.address.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.hotel_name && Array.isArray(rawFields.custom.hotel_name.use) && rawFields.custom.hotel_name.use.includes("send") && (
+                <HotelNameInput cusType="send" required={String(rawFields.custom.hotel_name.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.hotel_tel_number && Array.isArray(rawFields.custom.hotel_tel_number.use) && rawFields.custom.hotel_tel_number.use.includes("send") && (
+                <HotelTelNumberInput cusType="send" required={String(rawFields.custom.hotel_tel_number.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.booking_order_no && Array.isArray(rawFields.custom.booking_order_no.use) && rawFields.custom.booking_order_no.use.includes("send") && (
+                <BookingOrderNoInput cusType="send" required={String(rawFields.custom.booking_order_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.check_in_date && Array.isArray(rawFields.custom.check_in_date.use) && rawFields.custom.check_in_date.use.includes("send") && (
+                <CheckInDateInput
+                  cusType="send"
+                  required={String(rawFields.custom.check_in_date.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.check_out_date && Array.isArray(rawFields.custom.check_out_date.use) && rawFields.custom.check_out_date.use.includes("send") && (
+                <CheckOutDateInput
+                  cusType="send"
+                  required={String(rawFields.custom.check_out_date.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+            </View>
+          </CollapsibleSection>
+        )}
+
+        {rawFields?.traffics && Array.isArray(rawFields.traffics) && rawFields.traffics.some((t:any) => t?.traffic_type?.traffic_type_value === "flight") && (
+          <CollapsibleSection title="항공편 정보" open={!!openSections[8]} onToggle={() => toggleSection(8)} completed={!!completedSections[8]}>
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightType && (
+              <ArrivalFlightTypeSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightType?.is_require ?? "").toLowerCase() === "true"} />
             )}
-            {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("send") && (
-              <NativeFirstNameInput
-                cusType="send"
-                required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
-              />
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airport && (
+              <ArrivalAirportSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airport?.is_require ?? "").toLowerCase() === "true"} />
             )}
-            {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("send") && (
-              <TelCountryCodeSelector cusType="send" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightNo && (
+              <ArrivalFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightNo?.is_require ?? "").toLowerCase() === "true"} />
             )}
-            {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("send") && (
-              <TelNumberInput cusType="send" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_terminalNo && (
+              <ArrivalTerminalInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_terminalNo?.is_require ?? "").toLowerCase() === "true"} />
             )}
-            {rawFields?.custom?.country_cities && Array.isArray(rawFields.custom.country_cities.list_option) && rawFields.custom.country_cities.use?.includes("send") && (
-              <CountryCitiesSelector
-                cusType="send"
-                options={rawFields.custom.country_cities.list_option}
-                required={String(rawFields.custom.country_cities.is_require ?? "").toLowerCase() === "true"}
-              />
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_visa && (
+              <ArrivalVisaToggle trafficType="flight" />
             )}
-            {rawFields?.custom?.address && Array.isArray(rawFields.custom.address.use) && rawFields.custom.address.use.includes("send") && (
-              <AddressInput cusType="send" required={String(rawFields.custom.address.is_require ?? "").toLowerCase() === "true"} />
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_date && (
+              <ArrivalDateInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_date?.is_require ?? "").toLowerCase() === "true"} />
             )}
-            {rawFields?.custom?.hotel_name && Array.isArray(rawFields.custom.hotel_name.use) && rawFields.custom.hotel_name.use.includes("send") && (
-              <HotelNameInput cusType="send" required={String(rawFields.custom.hotel_name.is_require ?? "").toLowerCase() === "true"} />
-            )}
-            {rawFields?.custom?.hotel_tel_number && Array.isArray(rawFields.custom.hotel_tel_number.use) && rawFields.custom.hotel_tel_number.use.includes("send") && (
-              <HotelTelNumberInput cusType="send" required={String(rawFields.custom.hotel_tel_number.is_require ?? "").toLowerCase() === "true"} />
-            )}
-            {rawFields?.custom?.booking_order_no && Array.isArray(rawFields.custom.booking_order_no.use) && rawFields.custom.booking_order_no.use.includes("send") && (
-              <BookingOrderNoInput cusType="send" required={String(rawFields.custom.booking_order_no.is_require ?? "").toLowerCase() === "true"} />
-            )}
-            {rawFields?.custom?.check_in_date && Array.isArray(rawFields.custom.check_in_date.use) && rawFields.custom.check_in_date.use.includes("send") && (
-              <CheckInDateInput
-                cusType="send"
-                required={String(rawFields.custom.check_in_date.is_require ?? "").toLowerCase() === "true"}
-              />
-            )}
-            {rawFields?.custom?.check_out_date && Array.isArray(rawFields.custom.check_out_date.use) && rawFields.custom.check_out_date.use.includes("send") && (
-              <CheckOutDateInput
-                cusType="send"
-                required={String(rawFields.custom.check_out_date.is_require ?? "").toLowerCase() === "true"}
-              />
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_time && (
+              <ArrivalTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_time?.is_require ?? "").toLowerCase() === "true"} />
             )}
           </CollapsibleSection>
         )}
 
-        {/* Requests */}
+        {hasPsgQty && (
+          <CollapsibleSection title="탑승자 수 (psg_qty)" open={!!openSections[9]} onToggle={() => toggleSection(9)} completed={!!completedSections[9]}>
+            <View>
+            </View>
+          </CollapsibleSection>
+        )}
+
+        {(hasRentcar01 || hasRentcar02 || hasRentcar03) && (
+          <CollapsibleSection title="렌터카 정보" open={!!openSections[10]} onToggle={() => toggleSection(10)} completed={!!completedSections[10]}>
+            <View>
+              {(() => {
+                const types = ["rentcar_01", "rentcar_02", "rentcar_03"];
+                let cnt = 0;
+                return types.map((t) => {
+                  if (!availableTrafficTypes.includes(t)) return null;
+                  cnt += 1;
+                  return (
+                    <View key={t} style={{ marginBottom: 12 }}>
+                      <Text typography="t6" color={colors.grey800} >{`렌터카 정보 ${cnt}`}</Text>
+                      <View />
+                    </View>
+                  );
+                });
+              })()}
+            </View>
+          </CollapsibleSection>
+        )}
+
+        {(hasPickup03 || hasPickup04) && (
+          <CollapsibleSection title="픽업 정보" open={!!openSections[11]} onToggle={() => toggleSection(11)} completed={!!completedSections[11]}>
+            <View>
+              {(() => {
+                const types = ["pickup_03", "pickup_04"];
+                let cnt = 0;
+                return types.map((t) => {
+                  if (!availableTrafficTypes.includes(t)) return null;
+                  cnt += 1;
+                  return (
+                    <View key={t} style={{ marginBottom: 12 }}>
+                      <Text typography="t6" color={colors.grey800}>{`픽업 정보 ${cnt}`}</Text>
+                      <View />
+                    </View>
+                  );
+                });
+              })()}
+            </View>
+          </CollapsibleSection>
+        )}
+
+        {hasVoucher && (
+          <CollapsibleSection title="바우처/픽업 위치" open={!!openSections[12]} onToggle={() => toggleSection(12)} completed={!!completedSections[12]}>
+            <View>
+            </View>
+          </CollapsibleSection>
+        )}
+
         <CollapsibleSection title="요청 사항" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
           <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} value={orderNote} onChangeText={setOrderNote} style={[styles.input]} multiline />
           <View style={{ height: 12 }} />
           <Button type="primary" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(6)}>작성 완료</Button>
         </CollapsibleSection>
 
-        {/* Payment details */}
         <CollapsibleSection title="결제 세부 내역" open={!!openSections[7]} onToggle={() => toggleSection(7)} completed={!!completedSections[7]}>
           <MiniProductCard
             image={thumbnail}
@@ -484,7 +615,6 @@ function ProductPay() {
           </View>
         </CollapsibleSection>
 
-        {/* separator and payment CTA */}
         <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
 
         <View style={[styles.sectionContainer, { paddingHorizontal: 24, paddingVertical: 24 }]}>
@@ -684,6 +814,15 @@ const styles = StyleSheet.create({
   checkboxBoxChecked: {
     backgroundColor: colors.blue500,
     borderColor: colors.blue500,
+  },
+
+  trafficItem: {
+    borderWidth: 1,
+    borderColor: colors.grey100,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
+    backgroundColor: "#fff",
   },
 });
 
