@@ -13,8 +13,8 @@ import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } fr
 import { useProductStore } from "../../zustand/useProductStore";
 import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
-import { formatPrice } from "../../components/product/pay-function";
-import {useBookingFieldsMock as useBookingFields} from "../../kkday/useBookingFieldsMock";
+import {buildSkusFromParams, formatPrice} from "../../components/product/pay-function";
+import {useBookingFields} from "../../kkday/kkdayBookingField";
 import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
 import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
 import EngFirstNameInput from "../../components/product/payfield/EngFirstNameInput";
@@ -226,20 +226,97 @@ function ProductPay() {
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
     const trafficArr = store.getTrafficArray();
-    const payload: any = {
-      prod_no: params?.prod_no ?? pdt?.prod_no ?? null,
-      pkg_no: params?.pkg_no ?? null,
-      ...(store.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
-      custom: customArray.length ? customArray : undefined,
-      traffic: trafficArr.length ? trafficArr : undefined,
+    const buyer = store.getBuyerObject ? store.getBuyerObject() : {
+      buyer_first_name: (store as any).buyer_first_name,
+      buyer_last_name: (store as any).buyer_last_name,
+      buyer_Email: (store as any).buyer_Email,
+      buyer_tel_country_code: (store as any).buyer_tel_country_code,
+      buyer_tel_number: (store as any).buyer_tel_number,
+      buyer_country: (store as any).buyer_country,
     };
+
+    // item_no: prefer params.item_no[0], fallback to pkgData?.item?.[0]?.item_no
+    const itemNo =
+      Array.isArray(params?.item_no) && params.item_no.length > 0
+        ? params.item_no[0]
+        : pkgData?.item?.[0]?.item_no ?? undefined;
+
+    // build skus using helper
+    const adultCount = Number(params?.adult ?? 1);
+    const childCount = Number(params?.child ?? 0);
+    const selectedDate = params?.selected_date ?? null;
+    const adultPriceParam = params?.adult_price ?? params?.display_price;
+    const childPriceParam = params?.child_price;
+
+    let skus = buildSkusFromParams(pkgData, params, selectedDate, adultCount, childCount, adultPriceParam, childPriceParam);
+
+    // fallback: if helper returned null or empty, try to create sensible skus array
+    if (!skus || !Array.isArray(skus) || skus.length === 0) {
+      // try to use pkgData.item[0].skus to form minimal sku entries
+      const firstItem = pkgData?.item?.[0];
+      const firstSku = firstItem?.skus?.[0];
+      const fallbackSkuId = firstSku?.sku_id ?? null;
+      const fallbackAdultUnit = Number(adultPriceParam ?? adultPriceParam ?? 0);
+      const fallbackChildUnit = Number(childPriceParam ?? adultPriceParam ?? 0);
+
+      const tmp: any[] = [];
+      if (adultCount > 0 && fallbackSkuId) tmp.push({ sku_id: fallbackSkuId, qty: adultCount, price: Math.round((fallbackAdultUnit || 0) * adultCount) });
+      if (childCount > 0 && fallbackSkuId) tmp.push({ sku_id: fallbackSkuId, qty: childCount, price: Math.round((fallbackChildUnit || 0) * childCount) });
+
+      // if still empty and there is at least one sku entry in pkgData, push single entry combining counts
+      if (tmp.length === 0 && fallbackSkuId) {
+        const totalQty = adultCount + childCount;
+        const unit = Number(adultPriceParam ?? childPriceParam ?? 0);
+        tmp.push({ sku_id: fallbackSkuId, qty: totalQty, price: Math.round(unit * totalQty) });
+      }
+
+      skus = tmp;
+    }
+
+    const skusSanitized = Array.isArray(skus) ? skus.map((s) => ({
+      sku_id: s?.sku_id ?? null,
+      qty: Number(s?.qty ?? 0),
+      price: Number(s?.price ?? 0),
+    })) : [];
+
+    const payload: Record<string, any> = {
+      guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
+      partner_order_no: "1",
+      prod_no: params?.prod_no ?? pdt?.prod_no ?? undefined,
+      pkg_no: params?.pkg_no ?? undefined,
+      item_no: itemNo,
+      locale: "ko",
+      state: "KR",
+      // buyer fields
+      ...buyer,
+      // dates / times
+      s_date: params?.selected_date ?? undefined,
+      e_date: params?.selected_date ?? undefined,
+      event_time: null,
+      ...(store.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
+      ...(skusSanitized.length ? { skus: skusSanitized } : {}),
+      ...(customArray && customArray.length ? { custom: customArray } : {}),
+      ...(trafficArr && trafficArr.length ? { traffic: trafficArr } : {}),
+      ...(orderNote ? { order_note: orderNote } : {}),
+      ...(params?.total_price ? { total_price: params.total_price } : {}),
+      ...(params?.pay_type ? { pay_type: params.pay_type } : {}),
+    };
+
+    Object.keys(payload).forEach((k) => {
+      const v = payload[k];
+      if (v === undefined || v === null) delete payload[k];
+      else if (typeof v === "string" && v.trim() === "") delete payload[k];
+    });
+
     return payload;
   };
 
   async function onPay() {
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
-    if (uses.includes("cus_01") && !customArray.some(c => c.cus_type === "cus_01")) {
+    const payload = buildReservationPayload();
+    console.log(payload)
+    if (uses.includes("cus_01") && !customArray.some((c) => c.cus_type === "cus_01")) {
       Alert.alert("입력 오류", "예약자 정보(필수)를 입력해주세요.");
       return;
     }
@@ -253,8 +330,20 @@ function ProductPay() {
       }
     }
 
-    const payload = buildReservationPayload();
+
+
+    // for debug: show the payload before sending
     Alert.alert("테스트 페이로드", JSON.stringify(payload, null, 2));
+
+    // If you want to actually POST:
+    // try {
+    //   const resp = await axiosAuth.post("https://danimdatabase.com/kkday/Booking/", payload);
+    //   console.log("Booking response:", resp.data);
+    //   Alert.alert("예약 완료", "예약이 정상적으로 접수되었습니다.");
+    // } catch (err) {
+    //   console.warn("Booking failed", err);
+    //   Alert.alert("예약 실패", err?.message ?? "Unknown error");
+    // }
   }
 
   if (bfLoading) {
@@ -287,6 +376,89 @@ function ProductPay() {
         >
           <Text typography="t4" fontWeight="bold" style={{ marginBottom: 12 }}>{title}</Text>
           <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
+        </CollapsibleSection>
+
+        {/* 구매자 정보 섹션: BookingField 스펙과 무관하게 항상 받음 */}
+        <CollapsibleSection
+          title="구매자 정보"
+          open={!!openSections[1]} // 원하는 인덱스로 조정
+          onToggle={() => toggleSection(1)}
+          completed={!!completedSections[1]}
+        >
+          <View>
+            {/* 성 / 이름 */}
+            <Text typography="t6" color={colors.grey800} style={{ marginBottom: 6 }}>구매자 성</Text>
+            <TextInput
+              placeholder="Last name"
+              placeholderTextColor={colors.grey400}
+              value={useBookingStore.getState().buyer_last_name}
+              onChangeText={(t) => useBookingStore.getState().setBuyerLastName(t)}
+              style={styles.input}
+            />
+            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>구매자 이름</Text>
+            <TextInput
+              placeholder="First name"
+              placeholderTextColor={colors.grey400}
+              value={useBookingStore.getState().buyer_first_name}
+              onChangeText={(t) => useBookingStore.getState().setBuyerFirstName(t)}
+              style={styles.input}
+            />
+
+            {/* 이메일 */}
+            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>이메일</Text>
+            <TextInput
+              placeholder="email@example.com"
+              placeholderTextColor={colors.grey400}
+              value={useBookingStore.getState().buyer_Email}
+              onChangeText={(t) => useBookingStore.getState().setBuyerEmail(t)}
+              style={styles.input}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            {/* 전화번호: 국가 코드 + 번호 */}
+            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>전화번호</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {/* reuse TelCountryCodeSelector if it fits; otherwise a simple TextInput */}
+              <TelCountryCodeSelector
+                cusType="buyer" // component 내부 사용에 무해하면 넘김
+                options={[ /* reuse options from your existing selector or pass nothing to show defaults */ ]}
+                required={false}
+                // If your TelCountryCodeSelector doesn't accept direct onChange to store, use a simple TextInput:
+                // value and onChangeText need to be passed; if not supported, use a small TextInput for the code.
+              />
+              <View style={{ width: 12 }} />
+              <TextInput
+                placeholder="01012345678"
+                placeholderTextColor={colors.grey400}
+                value={String(useBookingStore.getState().buyer_tel_number ?? "")}
+                onChangeText={(t) => useBookingStore.getState().setBuyerTelNumber(t)}
+                style={[styles.input, { flex: 1 }]}
+                keyboardType="phone-pad"
+              />
+            </View>
+
+            {/* 국가 (buyer_country) */}
+            <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>국가 코드</Text>
+            <TextInput
+              placeholder="TW"
+              placeholderTextColor={colors.grey400}
+              value={useBookingStore.getState().buyer_country}
+              onChangeText={(t) => useBookingStore.getState().setBuyerCountry(t)}
+              style={styles.input}
+            />
+
+            <Button
+              type="primary"
+              style="fill"
+              display="block"
+              size="large"
+              containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+              onPress={() => markCompleteAndNext(1)}
+            >
+              작성 완료
+            </Button>
+          </View>
         </CollapsibleSection>
 
         {rawFields?.guide_lang && (
