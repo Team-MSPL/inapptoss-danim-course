@@ -35,6 +35,8 @@ import ShoeTypeSelector from "../../components/product/payfield/ShoeTypeSelector
 import GlassDegreeSelector from "../../components/product/payfield/GlassDegreeSelector";
 import MealSelector from "../../components/product/payfield/MealSelector";
 import AllergyFoodSelector from "../../components/product/payfield/AllergyFoodSelector";
+import NativeLastNameInput from "../../components/product/payfield/NativeLastNameInput";
+import NativeFirstNameInput from "../../components/product/payfield/NativeFirstNameInput";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -254,6 +256,18 @@ function ProductPay() {
               {rawFields?.custom?.allergy_food && Array.isArray(rawFields.custom.allergy_food.use) && rawFields.custom.allergy_food.use.includes("cus_01") && (
                 <AllergyFoodSelector cusType="cus_01" options={rawFields.custom.allergy_food.list_option} required={String(rawFields.custom.allergy_food.is_require ?? "").toLowerCase() === "true"} />
               )}
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("cus_01") && (
+                <NativeLastNameInput
+                  cusType="cus_01"
+                  required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("cus_01") && (
+                <NativeFirstNameInput
+                  cusType="cus_01"
+                  required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
             </View>
           </CollapsibleSection>
@@ -313,6 +327,18 @@ function ProductPay() {
               {rawFields?.custom?.allergy_food && Array.isArray(rawFields.custom.allergy_food.use) && rawFields.custom.allergy_food.use.includes("cus_02") && (
                 <AllergyFoodSelector cusType="cus_02" options={rawFields.custom.allergy_food.list_option} required={String(rawFields.custom.allergy_food.is_require ?? "").toLowerCase() === "true"} />
               )}
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("cus_02") && (
+                <NativeLastNameInput
+                  cusType="cus_02"
+                  required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("cus_02") && (
+                <NativeFirstNameInput
+                  cusType="cus_02"
+                  required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
             </View>
           </CollapsibleSection>
@@ -321,13 +347,35 @@ function ProductPay() {
         {/* contact & send sections (kept as placeholders) */}
         {hasContact && (
           <CollapsibleSection title="연락 수단" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
-            <View />
+            {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("contact") && (
+              <NativeLastNameInput
+                cusType="contact"
+                required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("contact") && (
+              <NativeFirstNameInput
+                cusType="contact"
+                required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
           </CollapsibleSection>
         )}
 
         {hasSend && (
           <CollapsibleSection title="투숙 정보" open={!!openSections[5]} onToggle={() => toggleSection(5)} completed={!!completedSections[5]}>
-            <View />
+            {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("send") && (
+              <NativeLastNameInput
+                cusType="send"
+                required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
+            {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("send") && (
+              <NativeFirstNameInput
+                cusType="send"
+                required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
           </CollapsibleSection>
         )}
 
