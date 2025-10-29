@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ActivityIndicator, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Text as RNText } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Text as RNText, Modal, Alert } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
 import { FixedBottomCTAProvider, Button, colors, Text } from "@toss-design-system/react-native";
@@ -29,7 +29,7 @@ function safeNum(v: any): number | undefined {
 }
 
 /** extract the lowest numeric price from an entry that might contain
- *  time-keyed price objects (e.g. { "09:10": 100 }) or direct numeric fields
+ *  time-keyed price objects (e.g. { "00:00": 100 }) or direct numeric fields
  */
 function lowestPriceFromEntry(entry: any): number | undefined {
   if (!entry) return undefined;
@@ -56,32 +56,124 @@ function lowestPriceFromEntry(entry: any): number | undefined {
 }
 
 /** Merge SKU calendars into a date -> { price } map (take lowest across SKUs and times) */
+// replace existing mergeSkuCalendars with this implementation
+
 function mergeSkuCalendars(pkgData: any) {
   if (!pkgData) return {};
-  const merged: Record<string, { price: number } > = {};
+  const merged: Record<string, any> = {}; // keep full entry object per date
 
   const items = Array.isArray(pkgData.item) ? pkgData.item : [];
+
+  // helper: merge two time-keyed maps by taking the lowest numeric value per time key
+  const mergeTimeMaps = (mapA: Record<string, any> | undefined, mapB: Record<string, any> | undefined) => {
+    if ((!mapA || Object.keys(mapA).length === 0) && (!mapB || Object.keys(mapB).length === 0)) return undefined;
+    const out: Record<string, number> = {};
+    const keys = new Set<string>([...(mapA ? Object.keys(mapA) : []), ...(mapB ? Object.keys(mapB) : [])]);
+    keys.forEach((k) => {
+      const a = safeNum(mapA?.[k]);
+      const b = safeNum(mapB?.[k]);
+      if (a === undefined && b === undefined) return;
+      if (a === undefined) out[k] = b as number;
+      else if (b === undefined) out[k] = a;
+      else out[k] = Math.min(a, b);
+    });
+    return out;
+  };
+
+  // helper: ensure entry is normalized into an object with possible time maps preserved
+  const normalizeEntry = (entry: any) => {
+    if (!entry) return null;
+    // If entry is primitive numeric-ish, convert to { price: n }
+    if (typeof entry === 'number' || typeof entry === 'string') {
+      const n = safeNum(entry);
+      return n === undefined ? null : { price: n };
+    }
+    // otherwise assume object, keep as-is (we'll merge fields)
+    return { ...(entry ?? {}) };
+  };
+
   items.forEach((item: any) => {
     const skus = Array.isArray(item.skus) ? item.skus : [];
+
+    // SKU-level calendars
     skus.forEach((sku: any) => {
       const cal = sku?.calendar_detail ?? sku?.calendar ?? null;
       if (!cal || typeof cal !== 'object') return;
       Object.entries(cal).forEach(([dateStr, entry]: any) => {
-        const price = lowestPriceFromEntry(entry);
-        if (price === undefined) return;
-        const existing = merged[dateStr]?.price;
-        if (existing === undefined || price < existing) merged[dateStr] = { price };
+        const norm = normalizeEntry(entry);
+        if (!norm) return;
+
+        if (!merged[dateStr]) merged[dateStr] = {};
+
+        // for known keys that might be time-maps (b2b_price, b2c_price, price)
+        ['b2b_price', 'b2c_price', 'price', 'original_price', 'soldOut'].forEach((key) => {
+          const eVal = norm[key];
+          const existing = merged[dateStr][key];
+
+          // merge time-maps specially
+          if (eVal && typeof eVal === 'object' && !Array.isArray(eVal)) {
+            // existing may be time-map or scalar; merge into time-map
+            const mergedMap = mergeTimeMaps(existing, eVal);
+            if (mergedMap) merged[dateStr][key] = mergedMap;
+          } else {
+            // scalar values: if existing is undefined, set; else keep minimal numeric for prices
+            if (key === 'b2b_price' || key === 'b2c_price' || key === 'price' || key === 'original_price') {
+              const existingNum = safeNum(existing);
+              const newNum = safeNum(eVal);
+              if (existingNum === undefined && newNum !== undefined) merged[dateStr][key] = newNum;
+              else if (existingNum !== undefined && newNum !== undefined) merged[dateStr][key] = Math.min(existingNum, newNum);
+            } else {
+              if (existing === undefined) merged[dateStr][key] = eVal;
+            }
+          }
+        });
+
+        // store SKU-level metadata optionally (e.g., SKU ids) — append to array
+        merged[dateStr].skus = merged[dateStr].skus || [];
+        merged[dateStr].skus.push({
+          sku_id: sku?.sku_id,
+          spec_token: sku?.spec_token,
+          remain_qty: sku?.remain_qty,
+        });
+
+        // compute/refresh a date-level "lowest price" for summary display
+        const candidate = lowestPriceFromEntry(norm);
+        const prevMin = merged[dateStr].price;
+        if (candidate !== undefined && (prevMin === undefined || candidate < prevMin)) {
+          merged[dateStr].price = candidate;
+        }
       });
     });
 
-    // item-level calendar fallback
+    // item-level calendar fallback (same merging logic)
     const itemCal = item?.calendar_detail ?? null;
     if (itemCal && typeof itemCal === 'object') {
       Object.entries(itemCal).forEach(([dateStr, entry]: any) => {
-        const price = lowestPriceFromEntry(entry);
-        if (price === undefined) return;
-        const existing = merged[dateStr]?.price;
-        if (existing === undefined || price < existing) merged[dateStr] = { price };
+        const norm = normalizeEntry(entry);
+        if (!norm) return;
+        if (!merged[dateStr]) merged[dateStr] = {};
+        ['b2b_price', 'b2c_price', 'price', 'original_price', 'soldOut'].forEach((key) => {
+          const eVal = norm[key];
+          const existing = merged[dateStr][key];
+          if (eVal && typeof eVal === 'object' && !Array.isArray(eVal)) {
+            const mergedMap = mergeTimeMaps(existing, eVal);
+            if (mergedMap) merged[dateStr][key] = mergedMap;
+          } else {
+            if (key === 'b2b_price' || key === 'b2c_price' || key === 'price' || key === 'original_price') {
+              const existingNum = safeNum(existing);
+              const newNum = safeNum(eVal);
+              if (existingNum === undefined && newNum !== undefined) merged[dateStr][key] = newNum;
+              else if (existingNum !== undefined && newNum !== undefined) merged[dateStr][key] = Math.min(existingNum, newNum);
+            } else {
+              if (existing === undefined) merged[dateStr][key] = eVal;
+            }
+          }
+        });
+        const candidate = lowestPriceFromEntry(norm);
+        const prevMin = merged[dateStr].price;
+        if (candidate !== undefined && (prevMin === undefined || candidate < prevMin)) {
+          merged[dateStr].price = candidate;
+        }
       });
     }
   });
@@ -90,10 +182,31 @@ function mergeSkuCalendars(pkgData: any) {
   const topCal = pkgData?.calendar_detail ?? null;
   if (topCal && typeof topCal === 'object') {
     Object.entries(topCal).forEach(([dateStr, entry]: any) => {
-      const price = lowestPriceFromEntry(entry);
-      if (price === undefined) return;
-      const existing = merged[dateStr]?.price;
-      if (existing === undefined || price < existing) merged[dateStr] = { price };
+      const norm = normalizeEntry(entry);
+      if (!norm) return;
+      if (!merged[dateStr]) merged[dateStr] = {};
+      ['b2b_price', 'b2c_price', 'price', 'original_price', 'soldOut'].forEach((key) => {
+        const eVal = norm[key];
+        const existing = merged[dateStr][key];
+        if (eVal && typeof eVal === 'object' && !Array.isArray(eVal)) {
+          const mergedMap = mergeTimeMaps(existing, eVal);
+          if (mergedMap) merged[dateStr][key] = mergedMap;
+        } else {
+          if (key === 'b2b_price' || key === 'b2c_price' || key === 'price' || key === 'original_price') {
+            const existingNum = safeNum(existing);
+            const newNum = safeNum(eVal);
+            if (existingNum === undefined && newNum !== undefined) merged[dateStr][key] = newNum;
+            else if (existingNum !== undefined && newNum !== undefined) merged[dateStr][key] = Math.min(existingNum, newNum);
+          } else {
+            if (existing === undefined) merged[dateStr][key] = eVal;
+          }
+        }
+      });
+      const candidate = lowestPriceFromEntry(norm);
+      const prevMin = merged[dateStr].price;
+      if (candidate !== undefined && (prevMin === undefined || candidate < prevMin)) {
+        merged[dateStr].price = candidate;
+      }
     });
   }
 
@@ -200,6 +313,14 @@ function ProductReservation() {
   const [pkgData, setPkgData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null); // single selected date
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  // modal/time states
+  const [timeModalVisible, setTimeModalVisible] = useState(false);
+  const [timeOptions, setTimeOptions] = useState<Array<{ time: string; price?: number }>>([]);
+  const [pendingDate, setPendingDate] = useState<string | null>(null);
+  // modal-local selected time (for dropdown/radio inside modal)
+  const [modalSelectedTime, setModalSelectedTime] = useState<string | null>(null);
 
   // calendar month
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -223,16 +344,36 @@ function ProductReservation() {
         });
 
         const data = res.data ?? {};
-        const firstItem = data.item?.[0];
-        const firstSku = firstItem?.skus?.[0];
-        const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? data.calendar_detail ?? null;
 
-        // create merged calendar map from all SKUs/items/top-level
+        // If API returns result code "03" -> show message and go back
+        if (data?.result === '03' || data?.result_code === '03') {
+          setLoading(false);
+          Alert.alert(
+            '알림',
+            '해당 여행 상품은 현재 판매가 종료되었습니다.',
+            [
+              {
+                text: '확인',
+                onPress: () => {
+                  try {
+                    navigation.goBack();
+                  } catch (e) {
+                    // fallback: navigate to root or close
+                    console.warn('[ProductReservation] navigation.goBack failed', e);
+                  }
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+          return;
+        }
+
+        // build merged calendar map from SKUs/items/top-level
         const mergedCalendar = mergeSkuCalendars(data);
 
         const pkgDataWithCalendar = {
           ...data,
-          calendar_detail,
           calendar_detail_merged: mergedCalendar,
         };
 
@@ -241,12 +382,11 @@ function ProductReservation() {
         console.log('[ProductReservation] fetched pkgData (sample):', {
           prod_no: params.prod_no,
           pkg_no: params.pkg_no,
-          hasCalendarDetail: !!calendar_detail,
           mergedDatesCount: Object.keys(mergedCalendar || {}).length,
         });
       } catch (e: any) {
         console.error('[ProductReservation] fetch error', e);
-        setError("패키지 정보를 불러오는데 실패했습니다.");
+        setError("패키지 정보를 불러오는 데 실패했습니다.");
       } finally {
         setLoading(false);
       }
@@ -254,7 +394,7 @@ function ProductReservation() {
 
     fetchPkg();
     // only on param changes
-  }, [params.prod_no, params.pkg_no]);
+  }, [params.prod_no, params.pkg_no, navigation]);
 
   // build calInfo - prefer merged calendar map if present
   const calInfo = useMemo(() => {
@@ -264,32 +404,54 @@ function ProductReservation() {
     const firstItem = pkgData.item[0];
     const firstSku = firstItem?.skus?.[0];
 
-    const calendar_detail = pkgData?.calendar_detail_merged ?? firstSku?.calendar_detail ?? pkgData?.calendar_detail ?? {};
+    // prefer merged calendar map
+    const calendar_detail = pkgData?.calendar_detail_merged && Object.keys(pkgData.calendar_detail_merged).length > 0
+      ? pkgData.calendar_detail_merged
+      : (firstSku?.calendar_detail ?? pkgData?.calendar_detail ?? {});
 
     const b2c_price = firstSku?.b2c_price ?? firstItem?.b2c_min_price;
+    const b2b_min_price = pkgData?.pkg?.[0]?.b2b_min_price ?? firstItem?.b2b_min_price;
     const sale_s_date = Array.isArray(firstItem?.sale_s_date) ? firstItem.sale_s_date[0] : firstItem.sale_s_date;
     const sale_e_date = Array.isArray(firstItem?.sale_e_date) ? firstItem.sale_e_date[0] : firstItem.sale_e_date;
 
     return {
       calendar_detail,
       b2c_price,
+      b2b_min_price,
       sale_s_date,
       sale_e_date,
     };
   }, [pkgData]);
 
-  // calendarData: if we have merged calendar map use it directly, otherwise fall back to makeCalendarData
+  // calendarData: prefer merged calendar map, else build fallback map using sale_s_date..sale_e_date and b2b_min_price
   const calendarData = useMemo(() => {
     if (!calInfo) return {};
-    if (calInfo.calendar_detail && Object.keys(calInfo.calendar_detail).length > 0) {
-      return calInfo.calendar_detail;
+    const { calendar_detail, sale_s_date, sale_e_date, b2b_min_price } = calInfo;
+
+    if (calendar_detail && Object.keys(calendar_detail).length > 0) {
+      return calendar_detail;
     }
-    // fallback: try use makeCalendarData (if calendar_detail is not usable)
+
+    // fallback: if sale date range exists, fill with b2b_min_price (or b2c_price as secondary)
+    const basePrice = safeNum(b2b_min_price) ?? safeNum(calInfo?.b2c_price) ?? undefined;
+    if (sale_s_date && sale_e_date && basePrice !== undefined) {
+      const start = dayjs(sale_s_date);
+      const end = dayjs(sale_e_date);
+      if (start.isValid() && end.isValid() && !start.isAfter(end)) {
+        const map: Record<string, any> = {};
+        for (let d = start.clone(); !d.isAfter(end, 'day'); d = d.add(1, 'day')) {
+          const dateStr = d.format('YYYY-MM-DD');
+          map[dateStr] = { b2b_price: basePrice, price: basePrice }; // keep both for compat
+        }
+        return map;
+      }
+    }
+
+    // last resort: try makeCalendarData (may throw)
     try {
       return makeCalendarData(calInfo);
     } catch (e) {
-      // fallback to empty map
-      console.warn('[ProductReservation] makeCalendarData failed, using empty calendar map', e);
+      console.warn('[ProductReservation] makeCalendarData fallback failed', e);
       return {};
     }
   }, [calInfo]);
@@ -315,12 +477,81 @@ function ProductReservation() {
     );
   }, [currentMonth, calendarData, sale_s_date, sale_e_date]);
 
+  // extract time options from a raw calendar entry (prefer b2b_price -> b2c_price -> price if they are time-keyed)
+  function extractTimeOptionsFromEntry(entry: any) {
+    if (!entry || typeof entry !== 'object') return [];
+
+    // helper: check if an object looks like a time-keyed map (keys like "10:00", "10:30")
+    const looksLikeTimeMap = (obj: any) => {
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
+      const keys = Object.keys(obj);
+      if (keys.length === 0) return false;
+      // simple heuristic: keys should match HH:mm or H:mm
+      const timeKeyRe = /^([01]?\d|2[0-3]):[0-5]\d$/;
+      return keys.some((k) => timeKeyRe.test(k));
+    };
+
+    // priority keys that may contain time-maps
+    const keysPrior = ['b2b_price', 'b2c_price', 'price'];
+
+    // 1) check prioritized maps (b2b_price, b2c_price, price) for time-keyed maps
+    for (const k of keysPrior) {
+      const val = entry[k];
+      if (looksLikeTimeMap(val)) {
+        return Object.entries(val)
+          .map(([time, p]) => ({ time, price: safeNum(p) }))
+          .filter((it) => it.price !== undefined)
+          .sort((a, b) => a.time.localeCompare(b.time));
+      }
+    }
+
+    // 2) maybe the entry itself is a time-keyed map (rare, but possible)
+    if (looksLikeTimeMap(entry)) {
+      return Object.entries(entry)
+        .map(([time, p]) => ({ time, price: safeNum(p) }))
+        .filter((it) => it.price !== undefined)
+        .sort((a, b) => a.time.localeCompare(b.time));
+    }
+
+    // 3) as fallback, sometimes nested objects exist (like { b2b_price: { "10:00": {...} } } )
+    // look for any nested time-map anywhere one level deep
+    for (const v of Object.values(entry)) {
+      if (looksLikeTimeMap(v)) {
+        return Object.entries(v)
+          .map(([time, p]) => ({ time, price: safeNum(p) }))
+          .filter((it) => it.price !== undefined)
+          .sort((a, b) => a.time.localeCompare(b.time));
+      }
+    }
+
+    return [];
+  }
+
   // get price info for a date (display/original/discount)
-  function getPriceForDate(dateStr: string) {
+  function getPriceForDate(dateStr: string, time?: string | null) {
     const cal = calendarData?.[dateStr] ?? null;
 
+    // if time provided and entry contains time-keyed map, prefer it
+    let display;
+    if (time && cal) {
+      // check preferred maps
+      const keysPrior = ['b2b_price', 'b2c_price', 'price'];
+      for (const k of keysPrior) {
+        const map = cal[k];
+        if (map && typeof map === 'object' && map[time] !== undefined) {
+          display = safeNum(map[time]);
+          break;
+        }
+      }
+      // fallback to entry.price/time-keyed fallback
+      if (display === undefined && typeof cal === 'object' && cal[time] !== undefined) {
+        display = safeNum(cal[time]);
+      }
+    }
+
     // display: prefer merged map price or cal price / b2b/b2c
-    const display = safeNum(cal?.price ?? cal?.b2b_price ?? cal?.b2c_price ?? cal) ??
+    display = display ??
+      safeNum(cal?.price ?? cal?.b2b_price ?? cal?.b2c_price ?? cal) ??
       safeNum(calInfo?.b2c_price) ??
       safeNum(pkgData?.pkg?.[0]?.b2b_min_price) ??
       safeNum(pkgData?.pkg?.[0]?.b2c_min_price);
@@ -331,11 +562,36 @@ function ProductReservation() {
   }
 
   // selection
-  const onDayPress = (cell: any) => {
+  const handleDayPress = (cell: any) => {
     if (!cell || cell.soldOut) return;
+
+    const entry = cell.rawCal;
+    const options = extractTimeOptionsFromEntry(entry);
+    if (options && options.length > 0) {
+      setTimeOptions(options);
+      setPendingDate(cell.date);
+      // IMPORTANT: set only the time string (not the whole object)
+      setModalSelectedTime(options[0]?.time ?? null);
+      setTimeModalVisible(true);
+      return;
+    }
+
     setSelected(cell.date);
+    setSelectedTime(null);
+    setPendingDate(null);
     setSDate(cell.date);
     setEDate(cell.date);
+  };
+
+  const handleChooseTime = (time: string | null) => {
+    if (!pendingDate || !time) return;
+    setSelected(pendingDate);
+    setSelectedTime(time);
+    setSDate(pendingDate);
+    setEDate(pendingDate);
+    setTimeModalVisible(false);
+    setPendingDate(null);
+    setModalSelectedTime(null);
   };
 
   // loading / error
@@ -360,12 +616,13 @@ function ProductReservation() {
 
   const goNext = () => {
     if (!selected) return;
-    const priceInfo = getPriceForDate(selected);
+    const priceInfo = getPriceForDate(selected, selectedTime ?? null);
     navigation.navigate('/product/people', {
       prod_no: params.prod_no,
       prod_name: pkgData?.prod_name ?? params.prod_name,
       pkg_no: params.pkg_no,
       selected_date: selected,
+      selected_time: selectedTime ?? null,
       display_price: priceInfo.display ?? null,
       original_price: priceInfo.original ?? null,
       discount_amount: priceInfo.discountAmount ?? 0,
@@ -429,7 +686,7 @@ function ProductReservation() {
                     <TouchableOpacity
                       key={j}
                       style={[{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 8 }, selectedStyle]}
-                      onPress={() => onDayPress(cell)}
+                      onPress={() => handleDayPress(cell)}
                     >
                       <Text style={{
                         fontWeight: isSel ? 'bold' : 'normal',
@@ -462,6 +719,91 @@ function ProductReservation() {
             다음으로
           </Button>
         </View>
+
+        {/* Time selection modal (dropdown-like but with selectable list + confirm/cancel) */}
+        <Modal
+          visible={timeModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => {
+            setTimeModalVisible(false);
+            setPendingDate(null);
+            setModalSelectedTime(null);
+          }}
+        >
+          <View style={modalStyles.backdrop}>
+            <View style={modalStyles.container}>
+              <Text typography="t6" style={{ marginBottom: 12 }}>시간을 선택하세요</Text>
+
+              {/* Selected preview */}
+              <View style={{ marginBottom: 12, padding: 8, borderRadius: 8, backgroundColor: '#fafafa', borderWidth: 1, borderColor: colors.grey100 }}>
+                <Text style={{ fontWeight: 'bold' }}>
+                  선택된 시간: {modalSelectedTime ?? '선택 안됨'}
+                </Text>
+                <Text style={{ color: colors.grey600, marginTop: 6 }}>
+                  {modalSelectedTime
+                    ? (() => {
+                      const found = timeOptions.find((t) => t.time === modalSelectedTime);
+                      return found ? formatCompactPrice(found.price) : '';
+                    })()
+                    : '시간을 선택하면 가격이 표시됩니다.'}
+                </Text>
+              </View>
+
+              {/* Time list */}
+              <ScrollView style={{ maxHeight: 300, marginBottom: 12 }}>
+                {timeOptions.map((opt) => {
+                  const active = modalSelectedTime === opt.time;
+                  return (
+                    <TouchableOpacity
+                      key={opt.time}
+                      style={[modalStyles.timeRow, active ? modalStyles.timeRowActive : undefined]}
+                      onPress={() => setModalSelectedTime(opt.time)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={active ? { color: '#fff', fontWeight: 'bold' } : undefined}>{opt.time}</Text>
+                      <Text style={active ? { color: '#fff' } : { color: colors.grey600 }}>{opt.price ? formatCompactPrice(opt.price) : ''}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
+                <View style={{ marginRight: 8 }}>
+                  <Button
+                    type="dark"
+                    style="fill"
+                    display="inline"
+                    size="medium"
+                    onPress={() => {
+                      setTimeModalVisible(false);
+                      setPendingDate(null);
+                      setModalSelectedTime(null);
+                    }}
+                  >
+                    취소
+                  </Button>
+                </View>
+                <Button
+                  type="primary"
+                  style="fill"
+                  display="inline"
+                  size="medium"
+                  disabled={!modalSelectedTime}
+                  onPress={() => {
+                    // confirm selected time from modalSelectedTime
+                    if (modalSelectedTime) {
+                      handleChooseTime(modalSelectedTime);
+                    }
+                  }}
+                >
+                  확인
+                </Button>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
       </FixedBottomCTAProvider>
     </View>
   );
@@ -473,6 +815,32 @@ const styles = StyleSheet.create({
   },
   rangeDay: {
     backgroundColor: colors.blue100,
+  },
+});
+
+const modalStyles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: Math.min(560, SCREEN_WIDTH - 48),
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+  },
+  timeRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grey100,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  timeRowActive: {
+    backgroundColor: colors.blue500,
   },
 });
 
