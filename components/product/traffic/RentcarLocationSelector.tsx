@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, TouchableOpacity, ScrollView, StyleSheet, TextInput } from "react-native";
 import { Text, colors } from "@toss-design-system/react-native";
 import useBookingStore from "../../../zustand/useBookingStore";
@@ -16,86 +16,100 @@ type Props = {
 };
 
 export default function RentcarLocationSelector({ trafficType, field, rawFields, specIndex, label, required = false, onValueChange }: Props) {
+  // stabilize trafficSpec (might be undefined)
   const trafficSpec = Array.isArray(rawFields?.traffics)
     ? rawFields.traffics[specIndex ?? rawFields.traffics.findIndex((t: any) => t?.traffic_type?.traffic_type_value === trafficType)] ?? null
     : null;
 
-  const locationOptions: LocationOption[] = trafficSpec?.[field]?.location ?? [];
-  const allowCustomizeOption = locationOptions.some((o) => String(o.id) === "customize");
+  // stabilize options
+  const locationOptions: LocationOption[] = useMemo(() => trafficSpec?.[field]?.location ?? [], [trafficSpec, field]);
+  const allowCustomizeOption = useMemo(() => locationOptions.some((o) => String(o.id) === "customize"), [locationOptions]);
 
-  const stored = useBookingStore((s) =>
-    (s.trafficArray ?? []).find((it) => {
+  // read stored value for this traffic entry (primitive/string)
+  const stored = useBookingStore((s: any) =>
+    (s.trafficArray ?? []).find((it: any) => {
       if (String(it?.traffic_type) !== String(trafficType)) return false;
       if (typeof specIndex === "number") return Number(it?.spec_index) === specIndex;
       return true;
     })?.[field] ?? ""
   );
-  const setTrafficField = useBookingStore((s) => s.setTrafficField);
+  const setTrafficField = useBookingStore((s: any) => s.setTrafficField);
 
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [customAddress, setCustomAddress] = useState<string>("");
 
-  // 초기값 동기화: stored 값이 option id/code/address 인지 판단해서 selectedId/customAddress를 셋팅
+  // INITIAL SYNC: stored -> selectedId/customAddress (guarded)
   useEffect(() => {
+    let nextSelectedId: string | null = null;
+    let nextCustomAddress = "";
+
     if (!Array.isArray(locationOptions) || locationOptions.length === 0) {
-      setSelectedId(null);
-      setCustomAddress(String(stored ?? ""));
-      return;
+      nextSelectedId = null;
+      nextCustomAddress = String(stored ?? "");
+    } else {
+      const byAddress = locationOptions.find((opt) => opt?.address && String(opt.address) === String(stored));
+      if (byAddress) {
+        nextSelectedId = String(byAddress.id ?? byAddress.code ?? "");
+        nextCustomAddress = "";
+      } else {
+        const byId = locationOptions.find((opt) => String(opt.id) === String(stored) || String(opt.code) === String(stored));
+        if (byId) {
+          nextSelectedId = String(byId.id ?? byId.code ?? "");
+          nextCustomAddress = "";
+        } else if (allowCustomizeOption && stored && String(stored).trim() !== "") {
+          nextSelectedId = "customize";
+          nextCustomAddress = String(stored);
+        } else {
+          nextSelectedId = null;
+          nextCustomAddress = String(stored ?? "");
+        }
+      }
     }
 
-    const byAddress = locationOptions.find((opt) => opt?.address && String(opt.address) === String(stored));
-    if (byAddress) { setSelectedId(String(byAddress.id ?? byAddress.code ?? "")); setCustomAddress(""); return; }
-
-    const byId = locationOptions.find((opt) => String(opt.id) === String(stored) || String(opt.code) === String(stored));
-    if (byId) { setSelectedId(String(byId.id ?? byId.code ?? "")); setCustomAddress(""); return; }
-
-    if (allowCustomizeOption && stored && String(stored).trim() !== "") {
-      setSelectedId("customize"); setCustomAddress(String(stored)); return;
-    }
-
-    setSelectedId(null);
-    setCustomAddress(String(stored ?? ""));
+    // guarded updates to avoid re-renders
+    setSelectedId((prev) => (prev !== nextSelectedId ? nextSelectedId : prev));
+    setCustomAddress((prev) => (prev !== nextCustomAddress ? nextCustomAddress : prev));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stored, JSON.stringify(locationOptions), allowCustomizeOption]);
 
-  // selectedId 변경 시: 주소만 저장 (is_rent_customize 저장은 제거됨)
+  // when selectedId changes: compute address to store and write only if different from stored
   useEffect(() => {
+    let addrToStore = "";
     if (selectedId === null) {
-      setTrafficField(trafficType, field, customAddress ? customAddress : "", specIndex);
-      onValueChange?.(customAddress ?? "");
+      addrToStore = customAddress ? customAddress : "";
+    } else if (selectedId === "customize") {
+      addrToStore = customAddress ?? "";
+    } else {
+      const opt = locationOptions.find((o) => String(o.id) === String(selectedId) || String(o.code) === String(selectedId));
+      addrToStore = opt?.address ?? opt?.name ?? "";
+    }
+
+    // guard: skip if identical
+    if (String(stored ?? "") === String(addrToStore ?? "")) {
+      onValueChange?.(addrToStore ?? "");
       return;
     }
 
-    if (selectedId === "customize") {
-      const addr = customAddress ?? "";
-      setTrafficField(trafficType, field, addr, specIndex);
-      onValueChange?.(addr);
-      return;
-    }
-
-    const opt = locationOptions.find((o) => String(o.id) === String(selectedId) || String(o.code) === String(selectedId));
-    const addr = opt?.address ?? opt?.name ?? "";
-    setTrafficField(trafficType, field, addr, specIndex);
-    onValueChange?.(addr);
+    setTrafficField(trafficType, field, addrToStore ?? "", specIndex);
+    onValueChange?.(addrToStore ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedId]);
+  }, [selectedId, customAddress, specIndex, JSON.stringify(locationOptions), stored]);
 
-  // customAddress 변경 시: 주소만 저장 (is_rent_customize 저장은 제거됨)
+  // when customAddress changes while in customize mode (or no options), write only if different
   useEffect(() => {
-    if (selectedId === "customize") {
-      const addr = customAddress ?? "";
-      setTrafficField(trafficType, field, addr, specIndex);
-      onValueChange?.(addr);
-    } else if (!locationOptions || locationOptions.length === 0) {
-      const addr = customAddress ?? "";
-      setTrafficField(trafficType, field, addr, specIndex);
-      onValueChange?.(addr);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customAddress]);
+    const isCustomActive = selectedId === "customize" || !Array.isArray(locationOptions) || locationOptions.length === 0;
+    if (!isCustomActive) return;
 
-  // 렌더: 옵션이 없으면 단순 텍스트 입력
+    const addrToStore = customAddress ?? "";
+    if (String(stored ?? "") === String(addrToStore)) return;
+
+    setTrafficField(trafficType, field, addrToStore, specIndex);
+    onValueChange?.(addrToStore);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customAddress, selectedId, specIndex, stored]);
+
+  // RENDER
   if (!Array.isArray(locationOptions) || locationOptions.length === 0) {
     return (
       <View style={{ marginBottom: 12 }}>
@@ -129,7 +143,7 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
               const name = isCustomize ? (opt.name ? `${opt.name} (직접 입력)` : "직접 입력") : (opt.name ?? String(id));
               const active = String(id) === String(selectedId);
               return (
-                <TouchableOpacity key={String(id) + String(idx)} onPress={() => { setSelectedId(String(id)); setOpen(false); }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
+                <TouchableOpacity key={String(id) + String(idx)} onPress={() => { setSelectedId((prev) => (prev !== String(id) ? String(id) : prev)); setOpen(false); }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
                   <Text style={active ? { color: "#fff" } : undefined}>{name}</Text>
                 </TouchableOpacity>
               );

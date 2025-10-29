@@ -1,20 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
-import { Text, colors } from "@toss-design-system/react-native";
+import React, {useEffect, useMemo, useState} from "react";
+import {View, TouchableOpacity, ScrollView, StyleSheet} from "react-native";
+import {Text, colors} from "@toss-design-system/react-native";
 import useBookingStore from "../../../zustand/useBookingStore";
 
 type Props = {
-  trafficType: string;
-  field: "s_date" | "e_date";
-  specIndex?: number;
-  label?: string;
-  required?: boolean;
-  onValueChange?: (v: string) => void;
+  trafficType: string,
+  field: "s_date" | "e_date",
+  specIndex?: number,
+  label?: string,
+  required?: boolean,
+  onValueChange?: (v: string) => void,
+  rawFields?: any
 };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
+
 function formatDateYYYYMMDD(y: number, m: number, d: number) {
   return `${y}-${pad(m)}-${pad(d)}`;
 }
@@ -22,7 +24,15 @@ function formatDateYYYYMMDD(y: number, m: number, d: number) {
 /**
  * PickupDateInput: Rentcar/Arrival Date와 동일한 UI 패턴
  */
-export default function PickupDateInput({ trafficType, field, specIndex, label, required = false, onValueChange }: Props) {
+export default function PickupDateInput({
+                                          trafficType,
+                                          field,
+                                          specIndex,
+                                          label,
+                                          required = false,
+                                          onValueChange,
+                                          rawFields
+                                        }: Props) {
   const stored = useBookingStore((s) =>
     (s.trafficArray ?? []).find((it) => {
       if (String(it?.traffic_type) !== String(trafficType)) return false;
@@ -66,11 +76,11 @@ export default function PickupDateInput({ trafficType, field, specIndex, label, 
     return arr;
   }, [currentYear]);
 
-  const months = useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), []);
+  const months = useMemo(() => Array.from({length: 12}, (_, i) => i + 1), []);
   const daysInMonth = (y: number, m: number) => new Date(y, m, 0).getDate();
   const days = useMemo(() => {
-    if (year && month) return Array.from({ length: daysInMonth(year, month) }, (_, i) => i + 1);
-    return Array.from({ length: 31 }, (_, i) => i + 1);
+    if (year && month) return Array.from({length: daysInMonth(year, month)}, (_, i) => i + 1);
+    return Array.from({length: 31}, (_, i) => i + 1);
   }, [year, month]);
 
   useEffect(() => {
@@ -87,17 +97,17 @@ export default function PickupDateInput({ trafficType, field, specIndex, label, 
 
   const renderPickerButton = (labelText: string, valueText: string | null, onPress: () => void) => (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.pickerButton}>
-      <Text style={{ color: valueText ? colors.grey800 : colors.grey400 }}>{valueText ?? labelText}</Text>
+      <Text style={{color: valueText ? colors.grey800 : colors.grey400}}>{valueText ?? labelText}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={{ marginBottom: 12 }}>
-      <Text typography="t6" color={colors.grey800} style={{ marginBottom: 6 }}>
-        {label ?? (field === "s_date" ? "픽업" : "하차")} {required ? <Text style={{ color: colors.red400 }}>*</Text> : null}
+    <View style={{marginBottom: 12}}>
+      <Text typography="t6" color={colors.grey800} style={{marginBottom: 6}}>
+        {label ?? (field === "s_date" ? "픽업" : "하차")} {required ? <Text style={{color: colors.red400}}>*</Text> : null}
       </Text>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
         {renderPickerButton("연도", year ? String(year) : null, () => setOpenPart(openPart === "year" ? null : "year"))}
         {renderPickerButton("월", month ? pad(month) : null, () => setOpenPart(openPart === "month" ? null : "month"))}
         {renderPickerButton("일", day ? pad(day) : null, () => setOpenPart(openPart === "day" ? null : "day"))}
@@ -109,8 +119,12 @@ export default function PickupDateInput({ trafficType, field, specIndex, label, 
             {openPart === "year" && years.map((y) => {
               const active = y === year;
               return (
-                <TouchableOpacity key={y} onPress={() => { setYear(y); if (month && day && day > daysInMonth(y, month)) setDay(daysInMonth(y, month)); setOpenPart(null); }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
-                  <Text style={active ? { color: "#fff" } : undefined}>{y}</Text>
+                <TouchableOpacity key={y} onPress={() => {
+                  setYear(y);
+                  if (month && day && day > daysInMonth(y, month)) setDay(daysInMonth(y, month));
+                  setOpenPart(null);
+                }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
+                  <Text style={active ? {color: "#fff"} : undefined}>{y}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -118,8 +132,12 @@ export default function PickupDateInput({ trafficType, field, specIndex, label, 
             {openPart === "month" && months.map((m) => {
               const active = m === month;
               return (
-                <TouchableOpacity key={m} onPress={() => { setMonth(m); if (year && day && day > daysInMonth(year, m)) setDay(daysInMonth(year, m)); setOpenPart(null); }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
-                  <Text style={active ? { color: "#fff" } : undefined}>{pad(m)}</Text>
+                <TouchableOpacity key={m} onPress={() => {
+                  setMonth(m);
+                  if (year && day && day > daysInMonth(year, m)) setDay(daysInMonth(year, m));
+                  setOpenPart(null);
+                }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
+                  <Text style={active ? {color: "#fff"} : undefined}>{pad(m)}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -127,8 +145,11 @@ export default function PickupDateInput({ trafficType, field, specIndex, label, 
             {openPart === "day" && days.map((d) => {
               const active = d === day;
               return (
-                <TouchableOpacity key={d} onPress={() => { setDay(d); setOpenPart(null); }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
-                  <Text style={active ? { color: "#fff" } : undefined}>{pad(d)}</Text>
+                <TouchableOpacity key={d} onPress={() => {
+                  setDay(d);
+                  setOpenPart(null);
+                }} style={[styles.optionRow, active ? styles.optionRowActive : undefined]}>
+                  <Text style={active ? {color: "#fff"} : undefined}>{pad(d)}</Text>
                 </TouchableOpacity>
               );
             })}

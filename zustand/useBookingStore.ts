@@ -140,11 +140,13 @@ const useBookingStore = create<BookingState>((set, get) => ({
 
         if (existingIsEmpty && requestedIsEmpty) {
           // nothing to change
-          return { trafficArray: state.trafficArray };
+          // IMPORTANT: return the same state object to avoid triggering subscribers
+          return state;
         }
         if (!existingIsEmpty && !requestedIsEmpty && String(existingVal) === String(value)) {
           // value identical, nothing to change
-          return { trafficArray: state.trafficArray };
+          // IMPORTANT: return the same state object to avoid triggering subscribers
+          return state;
         }
 
         // perform update (modify only if truly changed)
@@ -157,7 +159,8 @@ const useBookingStore = create<BookingState>((set, get) => ({
             return { trafficArray: next };
           } else {
             // field not present, nothing to change
-            return { trafficArray: state.trafficArray };
+            // IMPORTANT: return same state
+            return state;
           }
         } else {
           item[fieldId] = value;
@@ -169,7 +172,8 @@ const useBookingStore = create<BookingState>((set, get) => ({
         // If requested value is empty, do nothing (avoid creating empty entries)
         const isValEmpty = isEmpty(value);
         if (isValEmpty) {
-          return { trafficArray: state.trafficArray };
+          // IMPORTANT: return same state
+          return state;
         }
         const newItem: Record<string, any> = { traffic_type: trafficTypeValue };
         if (typeof specIndex === "number") newItem.spec_index = specIndex;

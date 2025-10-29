@@ -11,7 +11,6 @@ import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
 import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } from "@toss-design-system/react-native";
 import { useProductStore } from "../../zustand/useProductStore";
-import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
 import { formatPrice } from "../../components/product/pay-function";
 import { useBookingFieldsMock as useBookingFields } from "../../kkday/useBookingFieldsMock";
@@ -84,6 +83,7 @@ import ZipcodeInput from "../../components/product/payfield/ZipcodeInput";
 import ArrivalAirlineInput from "../../components/product/traffic/ArrivalAirlineInput";
 import SafetyseatSelfInfantInput from "../../components/product/traffic/SafetyseatSelfInfantInput";
 import RentcarCustomizeToggle from "../../components/product/traffic/RentcarCustomizeToggle";
+import CollapsibleSection from "../../components/product/collapsibleSection";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -163,7 +163,10 @@ function ProductPay() {
   }
 
   function toggleSection(idx: number) {
-    setOpenSections(prev => ({ ...prev, [idx]: !prev[idx] }));
+    setOpenSections(prev => {
+      // 항상 불변성 유지하고 함수형 업데이트 사용
+      return { ...prev, [idx]: !prev[idx] };
+    });
   }
 
   function markCompleteAndNext(sectionIndex: number) {
@@ -227,19 +230,6 @@ function ProductPay() {
   const hasRentcar03 = availableTrafficTypes.includes("rentcar_03");
   const hasPickup03 = availableTrafficTypes.includes("pickup_03");
   const hasPickup04 = availableTrafficTypes.includes("pickup_04");
-
-  const trafficArray = useBookingStore((s) => s.trafficArray);
-  const addTraffic = useBookingStore((s) => s.addTraffic);
-  const updateTrafficField = useBookingStore((s) => s.updateTrafficField);
-  const removeTraffic = useBookingStore((s) => s.removeTraffic);
-
-  function getTrafficIndicesByType(type: string) {
-    const indices: number[] = [];
-    (trafficArray || []).forEach((item, idx) => {
-      if (String(item?.traffic_type) === String(type)) indices.push(idx);
-    });
-    return indices;
-  }
 
   const buildReservationPayload = () => {
     const store = useBookingStore.getState();
@@ -401,12 +391,6 @@ function ProductPay() {
       });
     }
 
-    // traffic specs -> map to section indices:
-    // flight => 7
-    // psg_qty => 8
-    // rentcar_* => 9
-    // pickup_* => 10
-    // voucher => 11
     if (Array.isArray(rawFields?.traffics)) {
       rawFields.traffics.forEach((spec: any, specIndex: number) => {
         const t = spec?.traffic_type?.traffic_type_value;
@@ -722,17 +706,6 @@ function ProductPay() {
     }
 
     return miss;
-  }
-
-  function canCompleteSection(sectionIndex: number) {
-    // Use the built validation (requiredMap based)
-    try {
-      return validateSectionBuilt(sectionIndex).length === 0;
-    } catch (err) {
-      // fail-safe: if something unexpected happens, don't block (or choose to block by returning false)
-      console.warn("[canCompleteSection] validation error", err);
-      return false;
-    }
   }
 
   // ProductPay 내부에 붙여넣을 새 함수 (기존 validateSectionBuilt / validateSection are reused)
