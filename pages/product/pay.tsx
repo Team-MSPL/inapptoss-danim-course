@@ -13,7 +13,7 @@ import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } fr
 import { useProductStore } from "../../zustand/useProductStore";
 import { MiniProductCard } from "../../components/product/miniProductCard";
 import { formatPrice } from "../../components/product/pay-function";
-import { useBookingFieldsMock as useBookingFields } from "../../kkday/useBookingFieldsMock";
+import { useBookingFields } from "../../kkday/kkdayBookingField";
 import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
 import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
 import EngFirstNameInput from "../../components/product/payfield/EngFirstNameInput";

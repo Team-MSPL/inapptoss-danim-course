@@ -55,10 +55,16 @@ function lowestPriceFromEntry(entry: any): number | undefined {
   return Math.min(...candidates);
 }
 
-/** Merge SKU calendars into a date -> { price } map (take lowest across SKUs and times) */
-// replace existing mergeSkuCalendars with this implementation
-
-function mergeSkuCalendars(pkgData: any) {
+/** Merge SKU calendars into a date -> { price } map (take lowest across SKUs and times)
+ *  Enhanced behavior:
+ *  - preserve time-keyed maps when present and merge them by taking lowest per-time across SKUs
+ *  - compute a date-level "price" (lowest numeric) for calendar cell summary
+ *  - if a SKU has no calendar_detail but its parent item has sale_s_date/sale_e_date,
+ *    fill that date range with the fallbackDisplayPrice (passed from params.display_price) so the calendar shows a price.
+ *
+ *  Note: fallbackDisplayPrice parameter is used when SKU/item has sale range but no explicit calendar detail.
+ */
+function mergeSkuCalendars(pkgData: any, fallbackDisplayPrice?: number) {
   if (!pkgData) return {};
   const merged: Record<string, any> = {}; // keep full entry object per date
 
@@ -92,13 +98,14 @@ function mergeSkuCalendars(pkgData: any) {
     return { ...(entry ?? {}) };
   };
 
+  // First pass: merge explicit calendar_detail entries from SKUs/items/top-level
   items.forEach((item: any) => {
     const skus = Array.isArray(item.skus) ? item.skus : [];
 
     // SKU-level calendars
     skus.forEach((sku: any) => {
       const cal = sku?.calendar_detail ?? sku?.calendar ?? null;
-      if (!cal || typeof cal !== 'object') return;
+      if (!cal || typeof cal !== 'object' || Object.keys(cal).length === 0) return;
       Object.entries(cal).forEach(([dateStr, entry]: any) => {
         const norm = normalizeEntry(entry);
         if (!norm) return;
@@ -112,7 +119,6 @@ function mergeSkuCalendars(pkgData: any) {
 
           // merge time-maps specially
           if (eVal && typeof eVal === 'object' && !Array.isArray(eVal)) {
-            // existing may be time-map or scalar; merge into time-map
             const mergedMap = mergeTimeMaps(existing, eVal);
             if (mergedMap) merged[dateStr][key] = mergedMap;
           } else {
@@ -147,7 +153,7 @@ function mergeSkuCalendars(pkgData: any) {
 
     // item-level calendar fallback (same merging logic)
     const itemCal = item?.calendar_detail ?? null;
-    if (itemCal && typeof itemCal === 'object') {
+    if (itemCal && typeof itemCal === 'object' && Object.keys(itemCal).length > 0) {
       Object.entries(itemCal).forEach(([dateStr, entry]: any) => {
         const norm = normalizeEntry(entry);
         if (!norm) return;
@@ -180,7 +186,7 @@ function mergeSkuCalendars(pkgData: any) {
 
   // top-level calendar_detail fallback
   const topCal = pkgData?.calendar_detail ?? null;
-  if (topCal && typeof topCal === 'object') {
+  if (topCal && typeof topCal === 'object' && Object.keys(topCal).length > 0) {
     Object.entries(topCal).forEach(([dateStr, entry]: any) => {
       const norm = normalizeEntry(entry);
       if (!norm) return;
@@ -209,6 +215,65 @@ function mergeSkuCalendars(pkgData: any) {
       }
     });
   }
+
+  // SECOND PASS: fill missing date ranges using SKU/item sale_s_date/sale_e_date + fallbackDisplayPrice (params.display_price) preferred
+  items.forEach((item: any) => {
+    const skus = Array.isArray(item.skus) ? item.skus : [];
+    const itemSaleStart = Array.isArray(item.sale_s_date) ? item.sale_s_date[0] : item.sale_s_date;
+    const itemSaleEnd = Array.isArray(item.sale_e_date) ? item.sale_e_date[0] : item.sale_e_date;
+
+    skus.forEach((sku: any) => {
+      const skuCal = sku?.calendar_detail ?? sku?.calendar ?? null;
+      if (skuCal && typeof skuCal === 'object' && Object.keys(skuCal).length > 0) return;
+
+      const skuSaleStart = Array.isArray(sku?.sale_s_date) ? sku.sale_s_date[0] : sku?.sale_s_date;
+      const skuSaleEnd = Array.isArray(sku?.sale_e_date) ? sku.sale_e_date[0] : sku?.sale_e_date;
+      const start = skuSaleStart || itemSaleStart;
+      const end = skuSaleEnd || itemSaleEnd;
+
+      if (!start || !end) return;
+
+      // Use fallbackDisplayPrice (params.display_price) first per user's request,
+      // if fallback undefined, then use SKU official_price / b2b_price / b2c_price.
+      const basePriceSource = safeNum(fallbackDisplayPrice) !== undefined ? 'display_price' : 'sku_price';
+      const basePrice = (basePriceSource === 'display_price' ? safeNum(fallbackDisplayPrice) : undefined) ??
+        safeNum(sku?.official_price) ?? safeNum(sku?.b2b_price) ?? safeNum(sku?.b2c_price) ?? undefined;
+      if (basePrice === undefined) return;
+
+      const s = dayjs(start);
+      const e = dayjs(end);
+      if (!s.isValid() || !e.isValid() || s.isAfter(e)) return;
+
+      for (let d = s.clone(); !d.isAfter(e, 'day'); d = d.add(1, 'day')) {
+        const dateStr = d.format('YYYY-MM-DD');
+        if (!merged[dateStr]) merged[dateStr] = {};
+
+        const existingPrice = safeNum(merged[dateStr].price);
+        if (existingPrice === undefined || basePrice < existingPrice) {
+          merged[dateStr].price = basePrice;
+        }
+
+        const existingB2B = merged[dateStr].b2b_price;
+        if (!existingB2B || (typeof existingB2B !== 'object' && basePrice < safeNum(existingB2B))) {
+          merged[dateStr].b2b_price = basePrice;
+        }
+
+        merged[dateStr].skus = merged[dateStr].skus || [];
+        merged[dateStr].skus.push({
+          sku_id: sku?.sku_id,
+          spec_token: sku?.spec_token,
+          remain_qty: sku?.remain_qty,
+          filled_by_fallback_display: basePriceSource === 'display_price',
+          filled_price: basePrice,
+          filled_price_source: basePriceSource,
+        });
+
+        // also mark top-level metadata for the date to easily detect fallback use later
+        merged[dateStr].filled_price = basePrice;
+        merged[dateStr].filled_price_source = basePriceSource; // 'display_price' or 'sku_price'
+      }
+    });
+  });
 
   return merged;
 }
@@ -370,7 +435,9 @@ function ProductReservation() {
         }
 
         // build merged calendar map from SKUs/items/top-level
-        const mergedCalendar = mergeSkuCalendars(data);
+        // Pass params.display_price as fallbackDisplayPrice to fill ranges when calendar_detail is empty.
+        const fallbackDisplay = safeNum(params?.display_price) ?? undefined;
+        const mergedCalendar = mergeSkuCalendars(data, fallbackDisplay);
 
         const pkgDataWithCalendar = {
           ...data,
@@ -617,13 +684,24 @@ function ProductReservation() {
   const goNext = () => {
     if (!selected) return;
     const priceInfo = getPriceForDate(selected, selectedTime ?? null);
+
+    // If the merged calendar for this date was filled using params.display_price fallback,
+    // ensure we pass params.display_price as display_price to the next screen.
+    const calEntry = pkgData?.calendar_detail_merged?.[selected];
+    const filledSource = calEntry?.filled_price_source;
+    const fallbackDisplay = safeNum(params?.display_price);
+
+    const outgoingDisplay = (filledSource === 'display_price' && fallbackDisplay !== undefined)
+      ? fallbackDisplay
+      : priceInfo.display ?? null;
+
     navigation.navigate('/product/people', {
       prod_no: params.prod_no,
       prod_name: pkgData?.prod_name ?? params.prod_name,
       pkg_no: params.pkg_no,
       selected_date: selected,
       selected_time: selectedTime ?? null,
-      display_price: priceInfo.display ?? null,
+      display_price: outgoingDisplay,
       original_price: priceInfo.original ?? null,
       discount_amount: priceInfo.discountAmount ?? 0,
       b2b_min_price: safeNum(pkgData?.pkg?.[0]?.b2b_min_price) ?? null,

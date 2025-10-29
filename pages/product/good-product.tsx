@@ -105,15 +105,22 @@ function ProductGoodProduct() {
     const isSoldOut = !(selectedPkg.sale_s_date && selectedPkg.sale_e_date);
     if (isSoldOut) return;
 
+    // Use getPriceInfo(selectedPkg) to determine what to pass as display/original prices
+    const priceInfo = getPriceInfo(selectedPkg);
+
     navigation.navigate('/product/reservation', {
       prod_no: product?.prod_no,
       prod_name: product?.prod_name,
       pkg_no: selectedPkg.pkg_no,
       online_s_date: selectedPkg.sale_s_date,
       online_e_date: selectedPkg.sale_e_date,
-      b2c_min_price: selectedPkg.b2c_min_price,
-      b2b_min_price: selectedPkg.b2b_min_price,
-      // 기타 필요한 파라미터 추가
+      // pass the computed display/original/discount as shown in the UI
+      display_price: priceInfo?.display ?? null,
+      original_price: priceInfo?.original ?? null,
+      discount_amount: priceInfo?.discountAmount ?? 0,
+      // keep raw minima for backward compatibility if needed
+      b2b_min_price: selectedPkg.b2b_min_price ?? null,
+      b2c_min_price: selectedPkg.b2c_min_price ?? null,
     });
   };
 

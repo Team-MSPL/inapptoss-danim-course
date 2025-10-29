@@ -269,20 +269,24 @@ function ProductPeople() {
     return () => { mounted = false; };
   }, [prod, pkg]);
 
-  const selectedDate = s_date ?? params?.selected_date ?? null;
+  // prefer params.selected_date first (navigation params are available immediately), then reservation store s_date
+  const selectedDate = params?.selected_date ?? s_date ?? null;
 
+  // PRIORITY: use params.display_price/adult_price first (if provided), then pkgData-derived price
   const adultUnit = useMemo(() => {
     if (!selectedDate) return undefined;
-    const fromPkg = pkgData ? getUnitPriceForDateByType(pkgData, selectedDate, 'adult') : undefined;
     const fromParams = toNumber(params?.display_price) ?? toNumber(params?.adult_price) ?? undefined;
-    return fromPkg ?? fromParams;
+    if (fromParams !== undefined) return fromParams;
+    const fromPkg = pkgData ? getUnitPriceForDateByType(pkgData, selectedDate, 'adult') : undefined;
+    return fromPkg;
   }, [pkgData, selectedDate, params?.display_price, params?.adult_price]);
 
   const childUnit = useMemo(() => {
     if (!selectedDate) return undefined;
-    const fromPkg = pkgData ? getUnitPriceForDateByType(pkgData, selectedDate, 'child') : undefined;
     const fromParams = toNumber(params?.child_price) ?? undefined;
-    return fromPkg ?? fromParams ?? adultUnit;
+    if (fromParams !== undefined) return fromParams;
+    const fromPkg = pkgData ? getUnitPriceForDateByType(pkgData, selectedDate, 'child') : undefined;
+    return fromPkg ?? adultUnit;
   }, [pkgData, selectedDate, params?.child_price, adultUnit]);
 
   const fallbackUnit = useMemo(() => {
