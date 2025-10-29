@@ -36,6 +36,7 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [customAddress, setCustomAddress] = useState<string>("");
 
+  // 초기값 동기화: stored 값이 option id/code/address 인지 판단해서 selectedId/customAddress를 셋팅
   useEffect(() => {
     if (!Array.isArray(locationOptions) || locationOptions.length === 0) {
       setSelectedId(null);
@@ -58,17 +59,21 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stored, JSON.stringify(locationOptions), allowCustomizeOption]);
 
+  // selectedId 변경 시: 주소만 저장 (is_rent_customize 저장은 제거됨)
   useEffect(() => {
     if (selectedId === null) {
       setTrafficField(trafficType, field, customAddress ? customAddress : "", specIndex);
       onValueChange?.(customAddress ?? "");
       return;
     }
+
     if (selectedId === "customize") {
-      setTrafficField(trafficType, field, customAddress ?? "", specIndex);
-      onValueChange?.(customAddress ?? "");
+      const addr = customAddress ?? "";
+      setTrafficField(trafficType, field, addr, specIndex);
+      onValueChange?.(addr);
       return;
     }
+
     const opt = locationOptions.find((o) => String(o.id) === String(selectedId) || String(o.code) === String(selectedId));
     const addr = opt?.address ?? opt?.name ?? "";
     setTrafficField(trafficType, field, addr, specIndex);
@@ -76,17 +81,21 @@ export default function RentcarLocationSelector({ trafficType, field, rawFields,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
+  // customAddress 변경 시: 주소만 저장 (is_rent_customize 저장은 제거됨)
   useEffect(() => {
     if (selectedId === "customize") {
-      setTrafficField(trafficType, field, customAddress ?? "", specIndex);
-      onValueChange?.(customAddress ?? "");
+      const addr = customAddress ?? "";
+      setTrafficField(trafficType, field, addr, specIndex);
+      onValueChange?.(addr);
     } else if (!locationOptions || locationOptions.length === 0) {
-      setTrafficField(trafficType, field, customAddress ?? "", specIndex);
-      onValueChange?.(customAddress ?? "");
+      const addr = customAddress ?? "";
+      setTrafficField(trafficType, field, addr, specIndex);
+      onValueChange?.(addr);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customAddress]);
 
+  // 렌더: 옵션이 없으면 단순 텍스트 입력
   if (!Array.isArray(locationOptions) || locationOptions.length === 0) {
     return (
       <View style={{ marginBottom: 12 }}>

@@ -66,12 +66,12 @@ export const INFO_MENU = [
     icon: 'icon-mail-mono',
     onPressNav: '/info/my-inquiry-list',
   },
-  {
-    key: 'wishlist',
-    label: '관심 상품',
-    icon: 'icon-heart-red',
-    onPressNav: '/info/my-wishlist',
-  },
+  // {
+  //   key: 'wishlist',
+  //   label: '관심 상품',
+  //   icon: 'icon-heart-red',
+  //   onPressNav: '/info/my-wishlist',
+  // },
   {
     key: 'inquiry',
     label: '문의하기',

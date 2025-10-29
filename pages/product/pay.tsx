@@ -13,8 +13,8 @@ import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } fr
 import { useProductStore } from "../../zustand/useProductStore";
 import { CollapsibleSection } from "../../components/product/collapsibleSection";
 import { MiniProductCard } from "../../components/product/miniProductCard";
-import {buildSkusFromParams, formatPrice} from "../../components/product/pay-function";
-import {useBookingFields} from "../../kkday/kkdayBookingField";
+import { formatPrice } from "../../components/product/pay-function";
+import { useBookingFieldsMock as useBookingFields } from "../../kkday/useBookingFieldsMock";
 import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
 import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
 import EngFirstNameInput from "../../components/product/payfield/EngFirstNameInput";
@@ -79,6 +79,11 @@ import PickupLocationInput from "../../components/product/traffic/PickupLocation
 import PickupDateInput from "../../components/product/traffic/PickupDateInput";
 import PickupTimeInput from "../../components/product/traffic/PickupTimeInput";
 import VoucherLocationInput from "../../components/product/traffic/VoucherLocationInput";
+import PassportExpDateInput from "../../components/product/payfield/PassportExpDateInput";
+import ZipcodeInput from "../../components/product/payfield/ZipcodeInput";
+import ArrivalAirlineInput from "../../components/product/traffic/ArrivalAirlineInput";
+import SafetyseatSelfInfantInput from "../../components/product/traffic/SafetyseatSelfInfantInput";
+import RentcarCustomizeToggle from "../../components/product/traffic/RentcarCustomizeToggle";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -130,6 +135,7 @@ function ProductPay() {
   const [agreeService, setAgreeService] = useState<boolean>(false);
   const [agreeMarketing, setAgreeMarketing] = useState<boolean>(false);
 
+  const setGuideLangCode = useBookingStore((s) => s.setGuideLangCode);
   const buyerFirstName = useBookingStore((s) => s.buyer_first_name);
   const setBuyerFirstName = useBookingStore((s) => s.setBuyerFirstName);
   const buyerLastName = useBookingStore((s) => s.buyer_last_name);
@@ -350,6 +356,410 @@ function ProductPay() {
     // }
   }
 
+  const requiredMap = useMemo(() => {
+    // structure: { sectionIndex: Array<{ key: string, label: string, cusType?:string, trafficType?:string, specIndex?:number }> }
+    const map: Record<number, Array<any>> = {};
+
+    // helper to push
+    const pushField = (section: number, item: any) => {
+      if (!map[section]) map[section] = [];
+      map[section].push(item);
+    };
+
+    // Section 1: buyer basic info - always required
+    map[1] = [
+      { key: "buyer_last_name", label: "구매자 성" },
+      { key: "buyer_first_name", label: "구매자 이름" },
+      { key: "buyer_Email", label: "이메일" },
+      { key: "buyer_tel_number", label: "전화번호" },
+      { key: "buyer_country", label: "국가 코드" },
+    ];
+
+    // Section 2: guide_lang - if rawFields has guide_lang and it's required
+    if (rawFields?.guide_lang) {
+      const isReq = String(rawFields.guide_lang?.is_require ?? "true").toLowerCase() === "true";
+      if (isReq) pushField(2, { key: "guide_lang", label: "가이드 언어" });
+    }
+
+    // custom sections (cus_01 => section 3, cus_02 => section 4, contact => 5, send => 6)
+    if (rawFields?.custom && typeof rawFields.custom === "object") {
+      Object.entries(rawFields.custom).forEach(([fieldId, specObj]: any) => {
+        const useArr = specObj?.use ?? [];
+        const isReq = String(specObj?.is_require ?? "").toLowerCase() === "true";
+        if (!isReq || !Array.isArray(useArr)) return;
+        // for each cusType in useArr, map to section
+        useArr.forEach((cusType: string) => {
+          let sectionIndex = -1;
+          if (cusType === "cus_01") sectionIndex = 3;
+          else if (cusType === "cus_02") sectionIndex = 4;
+          else if (cusType === "contact") sectionIndex = 5;
+          else if (cusType === "send") sectionIndex = 6;
+          if (sectionIndex > 0) {
+            pushField(sectionIndex, { key: fieldId, label: (specObj?.label ?? fieldId), cusType });
+          }
+        });
+      });
+    }
+
+    // traffic specs -> map to section indices:
+    // flight => 7
+    // psg_qty => 8
+    // rentcar_* => 9
+    // pickup_* => 10
+    // voucher => 11
+    if (Array.isArray(rawFields?.traffics)) {
+      rawFields.traffics.forEach((spec: any, specIndex: number) => {
+        const t = spec?.traffic_type?.traffic_type_value;
+        if (!t) return;
+        const sectionIndex =
+          t === "flight" ? 7 :
+            t === "psg_qty" ? 8 :
+              t.startsWith("rentcar") ? 9 :
+                t.startsWith("pickup") ? 10 :
+                  t === "voucher" ? 11 : -1;
+
+        if (sectionIndex === -1) return;
+        Object.entries(spec).forEach(([fieldId, fieldSpec]: any) => {
+          if (fieldId === "traffic_type") return;
+          if (!fieldSpec || typeof fieldSpec !== "object") return;
+          const isReq = String(fieldSpec?.is_require ?? "").toLowerCase() === "true";
+          if (!isReq) return;
+          // push with specIndex so we can try exact-match
+          pushField(sectionIndex, { key: fieldId, label: (fieldSpec?.label ?? fieldId), trafficType: t, specIndex });
+        });
+      });
+    }
+
+    return map;
+  }, [rawFields]);
+  // 3) helper to read custom value (tolerant)
+  function readCustomValue(cusType: string, fieldId: string) {
+    const store = useBookingStore.getState();
+    // direct map
+    const group = store.customMap?.[cusType];
+    if (group && Object.prototype.hasOwnProperty.call(group, fieldId)) return group[fieldId];
+
+    // check getCustomArray entry
+    const arr = store.getCustomArray();
+    const entry = Array.isArray(arr) ? arr.find((e) => String(e?.cus_type) === String(cusType)) : undefined;
+    if (entry && Object.prototype.hasOwnProperty.call(entry, fieldId)) return entry[fieldId];
+
+    // tolerant variants
+    const variants = [fieldId, fieldId.replace(/_([a-z])/g, (m, p1) => p1.toUpperCase()), fieldId.replace(/_/g, "")];
+    if (group) {
+      for (const v of variants) if (Object.prototype.hasOwnProperty.call(group, v)) return group[v];
+    }
+    if (entry) {
+      for (const v of variants) if (Object.prototype.hasOwnProperty.call(entry, v)) return entry[v];
+    }
+    return undefined;
+  }
+
+// 4) helper to read traffic stored value (prefer rawTraffic)
+  function findStoredTrafficEntry(trafficType: string, specIndex?: number) {
+    const store = useBookingStore.getState();
+    const rawTraffic = (store as any).getRawTrafficArray ? (store as any).getRawTrafficArray() : store.getTrafficArray();
+    if (!Array.isArray(rawTraffic)) return undefined;
+    // 1) exact by spec_index
+    if (typeof specIndex === "number") {
+      const exact = rawTraffic.find((r: any) => String(r?.traffic_type) === String(trafficType) && Number(r?.spec_index) === Number(specIndex));
+      if (exact) return exact;
+    }
+    // 2) try to map by occurrence order (count how many specs of this type appear before specIndex)
+    const storedByType: any[] = rawTraffic.filter((r: any) => String(r?.traffic_type) === String(trafficType));
+    if (storedByType.length === 0) return undefined;
+
+    if (typeof specIndex === "number") {
+      // compute occurrence index of this spec in rawFields
+      let occurrence = 0;
+      for (let i = 0; i <= specIndex && i < (rawFields?.traffics?.length ?? 0); i++) {
+        if (String(rawFields.traffics[i]?.traffic_type?.traffic_type_value) === String(trafficType)) {
+          if (i === specIndex) break;
+          occurrence++;
+        }
+      }
+      if (storedByType.length > occurrence) return storedByType[occurrence];
+    }
+
+    // 3) fallback: first stored entry of that type
+    return storedByType[0];
+  }
+
+// 5) isFilled util
+  function isFilled(v: any) {
+    if (v === undefined || v === null) return false;
+    if (typeof v === "string") return v.trim() !== "";
+    return true; // number/boolean considered filled
+  }
+  // 6) validateSection uses requiredMap
+  function validateSectionBuilt(sectionIndex: number) {
+    const missing: string[] = [];
+    const list = requiredMap[sectionIndex] ?? [];
+    list.forEach((req: any) => {
+      if (req.cusType) {
+        const val = readCustomValue(req.cusType, req.key);
+        if (!isFilled(val)) missing.push(req.label || req.key);
+      } else if (req.trafficType) {
+        const entry = findStoredTrafficEntry(req.trafficType, req.specIndex);
+        const val = entry ? entry[req.key] : undefined;
+        if (!isFilled(val)) missing.push(req.label || `${req.trafficType}.${req.key}`);
+      } else {
+        // general keys (buyer, guide_lang)
+        const st = useBookingStore.getState();
+        const val = (req.key === "guide_lang") ? st.guideLangCode : (st as any)[req.key];
+        if (!isFilled(val)) missing.push(req.label || req.key);
+      }
+    });
+    return missing;
+  }
+
+  function getRequiredCustomFields(cusType: string) {
+    if (!rawFields?.custom) return [];
+    const fields: string[] = [];
+    Object.entries(rawFields.custom).forEach(([fieldId, specObj]: any) => {
+      const useArr = specObj?.use ?? [];
+      if (!Array.isArray(useArr) || !useArr.includes(cusType)) return;
+      const isReq = String(specObj?.is_require ?? "").toLowerCase() === "true";
+      if (isReq) fields.push(fieldId);
+    });
+    return fields;
+  }
+
+  function getRequiredTrafficEntries(typesArr: string[]) {
+    const required: Array<{ traffic_type: string; spec_index?: number; fieldId: string }> = [];
+    if (!Array.isArray(rawFields?.traffics)) return required;
+
+    rawFields.traffics.forEach((spec: any, specIndex: number) => {
+      const t = spec?.traffic_type?.traffic_type_value;
+      if (!t || !typesArr.includes(t)) return;
+      Object.entries(spec).forEach(([fieldId, fieldSpec]: any) => {
+        if (fieldId === "traffic_type") return;
+        if (!fieldSpec || typeof fieldSpec !== "object") return;
+        const isReq = String(fieldSpec?.is_require ?? "").toLowerCase() === "true";
+        if (isReq) required.push({ traffic_type: t, spec_index: specIndex, fieldId });
+      });
+    });
+
+    return required;
+  }
+
+  // validateCustomSection (로그 제거된 버전)
+  function validateCustomSection(cusType: string) {
+    const missing: string[] = [];
+    const reqFields = getRequiredCustomFields(cusType);
+    if (reqFields.length === 0) return missing;
+
+    const arr = useBookingStore.getState().getCustomArray() ?? [];
+    const entry = arr.find(e => String(e?.cus_type) === String(cusType));
+    if (!entry) {
+      reqFields.forEach(f => missing.push(`${cusType} - ${f}`));
+      return missing;
+    }
+    reqFields.forEach((f) => {
+      if (!isFilled(entry[f])) missing.push(`${cusType} - ${f}`);
+    });
+    return missing;
+  }
+
+// validateTrafficSection (렌더시 로그 제거, 매칭은 기존 로직 유지)
+  function validateTrafficSection(typesArr: string[]) {
+    const missing: string[] = [];
+    const requiredEntries = getRequiredTrafficEntries(typesArr);
+    if (requiredEntries.length === 0) return missing;
+
+    const store = useBookingStore.getState();
+    const rawTraffic = (store as any).getRawTrafficArray ? (store as any).getRawTrafficArray() : store.getTrafficArray();
+    if (!Array.isArray(rawTraffic)) return missing;
+
+    // group stored entries by traffic_type in insertion order
+    const storedByType: Record<string, any[]> = {};
+    rawTraffic.forEach((r: any) => {
+      const t = String(r?.traffic_type ?? "");
+      if (!storedByType[t]) storedByType[t] = [];
+      storedByType[t].push(r);
+    });
+
+    requiredEntries.forEach((req) => {
+      const t = String(req.traffic_type);
+
+      // 1) exact match by traffic_type + spec_index if possible
+      let match = rawTraffic.find((r: any) => String(r?.traffic_type) === t && (typeof req.spec_index === "number" ? Number(r?.spec_index) === Number(req.spec_index) : true));
+
+      // 2) if no exact match, try occurrence mapping:
+      if (!match) {
+        // compute occurrence index of this spec among rawFields.traffics of same type up to spec_index
+        let occurrenceIndex = 0;
+        if (Array.isArray(rawFields?.traffics)) {
+          let count = 0;
+          for (let i = 0; i <= (req.spec_index ?? rawFields.traffics.length - 1); i++) {
+            const s = rawFields.traffics[i];
+            if (!s) continue;
+            if (String(s?.traffic_type?.traffic_type_value) === t) {
+              if (i === req.spec_index) {
+                occurrenceIndex = count;
+                break;
+              }
+              count++;
+            }
+          }
+        }
+
+        const storedList = storedByType[t] ?? [];
+        if (storedList.length > occurrenceIndex) {
+          match = storedList[occurrenceIndex];
+        }
+      }
+
+      // 3) final fallback: first stored entry of same type
+      if (!match) {
+        const anyMatch = (rawTraffic || []).find((r: any) => String(r?.traffic_type) === t);
+        if (anyMatch) match = anyMatch;
+      }
+
+      const foundVal = match ? match[req.fieldId] : undefined;
+      if (!isFilled(foundVal)) {
+        missing.push(`${t} - ${req.fieldId}`);
+      }
+    });
+
+    return missing;
+  }
+  /**
+   * validateSection (indexes adapted to your layout)
+   * returns array of missing item descriptions (empty => valid)
+   */
+  function validateSection(sectionIndex: number) {
+    const miss: string[] = [];
+
+    switch (sectionIndex) {
+      case 1: { // 구매자 정보
+        const st = useBookingStore.getState();
+        if (!isFilled(st.buyer_last_name)) miss.push("구매자 성 (Last name)");
+        if (!isFilled(st.buyer_first_name)) miss.push("구매자 이름 (First name)");
+        // support both buyer_Email or buyer_email
+        if (!isFilled(st.buyer_Email) && !isFilled((st as any).buyer_email)) miss.push("이메일");
+        if (!isFilled(st.buyer_tel_number)) miss.push("전화번호");
+        if (!isFilled(st.buyer_country)) miss.push("국가 코드");
+        break;
+      }
+
+      case 2: { // 가이드 언어
+        if (rawFields?.guide_lang) {
+          // rawFields.guide_lang may be an object with is_require flag; default to require = true if you want mandatory
+          const isReq = String(rawFields.guide_lang?.is_require ?? "true").toLowerCase() === "true";
+          if (isReq && !isFilled(useBookingStore.getState().guideLangCode)) {
+            miss.push("가이드 언어 선택");
+          }
+        }
+        break;
+      }
+
+      case 3: { // 예약자 정보 cus_01
+        if (hasCus01) {
+          miss.push(...validateCustomSection("cus_01"));
+        }
+        break;
+      }
+
+      case 4: { // 여행자 정보 cus_02
+        if (hasCus02) miss.push(...validateCustomSection("cus_02"));
+        break;
+      }
+
+      case 5: { // 연락 수단 contact
+        if (hasContact) miss.push(...validateCustomSection("contact"));
+        break;
+      }
+
+      case 6: { // 투숙 정보 send
+        if (hasSend) miss.push(...validateCustomSection("send"));
+        break;
+      }
+
+      case 7: { // 항공 flight
+        if (hasFlight) miss.push(...validateTrafficSection(["flight"]));
+        break;
+      }
+
+      case 8: { // psg_qty
+        if (hasPsgQty) miss.push(...validateTrafficSection(["psg_qty"]));
+        break;
+      }
+
+      case 9: { // rentcar group
+        const types: string[] = [];
+        if (hasRentcar01) types.push("rentcar_01");
+        if (hasRentcar02) types.push("rentcar_02");
+        if (hasRentcar03) types.push("rentcar_03");
+        if (types.length) miss.push(...validateTrafficSection(types));
+        break;
+      }
+
+      case 10: { // pickup group
+        const types: string[] = [];
+        if (hasPickup03) types.push("pickup_03");
+        if (hasPickup04) types.push("pickup_04");
+        if (types.length) miss.push(...validateTrafficSection(types));
+        break;
+      }
+
+      case 11: { // voucher
+        if (hasVoucher) miss.push(...validateTrafficSection(["voucher"]));
+        break;
+      }
+
+      case 12: { // 요청 사항 (order note) - no required fields typically
+        // optional; skip
+        break;
+      }
+
+      case 13: { // 결제 세부 내역 - nothing required here
+        break;
+      }
+
+      default:
+        break;
+    }
+
+    return miss;
+  }
+
+  function canCompleteSection(sectionIndex: number) {
+    // Use the built validation (requiredMap based)
+    try {
+      return validateSectionBuilt(sectionIndex).length === 0;
+    } catch (err) {
+      // fail-safe: if something unexpected happens, don't block (or choose to block by returning false)
+      console.warn("[canCompleteSection] validation error", err);
+      return false;
+    }
+  }
+
+  // ProductPay 내부에 붙여넣을 새 함수 (기존 validateSectionBuilt / validateSection are reused)
+  function onCompletePress(sectionIndex: number) {
+    try {
+      // validateSectionBuilt 또는 validateSection (프로젝트에서 사용하는 구현 하나를 호출)
+      // 저는 당신 코드에서 requiredMap 기반 validateSectionBuilt이 이미 존재하므로 그걸 사용합니다.
+      const missing = typeof validateSectionBuilt === "function" ? validateSectionBuilt(sectionIndex) : validateSection(sectionIndex);
+
+      if (missing.length > 0) {
+        // 사용자에게 보기좋게 보여주기 (줄바꿈)
+        const msg = missing.slice(0, 20).join("\n");
+        // Debug snapshots (optional) — 필요한 경우 콘솔 확인
+
+        Alert.alert("입력 오류", `다음 항목이 비어있습니다:\n${msg}`);
+        return false;
+      }
+
+      // 모두 채워져 있으면 기존 동작(완료 표시 + 다음 섹션 열기)
+      markCompleteAndNext(sectionIndex);
+      return true;
+    } catch (err) {
+      console.warn("[onCompletePress] validation error", err);
+      Alert.alert("오류", "입력 검증 중 오류가 발생했습니다. 콘솔을 확인하세요.");
+      return false;
+    }
+  }
 
   // ProductPay 내부: countryOptions + CountrySelector 컴포넌트
   const countryOptions = [
@@ -447,7 +857,6 @@ function ProductPay() {
           <Image source={{ uri: thumbnail }} style={styles.tourImage} resizeMode="cover" />
         </CollapsibleSection>
 
-        {/* 구매자 정보 섹션: BookingField 스펙과 무관하게 항상 받음 */}
         <CollapsibleSection
           title="구매자 정보"
           open={!!openSections[1]} // 원하는 인덱스로 조정
@@ -486,15 +895,6 @@ function ProductPay() {
 
             {/* 전화번호: 국가(드롭다운) + 번호 입력 */}
             <Text typography="t6" color={colors.grey800} style={{ marginTop: 8, marginBottom: 6 }}>전화번호</Text>
-
-            {/* 위쪽에서 useBookingStore selector로 바인딩 되어 있어야 함:
-   const buyerTelCountryCode = useBookingStore((s) => s.buyer_tel_country_code);
-   const setBuyerTelCountryCode = useBookingStore((s) => s.setBuyerTelCountryCode);
-   const buyerTelNumber = useBookingStore((s) => s.buyer_tel_number);
-   const setBuyerTelNumber = useBookingStore((s) => s.setBuyerTelNumber);
-   const buyerCountry = useBookingStore((s) => s.buyer_country);
-   const setBuyerCountry = useBookingStore((s) => s.setBuyerCountry);
-*/}
 
             <View>
               <CountrySelector
@@ -543,7 +943,7 @@ function ProductPay() {
               display="block"
               size="large"
               containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
-              onPress={() => markCompleteAndNext(1)}
+              onPress={() => onCompletePress(1)}
             >
               작성 완료
             </Button>
@@ -551,13 +951,35 @@ function ProductPay() {
         </CollapsibleSection>
 
         {rawFields?.guide_lang && (
-          <CollapsibleSection title={"가이드 언어"} open={!!openSections[1]} onToggle={() => toggleSection(1)}  completed={!!completedSections[1]}>
-            <GuideLangSelector rawFields={rawFields} onSelect={(code) => console.log("selected guide_lang code:", code)} />
+          <CollapsibleSection
+            title={"가이드 언어"}
+            open={!!openSections[2]}
+            onToggle={() => toggleSection(2)}
+            completed={!!completedSections[2]}
+          >
+            {/* Store에 값 저장하도록 변경 */}
+            <GuideLangSelector
+              rawFields={rawFields}
+              onSelect={(code) => {
+                // save selected guide language into booking store
+                setGuideLangCode(code);
+              }}
+            />
+            <Button
+              type="primary"
+              style="fill"
+              display="block"
+              size="large"
+              containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+              onPress={() => onCompletePress(2)}
+            >
+              작성 완료
+            </Button>
           </CollapsibleSection>
         )}
 
         {hasCus01 && (
-          <CollapsibleSection title="예약자 정보" open={!!openSections[2]} onToggle={() => toggleSection(2)} completed={!!completedSections[2]}>
+          <CollapsibleSection title="예약자 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
             <View>
               {engLastUse.includes("cus_01") && <EngLastNameInput cusType="cus_01" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
               {engFirstUse.includes("cus_01") && <EngFirstNameInput cusType="cus_01" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
@@ -571,6 +993,12 @@ function ProductPay() {
               )}
               {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_01") && (
                 <PassportNoInput cusType="cus_01" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.passport_expdate && Array.isArray(rawFields.custom.passport_expdate.use) && rawFields.custom.passport_expdate.use.includes("cus_01") && (
+                <PassportExpDateInput
+                  cusType="cus_01"
+                  required={String(rawFields.custom.passport_expdate.is_require ?? "").toLowerCase() === "true"}
+                />
               )}
               {rawFields?.custom?.birth && Array.isArray(rawFields.custom.birth.use) && rawFields.custom.birth.use.includes("cus_01") && (
                 <BirthDateInput cusType="cus_01" required={String(rawFields.custom.birth.is_require ?? "").toLowerCase() === "true"} />
@@ -617,13 +1045,22 @@ function ProductPay() {
                   required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
                 />
               )}
-              <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(2)}>작성 완료</Button>
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(3)}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
 
         {hasCus02 && (
-          <CollapsibleSection title="여행자 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
+          <CollapsibleSection title="여행자 정보" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
             <View>
               {engLastUse.includes("cus_02") && <EngLastNameInput cusType="cus_02" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
               {engFirstUse.includes("cus_02") && <EngFirstNameInput cusType="cus_02" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
@@ -637,6 +1074,12 @@ function ProductPay() {
               )}
               {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_02") && (
                 <PassportNoInput cusType="cus_02" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />
+              )}
+              {rawFields?.custom?.passport_expdate && Array.isArray(rawFields.custom.passport_expdate.use) && rawFields.custom.passport_expdate.use.includes("cus_02") && (
+                <PassportExpDateInput
+                  cusType="cus_02"
+                  required={String(rawFields.custom.passport_expdate.is_require ?? "").toLowerCase() === "true"}
+                />
               )}
               {rawFields?.custom?.birth && Array.isArray(rawFields.custom.birth.use) && rawFields.custom.birth.use.includes("cus_02") && (
                 <BirthDateInput cusType="cus_02" required={String(rawFields.custom.birth.is_require ?? "").toLowerCase() === "true"} />
@@ -683,13 +1126,22 @@ function ProductPay() {
                   required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"}
                 />
               )}
-              <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(3)}>작성 완료</Button>
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(4)}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
 
         {hasContact && (
-          <CollapsibleSection title="연락 수단" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
+          <CollapsibleSection title="연락 수단" open={!!openSections[5]} onToggle={() => toggleSection(5)} completed={!!completedSections[5]}>
             <View>
               {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("contact") && (
                 <NativeLastNameInput
@@ -730,12 +1182,22 @@ function ProductPay() {
               {rawFields?.custom?.have_app && Array.isArray(rawFields.custom.have_app.use) && rawFields.custom.have_app.use.includes("contact") && (
                 <HaveAppToggle cusType="contact" label="연락 앱 설치 여부" />
               )}
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(5)}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
 
         {hasSend && (
-          <CollapsibleSection title="투숙 정보" open={!!openSections[5]} onToggle={() => toggleSection(5)} completed={!!completedSections[5]}>
+          <CollapsibleSection title="투숙 정보" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
             <View>
               {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("send") && (
                 <NativeLastNameInput
@@ -762,6 +1224,12 @@ function ProductPay() {
                   required={String(rawFields.custom.country_cities.is_require ?? "").toLowerCase() === "true"}
                 />
               )}
+              {rawFields?.custom?.zipcode && Array.isArray(rawFields.custom.zipcode.use) && rawFields.custom.zipcode.use.includes("send") && (
+                <ZipcodeInput
+                  cusType="send"
+                  required={String(rawFields.custom.zipcode.is_require ?? "").toLowerCase() === "true"}
+                />
+              )}
               {rawFields?.custom?.address && Array.isArray(rawFields.custom.address.use) && rawFields.custom.address.use.includes("send") && (
                 <AddressInput cusType="send" required={String(rawFields.custom.address.is_require ?? "").toLowerCase() === "true"} />
               )}
@@ -786,17 +1254,33 @@ function ProductPay() {
                   required={String(rawFields.custom.check_out_date.is_require ?? "").toLowerCase() === "true"}
                 />
               )}
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(6)}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
 
         {rawFields?.traffics && Array.isArray(rawFields.traffics) && rawFields.traffics.some((t:any) => t?.traffic_type?.traffic_type_value === "flight") && (
-          <CollapsibleSection title="항공편 정보" open={!!openSections[8]} onToggle={() => toggleSection(8)} completed={!!completedSections[8]}>
+          <CollapsibleSection title="항공편 정보" open={!!openSections[7]} onToggle={() => toggleSection(7)} completed={!!completedSections[7]}>
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightType && (
               <ArrivalFlightTypeSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightType?.is_require ?? "").toLowerCase() === "true"} />
             )}
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airport && (
               <ArrivalAirportSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airport?.is_require ?? "").toLowerCase() === "true"} />
+            )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airlineName && (
+              <ArrivalAirlineInput
+                trafficType="flight"
+                required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airlineName?.is_require ?? "").toLowerCase() === "true"}
+              />
             )}
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightNo && (
               <ArrivalFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightNo?.is_require ?? "").toLowerCase() === "true"} />
@@ -852,11 +1336,8 @@ function ProductPay() {
               style="fill"
               display="block"
               size="large"
-              containerStyle={{ alignSelf: 'center', width: 140, height: 48, marginTop: 8 }}
-              onPress={() => {
-                const arr = useBookingStore.getState().getTrafficArray();
-                console.log("[trafficArray]", arr);
-              }}
+              containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+              onPress={() => onCompletePress(7)}
             >
               작성 완료
             </Button>
@@ -864,7 +1345,7 @@ function ProductPay() {
         )}
 
         {hasPsgQty && (
-          <CollapsibleSection title="탑승자 수 (psg_qty)" open={!!openSections[9]} onToggle={() => toggleSection(9)} completed={!!completedSections[9]}>
+          <CollapsibleSection title="탑승자 수 (psg_qty)" open={!!openSections[8]} onToggle={() => toggleSection(8)} completed={!!completedSections[8]}>
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_adult && (
               <CarPsgAdultInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_adult?.is_require ?? "").toLowerCase() === "true"} />
             )}
@@ -883,6 +1364,12 @@ function ProductPay() {
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_infant && (
               <SafetyseatSupInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_infant?.is_require ?? "").toLowerCase() === "true"} />
             )}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_self_infant && (
+              <SafetyseatSelfInfantInput
+                trafficType="psg_qty"
+                required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_self_infant?.is_require ?? "").toLowerCase() === "true"}
+              />
+            )}
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_carry && (
               <LuggageCarryInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_carry?.is_require ?? "").toLowerCase() === "true"} />
             )}
@@ -894,11 +1381,8 @@ function ProductPay() {
               style="fill"
               display="block"
               size="large"
-              containerStyle={{ alignSelf: 'center', width: 140, height: 48, marginTop: 8 }}
-              onPress={() => {
-                const arr = useBookingStore.getState().getTrafficArray();
-                console.log("[trafficArray]", arr);
-              }}
+              containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+              onPress={() => onCompletePress(8)}
             >
               작성 완료
             </Button>
@@ -908,9 +1392,9 @@ function ProductPay() {
         {(hasRentcar01 || hasRentcar02 || hasRentcar03) && (
           <CollapsibleSection
             title="렌터카 정보"
-            open={!!openSections[10]}
-            onToggle={() => toggleSection(10)}
-            completed={!!completedSections[10]}
+            open={!!openSections[9]}
+            onToggle={() => toggleSection(9)}
+            completed={!!completedSections[9]}
           >
             <View>
               {Array.isArray(rawFields?.traffics) &&
@@ -985,6 +1469,16 @@ function ProductPay() {
                             required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"}
                           />
                         )}
+
+                        {spec?.is_rent_customize && (
+                          <RentcarCustomizeToggle
+                            trafficType={tValue}
+                            spec={spec}
+                            specIndex={specIndex}
+                            label={spec.is_rent_customize?.label ?? "직접 주소 입력"}
+                            onValueChange={(v) => console.log("is_rent_customize for", tValue, specIndex, v)}
+                          />
+                        )}
                       </View>
                     );
                   })}
@@ -993,11 +1487,8 @@ function ProductPay() {
                 style="fill"
                 display="block"
                 size="large"
-                containerStyle={{ alignSelf: "center", width: 140, height: 48, marginTop: 8 }}
-                onPress={() => {
-                  const arr = useBookingStore.getState().getTrafficArray();
-                  console.log("[trafficArray]", arr);
-                }}
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(9)}
               >
                 작성 완료
               </Button>
@@ -1008,9 +1499,9 @@ function ProductPay() {
         {(hasPickup03 || hasPickup04) && (
           <CollapsibleSection
             title="픽업 정보"
-            open={!!openSections[11]}
-            onToggle={() => toggleSection(11)}
-            completed={!!completedSections[11]}
+            open={!!openSections[10]}
+            onToggle={() => toggleSection(10)}
+            completed={!!completedSections[10]}
           >
             <View>
               {Array.isArray(rawFields?.traffics) &&
@@ -1086,6 +1577,16 @@ function ProductPay() {
                       </View>
                     );
                   })}
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                size="large"
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(10)}
+              >
+                작성 완료
+              </Button>
             </View>
           </CollapsibleSection>
         )}
@@ -1093,9 +1594,9 @@ function ProductPay() {
         {hasVoucher && (
           <CollapsibleSection
             title="바우처/픽업 위치"
-            open={!!openSections[12]}
-            onToggle={() => toggleSection(12)}
-            completed={!!completedSections[12]}
+            open={!!openSections[11]}
+            onToggle={() => toggleSection(11)}
+            completed={!!completedSections[11]}
           >
             <View>
               {Array.isArray(rawFields?.traffics) &&
@@ -1126,24 +1627,31 @@ function ProductPay() {
                 style="fill"
                 display="block"
                 size="large"
-                containerStyle={{ alignSelf: "center", width: 140, height: 48, marginTop: 8 }}
-                onPress={() => {
-                  const arr = useBookingStore.getState().getTrafficArray();
-                  console.log("[trafficArray]", arr);
-                }}
+                containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+                onPress={() => onCompletePress(11)}
               >
                 작성 완료
               </Button>
             </View>
           </CollapsibleSection>
         )}
-        <CollapsibleSection title="요청 사항" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
+
+        <CollapsibleSection title="요청 사항" open={!!openSections[12]} onToggle={() => toggleSection(12)} completed={!!completedSections[12]}>
           <TextInput placeholder="요청사항을 입력하세요" placeholderTextColor={colors.grey400} value={orderNote} onChangeText={setOrderNote} style={[styles.input]} multiline />
           <View style={{ height: 12 }} />
-          <Button type="primary" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50 }} onPress={() => markCompleteAndNext(6)}>작성 완료</Button>
+          <Button
+            type="primary"
+            style="fill"
+            display="block"
+            size="large"
+            containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }}
+            onPress={() => onCompletePress(12)}
+          >
+            작성 완료
+          </Button>
         </CollapsibleSection>
 
-        <CollapsibleSection title="결제 세부 내역" open={!!openSections[7]} onToggle={() => toggleSection(7)} completed={!!completedSections[7]}>
+        <CollapsibleSection title="결제 세부 내역" open={!!openSections[13]} onToggle={() => toggleSection(13)} completed={!!completedSections[13]}>
           <MiniProductCard
             image={thumbnail}
             title={title}
