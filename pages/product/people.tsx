@@ -309,9 +309,53 @@ function ProductPeople() {
 
   const canProceed = adult > 0 && !!selectedDate && !loadingPkg && !pkgError;
 
+  // --- NEW: compute sku mapping to include sku_id and calculated price when navigating to pay ---
+  function resolveSkusForNavigation() {
+    const item = pkgData?.item?.[0] ?? null;
+    const skuMap = item ? buildSkuMap(item) : { adult: [], child: [], other: [] };
+
+    const adultSku = skuMap.adult?.[0] ?? item?.skus?.[0] ?? null;
+    const childSku = skuMap.child?.[0] ?? null;
+
+    const skusForPayload: Array<{ sku_id: any; qty: number; price: number }> = [];
+
+    if (adult > 0 && adultSku) {
+      const skuId = adultSku?.sku_id ?? adultSku?.id ?? null;
+      const unitFromSku = safeNum(adultSku?.b2c_price ?? adultSku?.b2b_price ?? adultSku?.official_price) ?? adultPrice;
+      if (skuId) skusForPayload.push({ sku_id: skuId, qty: adult, price: Number(unitFromSku * adult) });
+    }
+
+    if (child > 0 && childSku) {
+      const skuId = childSku?.sku_id ?? childSku?.id ?? null;
+      const unitFromSku = safeNum(childSku?.b2c_price ?? childSku?.b2b_price ?? childSku?.official_price) ?? childPrice;
+      if (skuId) skusForPayload.push({ sku_id: skuId, qty: child, price: Number(unitFromSku * child) });
+    }
+
+    // If we couldn't map child SKU separately but there are children, merge into adult sku if possible
+    if (child > 0 && skusForPayload.length === 1 && skusForPayload[0].qty === adult) {
+      // only adult sku present and children need to be added
+      skusForPayload[0].qty = skusForPayload[0].qty + child;
+      skusForPayload[0].price = Number(skusForPayload[0].price + (childPrice * child));
+    }
+
+    // If no skus found but we have totals, fallback to first available sku anywhere
+    if (skusForPayload.length === 0) {
+      const fallbackSkuId = pkgData?.item?.[0]?.skus?.[0]?.sku_id ?? pkgData?.pkg?.[0]?.skus?.[0]?.sku_id ?? null;
+      if (fallbackSkuId) {
+        skusForPayload.push({ sku_id: fallbackSkuId, qty: adult + child, price: Number(adultPrice * adult + childPrice * child) });
+      }
+    }
+
+    return skusForPayload;
+  }
+
   const goNext = () => {
     if (!canProceed) return;
-    navigation.navigate('/product/pay', {
+
+    const skusToSend = resolveSkusForNavigation();
+
+    // debug logging to inspect what we will send
+    console.log('navigate to pay with params:', {
       prod_no: prod,
       prod_name: pkgData?.prod_name ?? params?.prod_name,
       pkg_no: pkg,
@@ -320,8 +364,24 @@ function ProductPeople() {
       adult_price: adultPrice,
       child_price: childPrice,
       total,
-      // pass the pkgData so ProductPay can render tour/pickup/description details
+      skus: skusToSend,
+    });
+
+    navigation.navigate('/product/pay', {
+      prod_no: prod,
+      prod_name: pkgData?.prod_name ?? params?.prod_name,
+      pkg_no: pkg,
+      selected_date: selectedDate,
+      adult, child,
+      adult_price: adultPrice,         // unit price shown in UI for adult
+      child_price: childPrice,         // unit price shown in UI for child
+      total,
       pkgData,
+      // include explicit sku mapping so ProductPay can build exact payload
+      skus: skusToSend.map(s => ({ sku_id: s.sku_id, qty: s.qty, price: s.price })),
+      // also include top-level sku ids for convenience
+      adult_sku_id: skusToSend[0]?.sku_id ?? null,
+      child_sku_id: skusToSend.length > 1 ? skusToSend[1]?.sku_id ?? null : (skusToSend[0]?.sku_id ?? null),
     });
   };
 
