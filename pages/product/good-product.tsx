@@ -51,8 +51,11 @@ function ProductGoodProduct() {
         if (res.data && res.data.prod && res.data.pkg) {
           setProduct({ ...params.product, ...res.data.prod, detail_loaded: true });
           setPkgList(res.data.pkg);
-          // 기본값: 첫번째 패키지 선택
-          setSelectedPkgNo(res.data.pkg[0]?.pkg_no ?? null);
+
+          // 기본값: 첫번째 판매중인 패키지( sale_s_date & sale_e_date 있는 것 ). 없으면 첫번째 항목
+          const firstAvailable = (res.data.pkg.find((p: any) => !!p.sale_s_date && !!p.sale_e_date) ?? res.data.pkg[0]);
+          setSelectedPkgNo(firstAvailable?.pkg_no ?? null);
+
           try { setPdt({ ...params.product, ...res.data.prod, detail_loaded: true }); } catch (e) { /* ignore */ }
         }
       } catch (e) {
@@ -98,6 +101,10 @@ function ProductGoodProduct() {
   const goReservation = () => {
     const selectedPkg = pkgList.find(pkg => pkg.pkg_no === selectedPkgNo);
     if (!selectedPkg) return;
+    // Prevent navigating to reservation if selected package is considered sold out by criteria
+    const isSoldOut = !(selectedPkg.sale_s_date && selectedPkg.sale_e_date);
+    if (isSoldOut) return;
+
     navigation.navigate('/product/reservation', {
       prod_no: product?.prod_no,
       prod_name: product?.prod_name,
@@ -272,88 +279,100 @@ function ProductGoodProduct() {
           <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>
             옵션 선택
           </Text>
-          {pkgList.map((pkg, idx) => (
-            <TouchableOpacity
-              key={pkg.pkg_no}
-              onPress={() => {
-                setSelectedPkgNo(pkg.pkg_no)
-                console.log(pkg);
-              }}
-              style={{
-                borderWidth: 1,
-                borderColor: selectedPkgNo === pkg.pkg_no ? colors.blue500 : colors.grey200,
-                borderRadius: 12,
-                backgroundColor: selectedPkgNo === pkg.pkg_no ? colors.blue50 : "#fafbfc",
-                marginBottom: 16,
-                padding: 18,
-              }}
-              activeOpacity={0.8}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <PlanLabel index={idx} pkg_name={pkg.pkg_name} />
-              </View>
-              <View style={{ marginTop: 10 }}>
-                {/* Refund tag */}
-                {getRefundTag(pkg) && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-                    <Icon name="icon-check" size={24} color={colors.blue500} />
-                    <Text style={{ marginLeft: 8, color: colors.grey600 }}>{getRefundTag(pkg)}</Text>
-                  </View>
-                )}
+          {pkgList.map((pkg, idx) => {
+            // 기준: sale_s_date && sale_e_date 가 있어야 판매중으로 간주.
+            const isSoldOut = !(pkg.sale_s_date && pkg.sale_e_date);
+            const isSelected = selectedPkgNo === pkg.pkg_no && !isSoldOut;
+            return (
+              <TouchableOpacity
+                key={pkg.pkg_no}
+                onPress={() => {
+                  // Prevent selecting sold-out packages
+                  if (isSoldOut) return;
+                  setSelectedPkgNo(pkg.pkg_no);
+                }}
+                style={{
+                  borderWidth: 1,
+                  borderColor: isSoldOut ? colors.grey200 : (isSelected ? colors.blue500 : colors.grey200),
+                  borderRadius: 12,
+                  backgroundColor: isSoldOut ? "#fff" : (isSelected ? colors.blue50 : "#fafbfc"),
+                  marginBottom: 16,
+                  padding: 18,
+                  opacity: isSoldOut ? 0.7 : 1,
+                }}
+                activeOpacity={isSoldOut ? 1 : 0.8}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+                  <PlanLabel index={idx} pkg_name={pkg.pkg_name} />
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  {/* Refund tag */}
+                  {getRefundTag(pkg) && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                      <Icon name="icon-check" size={24} color={colors.blue500} />
+                      <Text style={{ marginLeft: 8, color: colors.grey600 }}>{getRefundTag(pkg)}</Text>
+                    </View>
+                  )}
 
-                {/* Earliest booking */}
-                {earliestBookingText(pkg) && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                    <Icon name="icon-calendar-clock" size={24} />
-                    <Text style={{ marginLeft: 8, color: colors.grey600 }}>{earliestBookingText(pkg)}</Text>
-                  </View>
-                )}
+                  {/* Earliest booking */}
+                  {earliestBookingText(pkg) && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                      <Icon name="icon-calendar-clock" size={24} />
+                      <Text style={{ marginLeft: 8, color: colors.grey600 }}>{earliestBookingText(pkg)}</Text>
+                    </View>
+                  )}
 
-                {/* Bulleted short lines */}
-                {firstNLinesFromPackageDesc(pkg, 3).length > 0 && (
-                  <View style={{ marginTop: 6 }}>
-                    {firstNLinesFromPackageDesc(pkg, 3).map((line, i) => (
-                      <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>
-                        <Icon name="" size={24} />
-                        <Text style={{ marginRight: 8, color: colors.grey600 }}>•</Text>
-                        <Text style={{ flex: 1, color: colors.grey600 }}>{line}</Text>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 8 }}>
-                <View style={{ alignItems: 'flex-start' }}>
-                  {getPriceInfo(pkg).hasDiscount ? (
-                    <>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ color: colors.grey300, textDecorationLine: 'line-through', marginRight: 8 }}>
-                          {formatPrice(getPriceInfo(pkg).original)}원
-                        </Text>
-                        <Text style={{ color: '#3b5afe', fontWeight: '600' }}>
-                          {discountAmount >= 10000
-                            ? `${formatPrice(discountAmount)}원 할인`
-                            : `${getPriceInfo(pkg).discountPercent}% 할인`}
-                        </Text>
-                      </View>
-                      <Text style={{ fontSize: 18, fontWeight: '700', marginTop: 6 }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
-                    </>
-                  ) : (
-                    <Text style={{ fontSize: 18, fontWeight: '700' }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
+                  {/* Bulleted short lines */}
+                  {firstNLinesFromPackageDesc(pkg, 3).length > 0 && (
+                    <View style={{ marginTop: 6 }}>
+                      {firstNLinesFromPackageDesc(pkg, 3).map((line, i) => (
+                        <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>
+                          <Icon name="" size={24} />
+                          <Text style={{ marginRight: 8, color: colors.grey600 }}>•</Text>
+                          <Text style={{ flex: 1, color: colors.grey600 }}>{line}</Text>
+                        </View>
+                      ))}
+                    </View>
                   )}
                 </View>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 8 }}>
+                  <View style={{ alignItems: 'flex-start' }}>
+                    {getPriceInfo(pkg).hasDiscount ? (
+                      <>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text style={{ color: colors.grey300, textDecorationLine: 'line-through', marginRight: 8 }}>
+                            {formatPrice(getPriceInfo(pkg).original)}원
+                          </Text>
+                          <Text style={{ color: '#3b5afe', fontWeight: '600' }}>
+                            {discountAmount >= 10000
+                              ? `${formatPrice(discountAmount)}원 할인`
+                              : `${getPriceInfo(pkg).discountPercent}% 할인`}
+                          </Text>
+                        </View>
+                        <Text style={{ fontSize: 18, fontWeight: '700', marginTop: 6 }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
+                      </>
+                    ) : (
+                      <Text style={{ fontSize: 18, fontWeight: '700' }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
+                    )}
+                  </View>
 
-                <Button
-                  type={'primary'}
-                  size="medium"
-                  style="fill"
-                  onPress={() => setSelectedPkgNo(pkg.pkg_no)}
-                >
-                  {selectedPkgNo === pkg.pkg_no ? '선택됨' : '선택하기'}
-                </Button>
-              </View>
-            </TouchableOpacity>
-          ))}
+                  <Button
+                    type={isSoldOut ? 'dark' : 'primary'}
+                    size="medium"
+                    style="fill"
+                    onPress={() => {
+                      // do not allow selection / navigation for sold-out packages
+                      if (isSoldOut) return;
+                      setSelectedPkgNo(pkg.pkg_no);
+                    }}
+                    disabled={isSoldOut}
+                  >
+                    {isSoldOut ? '매진' : (selectedPkgNo === pkg.pkg_no ? '선택됨' : '선택하기')}
+                  </Button>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         {/* 하단 예약 CTA */}
         <View style={{ padding: 20, backgroundColor: "#fff", borderTopWidth: 1, borderColor: "#eee" }}>
