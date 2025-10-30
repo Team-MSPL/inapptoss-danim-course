@@ -16,8 +16,17 @@ export const Route = createRoute('/product/people', {
 function ProductPeople() {
   const navigation = useNavigation();
   const params = Route.useParams();
+
+  // incoming data from previous screen (reservation)
+  const incomingPkgData = params?.pkgData ?? null;
+  const incomingProdNo = params?.prod_no ?? null;
+  const incomingPkgNo = params?.pkg_no ?? null;
+  const incomingBaseSkus = Array.isArray(params?.baseSkus) ? params.baseSkus : (incomingPkgData?.item?.[0]?.skus ?? []);
+  const incomingSelectedSku = params?.selectedSku ?? null;
+
   const { prod_no, pkg_no, s_date, setSDate, setEDate } = useReservationStore();
 
+  // local state
   const [categories, setCategories] = useState<any[]>([]); // dynamic categories derived from specs/skus
   const [pkgData, setPkgData] = useState<any | null>(null);
   const [loadingPkg, setLoadingPkg] = useState(false);
@@ -34,52 +43,96 @@ function ProductPeople() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.selected_date]);
 
-  const prod = prod_no ?? params?.prod_no;
-  const pkg = pkg_no ?? params?.pkg_no;
+  const prod = prod_no ?? params?.prod_no ?? incomingProdNo;
+  const pkg = pkg_no ?? params?.pkg_no ?? incomingPkgNo;
 
+  // If incomingPkgData is provided, prefer it and skip network fetch.
   useEffect(() => {
-    if (!prod || !pkg) return;
     let mounted = true;
-    setLoadingPkg(true);
-    setPkgError(null);
+    async function loadPkg() {
+      setLoadingPkg(true);
+      setPkgError(null);
 
-    axios.post(QUERY_PACKAGE_API, {
-      prod_no: prod,
-      pkg_no: pkg,
-      locale: "kr",
-      state: "KR",
-    }, {
-      headers: { "Content-Type": "application/json" }
-    }).then(res => {
-      if (!mounted) return;
-      const data = res.data ?? {};
-      const firstItem = data.item?.[0];
-      const firstSku = firstItem?.skus?.[0];
-      const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? data.calendar_detail ?? null;
+      if (incomingPkgData) {
+        // Use incoming package data immediately
+        const firstItem = incomingPkgData.item?.[0] ?? null;
+        const firstSku = firstItem?.skus?.[0];
+        const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? incomingPkgData.calendar_detail ?? null;
 
-      // create merged calendar map
-      const merged: Record<string, any> = {};
-      (data.item ?? []).forEach((it: any) => {
-        (it.skus ?? []).forEach((sku: any) => {
-          const cal = sku?.calendar_detail ?? sku?.calendar ?? {};
-          Object.entries(cal ?? {}).forEach(([dateStr, entry]: any) => {
-            const low = lowestPriceFromEntry(entry);
-            if (low === undefined) return;
-            const ex = merged[dateStr]?.price;
-            if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+        // build merged calendar (lightweight merge same as earlier)
+        const merged: Record<string, any> = {};
+        (incomingPkgData.item ?? []).forEach((it: any) => {
+          (it.skus ?? []).forEach((sku: any) => {
+            const cal = sku?.calendar_detail ?? sku?.calendar ?? {};
+            Object.entries(cal ?? {}).forEach(([dateStr, entry]: any) => {
+              const low = lowestPriceFromEntry(entry);
+              if (low === undefined) return;
+              const ex = merged[dateStr]?.price;
+              if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+            });
           });
         });
-      });
-      // top-level fallback
-      Object.entries(calendar_detail ?? {}).forEach(([dateStr, entry]: any) => {
-        const low = lowestPriceFromEntry(entry);
-        if (low === undefined) return;
-        const ex = merged[dateStr]?.price;
-        if (ex === undefined || low < ex) merged[dateStr] = { price: low };
-      });
+        Object.entries(calendar_detail ?? {}).forEach(([dateStr, entry]: any) => {
+          const low = lowestPriceFromEntry(entry);
+          if (low === undefined) return;
+          const ex = merged[dateStr]?.price;
+          if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+        });
 
-      // persist pkgData and also extract unit_quantity_rule if present
-      if (mounted) {
+        if (!mounted) return;
+        setPkgData({ ...incomingPkgData, calendar_detail, calendar_detail_merged: merged });
+
+        const unitRule = firstItem?.unit_quantity_rule ?? incomingPkgData?.unit_quantity_rule ?? null;
+        setQuantityRule(unitRule ?? null);
+
+        setLoadingPkg(false);
+        return;
+      }
+
+      // Otherwise fetch from API (fallback)
+      if (!prod || !pkg) {
+        setPkgError('패키지 정보를 불러오기 위한 식별자가 없습니다.');
+        setLoadingPkg(false);
+        return;
+      }
+
+      try {
+        const res = await axios.post(QUERY_PACKAGE_API, {
+          prod_no: prod,
+          pkg_no: pkg,
+          locale: "kr",
+          state: "KR",
+        }, {
+          headers: { "Content-Type": "application/json" }
+        });
+
+        if (!mounted) return;
+        const data = res.data ?? {};
+        const firstItem = data.item?.[0];
+        const firstSku = firstItem?.skus?.[0];
+        const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? data.calendar_detail ?? null;
+
+        // create merged calendar map
+        const merged: Record<string, any> = {};
+        (data.item ?? []).forEach((it: any) => {
+          (it.skus ?? []).forEach((sku: any) => {
+            const cal = sku?.calendar_detail ?? sku?.calendar ?? {};
+            Object.entries(cal ?? {}).forEach(([dateStr, entry]: any) => {
+              const low = lowestPriceFromEntry(entry);
+              if (low === undefined) return;
+              const ex = merged[dateStr]?.price;
+              if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+            });
+          });
+        });
+        // top-level fallback
+        Object.entries(calendar_detail ?? {}).forEach(([dateStr, entry]: any) => {
+          const low = lowestPriceFromEntry(entry);
+          if (low === undefined) return;
+          const ex = merged[dateStr]?.price;
+          if (ex === undefined || low < ex) merged[dateStr] = { price: low };
+        });
+
         setPkgData({ ...data, calendar_detail, calendar_detail_merged: merged });
 
         // pick unit_quantity_rule from first item (if present)
@@ -87,18 +140,20 @@ function ProductPeople() {
         setQuantityRule(unitRule ?? null);
 
         console.log('[ProductPeople] fetched pkgData', { prod, pkg, mergedDatesCount: Object.keys(merged).length, unitRule });
+      } catch (err) {
+        if (!mounted) return;
+        console.error('[ProductPeople] fetch err', err);
+        setPkgError('패키지 가격 정보를 불러오지 못했습니다.');
+      } finally {
+        if (!mounted) return;
+        setLoadingPkg(false);
       }
-    }).catch(err => {
-      if (!mounted) return;
-      console.error('[ProductPeople] fetch err', err);
-      setPkgError('패키지 가격 정보를 불러오지 못했습니다.');
-    }).finally(() => {
-      if (!mounted) return;
-      setLoadingPkg(false);
-    });
+    }
 
+    loadPkg();
     return () => { mounted = false; };
-  }, [prod, pkg]);
+    // include incomingPkgData so effect re-runs if navigation passed a different pkgData
+  }, [prod, pkg, incomingPkgData]);
 
   // prefer params.selected_date first (navigation params are available immediately), then reservation store s_date
   const selectedDate = params?.selected_date ?? s_date ?? null;
@@ -120,16 +175,21 @@ function ProductPeople() {
     return '';
   };
 
-  /* ---- categories derivation (same as before) ---- */
+  /* ---- categories derivation (prefer incoming skus/selectedSku when present) ---- */
   useEffect(() => {
-    if (!pkgData) {
+    // choose the source item: prefer incomingPkgData.item[0] then pkgData.item[0]
+    const item = (incomingPkgData?.item?.[0]) ?? (pkgData?.item?.[0] ?? null);
+    // prefer incomingBaseSkus if provided, else item.skus
+    const skus: any[] = Array.isArray(incomingBaseSkus) && incomingBaseSkus.length > 0
+      ? incomingBaseSkus
+      : (Array.isArray(item?.skus) ? item.skus : []);
+
+    const specs: any[] = Array.isArray(item?.specs) ? item.specs : [];
+
+    if (!item) {
       setCategories([]);
       return;
     }
-
-    const item = pkgData.item?.[0] ?? null;
-    const skus: any[] = Array.isArray(item?.skus) ? item.skus : [];
-    const specs: any[] = Array.isArray(item?.specs) ? item.specs : [];
 
     // 명시적으로 '티켓 종류' 키를 우선으로 사용한다 (요구사항)
     const TICKET_KEY = '티켓 종류';
@@ -153,6 +213,7 @@ function ProductPeople() {
     };
 
     const pushCategory = (id: string, label: string, rule: any | null, initialQty = 0, candidateSkus?: any[]) => {
+      // use candidateSkus if provided, otherwise filter from 'skus' (which already prefers incomingBaseSkus)
       const candidates = candidateSkus ?? skus.filter(sku => {
         if (Array.isArray(sku?.specs_ref)) {
           if (sku.specs_ref.some((r: any) => String(r.spec_value_id) === String(id) || String(r.spec_item_id) === String(id))) return true;
@@ -172,7 +233,8 @@ function ProductPeople() {
       // 가격 계산: calendar 우선 -> sku.b2b_price 우선
       const candidateUnits: number[] = [];
       for (const c of candidates) {
-        const cal = c?.calendar_detail ?? c?.calendar ?? item?.calendar_detail ?? pkgData?.calendar_detail_merged ?? pkgData?.calendar_detail ?? null;
+        // If incomingSelectedSku exists and matches candidate sku_id, prefer its calendar for price
+        const cal = c?.calendar_detail ?? c?.calendar ?? item?.calendar_detail ?? (pkgData?.calendar_detail_merged ?? pkgData?.calendar_detail) ?? null;
         const entry = cal?.[selectedDate];
         const low = lowestPriceFromEntry(entry);
         if (low !== undefined) candidateUnits.push(low);
@@ -180,7 +242,7 @@ function ProductPeople() {
         if (skuNum !== undefined) candidateUnits.push(skuNum);
       }
       const unitFromCandidates = candidateUnits.length ? Math.min(...candidateUnits) : undefined;
-      const fallbackUnit = toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? toNumber(pkgData?.pkg?.[0]?.b2b_min_price) ?? toNumber(pkgData?.b2b_min_price) ?? 0;
+      const fallbackUnit = toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? toNumber((pkgData?.pkg?.[0] ?? {})?.b2b_min_price) ?? toNumber(pkgData?.b2b_min_price) ?? 0;
 
       // ageLabel 추출
       let ageLabel = '';
@@ -204,7 +266,7 @@ function ProductPeople() {
               // value가 있으면 그대로 추가 (중복 방지)
               if (!extras.includes(val)) extras.push(val);
             }
-            // value가 비어있으면 아무것도 추가하지 않음 (원하시면 key를 추가하는 fallback 가능)
+            // value가 비어있으면 아무것도 추가하지 않음
           } catch (e) {
             console.warn('spec entry parse failed', key, valRaw, e);
           }
@@ -235,7 +297,7 @@ function ProductPeople() {
       });
     };
 
-    // If we have ticketSpec, use its spec_items
+    // ticket spec mapping (same as before) but using skus variable (which may be incomingBaseSkus)
     const ticketSpec = specs.find(s => (s?.spec_title ?? '').toString().toLowerCase().includes('티켓')) ?? specs[0];
     if (ticketSpec && Array.isArray(ticketSpec.spec_items)) {
       let adultIndex = -1;
@@ -252,11 +314,10 @@ function ProductPeople() {
         const oid = si?.spec_item_oid ?? String(si?.spec_item_oid ?? idx);
         const rule = si?.rule ?? si?.rule ?? null;
         const initial = (idx === adultIndex) ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0);
-        // Push using spec item and allow candidate skus to be filtered later
         pushCategory(oid, name || String(oid), rule, initial);
       });
     } else {
-      // specs 없으면 각 sku를 읽어 티켓 종류 키 우선으로 label 생성
+      // specs not present: build categories from skus, but skus may be incomingBaseSkus
       const seen = new Set<string>();
       for (const sku of skus) {
         let label = deriveTicketLabelFromSku(sku);
@@ -270,13 +331,13 @@ function ProductPeople() {
       }
     }
 
-    // any skus not mapped into categories -> push as "기타"
+    // unmapped => 기타 (consider skus array)
     const mappedSkuIds = new Set(mapped.flatMap(m => (m.skus ?? []).map((s: any) => s.sku_id ?? s.id)).filter(Boolean));
     const unmapped = skus.filter(sku => !(mappedSkuIds.has(sku?.sku_id ?? sku?.id)));
     if (unmapped.length) {
       const unitCandidates: number[] = [];
       for (const c of unmapped) {
-        const cal = c?.calendar_detail ?? c?.calendar ?? item?.calendar_detail ?? pkgData?.calendar_detail ?? null;
+        const cal = c?.calendar_detail ?? c?.calendar ?? item?.calendar_detail ?? (pkgData?.calendar_detail ?? null);
         const entry = cal?.[selectedDate];
         const low = lowestPriceFromEntry(entry);
         if (low !== undefined) unitCandidates.push(low);
@@ -284,7 +345,7 @@ function ProductPeople() {
         if (skuNum !== undefined) unitCandidates.push(skuNum);
       }
       const unitFromCandidates = unitCandidates.length ? Math.min(...unitCandidates) : undefined;
-      const fallbackUnit = toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? toNumber(pkgData?.pkg?.[0]?.b2b_min_price) ?? 0;
+      const fallbackUnit = toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? toNumber((pkgData?.pkg?.[0] ?? {})?.b2b_min_price) ?? 0;
       const sample = unmapped[0];
       const ageLabel = sample?.spec_rule ? formatAgeRule(sample.spec_rule?.age_rule ?? { min: sample.spec_rule?.min_age, max: sample.spec_rule?.max_age }) : (sample?.spec_desc ? `(${sample.spec_desc})` : '');
       const extras: string[] = [];
@@ -297,13 +358,12 @@ function ProductPeople() {
           extras.push(vs);
         });
       }
-      const subLabel = extras;
       mapped.push({
         id: 'other',
         label: '기타',
         rule: null,
         ageLabel,
-        subLabel,
+        subLabel: extras,
         skus: unmapped,
         unit: unitFromCandidates ?? fallbackUnit,
         qty: 0,
@@ -312,7 +372,7 @@ function ProductPeople() {
 
     setCategories(mapped);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pkgData, selectedDate, params?.adult, params?.child]);
+  }, [pkgData, selectedDate, incomingBaseSkus, incomingPkgData, incomingSelectedSku, params?.adult, params?.child]);
 
   // compute totals based on categories
   const total = useMemo(() => {
@@ -325,7 +385,7 @@ function ProductPeople() {
 
   const canProceed = categories.some(c => Number(c.qty || 0) > 0) && !!selectedDate && !loadingPkg && !pkgError;
 
-  // New: helper to get min/max/multiple config
+  // helper to get min/max/multiple config
   const getTotalRule = () => {
     const tr = quantityRule?.total_rule ?? {};
     return {
@@ -358,13 +418,11 @@ function ProductPeople() {
   const extractMultipleFromRulesets = (rulesets: any[] | undefined): number | null => {
     if (!Array.isArray(rulesets)) return null;
     for (const r of rulesets) {
-      // common possible keys
       const candidates = [r?.multiple, r?.multiple_of, r?.step, r?.quantity_multiple, r?.quantity_step];
       for (const c of candidates) {
         const n = Number(c);
         if (Number.isFinite(n) && n > 0 && Math.floor(n) === n) return n;
       }
-      // sometimes ruleset contains a numeric 'value' with type 'multiple'
       if (r?.type === 'multiple' && r?.value) {
         const n = Number(r.value);
         if (Number.isFinite(n) && n > 0 && Math.floor(n) === n) return n;
@@ -373,7 +431,58 @@ function ProductPeople() {
     return null;
   };
 
-  // Validate on proceeding
+  // resolve SKUs for navigation/payload using selected categories and candidate skus
+  function resolveSkusForNavigationFromCategories() {
+    const result: Array<{ sku_id: any; qty: number; price: number; chosenSku?: any; candidates?: any[] }> = [];
+
+    for (const cat of categories) {
+      const qty = Number(cat.qty || 0);
+      if (qty <= 0) continue;
+      const candidates: any[] = Array.isArray(cat.skus) ? cat.skus : [];
+
+      const candWithUnit = candidates.map(sku => {
+        const cal = sku?.calendar_detail ?? sku?.calendar ?? (incomingSelectedSku?.calendar_detail ?? incomingSelectedSku?.calendar) ?? pkgData?.item?.[0]?.calendar_detail ?? pkgData?.calendar_detail_merged ?? pkgData?.calendar_detail ?? null;
+        const entry = cal?.[selectedDate];
+        const low = lowestPriceFromEntry(entry);
+        const skuNum = safeNum(sku?.b2b_price ?? sku?.b2c_price ?? sku?.official_price ?? sku?.filled_price);
+        const unit = low ?? skuNum ?? cat.unit ?? 0;
+        return { sku, unit };
+      });
+
+      let chosen = null;
+      if (candWithUnit.length > 0) {
+        candWithUnit.sort((a, b) => (Number(a.unit || 0) - Number(b.unit || 0)));
+        chosen = candWithUnit[0].sku;
+      } else {
+        chosen = (incomingSelectedSku ?? pkgData?.item?.[0]?.skus?.[0] ?? pkgData?.pkg?.[0]?.skus?.[0]) ?? null;
+      }
+
+      const skuId = chosen?.sku_id ?? chosen?.id ?? null;
+      const unitForChosen = candWithUnit.find(c => (c.sku?.sku_id ?? c.sku?.id) === (skuId))?.unit ?? safeNum(chosen?.b2b_price ?? chosen?.b2c_price) ?? cat.unit ?? 0;
+
+      if (skuId) {
+        result.push({
+          sku_id: skuId,
+          qty,
+          price: Number(unitForChosen * qty),
+          chosenSku: chosen,
+          candidates: candidates,
+        });
+      } else {
+        result.push({
+          sku_id: null,
+          qty,
+          price: Number((cat.unit ?? 0) * qty),
+          chosenSku: null,
+          candidates,
+        });
+      }
+    }
+
+    return result;
+  }
+
+  // Validate on proceeding and navigate to pay
   const goNext = () => {
     if (!canProceed) return;
 
@@ -388,7 +497,6 @@ function ProductPeople() {
       return;
     }
 
-    // if isMultipleLimit is active, try to validate against rulesets
     const rulesets = quantityRule?.ticket_rule?.rulesets ?? [];
     if (isMultipleLimit) {
       const multiple = extractMultipleFromRulesets(rulesets);
@@ -398,19 +506,11 @@ function ProductPeople() {
           return;
         }
       } else {
-        // no explicit multiple found — show info to user and allow or block as desired
-        // Here we choose to allow but inform user there's an active multiple-limit policy to check
         Alert.alert('구매 규칙 안내', '판매자가 복수 구매 제한(is_multiple_limit)을 설정했습니다. 자세한 규칙은 상품 상세를 확인해 주세요.');
-        // proceed (or return to block). If you want to block until clarified, uncomment next line:
-        // return;
       }
     }
 
     const skusForPayload = resolveSkusForNavigationFromCategories();
-
-    // Debug log: show categories and chosen skus
-    console.log('[ProductPeople] Selected categories:', categories.map(c => ({ id: c.id, label: c.label, qty: c.qty, unit: c.unit, candidates: (c.skus || []).length, ageLabel: c.ageLabel, subLabel: c.subLabel })));
-    console.log('[ProductPeople] skusForPayload:', skusForPayload.map(s => ({ sku_id: s.sku_id, qty: s.qty, price: s.price })));
 
     navigation.navigate('/product/pay', {
       prod_no: prod,
@@ -422,7 +522,10 @@ function ProductPeople() {
       adult_price: undefined,
       child_price: undefined,
       total: Number(total),
+      // forward original pkgData and skus context so downstream can rely on the same basis
       pkgData,
+      baseSkus: Array.isArray(incomingBaseSkus) && incomingBaseSkus.length > 0 ? incomingBaseSkus : (pkgData?.item?.[0]?.skus ?? []),
+      selectedSku: incomingSelectedSku ?? null,
     });
   };
 
@@ -437,7 +540,6 @@ function ProductPeople() {
       <View style={{ marginBottom: 8, padding: 12, backgroundColor: '#fff8e6', borderRadius: 8 }}>
         <Text style={{ fontWeight: 'bold', color: colors.grey800, marginBottom: 6 }}>구매 규칙 안내</Text>
         {rulesets.map((rs: any, idx: number) => {
-          // try to produce readable summary
           const title = rs?.title ?? rs?.name ?? rs?.description ?? JSON.stringify(rs);
           return (
             // eslint-disable-next-line react/no-array-index-key
@@ -499,7 +601,6 @@ function ProductPeople() {
                 ))
               )}
 
-              {/* show ticket_rule rulesets (if any) above fare breakdown */}
               {renderTicketRuleSummary()}
 
               <View style={{ marginTop: 8 }}>
