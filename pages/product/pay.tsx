@@ -86,24 +86,6 @@ import RentcarCustomizeToggle from "../../components/product/traffic/RentcarCust
 import CollapsibleSection from "../../components/product/collapsibleSection";
 import axiosAuth from "../../redux/api";
 
-function toNumber(v: any): number | undefined {
-  if (v === null || v === undefined) return undefined;
-  // allow numeric strings with commas like "12,345"
-  const n = Number(String(v).replace(/,/g, ''));
-  return Number.isFinite(n) ? n : undefined;
-}
-
-// add near the top of src/screens/ProductPay.tsx (imports 아래)
-function safeNum(v: any): number | undefined {
-  if (v === null || v === undefined) return undefined;
-  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
-  if (typeof v === 'string') {
-    const n = Number(String(v).replace(/,/g, ''));
-    return Number.isFinite(n) ? n : undefined;
-  }
-  return undefined;
-}
-
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
   component: ProductPay,
@@ -199,22 +181,10 @@ function ProductPay() {
   }
 
   const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
-  const childPrice = params?.child_price ?? adultPrice;
-  const adultCount = Number(params?.adult ?? 1);
-  const childCount = Number(params?.child ?? 0);
-  const adultTotal = adultPrice * adultCount;
-  const childTotal = childPrice * childCount;
-  const productAmount = adultTotal + childTotal;
+  const productAmount = params?.total;
 
   const originalPerPerson = params?.original_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? undefined;
   const salePerPerson = params?.display_price ?? adultPrice;
-  const percent = (originalPerPerson && salePerPerson && originalPerPerson > salePerPerson)
-    ? Math.floor(100 - (salePerPerson / originalPerPerson) * 100)
-    : 0;
-
-  const productDiscount = (originalPerPerson && salePerPerson && originalPerPerson > salePerPerson)
-    ? Math.floor((originalPerPerson - salePerPerson) * (adultCount + childCount))
-    : 0;
 
   const engLastSpec = rawFields?.custom?.english_last_name ?? null;
   const engLastUse: string[] = engLastSpec && Array.isArray(engLastSpec.use) ? engLastSpec.use : [];
@@ -249,99 +219,6 @@ function ProductPay() {
   const hasRentcar03 = availableTrafficTypes.includes("rentcar_03");
   const hasPickup03 = availableTrafficTypes.includes("pickup_03");
   const hasPickup04 = availableTrafficTypes.includes("pickup_04");
-
-  function buildSkuMapFromItem(item: any) {
-    // Build a simple map { adult: [sku], child: [sku], other: [sku] }
-    const map: Record<string, any[]> = { adult: [], child: [], other: [] };
-    if (!item || !Array.isArray(item.skus)) return map;
-
-    item.skus.forEach((sku: any) => {
-      const keys: string[] = [];
-
-      // ticket_rule_spec_item, spec values, specs_ref may contain hints
-      if (sku?.ticket_rule_spec_item) keys.push(String(sku.ticket_rule_spec_item).toLowerCase());
-      if (sku?.spec && typeof sku.spec === 'object') {
-        Object.values(sku.spec).forEach((v: any) => {
-          if (typeof v === 'string') keys.push(v.toLowerCase());
-        });
-      }
-      if (Array.isArray(sku?.specs_ref)) {
-        sku.specs_ref.forEach((r: any) => {
-          if (r?.spec_value_id) keys.push(String(r.spec_value_id).toLowerCase());
-          if (r?.spec_item_id) keys.push(String(r.spec_item_id).toLowerCase());
-        });
-      }
-
-      // heuristics
-      let mapped = 'other';
-      for (const c of keys) {
-        if (!c) continue;
-        if (c.includes('child') || c.includes('kid') || c.includes('youth') || c.includes('infant')) {
-          mapped = 'child';
-          break;
-        }
-        if (c.includes('adult') || c.includes('man') || c.includes('woman')) {
-          mapped = 'adult';
-          break;
-        }
-      }
-
-      // fallback: if only one sku, assume adult
-      if (mapped === 'other' && item.skus.length === 1) mapped = 'adult';
-
-      map[mapped] = map[mapped] || [];
-      map[mapped].push(sku);
-    });
-
-    return map;
-  }
-
-  // Replace normalizeParamsSkusArray used earlier with this implementation
-  function normalizeParamsSkusArray(rawSkus: any[], unitAdult: number, unitChild: number, adultCount: number, childCount: number) {
-    const out: Array<{ sku_id: any; qty: number; price: number }> = [];
-    if (!Array.isArray(rawSkus)) return out;
-
-    for (const r of rawSkus) {
-      if (!r) continue;
-      const skuId = r.sku_id ?? r.skuId ?? r.id ?? r.sku ?? null;
-      if (!skuId) continue;
-
-      // qty: prefer explicit qty, else infer from type or fallback to totals
-      let qty = Number(r.qty ?? r.quantity ?? r.count ?? 0) || 0;
-      const typeHint = (r.type ?? r.ticket_type ?? '').toString().toLowerCase();
-
-      if (!qty || qty <= 0) {
-        if (typeHint.includes('adult')) qty = adultCount;
-        else if (typeHint.includes('child')) qty = childCount;
-        else qty = adultCount + childCount;
-      }
-
-      // Determine unit price: PRIORITIZE params unit price (unitAdult/unitChild) if present
-      // We assume caller passed unitAdult/unitChild computed from params earlier.
-      let unit: number | undefined = undefined;
-
-      if (typeHint.includes('child')) unit = unitChild;
-      else if (typeHint.includes('adult')) unit = unitAdult;
-      else {
-        // no type hint: pick adult unit as default, but if r has explicit unit field, prefer that
-        const explicitUnit = Number(r.unit_price ?? r.unitPrice ?? r.price);
-        unit = Number.isFinite(explicitUnit) && explicitUnit > 0 ? explicitUnit : unitAdult;
-      }
-
-      // If unit still not set (NaN), fallback to any explicit price or 0
-      if (!Number.isFinite(unit)) {
-        const explicitUnit2 = Number(r.unit_price ?? r.unitPrice ?? r.price);
-        unit = Number.isFinite(explicitUnit2) ? explicitUnit2 : 0;
-      }
-
-      const totalPrice = Number(unit * qty);
-
-      out.push({ sku_id: skuId, qty, price: totalPrice });
-    }
-
-    return out;
-  }
-  // Replace or add this buildReservationPayload implementation inside ProductPay.tsx
 
   function buildReservationPayload() {
     // local helpers (ensure these exist in this file)
@@ -463,13 +340,29 @@ function ProductPay() {
       return out;
     };
 
-    // 1) If params.skus present - normalize and use (priority)
+    // -----------------------------
+    // SKUs selection strategy:
+    // If params.sku exists, use it directly (minimal normalization).
+    // Otherwise fall back to the original derivation logic.
+    // -----------------------------
+
+    // 1) If params.sku present - use it (user request: "payload로 들어가는 sku를 그냥 params.sku로 설정")
     let skusPayload: Array<{ sku_id: any; qty: number; price: number }> | undefined = undefined;
-    if (Array.isArray(params?.skus) && params.skus.length > 0) {
+    if (Array.isArray(params?.sku) && params.sku.length > 0) {
+      // 최소 정규화: ensure objects have sku_id, qty, price fields (coerce types)
+      skusPayload = (params.sku as any[]).map(s => ({
+        sku_id: s.sku_id ?? s.skuId ?? s.id ?? null,
+        qty: Number(s.qty ?? s.quantity ?? s.count ?? 0),
+        price: Number(s.price ?? s.total_price ?? 0),
+      })).filter(s => s.sku_id && s.qty > 0);
+    }
+
+    // 2) If not provided via params.sku, fallback to params.skus (existing behavior)
+    if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && Array.isArray(params?.skus) && params.skus.length > 0) {
       skusPayload = normalizeParamsSkus(params.skus);
     }
 
-    // 2) If not provided, try to derive skus from booking store selected skus (if any), normalize similarly
+    // 3) If still empty, try to derive skus from booking store selected skus (if any), normalize similarly
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && typeof store?.getSelectedSkus === 'function') {
       const sel = store.getSelectedSkus();
       if (Array.isArray(sel) && sel.length > 0) {
@@ -477,7 +370,7 @@ function ProductPay() {
       }
     }
 
-    // 3) Fallback: try to derive from pkgData and unitAdult/unitChild
+    // 4) Fallback: try to derive from pkgData and unitAdult/unitChild (original logic)
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && pkgData) {
       const item = pkgData?.item?.[0] ?? null;
       const skuMap = item ? buildSkuMapFromItem(item) : { adult: [], child: [], other: [] };
@@ -521,7 +414,7 @@ function ProductPay() {
       skusPayload = final.filter(s => s.sku_id && s.qty > 0);
     }
 
-    // 4) Last fallback: if still nothing and totalQty > 0, try to pick first available sku and set combined qty/price
+    // 5) Last fallback: if still nothing and totalQty > 0, try to pick first available sku and set combined qty/price
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && totalQty > 0) {
       const fallbackSkuId = pkgData?.item?.[0]?.skus?.[0]?.sku_id ?? pkgData?.pkg?.[0]?.skus?.[0]?.sku_id ?? null;
       if (fallbackSkuId) {
@@ -565,13 +458,24 @@ function ProductPay() {
       payload.skus = skusPayload;
     }
 
-    // include total if provided / available
-    if (typeof params?.total === 'number') payload.total_price = params.total;
-    else if (typeof store?.total === 'number') payload.total_price = store.total;
+    // Set total_price: 우선 params.total이 있으면 params.total을 사용 (숫자로 강제 변환),
+    // 없으면 store.total을 사용 (기존 동작 유지).
+    if (params?.total !== undefined && params?.total !== null) {
+      const totalNum = Number(params.total);
+      if (!Number.isNaN(totalNum)) {
+        payload.total_price = totalNum;
+      } else {
+        // params.total이 숫자로 변환 불가하면 기존 store.total로 fallback
+        if (typeof store?.total === 'number') payload.total_price = store.total;
+      }
+    } else if (typeof store?.total === 'number') {
+      payload.total_price = store.total;
+    }
 
     // Debug log
     console.log('[buildReservationPayload] skusPayload:', payload.skus);
     console.log('[buildReservationPayload] unitAdult, unitChild, counts:', unitAdult, unitChild, adultCount, childCount);
+    console.log('[buildReservationPayload] total_price:', payload.total_price);
 
     return payload;
   }
@@ -1895,18 +1799,17 @@ function ProductPay() {
             title={title}
             originPrice={originalPerPerson}
             salePrice={salePerPerson}
-            percent={percent}
-            perPersonText={`${formatPrice(salePerPerson)}원 X ${adultCount + childCount}명`}
+            perPersonText={`${formatPrice(productAmount)}원`}
           />
           <View style={{ marginTop: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.grey100 }}>
             <View style={styles.row}>
               <Text typography='t5'>상품 금액</Text>
               <Text typography='t5'>{formatPrice(productAmount)}원</Text>
             </View>
-            <View style={styles.row}>
-              <Text typography='t5'>상품 할인</Text>
-              <Text typography='t5'>{formatPrice(productDiscount)}원</Text>
-            </View>
+            {/*<View style={styles.row}>*/}
+            {/*  <Text typography='t5'>상품 할인</Text>*/}
+            {/*  <Text typography='t5'>{formatPrice(productDiscount)}원</Text>*/}
+            {/*</View>*/}
           </View>
         </CollapsibleSection>
 
