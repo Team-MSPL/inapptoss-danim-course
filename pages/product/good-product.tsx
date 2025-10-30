@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import { View, FlatList, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native';
+import { View, FlatList, TouchableOpacity, Dimensions, Image, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import {createRoute, useNavigation} from '@granite-js/react-native';
 import axiosAuth from "../../redux/api";
 import { FixedBottomCTAProvider, Button, Icon, Text, colors, Badge, Skeleton, AnimateSkeleton } from "@toss-design-system/react-native";
@@ -8,6 +8,8 @@ import { getRefundTag, firstNLinesFromPackageDesc, formatPrice, getPriceInfo, ea
 import {useProductStore} from "../../zustand/useProductStore";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 
 export const Route = createRoute('/product/good-product', {
   validateParams: (params) => params,
@@ -28,6 +30,8 @@ function ProductGoodProduct() {
   const [pkgList, setPkgList] = useState<any[]>([]);
   const [selectedPkgNo, setSelectedPkgNo] = useState<number|null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [reservationLoading, setReservationLoading] = useState(false); // new: reservation API call loading
 
   const setPdt = useProductStore(state => state.setPdt);
 
@@ -56,7 +60,7 @@ function ProductGoodProduct() {
           try { setPdt({ ...params.product, ...res.data.prod, detail_loaded: true }); } catch (e) { /* ignore */ }
         }
       } catch (e) {
-        // 에러처리
+        // 에러처리(필요시 Alert)
       }
       setLoading(false);
     }
@@ -90,17 +94,86 @@ function ProductGoodProduct() {
 
   const categoryList = parseKkdayCategoryKorean(product?.product_category).filter(Boolean);
 
-  const goReservation = () => {
-    const selectedPkg = pkgList.find(pkg => pkg.pkg_no === selectedPkgNo);
-    if (!selectedPkg) return;
-    const isSoldOut = !(selectedPkg.sale_s_date && selectedPkg.sale_e_date);
-    if (isSoldOut) return;
+  // New: onReserve -> call QueryPackage, validate, then navigate accordingly
+  const handleReservePress = async () => {
+    if (!selectedPkgNo) return;
+    setReservationLoading(true);
 
-    navigation.navigate('/product/reservation', {
-      prod_no: product?.prod_no,
-      prod_name: product?.prod_name,
-      pkg_no: selectedPkg.pkg_no,
-    });
+    try {
+      const res = await axiosAuth.post(QUERY_PACKAGE_API, {
+        prod_no: product?.prod_no ?? params.prod_no,
+        pkg_no: selectedPkgNo,
+        locale: "kr",
+        state: "KR",
+      }, {
+        headers: { "Content-Type": "application/json" }
+      });
+
+      const data = res.data ?? {};
+
+      // handle API-level result codes (판매종료 등)
+      if (data?.result === '03' || data?.result_code === '03') {
+        Alert.alert('알림', '해당 여행 상품은 현재 판매가 종료되었습니다.');
+        return;
+      }
+
+      // basic validation: must have item array with at least one
+      if (!Array.isArray(data?.item) || data.item.length === 0) {
+        Alert.alert('알림', '해당 패키지의 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+        return;
+      }
+
+      const firstItem = data.item[0];
+
+      // If specs is an array and exactly one and that spec has spec_oid === 'spec-single', go to reservation
+      const specs = firstItem?.specs;
+      if (Array.isArray(specs) && specs.length === 1) {
+        const onlySpec = specs[0];
+        if (onlySpec?.spec_oid === 'spec-single') {
+          // navigate to reservation page, pass pkgData for convenience
+          navigation.navigate('/product/reservation', {
+            prod_no: product?.prod_no ?? params.prod_no,
+            prod_name: product?.prod_name ?? params.prod_name,
+            pkg_no: selectedPkgNo,
+            pkgData: data,
+          });
+          return;
+        }
+      }
+
+      // If there are multiple specs (or specs not single), go to select-spec
+      if (Array.isArray(specs) && specs.length >= 1) {
+        navigation.navigate('/product/select-spec', {
+          prod_no: product?.prod_no ?? params.prod_no,
+          prod_name: product?.prod_name ?? params.prod_name,
+          pkg_no: selectedPkgNo,
+          pkgData: data,
+        });
+        return;
+      }
+
+      // Fallback: if specs not present but item has skus etc. — navigate to select-spec to let user choose
+      navigation.navigate('/product/select-spec', {
+        prod_no: product?.prod_no ?? params.prod_no,
+        prod_name: product?.prod_name ?? params.prod_name,
+        pkg_no: selectedPkgNo,
+        pkgData: data,
+      });
+
+    } catch (err: any) {
+      console.error('[ProductGoodProduct] QueryPackage error', err);
+      const msg = err?.response?.data?.result_msg ?? err?.message ?? '패키지 정보를 불러오는 중 오류가 발생했습니다.';
+      Alert.alert('오류', msg);
+    } finally {
+      setReservationLoading(false);
+    }
+  };
+
+  const goReservation = () => {
+    // keep backward compatibility: previously just navigated to select-spec
+    // now we route through the API check handler
+    if (!selectedPkgNo) return;
+    handleReservePress();
   };
 
   const renderDots = () => (
@@ -119,7 +192,7 @@ function ProductGoodProduct() {
       ))}
     </View>
   );
-  
+
   if (loading || !product) {
     return (
       <AnimateSkeleton delay={400} withGradient={true} withShimmer={true}>
@@ -365,10 +438,10 @@ function ProductGoodProduct() {
             style="fill"
             display="block"
             size="large"
-            disabled={!selectedPkgNo}
+            disabled={!selectedPkgNo || reservationLoading}
             onPress={goReservation}
           >
-            예약하기
+            {reservationLoading ? '로딩 중...' : '예약하기'}
           </Button>
         </View>
       </FixedBottomCTAProvider>
