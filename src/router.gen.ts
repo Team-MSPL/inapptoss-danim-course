@@ -41,6 +41,7 @@ import { Route as _ProductGoodProductRoute } from '../pages/product/good-product
 import { Route as _ProductPayRoute } from '../pages/product/pay';
 import { Route as _ProductPeopleRoute } from '../pages/product/people';
 import { Route as _ProductReservationRoute } from '../pages/product/reservation';
+import { Route as _ProductSelectSpecRoute } from '../pages/product/select-spec';
 import { Route as _RecommendPlaceRoute } from '../pages/recommend-place';
 import { Route as _TimetableRoute } from '../pages/timetable';
 
@@ -87,6 +88,7 @@ declare module '@granite-js/react-native' {
     '/product/pay': ReturnType<typeof _ProductPayRoute.useParams>;
     '/product/people': ReturnType<typeof _ProductPeopleRoute.useParams>;
     '/product/reservation': ReturnType<typeof _ProductReservationRoute.useParams>;
+    '/product/select-spec': ReturnType<typeof _ProductSelectSpecRoute.useParams>;
     '/recommend-place': ReturnType<typeof _RecommendPlaceRoute.useParams>;
     '/timetable': ReturnType<typeof _TimetableRoute.useParams>;
   }

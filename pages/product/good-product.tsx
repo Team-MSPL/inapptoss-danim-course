@@ -16,7 +16,6 @@ export const Route = createRoute('/product/good-product', {
 
 
 function PlanLabel({ index, pkg_name }: { index: number, pkg_name: string }) {
-  // Map 0 -> A, 1 -> B, 2 -> C ...
   const letter = String.fromCharCode(65 + index);
   return <Text numberOfLines={1} fontWeight="semibold" typography='t4' style={{ textAlign: 'left' }}>{`플랜 ${letter}: ${pkg_name}`}</Text>;
 }
@@ -32,7 +31,6 @@ function ProductGoodProduct() {
 
   const setPdt = useProductStore(state => state.setPdt);
 
-  // 캐러셀 상태
   const [imgIndex, setImgIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -43,8 +41,8 @@ function ProductGoodProduct() {
       try {
         const res = await axiosAuth.post(`${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`, {
           prod_no: params.product?.prod_no ?? params.prod_no,
-          locale: "zh-tw",
-          state: "TW",
+          locale: "kr",
+          state: "KR",
         }, {
           headers: { "Content-Type": "application/json" }
         });
@@ -52,7 +50,6 @@ function ProductGoodProduct() {
           setProduct({ ...params.product, ...res.data.prod, detail_loaded: true });
           setPkgList(res.data.pkg);
 
-          // 기본값: 첫번째 판매중인 패키지( sale_s_date & sale_e_date 있는 것 ). 없으면 첫번째 항목
           const firstAvailable = (res.data.pkg.find((p: any) => !!p.sale_s_date && !!p.sale_e_date) ?? res.data.pkg[0]);
           setSelectedPkgNo(firstAvailable?.pkg_no ?? null);
 
@@ -66,12 +63,10 @@ function ProductGoodProduct() {
     if (!product || !product.detail_loaded) fetchProductDetail();
   }, [params, product]);
 
-  // 가격 정보
   const discountPrice = typeof product?.b2b_min_price === "number" ? product.b2b_min_price : Number(product?.b2b_min_price || 0);
   const originalPrice = typeof product?.b2c_min_price === "number" ? product.b2c_min_price : Number(product?.b2c_min_price || 0);
   const discountAmount = originalPrice > discountPrice ? (originalPrice - discountPrice) : 0;
 
-  // 가이드 언어 정보
   let guideLabel: string | null = null;
   if (product?.guide_lang_list) {
     const langs = product.guide_lang_list;
@@ -80,7 +75,6 @@ function ProductGoodProduct() {
     else if (langs.includes('en')) guideLabel = "영어 가이드";
   }
 
-  // 안내 아이콘/텍스트 (동적)
   const hasPickupTag =
     Array.isArray(product?.tag) && product.tag.includes("TAG_5_2");
 
@@ -90,41 +84,25 @@ function ProductGoodProduct() {
     ...(product?.is_cancel_free ? [{ icon: "icon-coin-yellow", text: "무료 취소" }] : []),
   ];
 
-  // 이미지 리스트
   const images = Array.isArray(product?.img_list) && product.img_list.length > 0
     ? product.img_list
     : [product?.prod_img_url || "https://via.placeholder.com/400x240?text=No+Image"];
 
   const categoryList = parseKkdayCategoryKorean(product?.product_category).filter(Boolean);
 
-  // 예약 페이지로 이동
   const goReservation = () => {
     const selectedPkg = pkgList.find(pkg => pkg.pkg_no === selectedPkgNo);
     if (!selectedPkg) return;
-    // Prevent navigating to reservation if selected package is considered sold out by criteria
     const isSoldOut = !(selectedPkg.sale_s_date && selectedPkg.sale_e_date);
     if (isSoldOut) return;
-
-    // Use getPriceInfo(selectedPkg) to determine what to pass as display/original prices
-    const priceInfo = getPriceInfo(selectedPkg);
 
     navigation.navigate('/product/reservation', {
       prod_no: product?.prod_no,
       prod_name: product?.prod_name,
       pkg_no: selectedPkg.pkg_no,
-      online_s_date: selectedPkg.sale_s_date,
-      online_e_date: selectedPkg.sale_e_date,
-      // pass the computed display/original/discount as shown in the UI
-      display_price: priceInfo?.display ?? null,
-      original_price: priceInfo?.original ?? null,
-      discount_amount: priceInfo?.discountAmount ?? 0,
-      // keep raw minima for backward compatibility if needed
-      b2b_min_price: selectedPkg.b2b_min_price ?? null,
-      b2c_min_price: selectedPkg.b2c_min_price ?? null,
     });
   };
 
-  // 캐러셀 indicator 렌더
   const renderDots = () => (
     <View style={{ flexDirection: 'row', justifyContent: 'center', position: 'absolute', bottom: 10, width: '100%' }}>
       {images.map((_, idx) => (
@@ -141,8 +119,7 @@ function ProductGoodProduct() {
       ))}
     </View>
   );
-
-  // Skeleton 로딩 UI
+  
   if (loading || !product) {
     return (
       <AnimateSkeleton delay={400} withGradient={true} withShimmer={true}>
