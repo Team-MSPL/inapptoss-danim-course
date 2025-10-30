@@ -4,6 +4,7 @@ import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
 import { FixedBottomCTAProvider, Button, Text, colors } from "@toss-design-system/react-native";
 import { useReservationStore } from "../../zustand/useReservationStore";
+import Counter, { safeNum, toNumber, formatPrice, lowestPriceFromEntry } from "../../components/product/PeopleCounter";
 
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 
@@ -12,155 +13,6 @@ export const Route = createRoute('/product/people', {
   component: ProductPeople,
 });
 
-function formatPrice(n?: number | null) {
-  if (n === null || n === undefined) return '';
-  return Math.floor(Number(n)).toLocaleString();
-}
-
-function toNumber(v: any): number | undefined {
-  if (v === null || v === undefined) return undefined;
-  const n = Number(String(v).replace(/,/g, ''));
-  return Number.isFinite(n) ? n : undefined;
-}
-
-/* ---- Helpers (SKU/calendar price extraction) ---- */
-
-function safeNum(v: any): number | undefined {
-  if (v === null || v === undefined) return undefined;
-  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
-  if (typeof v === 'string') {
-    const n = Number(v.replace(/,/g, ''));
-    return Number.isFinite(n) ? n : undefined;
-  }
-  return undefined;
-}
-
-function lowestPriceFromEntry(entry: any) {
-  if (!entry) return undefined;
-  const candidates: number[] = [];
-  // prefer b2b prices when available
-  const keys = ['b2b_price', 'b2c_price', 'price', 'sale_price', 'original_price'];
-  keys.forEach(k => {
-    const val = entry?.[k];
-    if (val == null) return;
-    if (typeof val === 'number' || typeof val === 'string') {
-      const n = safeNum(val);
-      if (n !== undefined) candidates.push(n);
-    } else if (typeof val === 'object') {
-      Object.values(val).forEach((vv: any) => {
-        const n = safeNum(vv);
-        if (n !== undefined) candidates.push(n);
-      });
-    }
-  });
-  if (candidates.length === 0) return undefined;
-  return Math.min(...candidates);
-}
-
-// Counter: label (left top), ageLabel (right top), subLabel lines (below), price, and fixed right controls
-function Counter({ label, ageLabel, subLabel, price, value, setValue, min = 0, max = 10, disabled = false }: any) {
-  const onMinus = () => {
-    if (disabled) return;
-    setValue(Math.max(min, value - 1));
-  };
-  const onPlus = () => {
-    if (disabled) return;
-    setValue(Math.min(max, value + 1));
-  };
-
-  // normalize subLabel to array of lines
-  const subLines: string[] = Array.isArray(subLabel)
-    ? (subLabel as string[]).filter(Boolean)
-    : (subLabel ? String(subLabel).split('\n').map(s => s.trim()).filter(Boolean) : []);
-
-  return (
-    <View style={{
-      backgroundColor: colors.grey50,
-      borderRadius: 16,
-      padding: 20,
-      marginBottom: 18,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      opacity: disabled ? 0.6 : 1,
-    }}>
-      {/* Left: flexible content */}
-      <View style={{ flex: 1, paddingRight: 12 }}>
-        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text typography="t4" fontWeight="bold" numberOfLines={2} style={{ lineHeight: 24, flexShrink: 1 }}>
-              {label}
-            </Text>
-            {ageLabel ? (
-              <Text style={{ marginLeft: 8, color: colors.grey400, fontSize: 13 }}>
-                {ageLabel}
-              </Text>
-            ) : null}
-          </View>
-
-          {subLines.length > 0 ? (
-            <View style={{ marginTop: 6 }}>
-              {subLines.map((line, idx) => (
-                <Text key={idx} style={{ color: colors.grey400, fontSize: 13, marginTop: idx === 0 ? 0 : 4 }}>
-                  {line}
-                </Text>
-              ))}
-            </View>
-          ) : null}
-        </View>
-
-        <Text style={{ fontSize: 22, fontWeight: 'bold', marginTop: 8 }}>
-          {price ? `${formatPrice(price)}원` : '-'}
-        </Text>
-      </View>
-
-      {/* Right: fixed controls */}
-      <View style={{
-        width: 120,
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: colors.grey100,
-          borderRadius: 10,
-          paddingHorizontal: 10,
-          height: 46,
-        }}>
-          <TouchableOpacity onPress={onMinus} disabled={value <= min || disabled}>
-            <Text style={{
-              fontSize: 28,
-              color: value <= min || disabled ? colors.grey300 : colors.grey700,
-              width: 32,
-              textAlign: 'center',
-              lineHeight: 36
-            }}>-</Text>
-          </TouchableOpacity>
-
-          <View style={{
-            minWidth: 36, marginHorizontal: 8, backgroundColor: "#fff",
-            borderRadius: 8, alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', lineHeight: 36 }}>{value}</Text>
-          </View>
-
-          <TouchableOpacity onPress={onPlus} disabled={value >= max || disabled}>
-            <Text style={{
-              fontSize: 28,
-              color: value >= max || disabled ? colors.grey300 : colors.grey700,
-              width: 32,
-              textAlign: 'center',
-              lineHeight: 36
-            }}>+</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-/* Component */
 function ProductPeople() {
   const navigation = useNavigation();
   const params = Route.useParams();
@@ -453,19 +305,16 @@ function ProductPeople() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pkgData, selectedDate, params?.adult, params?.child]);
 
-  // compute totals based on categories
   const total = useMemo(() => {
     return categories.reduce((acc, c) => acc + (Number(c.unit || 0) * Number(c.qty || 0)), 0);
   }, [categories]);
 
   const canProceed = categories.some(c => Number(c.qty || 0) > 0) && !!selectedDate && !loadingPkg && !pkgError;
 
-  // update qty helper
   const setCategoryQty = (id: string, qty: number) => {
     setCategories(prev => prev.map(c => c.id === id ? { ...c, qty } : c));
   };
 
-  // resolve SKUs for navigation/payload using selected categories and candidate skus
   function resolveSkusForNavigationFromCategories() {
     const result: Array<{ sku_id: any; qty: number; price: number; chosenSku?: any; candidates?: any[] }> = [];
 
@@ -473,7 +322,7 @@ function ProductPeople() {
       const qty = Number(cat.qty || 0);
       if (qty <= 0) continue;
       const candidates: any[] = Array.isArray(cat.skus) ? cat.skus : [];
-      // compute per-candidate unit price and pick the cheapest (prefer calendar price for selectedDate and b2b)
+
       const candWithUnit = candidates.map(sku => {
         const cal = sku?.calendar_detail ?? sku?.calendar ?? pkgData?.item?.[0]?.calendar_detail ?? pkgData?.calendar_detail_merged ?? pkgData?.calendar_detail ?? null;
         const entry = cal?.[selectedDate];
@@ -521,7 +370,6 @@ function ProductPeople() {
 
     const skusForPayload = resolveSkusForNavigationFromCategories();
 
-    // Debug log: show categories and chosen skus
     console.log('[ProductPeople] Selected categories:', categories.map(c => ({ id: c.id, label: c.label, qty: c.qty, unit: c.unit, candidates: (c.skus || []).length, ageLabel: c.ageLabel, subLabel: c.subLabel })));
     console.log('[ProductPeople] skusForPayload:', skusForPayload.map(s => ({ sku_id: s.sku_id, qty: s.qty, price: s.price })));
 
