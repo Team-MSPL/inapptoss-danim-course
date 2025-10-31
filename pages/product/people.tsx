@@ -330,6 +330,7 @@ function ProductPeople() {
       pkgData,
       baseSkus: basisSkus,
       selectedSku: incomingSelectedSku ?? null,
+      selected_time: params?.selected_time ?? null,
     });
 
     console.log(basisSkus);
