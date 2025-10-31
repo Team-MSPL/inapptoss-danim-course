@@ -19,7 +19,7 @@ export const Route = createRoute('/product/good-product', {
 
 function PlanLabel({ index, pkg_name }: { index: number, pkg_name: string }) {
   const letter = String.fromCharCode(65 + index);
-  return <Text numberOfLines={1} fontWeight="semibold" typography='t4' style={{ textAlign: 'left' }}>{`플랜 ${letter}: ${pkg_name}`}</Text>;
+  return <Text numberOfLines={1} fontWeight="semibold" typography='t4' style={{ textAlign: 'left' }}>{`${pkg_name}`}</Text>;
 }
 
 function ProductGoodProduct() {
