@@ -249,13 +249,11 @@ function ProductPay() {
       buyer_country: (store as any).buyer_country,
     };
 
-    // normalize buyer email key if needed
     if ((buyerObj as any).buyer_Email && !(buyerObj as any).buyer_email) {
       (buyerObj as any).buyer_email = (buyerObj as any).buyer_Email;
       delete (buyerObj as any).buyer_Email;
     }
 
-    // item_no fallback
     const itemNo =
       Array.isArray(params?.item_no) && params.item_no.length > 0
         ? params.item_no[0]
@@ -263,16 +261,13 @@ function ProductPay() {
 
     const selectedDate = params?.selected_date ?? null;
 
-    // passenger counts (prefer store, fallback to params)
     const adultCount = Number(store?.adult ?? params?.adult ?? 1) || 0;
     const childCount = Number(store?.child ?? params?.child ?? 0) || 0;
     const totalQty = adultCount + childCount;
 
-    // unit prices (unit per person) as shown in UI / passed via params
     const unitAdult = toNumber(params?.adult_price) ?? toNumber(params?.display_price) ?? toNumber(pkgData?.item?.[0]?.b2c_min_price) ?? toNumber(pkgData?.b2c_min_price) ?? 0;
     const unitChild = toNumber(params?.child_price) ?? unitAdult;
 
-    // Utility: attempt to extract sku mapping from pkgData.item[0]
     const buildSkuMapFromItem = (item: any) => {
       const map: Record<string, any[]> = { adult: [], child: [], other: [] };
       if (!item || !Array.isArray(item.skus)) return map;
@@ -301,7 +296,6 @@ function ProductPay() {
       return map;
     };
 
-    // Normalize params.skus when provided: ensure shape { sku_id, qty, price } and compute price if missing
     const normalizeParamsSkus = (raw: any[] | undefined) => {
       if (!Array.isArray(raw) || raw.length === 0) return [];
       const out: Array<{ sku_id: any; qty: number; price: number }> = [];
@@ -340,13 +334,6 @@ function ProductPay() {
       return out;
     };
 
-    // -----------------------------
-    // SKUs selection strategy:
-    // If params.sku exists, use it directly (minimal normalization).
-    // Otherwise fall back to the original derivation logic.
-    // -----------------------------
-
-    // 1) If params.sku present - use it (user request: "payload로 들어가는 sku를 그냥 params.sku로 설정")
     let skusPayload: Array<{ sku_id: any; qty: number; price: number }> | undefined = undefined;
     if (Array.isArray(params?.sku) && params.sku.length > 0) {
       // 최소 정규화: ensure objects have sku_id, qty, price fields (coerce types)
@@ -357,12 +344,10 @@ function ProductPay() {
       })).filter(s => s.sku_id && s.qty > 0);
     }
 
-    // 2) If not provided via params.sku, fallback to params.skus (existing behavior)
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && Array.isArray(params?.skus) && params.skus.length > 0) {
       skusPayload = normalizeParamsSkus(params.skus);
     }
 
-    // 3) If still empty, try to derive skus from booking store selected skus (if any), normalize similarly
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && typeof store?.getSelectedSkus === 'function') {
       const sel = store.getSelectedSkus();
       if (Array.isArray(sel) && sel.length > 0) {
@@ -370,13 +355,11 @@ function ProductPay() {
       }
     }
 
-    // 4) Fallback: try to derive from pkgData and unitAdult/unitChild (original logic)
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && pkgData) {
       const item = pkgData?.item?.[0] ?? null;
       const skuMap = item ? buildSkuMapFromItem(item) : { adult: [], child: [], other: [] };
       const final: Array<{ sku_id: any; qty: number; price: number }> = [];
 
-      // adult SKU mapping
       if (adultCount > 0) {
         const adultSku = skuMap.adult?.[0] ?? item?.skus?.[0] ?? null;
         const skuId = adultSku?.sku_id ?? adultSku?.id ?? null;
@@ -384,7 +367,6 @@ function ProductPay() {
         if (skuId) final.push({ sku_id: skuId, qty: adultCount, price: Number(unitFromSku * adultCount) });
       }
 
-      // child SKU mapping
       if (childCount > 0) {
         const childSku = skuMap.child?.[0] ?? null;
         if (childSku) {
@@ -414,7 +396,6 @@ function ProductPay() {
       skusPayload = final.filter(s => s.sku_id && s.qty > 0);
     }
 
-    // 5) Last fallback: if still nothing and totalQty > 0, try to pick first available sku and set combined qty/price
     if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && totalQty > 0) {
       const fallbackSkuId = pkgData?.item?.[0]?.skus?.[0]?.sku_id ?? pkgData?.pkg?.[0]?.skus?.[0]?.sku_id ?? null;
       if (fallbackSkuId) {
@@ -428,7 +409,6 @@ function ProductPay() {
       }
     }
 
-    // Ensure final skusPayload objects have only { sku_id, qty, price } and numeric types
     skusPayload = (skusPayload || []).map(s => ({
       sku_id: s.sku_id,
       qty: Number(s.qty || 0),
@@ -459,8 +439,6 @@ function ProductPay() {
       payload.skus = skusPayload;
     }
 
-    // Set total_price: 우선 params.total이 있으면 params.total을 사용 (숫자로 강제 변환),
-    // 없으면 store.total을 사용 (기존 동작 유지).
     if (params?.total !== undefined && params?.total !== null) {
       const totalNum = Number(params.total);
       if (!Number.isNaN(totalNum)) {
@@ -500,9 +478,6 @@ function ProductPay() {
       }
     }
 
-
-
-    // for debug: show the payload before sending
     Alert.alert("테스트 페이로드", JSON.stringify(payload, null, 2));
 
     // try {
