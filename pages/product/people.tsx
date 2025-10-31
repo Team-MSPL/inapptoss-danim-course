@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ActivityIndicator, Alert } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
 import { FixedBottomCTAProvider, Button, Text, colors } from "@toss-design-system/react-native";
@@ -14,22 +14,20 @@ export const Route = createRoute('/product/people', {
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 
 /**
- * ProductPeople (simplified, self-contained)
+ * ProductPeople (simplified)
  * - Uses incoming pkgData/baseSkus from params when available; avoids refetch if pkgData present.
  * - UI basis: strictly incomingBaseSkus if provided; otherwise pkgData.item[0].skus.
- * - If basisSkus contains exactly one SKU => show a single category derived from that SKU.
- * - Restores and enforces unit_quantity_rule (min/max/is_multiple_limit) from pkgData.item[0].unit_quantity_rule when present.
- * - Provides client-side validation before navigating to payment.
+ * - Restores unit_quantity_rule (min/max/is_multiple_limit) from pkgData.item[0].unit_quantity_rule when present.
+ * - If isMultipleLimit is true and totalCount % multiple !== 0, the "다음으로" button is disabled.
  */
 
 function ProductPeople() {
   const navigation = useNavigation();
   const params = Route.useParams();
 
-  // incoming navigation params
   const incomingPkgData = params?.pkgData ?? null;
   const incomingBaseSkus = Array.isArray(params?.baseSkus) ? params.baseSkus : (incomingPkgData?.item?.[0]?.skus ?? []);
-  const incomingSelectedSku = params?.selectedSku ?? null; // forwarded but NOT used as UI basis per user's request
+  const incomingSelectedSku = params?.selectedSku ?? null;
 
   const { prod_no, pkg_no, s_date, setSDate, setEDate } = useReservationStore();
 
@@ -46,10 +44,8 @@ function ProductPeople() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.selected_date]);
 
-  // If pkgData not provided, fetch minimal package data
   useEffect(() => {
     if (pkgData) {
-      // restore quantity rule if present
       const firstItem = pkgData?.item?.[0] ?? null;
       setQuantityRule(firstItem?.unit_quantity_rule ?? pkgData?.unit_quantity_rule ?? null);
       return;
@@ -89,14 +85,12 @@ function ProductPeople() {
 
   const selectedDate = params?.selected_date ?? s_date ?? null;
 
-  // basisSkus: strictly use incomingBaseSkus if present; otherwise fallback to pkgData.item[0].skus
   const basisSkus = useMemo(() => {
     if (Array.isArray(incomingBaseSkus) && incomingBaseSkus.length > 0) return incomingBaseSkus;
     const itemSkus = pkgData?.item?.[0]?.skus;
     return Array.isArray(itemSkus) ? itemSkus : [];
   }, [incomingBaseSkus, pkgData]);
 
-  // small helpers
   const deriveTicketLabelFromSku = (sku: any) => {
     try {
       if (!sku?.spec || typeof sku.spec !== 'object') return '';
@@ -125,8 +119,33 @@ function ProductPeople() {
     return safeNum(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0;
   };
 
-  // build categories simplified
   const [categories, setCategories] = useState<any[]>([]);
+
+  const getTotalRule = () => {
+    const tr = quantityRule?.total_rule ?? {};
+    let multipleFromRuleset: number | null = null;
+    const rulesets = quantityRule?.ticket_rule?.rulesets ?? [];
+    if (Array.isArray(rulesets)) {
+      for (const r of rulesets) {
+        const candidates = [r?.multiple, r?.multiple_of, r?.step, r?.quantity_multiple, r?.quantity_step, r?.value];
+        for (const c of candidates) {
+          const n = Number(c);
+          if (Number.isFinite(n) && n > 0 && Math.floor(n) === n) {
+            multipleFromRuleset = n;
+            break;
+          }
+        }
+        if (multipleFromRuleset) break;
+      }
+    }
+    return {
+      min: Number(tr?.min_quantity ?? tr?.min ?? 1),
+      max: Number(tr?.max_quantity ?? tr?.max ?? Infinity),
+      isMultipleLimit: Boolean(tr?.is_multiple_limit ?? false),
+      multiple: multipleFromRuleset ?? 2,
+      rulesets,
+    };
+  };
 
   useEffect(() => {
     const item = pkgData?.item?.[0] ?? null;
@@ -138,7 +157,8 @@ function ProductPeople() {
       return;
     }
 
-    // single-SKU: produce exactly one card based on that SKU
+    const totalRule = getTotalRule();
+
     if (skus.length === 1) {
       const sku = skus[0];
       const label = deriveTicketLabelFromSku(sku) || sku.spec_desc || '티켓';
@@ -158,7 +178,9 @@ function ProductPeople() {
         }
       }
       const unit = unitForSku(sku) ?? 0;
-      const qtyDefault = Number(params?.adult ?? 1) || 1;
+      const qtyDefault = totalRule.isMultipleLimit
+        ? Math.max(totalRule.multiple, Number(params?.adult ?? 1) || 1)
+        : (Number(params?.adult ?? 1) || 1);
       setCategories([{
         id: sku.sku_id ?? sku.id ?? label,
         label,
@@ -171,7 +193,6 @@ function ProductPeople() {
       return;
     }
 
-    // multi-SKU: prefer ticket spec items if present
     const mapped: any[] = [];
     const ticketSpec = specs.find(s => (s?.spec_title ?? '').toString().toLowerCase().includes('티켓')) ?? specs[0];
     if (ticketSpec && Array.isArray(ticketSpec.spec_items)) {
@@ -194,6 +215,8 @@ function ProductPeople() {
           if (max != null) return `(만 ${max}세 미만)`;
           return '';
         })() : (candidates[0]?.spec_desc ?? '');
+        const rawQty = label.toLowerCase().includes('성인') ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0);
+        const qtyInit = totalRule.isMultipleLimit ? Math.max(totalRule.multiple, rawQty) : Math.max(0, Math.floor(rawQty));
         mapped.push({
           id: oid,
           label,
@@ -201,12 +224,11 @@ function ProductPeople() {
           subLabel: (candidates[0]?.spec && typeof candidates[0].spec === 'object') ? Object.entries(candidates[0].spec).filter(([k]) => k !== '티켓 종류').map(([_, v]) => String(v)) : [],
           skus: candidates,
           unit: unit ?? (toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0),
-          qty: label.toLowerCase().includes('성인') ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0),
+          qty: qtyInit,
         });
       }
     }
 
-    // fallback grouping by derived ticket label
     if (mapped.length === 0) {
       const groups = new Map<string, any[]>();
       for (const sku of skus) {
@@ -216,6 +238,8 @@ function ProductPeople() {
       }
       for (const [label, candidates] of groups.entries()) {
         const unit = Math.min(...candidates.map(unitForSku));
+        const rawQty = label.toLowerCase().includes('성인') ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0);
+        const qtyInit = totalRule.isMultipleLimit ? Math.max(totalRule.multiple, rawQty) : Math.max(0, Math.floor(rawQty));
         mapped.push({
           id: label,
           label,
@@ -223,44 +247,34 @@ function ProductPeople() {
           subLabel: (candidates[0]?.spec && typeof candidates[0].spec === 'object') ? Object.entries(candidates[0].spec).filter(([k]) => k !== '티켓 종류').map(([_, v]) => String(v)) : [],
           skus: candidates,
           unit: unit ?? (toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0),
-          qty: label.toLowerCase().includes('성인') ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0),
+          qty: qtyInit,
         });
       }
     }
 
     setCategories(mapped);
-    // deliberately depend on basisSkus and selectedDate and pkgData
-  }, [pkgData, basisSkus, selectedDate, params?.adult, params?.child]);
+  }, [pkgData, basisSkus, selectedDate, params?.adult, params?.child, quantityRule]);
 
-  // totals & validation helpers
   const total = useMemo(() => categories.reduce((acc, c) => acc + (Number(c.unit || 0) * Number(c.qty || 0)), 0), [categories]);
   const totalCount = useMemo(() => categories.reduce((acc, c) => acc + (Number(c.qty || 0)), 0), [categories]);
 
-  const getTotalRule = () => {
-    const tr = quantityRule?.total_rule ?? {};
-    return {
-      min: Number(tr?.min_quantity ?? tr?.min ?? 1),
-      max: Number(tr?.max_quantity ?? tr?.max ?? Infinity),
-      isMultipleLimit: Boolean(tr?.is_multiple_limit ?? false),
-      rulesets: quantityRule?.ticket_rule?.rulesets ?? [],
-    };
-  };
-
   const setCategoryQty = (id: string, qty: number) => {
-    // client-side enforce min/max on each change using quantityRule.total_rule if available
     setCategories(prev => {
       const prevTotal = prev.reduce((s, p) => s + Number(p.qty || 0), 0);
       const found = prev.find(p => p.id === id);
       const old = found ? Number(found.qty || 0) : 0;
-      const nextTotal = prevTotal - old + Number(qty || 0);
+      let requestedQty = Math.max(0, Math.floor(Number(qty || 0)));
 
       const { max } = getTotalRule();
+
+      const nextTotal = prevTotal - old + requestedQty;
+
       if (Number.isFinite(max) && nextTotal > max) {
-        Alert.alert('최대 수량 초과', `총 구매 수량은 최대 ${max}명까지 가능합니다.`);
+        // keep previous and optionally show alert (user said no warning, so we skip alert)
         return prev;
       }
-      // apply
-      return prev.map(c => c.id === id ? { ...c, qty } : c);
+
+      return prev.map(c => c.id === id ? { ...c, qty: requestedQty } : c);
     });
   };
 
@@ -281,48 +295,16 @@ function ProductPeople() {
   };
 
   const onNext = () => {
-    // validate totals with quantity rule before navigating
-    const { min, max, isMultipleLimit, rulesets } = getTotalRule();
-    if (totalCount < min) {
-      Alert.alert('최소 수량 미만', `총 최소 구매 수량은 ${min}명입니다.`);
-      return;
-    }
-    if (Number.isFinite(max) && totalCount > max) {
-      Alert.alert('최대 수량 초과', `총 최대 구매 수량은 ${max}명입니다.`);
-      return;
-    }
-    if (isMultipleLimit) {
-      // try to extract numeric multiple from rulesets (best-effort)
-      let multiple: number | null = null;
-      if (Array.isArray(rulesets)) {
-        for (const r of rulesets) {
-          const candidates = [r?.multiple, r?.multiple_of, r?.step, r?.quantity_multiple, r?.quantity_step, r?.value];
-          for (const c of candidates) {
-            const n = Number(c);
-            if (Number.isFinite(n) && n > 0 && Math.floor(n) === n) {
-              multiple = n;
-              break;
-            }
-          }
-          if (multiple) break;
-        }
-      }
-      if (multiple) {
-        if ((totalCount % multiple) !== 0) {
-          Alert.alert('수량 규칙 위반', `총 인원은 ${multiple}명 단위로만 구매 가능합니다.`);
-          return;
-        }
-      } else {
-        // unknown multiple rule -> inform user and allow (or block if you prefer)
-        Alert.alert('구매 규칙 안내', '판매자가 복수 구매 제한을 설정했습니다. 자세한 규칙을 확인하세요.');
-      }
-    }
+    const { min, max, isMultipleLimit, multiple } = getTotalRule();
+    if (totalCount < min) return;
+    if (Number.isFinite(max) && totalCount > max) return;
+    if (isMultipleLimit && (totalCount % multiple) !== 0) return;
 
     const skusForPayload = resolveSkusForNavigationFromCategories();
     navigation.navigate('/product/pay', {
       prod_no: params?.prod_no ?? prod_no,
       prod_name: pkgData?.prod_name ?? params?.prod_name,
-      pkg_no: params?.pkg_no ?? pkg_no,
+      pkg_no: params.pkg_no ?? pkg_no,
       selected_date: selectedDate,
       categories: categories.map(c => ({ id: c.id, label: c.label, qty: c.qty, unit: c.unit, ageLabel: c.ageLabel, subLabel: c.subLabel })),
       skus: skusForPayload.map(s => ({ sku_id: s.sku_id, qty: s.qty, price: s.price })),
@@ -332,9 +314,10 @@ function ProductPeople() {
       selectedSku: incomingSelectedSku ?? null,
       selected_time: params?.selected_time ?? null,
     });
-
-    console.log(basisSkus);
   };
+
+  const { isMultipleLimit, multiple } = getTotalRule();
+  const violatesMultiple = isMultipleLimit && ((totalCount % multiple) !== 0);
 
   if (loading) {
     return (
@@ -407,7 +390,14 @@ function ProductPeople() {
         </View>
 
         <View style={{ padding: 24 }}>
-          <Button type="primary" style="fill" display="block" size="large" disabled={false} onPress={onNext}>
+          <Button
+            type="primary"
+            style="fill"
+            display="block"
+            size="large"
+            disabled={violatesMultiple}
+            onPress={onNext}
+          >
             다음으로
           </Button>
         </View>
