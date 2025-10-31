@@ -13,6 +13,15 @@ export const Route = createRoute('/product/people', {
 
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 
+/**
+ * ProductPeople (simplified, self-contained)
+ * - Uses incoming pkgData/baseSkus from params when available; avoids refetch if pkgData present.
+ * - UI basis: strictly incomingBaseSkus if provided; otherwise pkgData.item[0].skus.
+ * - If basisSkus contains exactly one SKU => show a single category derived from that SKU.
+ * - Restores and enforces unit_quantity_rule (min/max/is_multiple_limit) from pkgData.item[0].unit_quantity_rule when present.
+ * - Provides client-side validation before navigating to payment.
+ */
+
 function ProductPeople() {
   const navigation = useNavigation();
   const params = Route.useParams();
@@ -20,13 +29,14 @@ function ProductPeople() {
   // incoming navigation params
   const incomingPkgData = params?.pkgData ?? null;
   const incomingBaseSkus = Array.isArray(params?.baseSkus) ? params.baseSkus : (incomingPkgData?.item?.[0]?.skus ?? []);
-  const incomingSelectedSku = params?.selectedSku ?? null; // we still forward it later, but DO NOT use it as UI basis
+  const incomingSelectedSku = params?.selectedSku ?? null; // forwarded but NOT used as UI basis per user's request
 
   const { prod_no, pkg_no, s_date, setSDate, setEDate } = useReservationStore();
 
   const [pkgData, setPkgData] = useState<any | null>(incomingPkgData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [quantityRule, setQuantityRule] = useState<any | null>(null);
 
   useEffect(() => {
     if (params?.selected_date && !s_date) {
@@ -36,9 +46,15 @@ function ProductPeople() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.selected_date]);
 
-  // If pkgData not provided by navigation, fetch it (minimal)
+  // If pkgData not provided, fetch minimal package data
   useEffect(() => {
-    if (pkgData) return;
+    if (pkgData) {
+      // restore quantity rule if present
+      const firstItem = pkgData?.item?.[0] ?? null;
+      setQuantityRule(firstItem?.unit_quantity_rule ?? pkgData?.unit_quantity_rule ?? null);
+      return;
+    }
+
     const prod = prod_no ?? params?.prod_no;
     const pkg = pkg_no ?? params?.pkg_no;
     if (!prod || !pkg) {
@@ -55,7 +71,10 @@ function ProductPeople() {
       state: "KR",
     }).then(res => {
       if (!mounted) return;
-      setPkgData(res.data ?? null);
+      const data = res.data ?? {};
+      setPkgData(data);
+      const firstItem = data?.item?.[0] ?? null;
+      setQuantityRule(firstItem?.unit_quantity_rule ?? data?.unit_quantity_rule ?? null);
     }).catch(e => {
       if (!mounted) return;
       console.error('[ProductPeople] fetch err', e);
@@ -70,14 +89,14 @@ function ProductPeople() {
 
   const selectedDate = params?.selected_date ?? s_date ?? null;
 
-  // Basis SKUs: STRICTLY use incomingBaseSkus. If empty, fallback to pkgData.item[0].skus
+  // basisSkus: strictly use incomingBaseSkus if present; otherwise fallback to pkgData.item[0].skus
   const basisSkus = useMemo(() => {
     if (Array.isArray(incomingBaseSkus) && incomingBaseSkus.length > 0) return incomingBaseSkus;
     const itemSkus = pkgData?.item?.[0]?.skus;
     return Array.isArray(itemSkus) ? itemSkus : [];
   }, [incomingBaseSkus, pkgData]);
 
-  // small helper: derive ticket label from sku.spec
+  // small helpers
   const deriveTicketLabelFromSku = (sku: any) => {
     try {
       if (!sku?.spec || typeof sku.spec !== 'object') return '';
@@ -95,7 +114,6 @@ function ProductPeople() {
     }
   };
 
-  // compute unit for a sku on selectedDate, fallback to sku prices or item-level minimums
   const unitForSku = (sku: any) => {
     const item = pkgData?.item?.[0] ?? null;
     const cal = sku?.calendar_detail ?? sku?.calendar ?? item?.calendar_detail ?? pkgData?.calendar_detail_merged ?? pkgData?.calendar_detail ?? null;
@@ -104,19 +122,23 @@ function ProductPeople() {
     if (low !== undefined) return low;
     const skuNum = safeNum(sku?.b2b_price ?? sku?.b2c_price ?? sku?.official_price ?? sku?.filled_price);
     if (skuNum !== undefined) return skuNum;
-    // final fallback: item-level min price
     return safeNum(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0;
   };
 
-  // Build categories (very simplified)
-  const categories = useMemo(() => {
+  // build categories simplified
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
     const item = pkgData?.item?.[0] ?? null;
-    const specs = Array.isArray(item?.specs) ? item.specs : [];
     const skus = basisSkus ?? [];
+    const specs = Array.isArray(item?.specs) ? item.specs : [];
 
-    if (!item || skus.length === 0) return [];
+    if (!item || !Array.isArray(skus) || skus.length === 0) {
+      setCategories([]);
+      return;
+    }
 
-    // If basisSkus is a single SKU, present single card for that SKU
+    // single-SKU: produce exactly one card based on that SKU
     if (skus.length === 1) {
       const sku = skus[0];
       const label = deriveTicketLabelFromSku(sku) || sku.spec_desc || '티켓';
@@ -137,7 +159,7 @@ function ProductPeople() {
       }
       const unit = unitForSku(sku) ?? 0;
       const qtyDefault = Number(params?.adult ?? 1) || 1;
-      return [{
+      setCategories([{
         id: sku.sku_id ?? sku.id ?? label,
         label,
         ageLabel,
@@ -145,21 +167,22 @@ function ProductPeople() {
         skus: [sku],
         unit,
         qty: qtyDefault,
-      }];
+      }]);
+      return;
     }
 
-    // Otherwise: try to use ticket spec items if present to produce categories (using only basisSkus)
-    const ticketSpec = specs.find(s => (s?.spec_title ?? '').toString().toLowerCase().includes('티켓')) ?? specs[0];
+    // multi-SKU: prefer ticket spec items if present
     const mapped: any[] = [];
-
+    const ticketSpec = specs.find(s => (s?.spec_title ?? '').toString().toLowerCase().includes('티켓')) ?? specs[0];
     if (ticketSpec && Array.isArray(ticketSpec.spec_items)) {
       for (const si of ticketSpec.spec_items) {
         const oid = si?.spec_item_oid ?? si?.spec_item_id ?? String(si?.name ?? '');
         const label = si?.name ?? si?.spec_item_title ?? oid;
-        // candidates from basisSkus that reference this spec_item_oid in specs_ref
-        const candidates = skus.filter(sku => {
+        const candidates = skus.filter((sku: any) => {
           if (!Array.isArray(sku?.specs_ref)) return false;
-          return sku.specs_ref.some((r: any) => String(r.spec_item_id) === String(oid) || String(r.spec_value_id) === String(oid));
+          return sku.specs_ref.some((r: any) =>
+            String(r.spec_item_id) === String(oid) || String(r.spec_value_id) === String(oid)
+          );
         });
         if (!candidates.length) continue;
         const unit = Math.min(...candidates.map(unitForSku));
@@ -170,7 +193,7 @@ function ProductPeople() {
           if (min != null) return `(만 ${min}세 이상)`;
           if (max != null) return `(만 ${max}세 미만)`;
           return '';
-        })() : (candidates[0]?.spec_desc ? candidates[0].spec_desc : '');
+        })() : (candidates[0]?.spec_desc ?? '');
         mapped.push({
           id: oid,
           label,
@@ -183,15 +206,15 @@ function ProductPeople() {
       }
     }
 
-    // If mapped empty, group by derived ticket label from basisSkus
+    // fallback grouping by derived ticket label
     if (mapped.length === 0) {
-      const grouped = new Map<string, any[]>();
+      const groups = new Map<string, any[]>();
       for (const sku of skus) {
         const label = deriveTicketLabelFromSku(sku) || sku.spec_desc || sku.sku_id || '기타';
-        if (!grouped.has(label)) grouped.set(label, []);
-        grouped.get(label)!.push(sku);
+        if (!groups.has(label)) groups.set(label, []);
+        groups.get(label)!.push(sku);
       }
-      for (const [label, candidates] of grouped.entries()) {
+      for (const [label, candidates] of groups.entries()) {
         const unit = Math.min(...candidates.map(unitForSku));
         mapped.push({
           id: label,
@@ -205,38 +228,96 @@ function ProductPeople() {
       }
     }
 
-    return mapped;
-  }, [pkgData, basisSkus, selectedDate, params?.adult, params?.child, incomingPkgData]);
+    setCategories(mapped);
+    // deliberately depend on basisSkus and selectedDate and pkgData
+  }, [pkgData, basisSkus, selectedDate, params?.adult, params?.child]);
 
-  // totals and validation
+  // totals & validation helpers
   const total = useMemo(() => categories.reduce((acc, c) => acc + (Number(c.unit || 0) * Number(c.qty || 0)), 0), [categories]);
   const totalCount = useMemo(() => categories.reduce((acc, c) => acc + (Number(c.qty || 0)), 0), [categories]);
 
-  const canProceed = categories.some(c => Number(c.qty || 0) > 0) && !!selectedDate && !loading && !error;
-
-  const setCategoryQty = (id: string, qty: number) => {
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, qty } : c));
+  const getTotalRule = () => {
+    const tr = quantityRule?.total_rule ?? {};
+    return {
+      min: Number(tr?.min_quantity ?? tr?.min ?? 1),
+      max: Number(tr?.max_quantity ?? tr?.max ?? Infinity),
+      isMultipleLimit: Boolean(tr?.is_multiple_limit ?? false),
+      rulesets: quantityRule?.ticket_rule?.rulesets ?? [],
+    };
   };
 
-  function resolveSkusForNavigationFromCategories() {
+  const setCategoryQty = (id: string, qty: number) => {
+    // client-side enforce min/max on each change using quantityRule.total_rule if available
+    setCategories(prev => {
+      const prevTotal = prev.reduce((s, p) => s + Number(p.qty || 0), 0);
+      const found = prev.find(p => p.id === id);
+      const old = found ? Number(found.qty || 0) : 0;
+      const nextTotal = prevTotal - old + Number(qty || 0);
+
+      const { max } = getTotalRule();
+      if (Number.isFinite(max) && nextTotal > max) {
+        Alert.alert('최대 수량 초과', `총 구매 수량은 최대 ${max}명까지 가능합니다.`);
+        return prev;
+      }
+      // apply
+      return prev.map(c => c.id === id ? { ...c, qty } : c);
+    });
+  };
+
+  const resolveSkusForNavigationFromCategories = () => {
     const result: Array<{ sku_id: any; qty: number; price: number; chosenSku?: any }> = [];
     for (const cat of categories) {
       const qty = Number(cat.qty || 0);
       if (qty <= 0) continue;
       const candidates: any[] = Array.isArray(cat.skus) ? cat.skus : [];
-      // pick cheapest candidate by unit price on selectedDate
       let chosen = candidates[0] ?? null;
       if (candidates.length > 0) {
         chosen = candidates.map(s => ({ s, u: unitForSku(s) })).sort((a, b) => (Number(a.u || 0) - Number(b.u || 0)))[0].s;
       }
       const unit = unitForSku(chosen) ?? Number(cat.unit || 0);
-      result.push({ sku_id: chosen?.sku_id ?? null, qty, price: Number(unit * qty), chosenSku: chosen });
+      result.push({ sku_id: chosen?.sku_id ?? null, qty, price: Number(unit), chosenSku: chosen });
     }
     return result;
-  }
+  };
 
   const onNext = () => {
-    if (!canProceed) return;
+    // validate totals with quantity rule before navigating
+    const { min, max, isMultipleLimit, rulesets } = getTotalRule();
+    if (totalCount < min) {
+      Alert.alert('최소 수량 미만', `총 최소 구매 수량은 ${min}명입니다.`);
+      return;
+    }
+    if (Number.isFinite(max) && totalCount > max) {
+      Alert.alert('최대 수량 초과', `총 최대 구매 수량은 ${max}명입니다.`);
+      return;
+    }
+    if (isMultipleLimit) {
+      // try to extract numeric multiple from rulesets (best-effort)
+      let multiple: number | null = null;
+      if (Array.isArray(rulesets)) {
+        for (const r of rulesets) {
+          const candidates = [r?.multiple, r?.multiple_of, r?.step, r?.quantity_multiple, r?.quantity_step, r?.value];
+          for (const c of candidates) {
+            const n = Number(c);
+            if (Number.isFinite(n) && n > 0 && Math.floor(n) === n) {
+              multiple = n;
+              break;
+            }
+          }
+          if (multiple) break;
+        }
+      }
+      if (multiple) {
+        if ((totalCount % multiple) !== 0) {
+          Alert.alert('수량 규칙 위반', `총 인원은 ${multiple}명 단위로만 구매 가능합니다.`);
+          return;
+        }
+      } else {
+        // unknown multiple rule -> inform user and allow (or block if you prefer)
+        Alert.alert('구매 규칙 안내', '판매자가 복수 구매 제한을 설정했습니다. 자세한 규칙을 확인하세요.');
+      }
+    }
+
     const skusForPayload = resolveSkusForNavigationFromCategories();
     navigation.navigate('/product/pay', {
       prod_no: params?.prod_no ?? prod_no,
@@ -246,11 +327,12 @@ function ProductPeople() {
       categories: categories.map(c => ({ id: c.id, label: c.label, qty: c.qty, unit: c.unit, ageLabel: c.ageLabel, subLabel: c.subLabel })),
       skus: skusForPayload.map(s => ({ sku_id: s.sku_id, qty: s.qty, price: s.price })),
       total: Number(total),
-      // forward the original context
       pkgData,
       baseSkus: basisSkus,
       selectedSku: incomingSelectedSku ?? null,
     });
+
+    console.log(basisSkus);
   };
 
   if (loading) {
@@ -271,7 +353,7 @@ function ProductPeople() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FixedBottomCTAProvider>
         <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
@@ -306,7 +388,17 @@ function ProductPeople() {
                 <Text style={{ color: colors.grey800, fontWeight: 'bold' }}>{formatPrice(Number((c.unit || 0) * (c.qty || 0)))}원</Text>
               </View>
             ))}
-            <View style={{ borderTopWidth: 1, borderColor: colors.grey100, marginTop: 12, paddingTop: 12, flexDirection: 'row', justifyContent: 'space-between' }}>
+
+            <View style={{
+              borderTopWidth: 1,
+              borderColor: colors.grey100,
+              marginTop: 12,
+              marginBottom: 12,
+              paddingTop: 12,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
               <Text style={{ color: colors.grey300, fontSize: 17, fontWeight: 'bold' }}>총 금액</Text>
               <Text style={{ color: colors.grey400, fontSize: 22, fontWeight: 'bold' }}>{formatPrice(Number(total))}원</Text>
             </View>
@@ -314,7 +406,7 @@ function ProductPeople() {
         </View>
 
         <View style={{ padding: 24 }}>
-          <Button type="primary" style="fill" display="block" size="large" disabled={!canProceed} onPress={onNext}>
+          <Button type="primary" style="fill" display="block" size="large" disabled={false} onPress={onNext}>
             다음으로
           </Button>
         </View>

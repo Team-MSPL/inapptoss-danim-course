@@ -438,6 +438,7 @@ function ProductPay() {
     // Build final payload
     const payload: Record<string, any> = {
       guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
+      pay_type: "01",
       partner_order_no: "1",
       prod_no: params?.prod_no ?? pdt?.prod_no ?? undefined,
       pkg_no: params?.pkg_no ?? undefined,
