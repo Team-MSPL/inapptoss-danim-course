@@ -54,6 +54,7 @@ function ProductGoodProduct() {
         if (resData?.result === '02' || resData?.result_code === '02') {
           Alert.alert('지원 불가', '해당 상품은 현재 어플리케이션에서 지원하지 않는 상품입니다.');
           setLoading(false);
+          navigation.goBack();
           return;
         }
 
@@ -148,16 +149,19 @@ function ProductGoodProduct() {
       // If package-level API returns result "02" -> package not supported in app
       if (data?.result === '02' || data?.result_code === '02') {
         Alert.alert('지원 불가', '해당 상품은 현재 어플리케이션에서 지원하지 않는 상품입니다.');
+        navigation.goBack();
         return;
       }
 
       if (data?.result === '03' || data?.result_code === '03') {
         Alert.alert('알림', '해당 여행 상품은 현재 판매가 종료되었습니다.');
+        navigation.goBack();
         return;
       }
 
       if (!Array.isArray(data?.item) || data.item.length === 0) {
         Alert.alert('알림', '해당 패키지의 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+        navigation.goBack();
         return;
       }
 
