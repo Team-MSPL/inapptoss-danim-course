@@ -28,6 +28,15 @@ function ProductSelectSpec() {
     return { ...pre };
   });
 
+  // Helper: find the ticket spec with EXACT title "티켓 종류" (case-insensitive, trimmed)
+  const ticketSpec = useMemo(() => {
+    return specs.find(s => {
+      if (!s?.spec_title) return false;
+      const title = String(s.spec_title).trim().toLowerCase();
+      return title === '티켓 종류';
+    }) ?? null;
+  }, [specs]);
+
   // Compute matched SKU index for current full selection (same logic as before)
   const matchedSkuIndex = useMemo(() => {
     const selectedEntries = Object.entries(selectedMap);
@@ -35,7 +44,7 @@ function ProductSelectSpec() {
 
     for (let i = 0; i < skus.length; i++) {
       const sku = skus[i];
-      const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? sku?.specs_ref ?? [];
+      const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? [];
       const ok = selectedEntries.every(([spec_oid, spec_item_oid]) => {
         return refs.some(
           r =>
@@ -49,7 +58,7 @@ function ProductSelectSpec() {
   }, [selectedMap, skus]);
 
   useEffect(() => {
-    // no-op effect preserved in case of side-effect debug needed
+    // kept for potential debug or side-effects
   }, [selectedMap, matchedSkuIndex]);
 
   const toggleSelect = (spec_oid: string, spec_item_oid: string) => {
@@ -64,13 +73,101 @@ function ProductSelectSpec() {
     });
   };
 
+  // Helper: find SKU index for a given selection map
+  const findSkuIndexForSelection = (selection: Record<string, string>) => {
+    const entries = Object.entries(selection);
+    if (entries.length === 0) return null;
+    for (let i = 0; i < skus.length; i++) {
+      const sku = skus[i];
+      const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? [];
+      const ok = entries.every(([spec_oid, spec_item_oid]) =>
+        refs.some(r => String(r.spec_item_id) === String(spec_oid) && String(r.spec_value_id) === String(spec_item_oid))
+      );
+      if (ok) return i;
+    }
+    return null;
+  };
+
   const onConfirm = () => {
-    const missing = specs.filter(s => !selectedMap[s.spec_oid]);
+    // 1) Build required-spec list EXCLUDING ticketSpec (if ticketSpec exists, user shouldn't pick it)
+    const requiredSpecs = specs.filter(s => {
+      if (!s?.spec_oid) return false;
+      // exclude ticketSpec from required set
+      if (ticketSpec && s.spec_oid === ticketSpec.spec_oid) return false;
+      return true;
+    });
+
+    // 2) Check missing among requiredSpecs only
+    const missing = requiredSpecs.filter(s => !selectedMap[s.spec_oid]);
     if (missing.length > 0) {
       Alert.alert('옵션 선택', `${missing.map(s => s.spec_title).join(', ')} 항목을 선택해 주세요.`);
       return;
     }
 
+    // 3) If ticketSpec exists, auto-expand ticket items for the chosen other specs:
+    if (ticketSpec) {
+      const combos: Array<{ selectedSpecs: Record<string, string>; matchedSkuIndex: number; matchedSku: any }> = [];
+
+      for (const ticketItem of ticketSpec.spec_items) {
+        const hypot: Record<string, string> = { ...(selectedMap ?? {}) , [ticketSpec.spec_oid]: ticketItem.spec_item_oid };
+
+        const skuIndex = findSkuIndexForSelection(hypot);
+        if (skuIndex != null) {
+          combos.push({
+            selectedSpecs: hypot,
+            matchedSkuIndex: skuIndex,
+            matchedSku: skus[skuIndex],
+          });
+        }
+      }
+
+      if (combos.length === 0) {
+        Alert.alert('조합 없음', '선택하신 옵션 조합에 해당하는 상품이 없습니다. 다른 조합을 선택해주세요.');
+        return;
+      }
+
+      // If the only selectable spec(s) were ticketSpec (i.e. requiredSpecs.length === 0),
+      // auto-navigate immediately because user had nothing to pick here.
+      if (requiredSpecs.length === 0) {
+        navigation.navigate('/product/reservation', {
+          prod_no: params?.prod_no ?? pkgData?.prod_no,
+          pkg_no: params?.pkg_no ?? pkgData?.pkg?.[0]?.pkg_no,
+          pkgData,
+          date_setting: params?.date_setting ?? null,
+          max_date: params?.max_date ?? null,
+          min_date: params?.min_date ?? null,
+          has_ticket_combinations: true,
+          ticket_combinations: combos.map(c => ({
+            selectedSpecs: c.selectedSpecs,
+            matchedSkuIndex: c.matchedSkuIndex,
+            matchedSku: c.matchedSku,
+          })),
+          item_unit: params?.item_unit ?? null,
+        });
+        return;
+      }
+
+      // Otherwise navigate with combos
+      navigation.navigate('/product/reservation', {
+        prod_no: params?.prod_no ?? pkgData?.prod_no,
+        pkg_no: params?.pkg_no ?? pkgData?.pkg?.[0]?.pkg_no,
+        pkgData,
+        date_setting: params?.date_setting ?? null,
+        max_date: params?.max_date ?? null,
+        min_date: params?.min_date ?? null,
+        has_ticket_combinations: true,
+        ticket_combinations: combos.map(c => ({
+          selectedSpecs: c.selectedSpecs,
+          matchedSkuIndex: c.matchedSkuIndex,
+          matchedSku: c.matchedSku,
+        })),
+        item_unit: params?.item_unit ?? null,
+      });
+
+      return;
+    }
+
+    // 4) Default (no ticketSpec): require all specs; matchedSkuIndex must exist
     if (matchedSkuIndex == null) {
       Alert.alert('조합 없음', '선택하신 옵션 조합에 해당하는 상품이 없습니다. 다른 조합을 선택해주세요.');
       return;
@@ -83,37 +180,27 @@ function ProductSelectSpec() {
       pkg_no: params?.pkg_no ?? pkgData?.pkg?.[0]?.pkg_no,
       pkgData,
       date_setting: params?.date_setting ?? null,
-      max_date: params.max_date ?? null,
-      min_date: params.min_date ?? null,
+      max_date: params?.max_date ?? null,
+      min_date: params?.min_date ?? null,
+      has_ticket_combinations: false,
       selectedSpecs: selectedMap,
       selectedSkuIndex: matchedSkuIndex,
       selectedSku: sku,
+      item_unit: params?.item_unit ?? null,
     });
   };
 
   /**
    * isOptionEnabled
-   * - spec_oid, spec_item_oid: candidate option to test
-   * - We simulate selecting this option in combination with the already selected other specs
-   * - The option is enabled if there's at least one SKU whose specs_ref match ALL selected entries
-   *
-   * Notes:
-   * - If the option is currently selected (exact match), it should always be enabled (so user can unselect).
-   * - We do not mutate actual selectedMap here.
    */
   const isOptionEnabled = (spec_oid: string, spec_item_oid: string) => {
-    // if this option is currently selected, allow it (so user can toggle off)
     if (selectedMap[spec_oid] === spec_item_oid) return true;
 
-    // build a hypothetical selection map: copy current selections, set this spec -> candidate value
-    const hypothetical: Record<string, string> = { ...(selectedMap ?? {}) , [spec_oid]: spec_item_oid };
-
+    const hypothetical: Record<string, string> = { ...(selectedMap ?? {}), [spec_oid]: spec_item_oid };
     const entries = Object.entries(hypothetical);
 
-    // there's at least one sku that satisfies all selected pairs
     return skus.some((sku: any) => {
-      const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? sku?.specs_ref ?? [];
-      // for each selected pair, the sku must have a ref matching spec_item_id === spec_oid && spec_value_id === spec_item_oid
+      const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? [];
       return entries.every(([soid, soidVal]) =>
         refs.some(r => String(r.spec_item_id) === String(soid) && String(r.spec_value_id) === String(soidVal))
       );
@@ -122,6 +209,12 @@ function ProductSelectSpec() {
 
   const renderSpecGroup = (spec: Spec) => {
     const selectedValue = selectedMap[spec.spec_oid];
+
+    // Hide the ticketSpec entirely from UI (do not render)
+    if (ticketSpec && spec.spec_oid === ticketSpec.spec_oid) {
+      return null;
+    }
+
     return (
       <View key={spec.spec_oid} style={{ marginBottom: 20 }}>
         <Text typography="t5" fontWeight="bold" style={{ marginBottom: 12 }}>{spec.spec_title}</Text>
@@ -130,7 +223,6 @@ function ProductSelectSpec() {
             const isSelected = selectedValue === item.spec_item_oid;
             const enabled = isOptionEnabled(spec.spec_oid, item.spec_item_oid);
 
-            // visual styles
             const baseStyle = styles.optionBase;
             const selectedStyle = isSelected ? styles.optionSelected : null;
             const disabledStyle = !enabled ? styles.optionDisabled : null;
@@ -139,7 +231,7 @@ function ProductSelectSpec() {
               <TouchableOpacity
                 key={item.spec_item_oid}
                 onPress={() => {
-                  if (!enabled) return; // no-op when disabled
+                  if (!enabled) return;
                   toggleSelect(spec.spec_oid, item.spec_item_oid);
                 }}
                 activeOpacity={enabled ? 0.8 : 1}
@@ -164,7 +256,7 @@ function ProductSelectSpec() {
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <FixedBottomCTAProvider>
-        <View style={{ padding: 24 }}>
+        <ScrollView contentContainerStyle={{ padding: 24 }}>
           <Text typography="t3" fontWeight="bold" style={{ marginBottom: 20 }}>
             옵션 선택
           </Text>
@@ -174,7 +266,7 @@ function ProductSelectSpec() {
           ) : (
             specs.map(renderSpecGroup)
           )}
-        </View>
+        </ScrollView>
         <FixedBottomCTA onPress={onConfirm}>
           다음
         </FixedBottomCTA>

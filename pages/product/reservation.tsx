@@ -275,9 +275,9 @@ function ProductReservation() {
     return [];
   }
 
-  // get price info for a date (display/original/discount)
-  function getPriceForDate(dateStr: string, time?: string | null) {
-    const cal = calendarData?.[dateStr] ?? null;
+  // get price info from a raw calendar entry (display/original/discount)
+  function getPriceFromEntry(entry: any, time?: string | null) {
+    const cal = entry ?? null;
 
     let display;
     if (time && cal) {
@@ -302,6 +302,41 @@ function ProductReservation() {
     const original = safeNum(cal?.original_price ?? cal?.b2c_price ?? calInfo?.b2c_price);
     const discountAmount = (original !== undefined && display !== undefined && original > display) ? Math.floor(original - display) : 0;
     return { display, original, discountAmount };
+  }
+
+  // Helper: choose calendar entry for a date prioritizing:
+  // 1) resolvedSelectedSku (if provided)
+  // 2) first SKU in pkgData.item[0].skus (if exists) <- this implements the requested preference
+  // 3) global calendarData (merged)
+  function getCalendarEntryForDateBySkuPreference(dateStr: string) {
+    if (!dateStr) return null;
+
+    // 1) resolvedSelectedSku
+    if (resolvedSelectedSku) {
+      const cal = resolvedSelectedSku.calendar_detail ?? resolvedSelectedSku.calendar ?? null;
+      return cal ? cal[dateStr] : null;
+    }
+
+    // 2) first SKU in pkgData.item[0].skus
+    const firstSku = pkgData?.item?.[0]?.skus?.[0] ?? null;
+    if (firstSku) {
+      const cal = firstSku.calendar_detail ?? firstSku.calendar ?? null;
+      if (cal && cal[dateStr] !== undefined) return cal[dateStr];
+    }
+
+    // 3) global merged calendarData
+    return calendarData?.[dateStr] ?? null;
+  }
+
+  // get price info for a date using SKU-preferred calendar entry
+  function getPriceForDatePreferredBySku(dateStr: string, time?: string | null) {
+    const entry = getCalendarEntryForDateBySkuPreference(dateStr);
+    return getPriceFromEntry(entry, time);
+  }
+
+  // get price info for a date (display/original/discount) - kept for compatibility but prefer getPriceForDatePreferredBySku
+  function getPriceForDate(dateStr: string, time?: string | null) {
+    return getPriceForDatePreferredBySku(dateStr, time);
   }
 
   // Helper: read date_setting and min/max constraints from params
@@ -457,8 +492,8 @@ function ProductReservation() {
       setSDate(s);
       setEDate(e);
       // compute priceInfo maybe based on start date (use s for single-day price) - reuse existing logic using selectedTime if any
-      const priceInfo = getPriceForDate(s, selectedTime ?? null);
-      const calEntry = calendarData?.[s];
+      const priceInfo = getPriceForDatePreferredBySku(s, selectedTime ?? null);
+      const calEntry = getCalendarEntryForDateBySkuPreference(s);
       const filledSource = calEntry?.filled_price_source;
       const fallbackDisplay = safeNum(params?.display_price);
       const outgoingDisplay = (filledSource === 'display_price' && fallbackDisplay !== undefined)
@@ -485,15 +520,17 @@ function ProductReservation() {
         selectedSku: resolvedSelectedSku ?? null,
         s_date: s,
         e_date: e,
+        item_unit: params?.item_unit ?? null,
+        has_ticket_combinations: params?.has_ticket_combinations ?? false,
       });
       return;
     }
 
-    // default single-day flow (unchanged)
+    // default single-day flow (unchanged but prefer first-sku pricing when multiple skus exist)
     if (!selected) return;
-    const priceInfo = getPriceForDate(selected, selectedTime ?? null);
 
-    const calEntry = calendarData?.[selected];
+    const priceInfo = getPriceForDatePreferredBySku(selected, selectedTime ?? null);
+    const calEntry = getCalendarEntryForDateBySkuPreference(selected);
     const filledSource = calEntry?.filled_price_source;
     const fallbackDisplay = safeNum(params?.display_price);
 
@@ -522,6 +559,8 @@ function ProductReservation() {
       pkgData: pkgData ?? null,
       baseSkus,
       selectedSku: resolvedSelectedSku ?? null,
+      item_unit: params?.item_unit ?? null,
+      has_ticket_combinations: params?.has_ticket_combinations ?? false,
     });
   };
 

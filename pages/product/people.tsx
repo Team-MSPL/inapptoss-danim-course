@@ -14,11 +14,12 @@ export const Route = createRoute('/product/people', {
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 
 /**
- * ProductPeople (simplified)
- * - Uses incoming pkgData/baseSkus from params when available; avoids refetch if pkgData present.
- * - UI basis: strictly incomingBaseSkus if provided; otherwise pkgData.item[0].skus.
- * - Restores unit_quantity_rule (min/max/is_multiple_limit) from pkgData.item[0].unit_quantity_rule when present.
- * - If isMultipleLimit is true and totalCount % multiple !== 0, the "다음으로" button is disabled.
+ * ProductPeople
+ * - Ensures unit price calculation uses the selected date (params.selected_date or store s_date)
+ * - When multiple SKUs are present for a category, prefer the first SKU's calendar entry for the selected date
+ *   (so price calculation matches ProductReservation's preference).
+ * - If no exact "티켓 종류" exists and params.item_unit is provided, label uses params.item_unit but unit (price)
+ *   is derived from SKUs (first-SKU/date-based) to avoid changing totals unexpectedly.
  */
 
 function ProductPeople() {
@@ -37,6 +38,7 @@ function ProductPeople() {
   const [quantityRule, setQuantityRule] = useState<any | null>(null);
 
   useEffect(() => {
+    // If reservation store doesn't yet have selected_date, use incoming param to set it
     if (params?.selected_date && !s_date) {
       setSDate(params.selected_date);
       setEDate(params.selected_date);
@@ -83,8 +85,10 @@ function ProductPeople() {
     return () => { mounted = false; };
   }, [pkgData, prod_no, pkg_no, params?.prod_no, params?.pkg_no]);
 
+  // selected date: prefer incoming param, else store s_date
   const selectedDate = params?.selected_date ?? s_date ?? null;
 
+  // base skus: either passed from previous screen or pkgData.item[0].skus
   const basisSkus = useMemo(() => {
     if (Array.isArray(incomingBaseSkus) && incomingBaseSkus.length > 0) return incomingBaseSkus;
     const itemSkus = pkgData?.item?.[0]?.skus;
@@ -108,14 +112,21 @@ function ProductPeople() {
     }
   };
 
-  const unitForSku = (sku: any) => {
+  // Prefer price for a SKU for the given date (if SKU has date-specific calendar/time prices use them)
+  const unitForSkuOnDate = (sku: any, dateStr: string | null) => {
+    if (!sku) return undefined;
     const item = pkgData?.item?.[0] ?? null;
+    // SKU-level calendar first
     const cal = sku?.calendar_detail ?? sku?.calendar ?? item?.calendar_detail ?? pkgData?.calendar_detail_merged ?? pkgData?.calendar_detail ?? null;
-    const entry = cal?.[selectedDate];
-    const low = lowestPriceFromEntry(entry);
-    if (low !== undefined) return low;
-    const skuNum = safeNum(sku?.b2b_price ?? sku?.b2c_price ?? sku?.official_price ?? sku?.filled_price);
+    if (dateStr && cal && cal[dateStr]) {
+      const entry = cal[dateStr];
+      const low = lowestPriceFromEntry(entry);
+      if (low !== undefined) return low;
+    }
+    // if no date-specific price, try SKU b2b/b2c fields
+    const skuNum = safeNum(sku?.b2b_price ?? sku?.b2c_price ?? sku?.price ?? sku?.official_price ?? sku?.filled_price);
     if (skuNum !== undefined) return skuNum;
+    // fallback to item-level min price
     return safeNum(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0;
   };
 
@@ -159,6 +170,41 @@ function ProductPeople() {
 
     const totalRule = getTotalRule();
 
+    // Detect exact "티켓 종류" spec (case-insensitive trimmed)
+    const exactTicketSpec = specs.find(s => {
+      if (!s?.spec_title) return false;
+      return String(s.spec_title).trim().toLowerCase() === '티켓 종류';
+    }) ?? null;
+
+    // If there's no exact "티켓 종류" and params.item_unit is provided -> single Counter using item_unit label,
+    // but derive unit(price) from SKUs using the selectedDate preference (prefer first SKU for date)
+    if (!exactTicketSpec && params?.item_unit != null) {
+      const provided = params.item_unit;
+      const qtyDefault = Number(params?.adult ?? 1) || 1;
+
+      // derive numeric unit (price) from SKUs using date preference: prefer first SKU's price for selectedDate
+      // if basisSkus contains items, prefer the first element in basisSkus array (this matches Reservation->People behavior)
+      let numericUnitFromSkus = 0;
+      if (Array.isArray(skus) && skus.length > 0) {
+        // prefer first SKU
+        numericUnitFromSkus = Number(unitForSkuOnDate(skus[0], selectedDate) ?? 0);
+      }
+
+      const numericUnit = Number.isFinite(Number(numericUnitFromSkus)) ? Number(numericUnitFromSkus) : 0;
+
+      setCategories([{
+        id: 'item_unit_single',
+        label: String(provided),
+        ageLabel: '',
+        subLabel: [],
+        skus: skus,
+        unit: numericUnit,
+        qty: qtyDefault,
+      }]);
+      return;
+    }
+
+    // If there's exactly 1 sku — original behavior
     if (skus.length === 1) {
       const sku = skus[0];
       const label = deriveTicketLabelFromSku(sku) || sku.spec_desc || '티켓';
@@ -177,7 +223,8 @@ function ProductPeople() {
           if (v) subLabel.push(String(v));
         }
       }
-      const unit = unitForSku(sku) ?? 0;
+      // Use SKU price for the selected date if available
+      const unit = unitForSkuOnDate(sku, selectedDate) ?? 0;
       const qtyDefault = totalRule.isMultipleLimit
         ? Math.max(totalRule.multiple, Number(params?.adult ?? 1) || 1)
         : (Number(params?.adult ?? 1) || 1);
@@ -193,10 +240,11 @@ function ProductPeople() {
       return;
     }
 
-    const mapped: any[] = [];
-    const ticketSpec = specs.find(s => (s?.spec_title ?? '').toString().toLowerCase().includes('티켓')) ?? specs[0];
-    if (ticketSpec && Array.isArray(ticketSpec.spec_items)) {
-      for (const si of ticketSpec.spec_items) {
+    // If exactTicketSpec exists, group by its items (one category per ticket item).
+    // For each candidate group, prefer the first-SKU's date price when multiple candidate SKUs exist.
+    if (exactTicketSpec && Array.isArray(exactTicketSpec.spec_items)) {
+      const mapped: any[] = [];
+      for (const si of exactTicketSpec.spec_items) {
         const oid = si?.spec_item_oid ?? si?.spec_item_id ?? String(si?.name ?? '');
         const label = si?.name ?? si?.spec_item_title ?? oid;
         const candidates = skus.filter((sku: any) => {
@@ -206,7 +254,11 @@ function ProductPeople() {
           );
         });
         if (!candidates.length) continue;
-        const unit = Math.min(...candidates.map(unitForSku));
+
+        // Prefer the first candidate SKU's price for the selectedDate
+        const firstCandidate = candidates[0];
+        const unit = Number(unitForSkuOnDate(firstCandidate, selectedDate) ?? Math.min(...candidates.map(s => unitForSkuOnDate(s, selectedDate) ?? 0)));
+
         const ageLabel = si?.rule ? (() => {
           const ar = si.rule?.age_rule ?? si.rule;
           const min = ar?.min ?? ar?.min_age; const max = ar?.max ?? ar?.max_age;
@@ -227,33 +279,37 @@ function ProductPeople() {
           qty: qtyInit,
         });
       }
-    }
 
-    if (mapped.length === 0) {
-      const groups = new Map<string, any[]>();
-      for (const sku of skus) {
-        const label = deriveTicketLabelFromSku(sku) || sku.spec_desc || sku.sku_id || '기타';
-        if (!groups.has(label)) groups.set(label, []);
-        groups.get(label)!.push(sku);
-      }
-      for (const [label, candidates] of groups.entries()) {
-        const unit = Math.min(...candidates.map(unitForSku));
-        const rawQty = label.toLowerCase().includes('성인') ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0);
-        const qtyInit = totalRule.isMultipleLimit ? Math.max(totalRule.multiple, rawQty) : Math.max(0, Math.floor(rawQty));
-        mapped.push({
-          id: label,
-          label,
-          ageLabel: candidates[0]?.spec_desc ?? '',
-          subLabel: (candidates[0]?.spec && typeof candidates[0].spec === 'object') ? Object.entries(candidates[0].spec).filter(([k]) => k !== '티켓 종류').map(([_, v]) => String(v)) : [],
-          skus: candidates,
-          unit: unit ?? (toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0),
-          qty: qtyInit,
-        });
+      if (mapped.length > 0) {
+        setCategories(mapped);
+        return;
       }
     }
 
-    setCategories(mapped);
-  }, [pkgData, basisSkus, selectedDate, params?.adult, params?.child, quantityRule]);
+    // Fallback grouping by derived label; when choosing unit price use first SKU's date price among candidates
+    const groups = new Map<string, any[]>();
+    for (const sku of skus) {
+      const label = deriveTicketLabelFromSku(sku) || sku.spec_desc || sku.sku_id || '기타';
+      if (!groups.has(label)) groups.set(label, []);
+      groups.get(label)!.push(sku);
+    }
+    const fallback: any[] = [];
+    for (const [label, candidates] of groups.entries()) {
+      const unit = Number(unitForSkuOnDate(candidates[0], selectedDate) ?? Math.min(...candidates.map(s => unitForSkuOnDate(s, selectedDate) ?? 0)));
+      const rawQty = label.toLowerCase().includes('성인') ? (Number(params?.adult ?? 1) || 1) : (Number(params?.child ?? 0) || 0);
+      const qtyInit = totalRule.isMultipleLimit ? Math.max(totalRule.multiple, rawQty) : Math.max(0, Math.floor(rawQty));
+      fallback.push({
+        id: label,
+        label,
+        ageLabel: candidates[0]?.spec_desc ?? '',
+        subLabel: (candidates[0]?.spec && typeof candidates[0].spec === 'object') ? Object.entries(candidates[0].spec).filter(([k]) => k !== '티켓 종류').map(([_, v]) => String(v)) : [],
+        skus: candidates,
+        unit: unit ?? (toNumber(item?.b2b_min_price ?? item?.b2c_min_price) ?? 0),
+        qty: qtyInit,
+      });
+    }
+    setCategories(fallback);
+  }, [pkgData, basisSkus, selectedDate, params?.adult, params?.child, quantityRule, params?.item_unit]);
 
   const total = useMemo(() => categories.reduce((acc, c) => acc + (Number(c.unit || 0) * Number(c.qty || 0)), 0), [categories]);
   const totalCount = useMemo(() => categories.reduce((acc, c) => acc + (Number(c.qty || 0)), 0), [categories]);
@@ -286,9 +342,10 @@ function ProductPeople() {
       const candidates: any[] = Array.isArray(cat.skus) ? cat.skus : [];
       let chosen = candidates[0] ?? null;
       if (candidates.length > 0) {
-        chosen = candidates.map(s => ({ s, u: unitForSku(s) })).sort((a, b) => (Number(a.u || 0) - Number(b.u || 0)))[0].s;
+        // choose the candidate with lowest unitForSkuOnDate (consistent with UI)
+        chosen = candidates.map(s => ({ s, u: unitForSkuOnDate(s, selectedDate) ?? 0 })).sort((a, b) => (Number(a.u || 0) - Number(b.u || 0)))[0].s;
       }
-      const unit = unitForSku(chosen) ?? Number(cat.unit || 0);
+      const unit = Number(unitForSkuOnDate(chosen, selectedDate) ?? Number(cat.unit || 0));
       result.push({ sku_id: chosen?.sku_id ?? null, qty, price: Number(unit), chosenSku: chosen });
     }
     return result;
