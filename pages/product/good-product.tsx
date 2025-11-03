@@ -10,67 +10,82 @@ import {useProductStore} from "../../zustand/useProductStore";
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
+const QUERY_PRODUCT_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`;
 
 export const Route = createRoute('/product/good-product', {
   validateParams: (params) => params,
   component: ProductGoodProduct,
 });
 
-
 function PlanLabel({ index, pkg_name }: { index: number, pkg_name: string }) {
-  const letter = String.fromCharCode(65 + index);
   return <Text numberOfLines={1} fontWeight="semibold" typography='t4' style={{ textAlign: 'left' }}>{`${pkg_name}`}</Text>;
 }
 
 function ProductGoodProduct() {
   const navigation = useNavigation();
-
   const params = Route.useParams();
+
   const [product, setProduct] = useState<any>(params.product ?? null);
   const [pkgList, setPkgList] = useState<any[]>([]);
   const [selectedPkgNo, setSelectedPkgNo] = useState<number|null>(null);
   const [loading, setLoading] = useState(false);
-
-  const [reservationLoading, setReservationLoading] = useState(false); // new: reservation API call loading
+  const [reservationLoading, setReservationLoading] = useState(false);
 
   const setPdt = useProductStore(state => state.setPdt);
-
-  const [imgIndex, setImgIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
     async function fetchProductDetail() {
       if (product && product.detail_loaded) return;
       setLoading(true);
       try {
-        const res = await axiosAuth.post(`${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`, {
+        const res = await axiosAuth.post(QUERY_PRODUCT_API, {
           prod_no: params.product?.prod_no ?? params.prod_no,
           locale: "kr",
           state: "KR",
         }, {
           headers: { "Content-Type": "application/json" }
         });
-        if (res.data && res.data.prod && res.data.pkg) {
-          setProduct({ ...params.product, ...res.data.prod, detail_loaded: true });
-          setPkgList(res.data.pkg);
 
-          const firstAvailable = (res.data.pkg.find((p: any) => !!p.sale_s_date && !!p.sale_e_date) ?? res.data.pkg[0]);
+        const resData = res?.data ?? {};
+
+        // New: If product-level API returns result "02" -> not supported in app
+        if (resData?.result === '02' || resData?.result_code === '02') {
+          Alert.alert('지원 불가', '해당 상품은 현재 어플리케이션에서 지원하지 않는 상품입니다.');
+          setLoading(false);
+          return;
+        }
+
+        if (resData && resData.prod && resData.pkg) {
+          const merged = { ...params.product, ...resData.prod, detail_loaded: true };
+          setProduct(merged);
+          setPkgList(resData.pkg);
+
+          const firstAvailable = (resData.pkg.find((p: any) => !!p.sale_s_date && !!p.sale_e_date) ?? resData.pkg[0]);
           setSelectedPkgNo(firstAvailable?.pkg_no ?? null);
 
-          try { setPdt({ ...params.product, ...res.data.prod, detail_loaded: true }); } catch (e) { /* ignore */ }
+          try { setPdt(merged); } catch (e) { /* ignore */ }
+        } else {
+          // if API returned but missing expected payload, show generic alert
+          console.warn('[ProductGoodProduct] QueryProduct unexpected response', resData);
         }
-      } catch (e) {
-        // 에러처리(필요시 Alert)
+      } catch (e: any) {
+        console.error('[ProductGoodProduct] QueryProduct error', e);
+        Alert.alert('오류', e?.message ?? '상품 정보를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     if (!product || !product.detail_loaded) fetchProductDetail();
-  }, [params, product]);
+  }, [params, product, setPdt]);
 
+  // price helpers
   const discountPrice = typeof product?.b2b_min_price === "number" ? product.b2b_min_price : Number(product?.b2b_min_price || 0);
   const originalPrice = typeof product?.b2c_min_price === "number" ? product.b2c_min_price : Number(product?.b2c_min_price || 0);
   const discountAmount = originalPrice > discountPrice ? (originalPrice - discountPrice) : 0;
 
+  // guide label
   let guideLabel: string | null = null;
   if (product?.guide_lang_list) {
     const langs = product.guide_lang_list;
@@ -79,8 +94,7 @@ function ProductGoodProduct() {
     else if (langs.includes('en')) guideLabel = "영어 가이드";
   }
 
-  const hasPickupTag =
-    Array.isArray(product?.tag) && product.tag.includes("TAG_5_2");
+  const hasPickupTag = Array.isArray(product?.tag) && product.tag.includes("TAG_5_2");
 
   const infoList = [
     ...(hasPickupTag ? [{ icon: "icon-car-checkup", text: "픽업 가능" }] : []),
@@ -93,6 +107,26 @@ function ProductGoodProduct() {
     : [product?.prod_img_url || "https://via.placeholder.com/400x240?text=No+Image"];
 
   const categoryList = parseKkdayCategoryKorean(product?.product_category).filter(Boolean);
+
+  // Helper: safe extraction of date_setting and min/max days
+  const extractDateSettingPayload = (prod: any) => {
+    const ds = prod?.go_date_setting;
+    const payload: { date_setting?: string; min_date?: number; max_date?: number } = {};
+    if (!ds) return payload;
+
+    if (ds?.type != null) payload.date_setting = String(ds.type);
+
+    const days = ds?.days;
+    if (days && typeof days === 'object') {
+      const rawMin = days?.min;
+      const rawMax = days?.max;
+      const minNum = Number(rawMin);
+      const maxNum = Number(rawMax);
+      if (Number.isFinite(minNum)) payload.min_date = Math.max(0, Math.floor(minNum));
+      if (Number.isFinite(maxNum)) payload.max_date = Math.max(0, Math.floor(maxNum));
+    }
+    return payload;
+  };
 
   // New: onReserve -> call QueryPackage, validate, then navigate accordingly
   const handleReservePress = async () => {
@@ -111,53 +145,66 @@ function ProductGoodProduct() {
 
       const data = res.data ?? {};
 
-      // handle API-level result codes (판매종료 등)
+      // If package-level API returns result "02" -> package not supported in app
+      if (data?.result === '02' || data?.result_code === '02') {
+        Alert.alert('지원 불가', '해당 상품은 현재 어플리케이션에서 지원하지 않는 상품입니다.');
+        return;
+      }
+
       if (data?.result === '03' || data?.result_code === '03') {
         Alert.alert('알림', '해당 여행 상품은 현재 판매가 종료되었습니다.');
         return;
       }
 
-      // basic validation: must have item array with at least one
       if (!Array.isArray(data?.item) || data.item.length === 0) {
         Alert.alert('알림', '해당 패키지의 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
         return;
       }
 
       const firstItem = data.item[0];
-
-      // If specs is an array and exactly one and that spec has spec_oid === 'spec-single', go to reservation
       const specs = firstItem?.specs;
+      const payloadDateSetting = extractDateSettingPayload(product ?? {});
+
+      // If single spec named 'spec-single' => go straight to reservation
       if (Array.isArray(specs) && specs.length === 1) {
         const onlySpec = specs[0];
         if (onlySpec?.spec_oid === 'spec-single') {
-          // navigate to reservation page, pass pkgData for convenience
           navigation.navigate('/product/reservation', {
             prod_no: product?.prod_no ?? params.prod_no,
             prod_name: product?.prod_name ?? params.prod_name,
             pkg_no: selectedPkgNo,
             pkgData: data,
+            ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
+            ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
+            ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
           });
           return;
         }
       }
 
-      // If there are multiple specs (or specs not single), go to select-spec
+      // If there are specs, go to select-spec (pass safe payload)
       if (Array.isArray(specs) && specs.length >= 1) {
         navigation.navigate('/product/select-spec', {
           prod_no: product?.prod_no ?? params.prod_no,
           prod_name: product?.prod_name ?? params.prod_name,
           pkg_no: selectedPkgNo,
           pkgData: data,
+          ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
+          ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
+          ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
         });
         return;
       }
 
-      // Fallback: if specs not present but item has skus etc. — navigate to select-spec to let user choose
+      // Fallback: no specs -> still navigate to select-spec with safe payload
       navigation.navigate('/product/select-spec', {
         prod_no: product?.prod_no ?? params.prod_no,
         prod_name: product?.prod_name ?? params.prod_name,
         pkg_no: selectedPkgNo,
         pkgData: data,
+        ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
+        ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
+        ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
       });
 
     } catch (err: any) {
@@ -170,8 +217,6 @@ function ProductGoodProduct() {
   };
 
   const goReservation = () => {
-    // keep backward compatibility: previously just navigated to select-spec
-    // now we route through the API check handler
     if (!selectedPkgNo) return;
     handleReservePress();
   };
@@ -267,8 +312,8 @@ function ProductGoodProduct() {
           />
           {renderDots()}
         </View>
+
         <View style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 8 }}>
-          {/* 상품명 */}
           <Text typography="t2" color={colors.black} fontWeight='bold' style={{ marginBottom: 16 }}>
             {product?.prod_name || product?.name}
           </Text>
@@ -281,6 +326,7 @@ function ProductGoodProduct() {
               ))}
           </View>
         </View>
+
         {/* 할인/가격 */}
         <View style={{ paddingHorizontal: 24, marginBottom: 10 }}>
           <View style={{ flexDirection: "column", justifyContent: 'flex-end', alignItems: 'flex-end' }}>
@@ -304,6 +350,7 @@ function ProductGoodProduct() {
             </View>
           </View>
         </View>
+
         {/* 안내 아이콘/텍스트 */}
         <View style={{ paddingHorizontal: 24, marginBottom: 16, marginTop: 8 }}>
           <View style={{ flexDirection: "column", alignItems: "flex-start", gap: 6}}>
@@ -319,9 +366,9 @@ function ProductGoodProduct() {
             ))}
           </View>
         </View>
+
         <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
         <View style={{padding: 24}}>
-          {/* 상품 설명(소개) */}
           <Text typography='t5' fontWeight='medium' style={{ marginBottom: 30 }}>
             {(product.introduction ?? "")
               .replace(/<[^>]+>/g, "")
@@ -330,24 +377,21 @@ function ProductGoodProduct() {
               .trim()}
           </Text>
         </View>
+
         <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
+
         {/* 옵션(패키지) 선택 UI */}
         <View style={{ padding: 24 }}>
           <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>
             옵션 선택
           </Text>
           {pkgList.map((pkg, idx) => {
-            // 기준: sale_s_date && sale_e_date 가 있어야 판매중으로 간주.
             const isSoldOut = !(pkg.sale_s_date && pkg.sale_e_date);
             const isSelected = selectedPkgNo === pkg.pkg_no && !isSoldOut;
             return (
               <TouchableOpacity
                 key={pkg.pkg_no}
-                onPress={() => {
-                  // Prevent selecting sold-out packages
-                  if (isSoldOut) return;
-                  setSelectedPkgNo(pkg.pkg_no);
-                }}
+                onPress={() => { if (!isSoldOut) setSelectedPkgNo(pkg.pkg_no); }}
                 style={{
                   borderWidth: 1,
                   borderColor: isSoldOut ? colors.grey200 : (isSelected ? colors.blue500 : colors.grey200),
@@ -363,7 +407,6 @@ function ProductGoodProduct() {
                   <PlanLabel index={idx} pkg_name={pkg.pkg_name} />
                 </View>
                 <View style={{ marginTop: 10 }}>
-                  {/* Refund tag */}
                   {getRefundTag(pkg) && (
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                       <Icon name="icon-check" size={24} color={colors.blue500} />
@@ -371,7 +414,6 @@ function ProductGoodProduct() {
                     </View>
                   )}
 
-                  {/* Earliest booking */}
                   {earliestBookingText(pkg) && (
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                       <Icon name="icon-calendar-clock" size={24} />
@@ -379,7 +421,6 @@ function ProductGoodProduct() {
                     </View>
                   )}
 
-                  {/* Bulleted short lines */}
                   {firstNLinesFromPackageDesc(pkg, 3).length > 0 && (
                     <View style={{ marginTop: 6 }}>
                       {firstNLinesFromPackageDesc(pkg, 3).map((line, i) => (
@@ -392,6 +433,7 @@ function ProductGoodProduct() {
                     </View>
                   )}
                 </View>
+
                 <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 8 }}>
                   <View style={{ alignItems: 'flex-start' }}>
                     {getPriceInfo(pkg).hasDiscount ? (
@@ -417,11 +459,7 @@ function ProductGoodProduct() {
                     type={isSoldOut ? 'dark' : 'primary'}
                     size="medium"
                     style="fill"
-                    onPress={() => {
-                      // do not allow selection / navigation for sold-out packages
-                      if (isSoldOut) return;
-                      setSelectedPkgNo(pkg.pkg_no);
-                    }}
+                    onPress={() => { if (!isSoldOut) setSelectedPkgNo(pkg.pkg_no); }}
                     disabled={isSoldOut}
                   >
                     {isSoldOut ? '매진' : (selectedPkgNo === pkg.pkg_no ? '선택됨' : '선택하기')}
@@ -431,6 +469,7 @@ function ProductGoodProduct() {
             );
           })}
         </View>
+
         {/* 하단 예약 CTA */}
         <View style={{ padding: 20, backgroundColor: "#fff", borderTopWidth: 1, borderColor: "#eee" }}>
           <Button
