@@ -165,7 +165,19 @@ function ProductGoodProduct() {
         return;
       }
 
+      // after: const firstItem = data.item[0];
       const firstItem = data.item[0];
+
+// try to extract item.unit from several possible fields to be robust
+      const itemUnit =
+        // prefer explicit unit field
+        firstItem?.unit ??
+        // fallbacks some APIs use 'unit_price' or 'b2b_price' at item level
+        firstItem?.unit_price ??
+        firstItem?.b2b_price ??
+        firstItem?.b2c_price ??
+        null;
+
       const specs = firstItem?.specs;
       const payloadDateSetting = extractDateSettingPayload(product ?? {});
 
@@ -181,6 +193,7 @@ function ProductGoodProduct() {
             ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
             ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
             ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
+            ...(itemUnit != null ? { item_unit: itemUnit } : {}),
           });
           return;
         }
@@ -196,6 +209,7 @@ function ProductGoodProduct() {
           ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
           ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
           ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
+          ...(itemUnit != null ? { item_unit: itemUnit } : {}),
         });
         return;
       }
@@ -209,6 +223,7 @@ function ProductGoodProduct() {
         ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
         ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
         ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
+        ...(itemUnit != null ? { item_unit: itemUnit } : {}),
       });
 
     } catch (err: any) {
