@@ -85,6 +85,7 @@ import SafetyseatSelfInfantInput from "../../components/product/traffic/Safetyse
 import RentcarCustomizeToggle from "../../components/product/traffic/RentcarCustomizeToggle";
 import CollapsibleSection from "../../components/product/collapsibleSection";
 import axiosAuth from "../../redux/api";
+import {lowestPriceFromEntry} from "../../components/product/reservation-function";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -220,14 +221,19 @@ function ProductPay() {
   const hasPickup03 = availableTrafficTypes.includes("pickup_03");
   const hasPickup04 = availableTrafficTypes.includes("pickup_04");
 
-  function buildReservationPayload() {
-    // local helpers (ensure these exist in this file)
-    const toNumber = (v: any): number | undefined => {
-      if (v === null || v === undefined) return undefined;
-      const n = Number(String(v).replace(/,/g, ''));
-      return Number.isFinite(n) ? n : undefined;
-    };
-    const safeNum = (v: any): number | undefined => {
+  // Paste these two functions into your ProductPay file, replacing the previous implementations
+// - unitForSkuOnDate(pkgDataLocal, sku, dateStr)
+// - buildReservationPayload()
+// They make ProductPay prefer params.skus (with { sku_id, qty, price }) and otherwise derive skus
+// using the selected date -> SKU calendar (same preference as ProductPeople).
+
+  /**
+   * Helper: prefer calendar price for sku on a given date, falling back to sku fields -> item min price
+   */
+  function unitForSkuOnDate(pkgDataLocal: any, sku: any, dateStr: string | null) {
+    if (!sku) return undefined;
+
+    const safeNumLocal = (v: any): number | undefined => {
       if (v === null || v === undefined) return undefined;
       if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
       if (typeof v === 'string') {
@@ -235,6 +241,47 @@ function ProductPay() {
         return Number.isFinite(n) ? n : undefined;
       }
       return undefined;
+    };
+
+    const itemLocal = pkgDataLocal?.item?.[0] ?? null;
+    const cal = sku?.calendar_detail ?? sku?.calendar ?? itemLocal?.calendar_detail ?? pkgDataLocal?.calendar_detail_merged ?? pkgDataLocal?.calendar_detail ?? null;
+
+    if (dateStr && cal && cal[dateStr]) {
+      const entry = cal[dateStr];
+      const low = lowestPriceFromEntry(entry);
+      if (low !== undefined) return low;
+
+      // If entry contains time-keyed maps, pick lowest among them
+      if (typeof entry === 'object') {
+        const cand = Object.values(entry)
+          .flatMap(v => (typeof v === 'object' ? Object.values(v) : [v]))
+          .map(v => safeNumLocal(v))
+          .filter((n): n is number => typeof n === 'number');
+        if (cand.length) return Math.min(...cand);
+      }
+    }
+
+    // sku-level direct fields
+    const skuNum = safeNumLocal(sku?.b2c_price ?? sku?.b2b_price ?? sku?.price ?? sku?.official_price ?? sku?.filled_price);
+    if (skuNum !== undefined) return skuNum;
+
+    // item-level fallback
+    return safeNumLocal(itemLocal?.b2b_min_price ?? itemLocal?.b2c_min_price) ?? 0;
+  }
+
+  /**
+   * buildReservationPayload
+   * - If params.skus exists and contains entries, prefer those entries and expect per-unit price under `price`.
+   *   Accepts either { sku_id, qty, price } or common aliases; normalizes and uses those values.
+   * - If params.skus not given, falls back to: preferred params (adult_price/display_price/child_price) then SKU calendar via unitForSkuOnDate.
+   * - payload.skus entries will be { sku_id, qty, price } (price = per-unit).
+   * - payload.total_price will be params.total (if valid number) otherwise sum(qty * price).
+   */
+  function buildReservationPayload() {
+    const toNumberLocal = (v: any): number | undefined => {
+      if (v === null || v === undefined) return undefined;
+      const n = Number(String(v).replace(/,/g, ''));
+      return Number.isFinite(n) ? n : undefined;
     };
 
     const store = useBookingStore.getState();
@@ -249,39 +296,116 @@ function ProductPay() {
       buyer_country: (store as any).buyer_country,
     };
 
-    // normalize buyer email key if needed
     if ((buyerObj as any).buyer_Email && !(buyerObj as any).buyer_email) {
       (buyerObj as any).buyer_email = (buyerObj as any).buyer_Email;
       delete (buyerObj as any).buyer_Email;
     }
 
-    // item_no fallback
     const itemNo =
       Array.isArray(params?.item_no) && params.item_no.length > 0
         ? params.item_no[0]
         : pkgData?.item?.[0]?.item_no ?? undefined;
 
-    const selectedDate = params?.selected_date ?? null;
+    const selectedDate = params?.selected_date ?? s_date ?? null;
 
-    // passenger counts (prefer store, fallback to params)
     const adultCount = Number(store?.adult ?? params?.adult ?? 1) || 0;
     const childCount = Number(store?.child ?? params?.child ?? 0) || 0;
     const totalQty = adultCount + childCount;
 
-    // unit prices (unit per person) as shown in UI / passed via params
-    const unitAdult = toNumber(params?.adult_price) ?? toNumber(params?.display_price) ?? toNumber(pkgData?.item?.[0]?.b2c_min_price) ?? toNumber(pkgData?.b2c_min_price) ?? 0;
-    const unitChild = toNumber(params?.child_price) ?? unitAdult;
+    // Accept UI-provided prices as authoritative if present
+    const preferredAdultUnit = toNumberLocal(params?.adult_price) ?? toNumberLocal(params?.display_price);
+    const preferredChildUnit = toNumberLocal(params?.child_price) ?? preferredAdultUnit;
 
-    // Utility: attempt to extract sku mapping from pkgData.item[0]
-    const buildSkuMapFromItem = (item: any) => {
+    const unitAdultFallback = toNumberLocal(pkgData?.item?.[0]?.b2c_min_price) ?? toNumberLocal(pkgData?.b2c_min_price) ?? 0;
+    const unitChildFallback = preferredChildUnit ?? unitAdultFallback;
+
+    const item = pkgData?.item?.[0] ?? null;
+
+    // helper to find sku object in pkgData.item by sku id
+    const findSkuObjById = (skuId: any) => {
+      if (!item || !Array.isArray(item.skus)) return null;
+      return item.skus.find((s: any) => String(s?.sku_id ?? s?.id) === String(skuId)) ?? null;
+    };
+
+    // 1) If params.skus exists, normalize and use it directly.
+    if (Array.isArray(params?.skus) && params.skus.length > 0) {
+      const normalized: Array<{ sku_id: any; qty: number; price: number }> = [];
+
+      for (const raw of params.skus) {
+        if (!raw) continue;
+        const skuId = raw.sku_id ?? raw.skuId ?? raw.id ?? null;
+        if (!skuId) continue;
+        const qty = Number(raw.qty ?? raw.quantity ?? raw.count ?? 0) || 0;
+        // prefer explicit per-unit price in params.skus (field `price`), or `unit_price`
+        let unit = toNumberLocal(raw.price ?? raw.unit_price ?? raw.unitPrice);
+        const explicitTotal = toNumberLocal(raw.total_price ?? raw.totalPrice);
+        if (unit === undefined && explicitTotal !== undefined && qty > 0) {
+          unit = explicitTotal / qty;
+        }
+
+        // If still undefined, try to derive from type hint then SKU calendar
+        if (unit === undefined) {
+          const typeHint = (raw.type ?? raw.ticket_type ?? '').toString().toLowerCase();
+          unit = typeHint.includes('child') ? preferredChildUnit : preferredAdultUnit;
+        }
+
+        if (unit === undefined) {
+          const skuObj = findSkuObjById(skuId);
+          if (skuObj) unit = unitForSkuOnDate(pkgData, skuObj, selectedDate);
+        }
+
+        if (unit === undefined) unit = unitAdultFallback;
+
+        normalized.push({
+          sku_id: skuId,
+          qty: qty || totalQty,
+          price: Number(unit),
+        });
+      }
+
+      const payload: Record<string, any> = {
+        guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
+        pay_type: "01",
+        partner_order_no: "1",
+        prod_no: params?.prod_no ?? (pdt?.prod_no ?? undefined),
+        pkg_no: params?.pkg_no ?? undefined,
+        item_no: itemNo,
+        locale: "ko",
+        state: "KR",
+        ...buyerObj,
+        s_date: selectedDate ?? undefined,
+        e_date: selectedDate ?? undefined,
+        event_time: params?.selected_time ?? null,
+        ...(store?.guideLangCode ? { guide_lang: store.guideLangCode } : {}),
+        ...(customArray && customArray.length ? { custom: customArray } : {}),
+        ...(trafficArr && trafficArr.length ? { traffic: trafficArr } : {}),
+        ...(orderNote ? { order_note: orderNote } : {}),
+      };
+
+      payload.skus = normalized.map(x => ({ sku_id: x.sku_id, qty: x.qty, price: x.price }));
+
+      // total_price: prefer params.total if valid number, else compute
+      if (params?.total !== undefined && params?.total !== null) {
+        const totalNum = Number(params.total);
+        payload.total_price = !Number.isNaN(totalNum) ? totalNum : normalized.reduce((s, it) => s + (it.qty * it.price), 0);
+      } else {
+        payload.total_price = normalized.reduce((s, it) => s + (it.qty * it.price), 0);
+      }
+
+      console.log('[buildReservationPayload] using params.skus normalized:', payload.skus);
+      return payload;
+    }
+
+    // 2) Build derived skus when params.skus not provided
+    const derived: Array<{ sku_id: any; qty: number; price: number }> = [];
+
+    const buildSkuMapFromItem = (itemLocal: any) => {
       const map: Record<string, any[]> = { adult: [], child: [], other: [] };
-      if (!item || !Array.isArray(item.skus)) return map;
-      item.skus.forEach((sku: any) => {
+      if (!itemLocal || !Array.isArray(itemLocal.skus)) return map;
+      itemLocal.skus.forEach((sku: any) => {
         const keys: string[] = [];
         if (sku?.ticket_rule_spec_item) keys.push(String(sku.ticket_rule_spec_item).toLowerCase());
-        if (sku?.spec && typeof sku.spec === 'object') {
-          Object.values(sku.spec).forEach((v: any) => { if (typeof v === 'string') keys.push(v.toLowerCase()); });
-        }
+        if (sku?.spec && typeof sku.spec === 'object') Object.values(sku.spec).forEach((v: any) => { if (typeof v === 'string') keys.push(v.toLowerCase()); });
         if (Array.isArray(sku?.specs_ref)) {
           sku.specs_ref.forEach((r: any) => {
             if (r?.spec_value_id) keys.push(String(r.spec_value_id).toLowerCase());
@@ -294,153 +418,62 @@ function ProductPay() {
           if (c.includes('child') || c.includes('kid') || c.includes('youth') || c.includes('infant')) { mapped = 'child'; break; }
           if (c.includes('adult') || c.includes('man') || c.includes('woman')) { mapped = 'adult'; break; }
         }
-        if (mapped === 'other' && item.skus.length === 1) mapped = 'adult';
+        if (mapped === 'other' && itemLocal.skus.length === 1) mapped = 'adult';
         map[mapped] = map[mapped] || [];
         map[mapped].push(sku);
       });
       return map;
     };
 
-    // Normalize params.skus when provided: ensure shape { sku_id, qty, price } and compute price if missing
-    const normalizeParamsSkus = (raw: any[] | undefined) => {
-      if (!Array.isArray(raw) || raw.length === 0) return [];
-      const out: Array<{ sku_id: any; qty: number; price: number }> = [];
-      for (const r of raw) {
-        if (!r) continue;
-        const skuId = r.sku_id ?? r.skuId ?? r.id ?? null;
-        if (!skuId) continue;
-        const qty = Number(r.qty ?? r.quantity ?? r.count ?? 0) || 0;
-        // determine unit price for this sku: check explicit mapping hints first (params.adult_sku_id/child_sku_id)
-        let unit: number | undefined = undefined;
-        const adultSkuHint = params?.adult_sku_id ?? params?.adult_skuId ?? undefined;
-        const childSkuHint = params?.child_sku_id ?? params?.child_skuId ?? undefined;
+    if (pkgData) {
+      const skuMap = buildSkuMapFromItem(item);
 
-        if (adultSkuHint && String(skuId) === String(adultSkuHint)) unit = unitAdult;
-        else if (childSkuHint && String(skuId) === String(childSkuHint)) unit = unitChild;
-        // allow type hint in object
-        const typeHint = (r.type ?? r.ticket_type ?? '').toString().toLowerCase();
-        if (!unit && typeHint.includes('child')) unit = unitChild;
-        if (!unit && typeHint.includes('adult')) unit = unitAdult;
-
-        // if explicit price provided, treat it as total price or unit depending on presence of unit_price flag
-        const explicitPrice = toNumber(r.price ?? r.total_price);
-        const explicitUnit = toNumber(r.unit_price ?? r.unitPrice);
-        let totalPrice: number;
-        if (explicitPrice !== undefined) {
-          // assume provided price is total price for this sku entry
-          totalPrice = explicitPrice;
-        } else {
-          // prefer explicit unit if present, else the computed unit, else fallbacks
-          const useUnit = explicitUnit ?? unit ?? unitAdult;
-          totalPrice = Number(useUnit * (qty || totalQty || 1));
-        }
-
-        out.push({ sku_id: skuId, qty: qty || totalQty, price: totalPrice });
-      }
-      return out;
-    };
-
-    // -----------------------------
-    // SKUs selection strategy:
-    // If params.sku exists, use it directly (minimal normalization).
-    // Otherwise fall back to the original derivation logic.
-    // -----------------------------
-
-    // 1) If params.sku present - use it (user request: "payload로 들어가는 sku를 그냥 params.sku로 설정")
-    let skusPayload: Array<{ sku_id: any; qty: number; price: number }> | undefined = undefined;
-    if (Array.isArray(params?.sku) && params.sku.length > 0) {
-      // 최소 정규화: ensure objects have sku_id, qty, price fields (coerce types)
-      skusPayload = (params.sku as any[]).map(s => ({
-        sku_id: s.sku_id ?? s.skuId ?? s.id ?? null,
-        qty: Number(s.qty ?? s.quantity ?? s.count ?? 0),
-        price: Number(s.price ?? s.total_price ?? 0),
-      })).filter(s => s.sku_id && s.qty > 0);
-    }
-
-    // 2) If not provided via params.sku, fallback to params.skus (existing behavior)
-    if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && Array.isArray(params?.skus) && params.skus.length > 0) {
-      skusPayload = normalizeParamsSkus(params.skus);
-    }
-
-    // 3) If still empty, try to derive skus from booking store selected skus (if any), normalize similarly
-    if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && typeof store?.getSelectedSkus === 'function') {
-      const sel = store.getSelectedSkus();
-      if (Array.isArray(sel) && sel.length > 0) {
-        skusPayload = normalizeParamsSkus(sel);
-      }
-    }
-
-    // 4) Fallback: try to derive from pkgData and unitAdult/unitChild (original logic)
-    if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && pkgData) {
-      const item = pkgData?.item?.[0] ?? null;
-      const skuMap = item ? buildSkuMapFromItem(item) : { adult: [], child: [], other: [] };
-      const final: Array<{ sku_id: any; qty: number; price: number }> = [];
-
-      // adult SKU mapping
+      // adult
       if (adultCount > 0) {
         const adultSku = skuMap.adult?.[0] ?? item?.skus?.[0] ?? null;
         const skuId = adultSku?.sku_id ?? adultSku?.id ?? null;
-        const unitFromSku = safeNum(adultSku?.b2c_price ?? adultSku?.b2b_price ?? adultSku?.official_price) ?? unitAdult;
-        if (skuId) final.push({ sku_id: skuId, qty: adultCount, price: Number(unitFromSku * adultCount) });
+        let unitPrice = preferredAdultUnit !== undefined ? preferredAdultUnit : undefined;
+        if (unitPrice === undefined && adultSku) unitPrice = unitForSkuOnDate(pkgData, adultSku, selectedDate);
+        if (unitPrice === undefined) unitPrice = unitAdultFallback;
+        if (skuId) derived.push({ sku_id: skuId, qty: adultCount, price: Number(unitPrice) });
       }
 
-      // child SKU mapping
+      // child
       if (childCount > 0) {
         const childSku = skuMap.child?.[0] ?? null;
         if (childSku) {
           const skuId = childSku?.sku_id ?? childSku?.id ?? null;
-          const unitFromSku = safeNum(childSku?.b2c_price ?? childSku?.b2b_price ?? childSku?.official_price) ?? unitChild;
-          if (skuId) final.push({ sku_id: skuId, qty: childCount, price: Number(unitFromSku * childCount) });
+          let unitPrice = preferredChildUnit !== undefined ? preferredChildUnit : undefined;
+          if (unitPrice === undefined) unitPrice = unitForSkuOnDate(pkgData, childSku, selectedDate);
+          if (unitPrice === undefined) unitPrice = unitChildFallback;
+          if (skuId) derived.push({ sku_id: skuId, qty: childCount, price: Number(unitPrice) });
         } else {
-          // merge into adult sku if no child-specific sku found
-          if (final.length > 0) {
-            final[0].qty = final[0].qty + childCount;
-            final[0].price = Number(final[0].price + (unitChild * childCount));
+          // merge into adult if no child sku found
+          if (derived.length > 0) {
+            const addUnit = preferredChildUnit !== undefined ? preferredChildUnit : unitChildFallback;
+            derived[0].qty = derived[0].qty + childCount;
+            // leave price as per-unit; ProductPay will multiply qty*price when sending total to server
           }
         }
       }
 
-      // if still empty try calendar metadata
-      if (final.length === 0) {
-        const dateSkus = pkgData?.calendar_detail_merged?.[selectedDate]?.skus ?? pkgData?.item?.[0]?.skus ?? pkgData?.pkg?.[0]?.skus ?? [];
+      // fallback: if nothing derived, pick first date-sku
+      if (derived.length === 0) {
+        const dateSkus = pkgData?.calendar_detail_merged?.[selectedDate]?.skus ?? item?.skus ?? pkgData?.pkg?.[0]?.skus ?? [];
         if (Array.isArray(dateSkus) && dateSkus.length > 0) {
           const only = dateSkus[0];
           const skuId = only?.sku_id ?? only?.id ?? null;
-          const unitFromSku = safeNum(only?.b2c_price ?? only?.b2b_price ?? only?.filled_price) ?? unitAdult;
-          if (skuId) final.push({ sku_id: skuId, qty: totalQty, price: Number(unitFromSku * totalQty) });
+          const unitPrice = preferredAdultUnit !== undefined ? preferredAdultUnit : unitForSkuOnDate(pkgData, only, selectedDate) ?? unitAdultFallback;
+          if (skuId) derived.push({ sku_id: skuId, qty: totalQty, price: Number(unitPrice) });
         }
       }
-
-      skusPayload = final.filter(s => s.sku_id && s.qty > 0);
     }
 
-    // 5) Last fallback: if still nothing and totalQty > 0, try to pick first available sku and set combined qty/price
-    if ((!Array.isArray(skusPayload) || skusPayload.length === 0) && totalQty > 0) {
-      const fallbackSkuId = pkgData?.item?.[0]?.skus?.[0]?.sku_id ?? pkgData?.pkg?.[0]?.skus?.[0]?.sku_id ?? null;
-      if (fallbackSkuId) {
-        skusPayload = [{
-          sku_id: fallbackSkuId,
-          qty: totalQty,
-          price: Number(unitAdult * adultCount + unitChild * childCount)
-        }];
-      } else {
-        skusPayload = [];
-      }
-    }
-
-    // Ensure final skusPayload objects have only { sku_id, qty, price } and numeric types
-    skusPayload = (skusPayload || []).map(s => ({
-      sku_id: s.sku_id,
-      qty: Number(s.qty || 0),
-      price: Number(s.price || 0),
-    })).filter(s => s.sku_id && s.qty > 0);
-
-    // Build final payload
     const payload: Record<string, any> = {
       guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
       pay_type: "01",
       partner_order_no: "1",
-      prod_no: params?.prod_no ?? pdt?.prod_no ?? undefined,
+      prod_no: params?.prod_no ?? (pdt?.prod_no ?? undefined),
       pkg_no: params?.pkg_no ?? undefined,
       item_no: itemNo,
       locale: "ko",
@@ -455,27 +488,20 @@ function ProductPay() {
       ...(orderNote ? { order_note: orderNote } : {}),
     };
 
-    if (skusPayload.length > 0) {
-      payload.skus = skusPayload;
-    }
+    // payload.skus: only include sku_id, qty, price (per-unit)
+    payload.skus = derived.map(d => ({ sku_id: d.sku_id, qty: d.qty, price: d.price }));
 
-    // Set total_price: 우선 params.total이 있으면 params.total을 사용 (숫자로 강제 변환),
-    // 없으면 store.total을 사용 (기존 동작 유지).
+    // total_price: prefer params.total if numeric; otherwise compute sum(qty * price)
     if (params?.total !== undefined && params?.total !== null) {
       const totalNum = Number(params.total);
-      if (!Number.isNaN(totalNum)) {
-        payload.total_price = totalNum;
-      } else {
-        // params.total이 숫자로 변환 불가하면 기존 store.total로 fallback
-        if (typeof store?.total === 'number') payload.total_price = store.total;
-      }
-    } else if (typeof store?.total === 'number') {
-      payload.total_price = store.total;
+      payload.total_price = !Number.isNaN(totalNum)
+        ? totalNum
+        : payload.skus.reduce((s: number, it: any) => s + (Number(it.qty || 0) * Number(it.price || 0)), 0);
+    } else {
+      payload.total_price = payload.skus.reduce((s: number, it: any) => s + (Number(it.qty || 0) * Number(it.price || 0)), 0);
     }
 
-    // Debug log
-    console.log('[buildReservationPayload] skusPayload:', payload.skus);
-    console.log('[buildReservationPayload] unitAdult, unitChild, counts:', unitAdult, unitChild, adultCount, childCount);
+    console.log('[buildReservationPayload] derived skus:', payload.skus);
     console.log('[buildReservationPayload] total_price:', payload.total_price);
 
     return payload;

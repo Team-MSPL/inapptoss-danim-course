@@ -20,6 +20,9 @@ const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/Qu
  *   (so price calculation matches ProductReservation's preference).
  * - If no exact "티켓 종류" exists and params.item_unit is provided, label uses params.item_unit but unit (price)
  *   is derived from SKUs (first-SKU/date-based) to avoid changing totals unexpectedly.
+ *
+ * - This variant sends navigation.params.skus entries with shape: { sku_id, qty, price }
+ *   where price is the per-unit price (formerly unit_price).
  */
 
 function ProductPeople() {
@@ -183,10 +186,8 @@ function ProductPeople() {
       const qtyDefault = Number(params?.adult ?? 1) || 1;
 
       // derive numeric unit (price) from SKUs using date preference: prefer first SKU's price for selectedDate
-      // if basisSkus contains items, prefer the first element in basisSkus array (this matches Reservation->People behavior)
       let numericUnitFromSkus = 0;
       if (Array.isArray(skus) && skus.length > 0) {
-        // prefer first SKU
         numericUnitFromSkus = Number(unitForSkuOnDate(skus[0], selectedDate) ?? 0);
       }
 
@@ -334,19 +335,27 @@ function ProductPeople() {
     });
   };
 
+  // NEW: resolve SKUs for navigation and include price (per-unit) explicitly as `price`
   const resolveSkusForNavigationFromCategories = () => {
     const result: Array<{ sku_id: any; qty: number; price: number; chosenSku?: any }> = [];
     for (const cat of categories) {
       const qty = Number(cat.qty || 0);
       if (qty <= 0) continue;
       const candidates: any[] = Array.isArray(cat.skus) ? cat.skus : [];
-      let chosen = candidates[0] ?? null;
-      if (candidates.length > 0) {
-        // choose the candidate with lowest unitForSkuOnDate (consistent with UI)
-        chosen = candidates.map(s => ({ s, u: unitForSkuOnDate(s, selectedDate) ?? 0 })).sort((a, b) => (Number(a.u || 0) - Number(b.u || 0)))[0].s;
-      }
+      if (candidates.length === 0) continue;
+
+      // Choose the SKU to use (prefer first candidate)
+      const chosen = candidates[0];
+
+      // Compute per-unit price using selectedDate preference
       const unit = Number(unitForSkuOnDate(chosen, selectedDate) ?? Number(cat.unit || 0));
-      result.push({ sku_id: chosen?.sku_id ?? null, qty, price: Number(unit), chosenSku: chosen });
+
+      result.push({
+        sku_id: chosen?.sku_id ?? null,
+        qty,
+        price: Number(unit),
+        chosenSku: chosen,
+      });
     }
     return result;
   };
@@ -358,12 +367,14 @@ function ProductPeople() {
     if (isMultipleLimit && (totalCount % multiple) !== 0) return;
 
     const skusForPayload = resolveSkusForNavigationFromCategories();
+
     navigation.navigate('/product/pay', {
       prod_no: params?.prod_no ?? prod_no,
       prod_name: pkgData?.prod_name ?? params?.prod_name,
       pkg_no: params.pkg_no ?? pkg_no,
       selected_date: selectedDate,
       categories: categories.map(c => ({ id: c.id, label: c.label, qty: c.qty, unit: c.unit, ageLabel: c.ageLabel, subLabel: c.subLabel })),
+      // Pass simplified skus: sku_id, qty, price (price is per-unit)
       skus: skusForPayload.map(s => ({ sku_id: s.sku_id, qty: s.qty, price: s.price })),
       total: Number(total),
       pkgData,
