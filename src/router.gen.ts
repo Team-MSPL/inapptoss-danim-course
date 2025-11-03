@@ -38,6 +38,8 @@ import { Route as _MyTravleListRoute } from '../pages/my-travle-list';
 import { Route as _PresetDetailRoute } from '../pages/preset-detail';
 import { Route as _PresetRoute } from '../pages/preset';
 import { Route as _ProductGoodProductRoute } from '../pages/product/good-product';
+import { Route as _ProductPayFailRoute } from '../pages/product/pay-fail';
+import { Route as _ProductPaySuccessRoute } from '../pages/product/pay-success';
 import { Route as _ProductPayRoute } from '../pages/product/pay';
 import { Route as _ProductPeopleRoute } from '../pages/product/people';
 import { Route as _ProductReservationRoute } from '../pages/product/reservation';
@@ -85,6 +87,8 @@ declare module '@granite-js/react-native' {
     '/preset-detail': ReturnType<typeof _PresetDetailRoute.useParams>;
     '/preset': ReturnType<typeof _PresetRoute.useParams>;
     '/product/good-product': ReturnType<typeof _ProductGoodProductRoute.useParams>;
+    '/product/pay-fail': ReturnType<typeof _ProductPayFailRoute.useParams>;
+    '/product/pay-success': ReturnType<typeof _ProductPaySuccessRoute.useParams>;
     '/product/pay': ReturnType<typeof _ProductPayRoute.useParams>;
     '/product/people': ReturnType<typeof _ProductPeopleRoute.useParams>;
     '/product/reservation': ReturnType<typeof _ProductReservationRoute.useParams>;

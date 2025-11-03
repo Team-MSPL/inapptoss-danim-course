@@ -91,6 +91,7 @@ import {
   validateSectionBuilt as makeValidateSectionBuilt,
 } from "../../components/product/booking/validationHelpers";
 import BuyerInfoSection from "../../components/product/sections/BuyerInfoSection";
+import useBookingApi from "../../hooks/useBookingApi";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -221,11 +222,13 @@ function ProductPay() {
   const hasPickup03 = availableTrafficTypes.includes("pickup_03");
   const hasPickup04 = availableTrafficTypes.includes("pickup_04");
 
+  const { loading: bookingLoading, error: bookingError, run } = useBookingApi();
+
   async function onPay() {
     const store = useBookingStore.getState();
     const customArray = store.getCustomArray();
-    const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
-    console.log(payload);
+
+    // 기존 검증
     if (uses.includes("cus_01") && !customArray.some((c) => c.cus_type === "cus_01")) {
       Alert.alert("입력 오류", "예약자 정보(필수)를 입력해주세요.");
       return;
@@ -240,7 +243,53 @@ function ProductPay() {
       }
     }
 
-    Alert.alert("테스트 페이로드", JSON.stringify(payload, null, 2));
+    // 빌드 페이로드
+    const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
+    console.debug("[ProductPay] onPay - payload:", payload);
+
+    try {
+      // run은 useBookingApi().run
+      const res = await run(payload);
+      console.debug("[ProductPay] run result:", res);
+
+      // 멀티 스펙 결과 처리
+      if (res && Array.isArray(res.results)) {
+        const results = res.results;
+        // 성공 판정: bookingResponse에 order_no 존재 (또는 resp 형태)
+        const successes = results.filter(r => {
+          const br = r?.bookingResponse;
+          if (!br) return false;
+          // bookingResponse may be normalized resp already
+          return Boolean(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
+        });
+        const failures = results.filter(r => !successes.includes(r));
+        console.debug("[ProductPay] successes:", successes, "failures:", failures);
+
+        if (failures.length === 0) {
+          // 모두 성공
+          navigation.replace("/product/pay-success");
+        } else {
+          // 일부 또는 전체 실패
+          navigation.replace("/product/pay-fail");
+        }
+        return;
+      }
+
+      // 단일 결과 처리 (기존 호환)
+      const bookingResp = res?.bookingResponse ?? res?.bookingResponse;
+      // bookingResp may be normalized already (resp)
+      const orderNo = bookingResp?.order_no ?? bookingResp?.orderNo ?? (bookingResp?.data && bookingResp.data.order_no);
+
+      if (orderNo) {
+        navigation.replace("/product/pay-success");
+      } else {
+        navigation.replace("/product/pay-fail");
+      }
+    } catch (err: any) {
+      console.error("[ProductPay] onPay error:", err);
+      // 이미 useBookingApi에서 save API는 호출됨. 실패시 이동
+      navigation.replace("/product/pay-fail");
+    }
   }
 
   const requiredMap = useMemo(() => {
@@ -635,7 +684,9 @@ function ProductPay() {
           <TouchableOpacity onPress={() => setAgreeMarketing(s => !s)} style={styles.agreeRow}><View style={styles.checkbox}>{agreeMarketing && <Icon name="icon-check" size={14} color={colors.blue500} />}</View><Text style={{ marginLeft: 8 }}>(선택) 마케팅 수신 동의</Text></TouchableOpacity>
         </View>
 
-        <FixedBottomCTA onPress={onPay} disabled={false}>결제하기</FixedBottomCTA>
+        <FixedBottomCTA onPress={onPay} disabled={bookingLoading}>
+          {bookingLoading ? "결제중입니다..." : "결제하기"}
+        </FixedBottomCTA>
       </FixedBottomCTAProvider>
     </View>
   );
