@@ -21,11 +21,10 @@ type BookingItem = {
   order_no?: string;
   s_date?: string | null;
   created_at?: string;
-  skus?: Array<{ sku_id?: string; qty?: number; price?: number }>;
+  skus?: Array<{ sku_id?: string; qty?: number; price?: number; spec?: any }>;
   order_note?: string;
   total_price?: number;
   isActive?: boolean;
-  // original list item may contain other fields
   [k: string]: any;
 };
 
@@ -62,6 +61,49 @@ function isPastDate(dateStr?: string | null) {
   const target = new Date(d);
   target.setHours(0, 0, 0, 0);
   return target < today;
+}
+
+/**
+ * Normalize unit and build people/ticket text.
+ * Rules:
+ * - If dtl.skus exists, sum qty.
+ * - If a sku.spec contains 티켓 종류 or Ticket Type, use that string as ticketType.
+ * - If unit exists (non-empty string), append it after count (e.g. "2명", "3개", "1대", or "Traveler").
+ * - If ticketType exists: show "티켓종류 count+unit" (e.g. "대인 2명").
+ * - If unit missing: fall back to "인원수 N명" (Korean default) or `${N}개` for listItem-only fallback.
+ */
+function buildPeopleTextFromDtl(dtl?: any, listItem?: any): string {
+  // dtl.skus preferred
+  if (dtl && Array.isArray(dtl.skus) && dtl.skus.length > 0) {
+    const count = dtl.skus.reduce((s: number, sk: any) => s + (Number(sk?.qty ?? 1) || 0), 0);
+    const unit = (dtl?.unit ?? "").toString().trim();
+    // try multiple keys for ticket type
+    const skuWithSpec =
+      dtl.skus.find(
+        (sk: any) =>
+          sk?.spec &&
+          typeof sk.spec === "object" &&
+          (sk.spec["티켓 종류"] || sk.spec["Ticket Type"] || sk.spec["ticket_type"])
+      ) ?? null;
+    if (skuWithSpec) {
+      const ticketType =
+        skuWithSpec.spec["티켓 종류"] ?? skuWithSpec.spec["Ticket Type"] ?? skuWithSpec.spec["ticket_type"] ?? "";
+      if (unit) return `${ticketType} ${count}${unit}`;
+      return `${ticketType} ${count}명`;
+    }
+    if (unit) return `${count}${unit}`;
+    return `인원수 ${count}명`;
+  }
+
+  // fallback to listItem.skus
+  if (listItem && Array.isArray(listItem.skus) && listItem.skus.length > 0) {
+    const count = listItem.skus.reduce((s: number, sk: any) => s + (Number(sk?.qty ?? 1) || 0), 0);
+    // no unit known here => generic "개"
+    return `${count}개`;
+  }
+
+  // last resort
+  return "1명";
 }
 
 export default function MyReservation() {
@@ -209,31 +251,8 @@ export default function MyReservation() {
               item.event_time ??
               "";
 
-            // determine people / ticket info + qty + unit
-            let peopleText = "";
-            let peopleCount = 0;
-            let unitText = "";
-
-            if (dtl && Array.isArray(dtl?.skus) && dtl?.skus.length > 0) {
-              // aggregate quantity across skus
-              peopleCount = dtl.skus.reduce((s: number, sk: any) => s + (Number(sk?.qty ?? 1) || 0), 0);
-              unitText = dtl?.unit ?? "";
-
-              // find ticket spec if exists
-              const skuWithSpec = dtl.skus.find((sk: any) => sk?.spec && typeof sk.spec === "object" && sk.spec["티켓 종류"]);
-              if (skuWithSpec) {
-                const ticketType = skuWithSpec.spec["티켓 종류"];
-                peopleText = unitText ? `${ticketType} ${peopleCount}${unitText}` : `${ticketType} ${peopleCount}명`;
-              } else {
-                peopleText = unitText ? `${peopleCount}${unitText}` : `인원수 ${peopleCount}명`;
-              }
-            } else if (Array.isArray(item.skus) && item.skus.length > 0) {
-              peopleCount = item.skus.reduce((s, sk) => s + (Number(sk.qty ?? 1) || 0), 0);
-              peopleText = `${peopleCount}개`;
-            } else {
-              peopleText = `1명`;
-              peopleCount = 1;
-            }
+            // build people text using helper
+            const peopleText = buildPeopleTextFromDtl(dtl, item);
 
             const titleText =
               (dtlInfo && (dtlInfo?.product_summary?.prod_name ?? dtlInfo?.product_summary?.prod_name)) ??
@@ -246,7 +265,6 @@ export default function MyReservation() {
             const past = isPastDate(item.s_date ?? item.created_at);
             const hasVoucher = Boolean(dtl?.has_voucher);
 
-            // compute dayLabel and badge appearance
             const dayLabel = (() => {
               if (!item.s_date) return "";
               const target = new Date(item.s_date);
@@ -266,17 +284,12 @@ export default function MyReservation() {
               const today = new Date();
               today.setHours(0, 0, 0, 0);
               const diffDays = Math.round((target.getTime() - today.getTime()) / (24 * 3600 * 1000));
-              if (diffDays === 0) return "yellow"; // today
-              if (diffDays > 0) return "blue"; // future
-              return "dark"; // past
+              if (diffDays === 0) return "yellow";
+              if (diffDays > 0) return "blue";
+              return "dark";
             })();
 
-            // map badgeVariant to toss Badge props if necessary
-            // Here we assume Badge.type accepts strings like "yellow"/"blue"/"dark".
-            // If your Badge API uses different names, map accordingly.
-            const badgeTypeProp = badgeVariant; // use directly; adjust if badge uses different enum
-
-            // stable key for Badge
+            const badgeTypeProp = badgeVariant;
             const badgeKey = item.order_no ? `badge_${item.order_no}` : `badge_${item._id}`;
 
             return (
@@ -295,7 +308,6 @@ export default function MyReservation() {
                   {descText}
                 </Text>
 
-                {/* 2x2 Grid: top-left date, top-right time, bottom-left people, bottom-right (empty / reserved) */}
                 <View style={styles.grid2x2}>
                   <View style={styles.gridCell}>
                     <View style={styles.gridInner}>
@@ -324,7 +336,6 @@ export default function MyReservation() {
                   <View style={styles.gridCell} />
                 </View>
 
-                {/* Footer: buttons 1:1 width */}
                 <View style={styles.cardFooter}>
                   {hasVoucher ? (
                     <>
@@ -395,7 +406,6 @@ const styles = StyleSheet.create({
   },
   cardTitle: { flex: 1, marginLeft: 12},
   cardDesc: { marginBottom: 12, color: colors.grey500, paddingHorizontal: 20 },
-  /* 2x2 grid */
   grid2x2: {
     flexDirection: "row",
     flexWrap: "wrap",
