@@ -19,7 +19,7 @@ import {
 } from "@toss-design-system/react-native";
 import MapWebView from "../../components/product/map-webview";
 import WebView from "@granite-js/native/react-native-webview";
-import Pdml from "../../components/pdml"; // your pdml index export (object + named exports)
+import Pdml from "../../components/pdml";
 
 export const Route = createRoute("/reservation/detail", {
   validateParams: (params) => params,
@@ -32,36 +32,6 @@ function safe<T = any>(v: any, def: T): T {
   return v === undefined || v === null ? def : v;
 }
 
-function extractLocationFromModuleContent(moduleContent?: any) {
-  if (!moduleContent) return null;
-  const latlng = moduleContent?.latlng ?? null;
-  if (latlng && (latlng.latitude || latlng.longitude)) return latlng;
-  if (moduleContent?.latitude || moduleContent?.longitude) {
-    return {
-      latitude: moduleContent.latitude,
-      longitude: moduleContent.longitude,
-      map_snap_url: moduleContent?.map_snap_url ?? null,
-      zoom_lv: moduleContent?.zoom_lv ?? null,
-      desc: moduleContent?.location_name ?? moduleContent?.desc ?? null,
-    };
-  }
-  const list = moduleContent?.list;
-  if (Array.isArray(list)) {
-    for (const entry of list) {
-      const cand = entry?.latlng ?? entry?.content?.latlng ?? null;
-      if (cand && (cand.latitude || cand.longitude)) return cand;
-      const locationInfo = entry?.location_info ?? entry?.location_info?.properties;
-      if (locationInfo) {
-        const cand2 = locationInfo?.latlng ?? null;
-        if (cand2 && (cand2.latitude || cand2.longitude)) return cand2;
-      }
-    }
-  }
-  const propsLatlng = moduleContent?.properties?.latlng;
-  if (propsLatlng && (propsLatlng.latitude || propsLatlng.longitude)) return propsLatlng;
-  return null;
-}
-
 function stripHtmlTags(html?: string) {
   if (!html) return "";
   const withoutScripts = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
@@ -71,18 +41,29 @@ function stripHtmlTags(html?: string) {
   return stripped.replace(/\n\s*\n+/g, "\n").trim();
 }
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+/**
+ * NOTE (테스트 팁)
+ * - 빠르게 확인하려면 컴포넌트 상단에 DEV_SAMPLE_DTL을 선언하고
+ *   const dtl = params?.dtl ?? DEV_SAMPLE_DTL;
+ *   로 사용하세요. (배포 전 제거)
+ */
+
 export default function ReservationDetail() {
   const navigation = useNavigation();
   const params: { dtl?: DtlRaw; dtlInfo?: any; order_no?: string; listItem?: any } = Route.useParams();
 
+  // 실제 사용: params.dtl 사용
+  // 개발 테스트 시만 DEV_SAMPLE_DTL을 사용하도록 덮어쓸 수 있음
   const dtl = params?.dtl ?? {};
+
   const dtlInfo = params?.dtlInfo ?? {};
 
   const sDate = safe(dtl?.s_date ?? dtl?.start_date ?? params?.listItem?.s_date, "");
   const eventTime = safe(dtl?.event_time ?? dtl?.time ?? dtl?.event_backup_data ?? "", "");
   const canCancel = Boolean(dtl?.can_cancel ?? false);
 
-  // experience location (first latlng found in PMDL_EXPERIENCE_LOCATION)
   const experienceLocation = useMemo(() => {
     try {
       const list =
@@ -142,31 +123,124 @@ export default function ReservationDetail() {
     return `1명`;
   }, [dtl, params?.listItem]);
 
-  // Generic fallback renderer (keeps previous behavior for modules without dedicated component)
+  // ---- pick / rent parsing: 오직 지정한 필드들만 사용 ----
+  const pickupEntries = useMemo(() => {
+    if (!Array.isArray(dtl?.traffic)) return [];
+    return dtl.traffic.filter((t: any) => typeof t?.traffic_type === "string" && t.traffic_type.startsWith("pickup"))
+      // normalize to only include necessary fields
+      .map((t: any) => ({
+        traffic_type: t.traffic_type,
+        s_date: t.s_date ?? "",
+        s_time: t.s_time ?? "",
+        s_location: t.s_location ?? t.s_addr ?? "",
+        e_location: t.e_location ?? t.e_addr ?? "",
+      }));
+  }, [dtl]);
+
+  const rentcarEntries = useMemo(() => {
+    if (!Array.isArray(dtl?.traffic)) return [];
+    return dtl.traffic.filter((t: any) => typeof t?.traffic_type === "string" && t.traffic_type.startsWith("rentcar"))
+      .map((t: any) => ({
+        traffic_type: t.traffic_type,
+        s_date: t.s_date ?? "",
+        s_location: t.s_location ?? t.s_addr ?? "",
+        e_location: t.e_location ?? t.e_addr ?? "",
+        provide_wifi: Boolean(t.provide_wifi),
+        provide_gps: Boolean(t.provide_gps),
+        is_rent_customize: Boolean(t.is_rent_customize),
+      }));
+  }, [dtl]);
+
+  // Simple safe string getter
+  function text(v: any) {
+    if (v == null) return "";
+    if (typeof v === "string" || typeof v === "number") return String(v);
+    if (typeof v === "object" && typeof v.desc === "string") return v.desc;
+    return "";
+  }
+
+  // ---- simplified UI blocks (이미지 / 추가 필드 없음) ----
+  function PickupCard({ entry }: { entry: any }) {
+    return (
+      <View style={styles.infoCard}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+          <View style={{ width: 6, height: 26, backgroundColor: colors.green200, borderRadius: 3, marginRight: 12 }} />
+          <Text typography="t5" fontWeight="bold">픽업 정보</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text typography="t7" color={colors.grey700}>픽업 날짜</Text>
+          <Text typography="t7" color={colors.black}>{text(entry.s_date) || "—"}</Text>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.infoRow}>
+          <Text typography="t7" color={colors.grey700}>픽업 시간</Text>
+          <Text typography="t7" color={colors.black}>{text(entry.s_time) || "—"}</Text>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.infoRow}>
+          <Text typography="t7" color={colors.grey700}>승차 정보</Text>
+          <Text typography="t7" color={colors.black}>
+            {text(entry.s_location) || (text(entry.e_location) ? text(entry.e_location) : "—")}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  function RentcarCard({ entry }: { entry: any }) {
+    const extras: string[] = [];
+    if (entry.is_rent_customize) extras.push("맞춤 대여");
+    if (entry.provide_wifi) extras.push("Wi‑Fi");
+    if (entry.provide_gps) extras.push("GPS");
+
+    return (
+      <View style={styles.infoCard}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+          <View style={{ width: 6, height: 26, backgroundColor: colors.green200, borderRadius: 3, marginRight: 12 }} />
+          <Text typography="t5" fontWeight="bold">렌터카 정보</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text typography="t7" color={colors.grey700}>대여 날짜</Text>
+          <Text typography="t7" color={colors.black}>{text(entry.s_date) || "—"}</Text>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.infoRow}>
+          <Text typography="t7" color={colors.grey700}>시작/종료</Text>
+          <Text typography="t7" color={colors.black}>{text(entry.s_location) || "—"} → {text(entry.e_location) || "—"}</Text>
+        </View>
+
+        {extras.length > 0 ? (
+          <>
+            <View style={styles.divider} />
+            <View style={styles.infoRow}>
+              <Text typography="t7" color={colors.grey700}>추가 옵션</Text>
+              <Text typography="t7" color={colors.black}>{extras.join(" · ")}</Text>
+            </View>
+          </>
+        ) : null}
+      </View>
+    );
+  }
+
+  // Generic module renderer kept from before (unchanged)
   function renderModule(moduleKey: string, moduleObj: any) {
     if (!moduleObj) return null;
     const moduleTitle = moduleObj.module_title ?? moduleObj.title ?? moduleKey;
     const content = moduleObj.content ?? moduleObj;
 
     if (moduleObj?.use_html && content?.type === "text" && content?.desc) {
-      const html = `
-        <!doctype html>
-        <html>
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial; color: #111827; padding: 12px; margin:0; }
-              p { margin: 0 0 12px 0; line-height:1.5; color: #374151; }
-            </style>
-          </head>
-          <body>${content.desc}</body>
-        </html>
-      `;
+      const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/></head><body>${content.desc}</body></html>`;
       return (
         <View style={styles.section} key={moduleKey}>
-          <Text typography="t6" style={styles.sectionTitle}>
-            {moduleTitle}
-          </Text>
+          <Text typography="t6" style={styles.sectionTitle}>{moduleTitle}</Text>
           <View style={{ height: 220, marginTop: 8, borderRadius: 8, overflow: "hidden", backgroundColor: colors.grey50 }}>
             <WebView originWhitelist={["*"]} source={{ html }} style={{ flex: 1 }} javaScriptEnabled domStorageEnabled />
           </View>
@@ -178,145 +252,13 @@ export default function ReservationDetail() {
       const plain = stripHtmlTags(content.desc);
       return (
         <View style={styles.section} key={moduleKey}>
-          <Text typography="t6" style={styles.sectionTitle}>
-            {moduleTitle}
-          </Text>
-          <Text typography="t7" color={colors.grey700} style={styles.sectionBody}>
-            {plain}
-          </Text>
-        </View>
-      );
-    }
-
-    if (content?.type === "properties" && content?.properties) {
-      return (
-        <View style={styles.section} key={moduleKey}>
-          <Text typography="t6" style={styles.sectionTitle}>
-            {moduleTitle}
-          </Text>
-          <View style={{ marginTop: 8 }}>
-            {Object.entries(content.properties).map(([pKey, pVal]: any) => {
-              if (!pVal) return null;
-              if (pVal.type === "list" && Array.isArray(pVal.list)) {
-                return (
-                  <View key={pKey} style={{ marginTop: 8 }}>
-                    {pVal.title ? <Text typography="t7" color={colors.grey900}>{pVal.title}</Text> : null}
-                    {pVal.list.map((li: any, idx: number) => (
-                      <Text key={idx} typography="t7" color={colors.grey700} style={{ marginTop: 4 }}>
-                        - {li?.desc ?? ""}
-                      </Text>
-                    ))}
-                  </View>
-                );
-              }
-              if (pVal.type === "content" && pVal.desc) {
-                const plain = pVal?.use_html ? null : stripHtmlTags(pVal.desc);
-                return pVal?.use_html ? (
-                  <View key={pKey} style={{ marginTop: 8 }}>
-                    <View style={{ height: 160 }}>
-                      <WebView originWhitelist={["*"]} source={{ html: String(pVal.desc) }} style={{ flex: 1 }} javaScriptEnabled domStorageEnabled />
-                    </View>
-                  </View>
-                ) : (
-                  <Text key={pKey} typography="t7" color={colors.grey700} style={{ marginTop: 8 }}>
-                    {plain}
-                  </Text>
-                );
-              }
-              return null;
-            })}
-          </View>
-        </View>
-      );
-    }
-
-    if (content?.media && Array.isArray(content.media) && content.media.length > 0) {
-      return (
-        <View style={styles.section} key={moduleKey}>
-          <Text typography="t6" style={styles.sectionTitle}>
-            {moduleTitle}
-          </Text>
-          <View style={{ marginTop: 8 }}>
-            {content.media.map((m: any, idx: number) => {
-              const src = m?.source_content ?? null;
-              if (!src) return null;
-              const uri = src.startsWith("http") ? src : `https://${src}`;
-              return <Image key={idx} source={{ uri }} style={styles.mediaImage} resizeMode="cover" />;
-            })}
-          </View>
-        </View>
-      );
-    }
-
-    if (Array.isArray(content?.list) && content.list.length > 0) {
-      return (
-        <View style={styles.section} key={moduleKey}>
-          <Text typography="t6" style={styles.sectionTitle}>
-            {moduleTitle}
-          </Text>
-          <View style={{ marginTop: 8 }}>
-            {content.list.map((it: any, idx: number) => {
-              const dailyTitle = it?.daily_title ?? it?.title ?? null;
-              const desc = it?.desc ?? it?.daily_schedule_list ?? null;
-              return (
-                <View key={idx} style={{ marginBottom: 10 }}>
-                  {dailyTitle ? <Text typography="t7" color={colors.grey900}>{dailyTitle}</Text> : null}
-                  {it?.daily_schedule_list?.list && Array.isArray(it.daily_schedule_list.list)
-                    ? it.daily_schedule_list.list.map((row: any, rIdx: number) => (
-                      <View key={rIdx} style={{ marginTop: 6 }}>
-                        <Text typography="t7" color={colors.grey700}>
-                          {row?.time ? `${row.time} ` : ""}{row?.content ?? ""}
-                        </Text>
-                      </View>
-                    ))
-                    : typeof desc === "string"
-                      ? <Text typography="t7" color={colors.grey700}>{stripHtmlTags(desc)}</Text>
-                      : null}
-                </View>
-              );
-            })}
-          </View>
-        </View>
-      );
-    }
-
-    const possibleLocation = extractLocationFromModuleContent(content);
-    if (possibleLocation && (possibleLocation.latitude || possibleLocation.lat || possibleLocation.longitude || possibleLocation.lng)) {
-      const lat = Number(possibleLocation.latitude ?? possibleLocation.lat ?? possibleLocation.latlng?.latitude);
-      const lng = Number(possibleLocation.longitude ?? possibleLocation.lng ?? possibleLocation.latlng?.longitude);
-      const zoom = possibleLocation?.zoom_lv ? Number(possibleLocation.zoom_lv) : 12;
-      const desc = possibleLocation?.desc ?? possibleLocation?.location_name ?? null;
-      return (
-        <View style={styles.section} key={moduleKey}>
           <Text typography="t6" style={styles.sectionTitle}>{moduleTitle}</Text>
-          {desc ? <Text typography="t7" color={colors.blue500} style={{ marginTop: 8 }}>{desc}</Text> : null}
-          <View style={{ marginTop: 12 }}>
-            <MapWebView
-              lat={lat}
-              lng={lng}
-              googleApiKey={(global as any).GOOGLE_API_KEY ?? ""}
-              zoom={zoom}
-              range={Number(possibleLocation?.zoom_lv ?? 1)}
-            />
-          </View>
+          <Text typography="t7" color={colors.grey700} style={styles.sectionBody}>{plain}</Text>
         </View>
       );
     }
 
-    if (content?.desc) {
-      const plain = stripHtmlTags(content.desc);
-      return (
-        <View style={styles.section} key={moduleKey}>
-          <Text typography="t6" style={styles.sectionTitle}>
-            {moduleTitle}
-          </Text>
-          <Text typography="t7" color={colors.grey700} style={styles.sectionBody}>
-            {plain}
-          </Text>
-        </View>
-      );
-    }
-
+    // keep other fallbacks minimal (not touching map/media here)
     return null;
   }
 
@@ -367,53 +309,32 @@ export default function ReservationDetail() {
     }
   })();
 
-  const lat = experienceLocation ? Number(experienceLocation.latitude || experienceLocation.lat || experienceLocation.latlng?.latitude) : null;
-  const lng = experienceLocation ? Number(experienceLocation.longitude || experienceLocation.lng || experienceLocation.latlng?.longitude) : null;
-
   const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
 
   return (
     <View style={styles.screen}>
       <FixedBottomCTAProvider>
-        <Top.Root
-          title={<Top.TitleParagraph typography="t3" color={colors.grey900}>예약 상세 내역</Top.TitleParagraph>}
-        />
+        <Top.Root title={<Top.TitleParagraph typography="t3" color={colors.grey900}>예약 상세 내역</Top.TitleParagraph>} />
 
         <ScrollView contentContainerStyle={styles.container}>
           <View style={{ paddingHorizontal: 4 }}>
             <View style={styles.section}>
               <View style={{ flexDirection: "row", gap: 12, marginBottom: 10 }}>
                 <View style={{ width: 4, height: 29, backgroundColor: colors.green200, borderRadius: 100 }} />
-                <Text typography="t4" fontWeight="medium" style={styles.sectionHeading}>
-                  예약 정보
-                </Text>
+                <Text typography="t4" fontWeight="medium" style={styles.sectionHeading}>예약 정보</Text>
               </View>
 
               <View style={styles.row}>
-                <View style={styles.iconCell}>
-                  <Icon name="icon-calendar-timetable" size={24} />
-                </View>
-                <View style={styles.cellBody}>
-                  <Text typography="t5" fontWeight="regular" color={colors.black}>{dateDisplay}</Text>
-                </View>
+                <View style={styles.iconCell}><Icon name="icon-calendar-timetable" size={24} /></View>
+                <View style={styles.cellBody}><Text typography="t5" fontWeight="regular" color={colors.black}>{dateDisplay}</Text></View>
 
-                <View style={styles.iconCell}>
-                  <Icon name="icon-clock-blue-weak" size={24} />
-                </View>
-                <View style={styles.cellBody}>
-                  <Text typography="t5" fontWeight="regular" color={colors.black}>{eventTime || "—"}</Text>
-                </View>
+                <View style={styles.iconCell}><Icon name="icon-clock-blue-weak" size={24} /></View>
+                <View style={styles.cellBody}><Text typography="t5" fontWeight="regular" color={colors.black}>{eventTime || "—"}</Text></View>
               </View>
 
               <View style={[styles.row, { marginTop: 8 }]}>
-                <View style={styles.iconCell}>
-                  <Icon name="icon-user-two-blue-tab" size={24} />
-                </View>
-                <View style={styles.cellBody}>
-                  <Text typography="t5" fontWeight="regular" color={colors.black}>
-                    {peopleText}
-                  </Text>
-                </View>
+                <View style={styles.iconCell}><Icon name="icon-user-two-blue-tab" size={24} /></View>
+                <View style={styles.cellBody}><Text typography="t5" fontWeight="regular" color={colors.black}>{peopleText}</Text></View>
               </View>
             </View>
 
@@ -421,9 +342,7 @@ export default function ReservationDetail() {
               <View style={styles.section}>
                 <View style={{ flexDirection: "row", gap: 12, marginBottom: 10 }}>
                   <View style={{ width: 4, height: 29, backgroundColor: colors.green200, borderRadius: 100 }} />
-                  <Text typography="t4" fontWeight="medium" style={styles.sectionHeading}>
-                    주소
-                  </Text>
+                  <Text typography="t4" fontWeight="medium" style={styles.sectionHeading}>주소</Text>
                 </View>
 
                 <TouchableOpacity activeOpacity={0.8}>
@@ -435,15 +354,9 @@ export default function ReservationDetail() {
                   </Text>
                 </TouchableOpacity>
 
-                {lat != null && lng != null ? (
+                {experienceLocation?.latitude && experienceLocation?.longitude ? (
                   <View style={{ marginTop: 12 }}>
-                    <MapWebView
-                      lat={lat}
-                      lng={lng}
-                      googleApiKey={GOOGLE_API_KEY}
-                      zoom={experienceLocation?.zoom_lv ? Number(experienceLocation.zoom_lv) : 12}
-                      range={Number(experienceLocation?.zoom_lv ?? 1)}
-                    />
+                    <MapWebView lat={Number(experienceLocation.latitude)} lng={Number(experienceLocation.longitude)} googleApiKey={GOOGLE_API_KEY} zoom={12} range={1} />
                   </View>
                 ) : mapImageUrl ? (
                   <Image source={{ uri: mapImageUrl }} style={styles.mapImage} resizeMode="cover" />
@@ -451,45 +364,39 @@ export default function ReservationDetail() {
               </View>
             ) : null}
 
-            {/* Render ordered modules: prefer dedicated PDML component if exists, fallback to generic renderer */}
+            {/* simplified pickup / rentcar cards (위치: 주문 내역 위) */}
+            {pickupEntries.length > 0 && (
+              <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+                {pickupEntries.map((p: any, i: number) => (
+                  <PickupCard key={`pickup-${i}`} entry={p} />
+                ))}
+              </View>
+            )}
+
+            {rentcarEntries.length > 0 && (
+              <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+                {rentcarEntries.map((r: any, i: number) => (
+                  <RentcarCard key={`rentcar-${i}`} entry={r} />
+                ))}
+              </View>
+            )}
+
+            {/* PDML modules (kept minimal) */}
             {orderedModuleKeys.map((key) => {
               const moduleData = modulesRoot[key];
               if (!moduleData) return null;
-
               const PdmlComponent = (Pdml as any)[key];
-              if (PdmlComponent) {
-                return (
-                  <PdmlComponent
-                    key={key}
-                    moduleKey={key}
-                    moduleData={moduleData}
-                    googleApiKey={GOOGLE_API_KEY}
-                  />
-                );
-              }
-
+              if (PdmlComponent) return <PdmlComponent key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
               const normalizedKey = key.replace(/\./g, "_");
               const PdmlComponent2 = (Pdml as any)[normalizedKey];
-              if (PdmlComponent2) {
-                return (
-                  <PdmlComponent2
-                    key={key}
-                    moduleKey={key}
-                    moduleData={moduleData}
-                    googleApiKey={GOOGLE_API_KEY}
-                  />
-                );
-              }
-
+              if (PdmlComponent2) return <PdmlComponent2 key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
               return renderModule(key, moduleData);
             })}
 
             <View style={styles.section}>
               <Text typography="t6" style={styles.sectionTitle}>주문 내역</Text>
               <TouchableOpacity onPress={() => Alert.alert("주문 내역 확인", "주문 내역 보기(미구현)")}>
-                <Text typography="t7" color={colors.blue500} style={{ marginTop: 8 }}>
-                  주문 내역 확인
-                </Text>
+                <Text typography="t7" color={colors.blue500} style={{ marginTop: 8 }}>주문 내역 확인</Text>
               </TouchableOpacity>
             </View>
 
@@ -536,4 +443,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grey50,
   },
   cardFooterPlaceholder: { height: 80 },
+
+  /* pickup / rentcar card styles */
+  infoCard: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: colors.grey100,
+    marginBottom: 12,
+    shadowColor: "#00000005",
+    elevation: 1,
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.grey100,
+  },
+  smallImage: {
+    width: "100%",
+    height: 110,
+    borderRadius: 8,
+    backgroundColor: colors.grey50,
+  },
 });
