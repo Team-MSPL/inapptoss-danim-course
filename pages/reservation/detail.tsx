@@ -200,10 +200,7 @@ export default function ReservationDetail() {
   const lat = location ? Number(location.latitude || location.lat || location.latlng?.latitude) : null;
   const lng = location ? Number(location.longitude || location.lng || location.latlng?.longitude) : null;
 
-  const GOOGLE_API_KEY =
-    (global as any).GOOGLE_API_KEY ??
-    (process.env && (process.env.GOOGLE_API_KEY as unknown as string)) ??
-    "";
+  const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
 
   return (
     <View style={styles.screen}>
@@ -267,8 +264,6 @@ export default function ReservationDetail() {
                   range={Number(location?.zoom_lv ?? 1)}
                 />
               </View>
-            ) : mapImageUrl ? (
-              <Image source={{ uri: mapImageUrl }} style={styles.mapImage} resizeMode="cover" />
             ) : null}
           </View>
         ) : null}
