@@ -28,6 +28,45 @@ function ProductSelectSpec() {
     return { ...pre };
   });
 
+  // If there are no selectable specs (specs.length < 2) immediately navigate to reservation
+  useEffect(() => {
+    if (!pkgData) return;
+    if ((specs?.length ?? 0) < 2) {
+      // No option groups to select -> navigate directly
+      const matchedSkuIndex = (() => {
+        // attempt to find a default SKU index based on initialSelectedSpecs or empty selection
+        const entries = Object.entries(selectedMap);
+        if (entries.length === 0) return null;
+        for (let i = 0; i < skus.length; i++) {
+          const sku = skus[i];
+          const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? [];
+          const ok = entries.every(([spec_oid, spec_item_oid]) =>
+            refs.some(r => String(r.spec_item_id) === String(spec_oid) && String(r.spec_value_id) === String(spec_item_oid))
+          );
+          if (ok) return i;
+        }
+        return null;
+      })();
+
+      // navigate with or without matchedSkuIndex
+      navigation.navigate('/product/reservation', {
+        prod_no: params?.prod_no ?? pkgData?.prod_no,
+        pkg_no: params?.pkg_no ?? (pkgData?.pkg && pkgData.pkg[0]?.pkg_no) ?? pkgData?.pkg_no,
+        pkgData,
+        date_setting: params?.date_setting ?? null,
+        max_date: params?.max_date ?? null,
+        min_date: params?.min_date ?? null,
+        has_ticket_combinations: false,
+        selectedSpecs: selectedMap,
+        selectedSkuIndex: matchedSkuIndex,
+        selectedSku: matchedSkuIndex != null ? skus[matchedSkuIndex] : undefined,
+        item_unit: params?.item_unit ?? null,
+      });
+    }
+    // run once on mount dependent on pkgData/specs length
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pkgData]);
+
   // Helper: find the ticket spec with EXACT title "티켓 종류" (case-insensitive, trimmed)
   const ticketSpec = useMemo(() => {
     return specs.find(s => {
@@ -131,7 +170,7 @@ function ProductSelectSpec() {
       if (requiredSpecs.length === 0) {
         navigation.navigate('/product/reservation', {
           prod_no: params?.prod_no ?? pkgData?.prod_no,
-          pkg_no: params?.pkg_no ?? pkgData?.pkg?.[0]?.pkg_no,
+          pkg_no: params?.pkg_no ?? (pkgData?.pkg && pkgData.pkg[0]?.pkg_no) ?? pkgData?.pkg_no,
           pkgData,
           date_setting: params?.date_setting ?? null,
           max_date: params?.max_date ?? null,
@@ -150,7 +189,7 @@ function ProductSelectSpec() {
       // Otherwise navigate with combos
       navigation.navigate('/product/reservation', {
         prod_no: params?.prod_no ?? pkgData?.prod_no,
-        pkg_no: params?.pkg_no ?? pkgData?.pkg?.[0]?.pkg_no,
+        pkg_no: params?.pkg_no ?? (pkgData?.pkg && pkgData.pkg[0]?.pkg_no) ?? pkgData?.pkg_no,
         pkgData,
         date_setting: params?.date_setting ?? null,
         max_date: params?.max_date ?? null,
@@ -177,7 +216,7 @@ function ProductSelectSpec() {
 
     navigation.navigate('/product/reservation', {
       prod_no: params?.prod_no ?? pkgData?.prod_no,
-      pkg_no: params?.pkg_no ?? pkgData?.pkg?.[0]?.pkg_no,
+      pkg_no: params?.pkg_no ?? (pkgData?.pkg && pkgData.pkg[0]?.pkg_no) ?? pkgData?.pkg_no,
       pkgData,
       date_setting: params?.date_setting ?? null,
       max_date: params?.max_date ?? null,
