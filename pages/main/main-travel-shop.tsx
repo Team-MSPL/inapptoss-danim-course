@@ -436,10 +436,14 @@ export default function MainTravelShop() {
         onRefresh={onRefresh}
         ListFooterComponent={
           (productList.length < totalCountRef.current) ? (
-            <View style={{ paddingVertical: 20, alignItems: 'center' }}>
-              <Button onPress={handleLoadMore} loading={isLoadingMore}>
-                더 불러오기
-              </Button>
+            <View style={{ paddingVertical: 20, alignItems: 'center', alignSelf: 'center' }}>
+              <TouchableOpacity
+                style={{backgroundColor: 'white', width: Dimensions.get('window').width, height: 180, alignItems: 'center'}}
+                onPress={handleLoadMore}
+                disabled={isLoadingMore}
+              >
+                <Text typography='t5' fontWeight='bold'>더 불러오기</Text>
+              </TouchableOpacity>
             </View>
           ) : null
         }
