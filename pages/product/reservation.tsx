@@ -361,11 +361,20 @@ function ProductReservation() {
 
   // selection handler: supports single-day (default) and range ("02")
   const handleDayPress = (cell: any) => {
-    if (!cell || cell.soldOut) return;
+    if (!cell) return;
+
+    // compute whether this cell is selectable (has price or time options and not sold out)
+    const entry = getCalendarEntryForDateBySkuPreference(cell.date);
+    const timeOpts = extractTimeOptionsFromEntry(entry);
+    const priceInfo = getPriceFromEntry(entry);
+    const hasPrice = (timeOpts && timeOpts.length > 0) || (priceInfo && priceInfo.display !== undefined && priceInfo.display !== null);
+
+    // If no price and no time options, do nothing
+    if (!hasPrice || cell.soldOut) return;
+
     const dateStr = cell.date;
 
     // If this date has time options, open modal for time selection like before
-    const entry = cell.rawCal;
     const options = extractTimeOptionsFromEntry(entry);
     if (options && options.length > 0) {
       // For range mode we still allow time selection only when selecting a single date (treat as s_date==e_date)
@@ -578,6 +587,17 @@ function ProductReservation() {
     return {};
   };
 
+  // helper to determine if a date has price or time options (selectable)
+  const hasPriceOrTimeForDate = (dateStr: string) => {
+    const entry = getCalendarEntryForDateBySkuPreference(dateStr);
+    if (!entry) return false;
+    // time options available?
+    const timeOpts = extractTimeOptionsFromEntry(entry);
+    if (timeOpts && timeOpts.length > 0) return true;
+    const priceInfo = getPriceFromEntry(entry);
+    return priceInfo && priceInfo.display !== undefined && priceInfo.display !== null;
+  };
+
   // loading / error UI
   if (loading) {
     return (
@@ -639,11 +659,14 @@ function ProductReservation() {
                     return <View key={j} style={{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center' }} />;
                   }
 
-                  if (cell.soldOut) {
+                  // Determine if this cell is selectable: not sold out AND has price or time options
+                  const selectable = !cell.soldOut && hasPriceOrTimeForDate(cell.date);
+
+                  if (cell.soldOut || !selectable) {
                     return (
                       <View key={j} style={{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center' }}>
                         <Text style={{ color: colors.grey300, fontSize: 15 }}>{cell.day}</Text>
-                        <Text style={{ color: colors.grey300, fontSize: 12 }}>매진</Text>
+                        <Text style={{ color: colors.grey300, fontSize: 12 }}>{cell.soldOut ? '매진' : '-'}</Text>
                       </View>
                     );
                   }
@@ -659,6 +682,7 @@ function ProductReservation() {
                       key={j}
                       style={[{ width: 34, height: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 8 }, cellStyle]}
                       onPress={() => handleDayPress(cell)}
+                      activeOpacity={0.8}
                     >
                       <Text style={{
                         fontWeight: isSel ? 'bold' : 'normal',
