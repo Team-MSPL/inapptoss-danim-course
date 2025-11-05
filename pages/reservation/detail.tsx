@@ -311,6 +311,15 @@ export default function ReservationDetail() {
 
   const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
 
+  function onOrderDetail() {
+    navigation.navigate("/reservation/order-detail", {
+      order_no: params.order_no,
+      dtl: params.dtl,
+      dtlInfo: params.dtlInfo,
+      listItem: params.listItem,
+    });
+  }
+
   return (
     <View style={styles.screen}>
       <FixedBottomCTAProvider>
@@ -394,8 +403,11 @@ export default function ReservationDetail() {
             })}
 
             <View style={styles.section}>
-              <Text typography="t6" style={styles.sectionTitle}>주문 내역</Text>
-              <TouchableOpacity onPress={() => Alert.alert("주문 내역 확인", "주문 내역 보기(미구현)")}>
+              <View style={{ flexDirection: "row", gap: 12, marginBottom: 10 }}>
+                <View style={{ width: 4, height: 29, backgroundColor: colors.green200, borderRadius: 100 }} />
+                <Text typography="t5" style={styles.sectionTitle}>주문 내역</Text>
+              </View>
+              <TouchableOpacity onPress={onOrderDetail}>
                 <Text typography="t7" color={colors.blue500} style={{ marginTop: 8 }}>주문 내역 확인</Text>
               </TouchableOpacity>
             </View>
@@ -420,7 +432,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: 8,
     color: colors.grey800,
-    fontSize: 16,
     lineHeight: 22,
     fontWeight: "600",
   },
