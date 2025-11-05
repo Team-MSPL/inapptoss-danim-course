@@ -284,15 +284,13 @@ export default function ReservationDetail() {
       Alert.alert("취소 불가", "이 상품은 취소할 수 없습니다.");
       return;
     }
-    Alert.alert("취소 요청", "예약을 취소하시겠습니까?", [
-      { text: "아니오", style: "cancel" },
-      {
-        text: "예",
-        onPress: () => {
-          Alert.alert("취소 완료", "예약 취소 요청이 접수되었습니다.");
-        },
-      },
-    ]);
+
+    navigation.navigate("/reservation/cancel", {
+      order_no: params.order_no,
+      dtl: params.dtl,
+      dtlInfo: params.dtlInfo,
+      listItem: params.listItem,
+    });
   }
 
   const dateDisplay = (() => {
