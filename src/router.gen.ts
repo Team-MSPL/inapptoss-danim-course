@@ -45,6 +45,8 @@ import { Route as _ProductPeopleRoute } from '../pages/product/people';
 import { Route as _ProductReservationRoute } from '../pages/product/reservation';
 import { Route as _ProductSelectSpecRoute } from '../pages/product/select-spec';
 import { Route as _RecommendPlaceRoute } from '../pages/recommend-place';
+import { Route as _ReservationCancelFailRoute } from '../pages/reservation/cancel-fail';
+import { Route as _ReservationCancelSuccessRoute } from '../pages/reservation/cancel-success';
 import { Route as _ReservationCancelRoute } from '../pages/reservation/cancel';
 import { Route as _ReservationDetailRoute } from '../pages/reservation/detail';
 import { Route as _ReservationOrderDetailRoute } from '../pages/reservation/order-detail';
@@ -98,6 +100,8 @@ declare module '@granite-js/react-native' {
     '/product/reservation': ReturnType<typeof _ProductReservationRoute.useParams>;
     '/product/select-spec': ReturnType<typeof _ProductSelectSpecRoute.useParams>;
     '/recommend-place': ReturnType<typeof _RecommendPlaceRoute.useParams>;
+    '/reservation/cancel-fail': ReturnType<typeof _ReservationCancelFailRoute.useParams>;
+    '/reservation/cancel-success': ReturnType<typeof _ReservationCancelSuccessRoute.useParams>;
     '/reservation/cancel': ReturnType<typeof _ReservationCancelRoute.useParams>;
     '/reservation/detail': ReturnType<typeof _ReservationDetailRoute.useParams>;
     '/reservation/order-detail': ReturnType<typeof _ReservationOrderDetailRoute.useParams>;

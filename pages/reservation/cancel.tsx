@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -19,6 +19,8 @@ import {
   useBottomSheet,
   BottomSheet,
 } from "@toss-design-system/react-native";
+import axiosAuth from "../../redux/api";
+import MiniProductCard from "../../components/product/miniProductCard";
 
 export const Route = createRoute("/reservation/cancel", {
   validateParams: (params) => params,
@@ -102,7 +104,7 @@ export default function ReservationCancel() {
   const refundPolicy = useMemo(() => {
     try {
       const root = dtlInfo?.product_summary?.description_module_for_render ?? dtlInfo?.product_summary?.description_module;
-      const policyModule = root?.PMDL_REFUND_POLICY ?? root?.PMDL_REFUND_POLICY;
+      const policyModule = root?.PMDL_REFUND_POLICY;
       const content = policyModule?.content ?? policyModule;
       const props = content?.properties ?? {};
       const policyType = props?.policy_type;
@@ -136,7 +138,27 @@ export default function ReservationCancel() {
     navigation.goBack();
   }
 
-  function onConfirmCancel() {
+  // map selected reason label to cancel_type code
+  // NOTE: You can change this mapping if you prefer different codes.
+  const reasonToCancelType = (reason: string | null): string | null => {
+    if (!reason) return null;
+    switch (reason) {
+      case "예약 실수":
+        return "MC001";
+      case "단순 변심":
+        return "MC004";
+      case "여권/비자 문제":
+        return "MC999";
+      case "개인 사정":
+        return "MC004";
+      case "여행사 사정":
+        return "MC001";
+      default:
+        return "MC999";
+    }
+  };
+
+  async function onConfirmCancel() {
     if (!canCancel) {
       Alert.alert("취소 불가", "이 상품은 취소할 수 없습니다.");
       return;
@@ -150,14 +172,130 @@ export default function ReservationCancel() {
       { text: "아니오", style: "cancel" },
       {
         text: "예",
-        onPress: () => {
-          // TODO: call cancellation API here with params.order_no + selectedReason
-          Alert.alert("취소 접수", "예약 취소 요청이 접수되었습니다.");
-          navigation.goBack();
+        onPress: async () => {
+          const cancelType = reasonToCancelType(selectedReason);
+          const body = {
+            order_no: String(params.order_no ?? ""),
+            cancel_type: cancelType ?? "",
+            // send the chosen reason text as cancel_desc because the API requires a non-empty desc
+            cancel_desc: selectedReason ?? "",
+          };
+
+          // Log the exact payload we will send
+          console.log("[ReservationCancel] sending cancel body:", body);
+
+          try {
+            // Call cancel API
+            const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
+
+            // Log headers we will use (for debugging header-related 400 cases)
+            const headers = { "Content-Type": "application/json", Accept: "application/json" };
+            console.log("[ReservationCancel] POST", CANCEL_API, "headers:", headers);
+
+            // Send JSON explicitly (axios will stringify automatically, but logging the string helps)
+            const bodyString = JSON.stringify(body);
+            console.log("[ReservationCancel] POST bodyString:", bodyString);
+
+            const res = await axiosAuth.post(CANCEL_API, bodyString, {
+              headers,
+            });
+
+            // Log status and response body
+            console.log("[ReservationCancel] Cancel response status:", res?.status);
+            console.log("[ReservationCancel] Cancel response data:", res?.data);
+
+            const data = res?.data ?? {};
+            const ok = data?.result === "00" || data?.result === 0 || data?.success === true;
+            if (ok) {
+              console.log("[ReservationCancel] cancel succeeded, navigating to success screen");
+              navigation.navigate("/reservation/cancel-success", { cancelResponse: data, email: params.dtl.buyer_email });
+            } else {
+              console.warn("[ReservationCancel] cancel returned failure payload, navigating to fail screen", data);
+              navigation.navigate("/reservation/cancel-fail", { cancelResponse: data });
+            }
+          } catch (err: any) {
+            // axios error can contain err.response with status/data
+            const status = err?.response?.status;
+            const respData = err?.response?.data;
+            console.error("[ReservationCancel] Cancel API error - message:", err?.message);
+            console.error("[ReservationCancel] Cancel API error - status:", status);
+            console.error("[ReservationCancel] Cancel API error - response data:", respData);
+            // Also print the entire error object for deep inspection
+            console.error("[ReservationCancel] Cancel API error - full error:", err);
+
+            // Navigate to fail screen and pass error details for debugging/UX
+            navigation.navigate("/reservation/cancel-fail", {
+              error: String(err?.message ?? "Unknown error"),
+              status,
+              response: respData,
+            });
+          }
         },
       },
     ]);
   }
+
+  // -------------------------
+  // MiniProductCard: fetch product by prod_no from dtl and display above cancel reason
+  // -------------------------
+  const [product, setProduct] = useState<any | null>(null);
+  const [productLoading, setProductLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchProduct(prodNo: number) {
+      setProductLoading(true);
+      try {
+        const QUERY_PRODUCT_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`;
+        const res = await axiosAuth.post(
+          QUERY_PRODUCT_API,
+          {
+            prod_no: prodNo,
+            locale: "kr",
+            state: "KR",
+          },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        const data = res?.data ?? {};
+        const prod = data?.prod ?? null;
+        if (mounted) {
+          if (prod) {
+            // Prepare props for MiniProductCard
+            const originPrice = prod.b2c_min_price ?? prod.b2c_price ?? 0;
+            const salePrice = prod.b2b_min_price ?? prod.b2b_price ?? 0;
+            const percent =
+              originPrice > 0 && originPrice > salePrice
+                ? Math.floor(100 - (salePrice / originPrice) * 100)
+                : 0;
+            const mini = {
+              image: prod.prod_img_url ?? prod.prod_img ?? "",
+              title: prod.prod_name ?? prod.prod_nm ?? "",
+              originPrice,
+              salePrice,
+              percent,
+              perPersonText: prod.unit ? String(prod.unit) : prod.introduction ?? "",
+            };
+            setProduct(mini);
+          } else {
+            setProduct(null);
+          }
+        }
+      } catch (err) {
+        console.warn("[ReservationCancel] QueryProduct failed", err);
+        if (mounted) setProduct(null);
+      } finally {
+        if (mounted) setProductLoading(false);
+      }
+    }
+
+    const prodNo = Number(dtl?.prod_no ?? dtl?.prodNo ?? 0);
+    if (prodNo > 0) {
+      fetchProduct(prodNo);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [dtl]);
 
   return (
     <View style={styles.screen}>
@@ -172,6 +310,25 @@ export default function ReservationCancel() {
 
         {/* FixedBottomCTAProvider handles scrolling so we place content directly */}
         <View style={styles.container}>
+          {/* Mini product card (if available) */}
+          {/* TODO: 디자인 적용 */}
+          {product ? (
+            <View style={{ marginBottom: 16 }}>
+              <MiniProductCard
+                image={product.image}
+                title={product.title}
+                originPrice={product.originPrice}
+                salePrice={product.salePrice}
+                percent={product.percent}
+                perPersonText={product.perPersonText}
+              />
+            </View>
+          ) : productLoading ? (
+            <View style={{ height: 140, justifyContent: "center", alignItems: "center", marginBottom: 12 }}>
+              <Text typography="t7" color={colors.grey500}>상품 정보를 불러오는 중...</Text>
+            </View>
+          ) : null}
+
           {/* Section: 취소 사유 (uses bottom sheet selection) */}
           <View style={styles.section}>
             <View style={styles.sectionHeadingRow}>
@@ -316,5 +473,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
   },
-  totalAmount: { color: "#3b5afe" },
+  totalAmount: { color: '#5350FF' },
 });
