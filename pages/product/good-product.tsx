@@ -18,7 +18,8 @@ import {
   colors,
   Badge,
   Skeleton,
-  AnimateSkeleton, FixedBottomCTA,
+  AnimateSkeleton,
+  FixedBottomCTA,
 } from "@toss-design-system/react-native";
 import { parseKkdayCategoryKorean } from "../../kkday/kkdayCategoryToKorean";
 import {
@@ -29,13 +30,13 @@ import {
   earliestBookingText,
 } from "../../components/product/good-product-function";
 import { useProductStore } from "../../zustand/useProductStore";
-import Pdml from "../../components/pdml"; // reuse PDML components from detail
+import Pdml from "../../components/pdml"; // reuse PDML components as detail
 import MapWebView from "../../components/product/map-webview";
 import WebView from "@granite-js/native/react-native-webview";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// Use import.meta.env as requested
+// Use import.meta.env directly as requested
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 const QUERY_PRODUCT_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`;
 const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY ?? "";
@@ -60,6 +61,84 @@ function stripHtmlTags(html?: string) {
   const withBreaks = withoutStyles.replace(/<(\/)?(p|div|br|li|ul|ol|tr|table|h[1-6])[^>]*>/gi, "\n");
   const stripped = withBreaks.replace(/<\/?[^>]+(>|$)/g, "");
   return stripped.replace(/\n\s*\n+/g, "\n").trim();
+}
+
+/**
+ * Decode a few common HTML entities and numeric entities.
+ * Add mappings as needed.
+ */
+function decodeHTMLEntities(str: string) {
+  if (!str) return str;
+  let s = String(str);
+  const entityMap: { [k: string]: string } = {
+    "&nbsp;": " ",
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&apos;": "'",
+    // add more if needed
+  };
+  s = s.replace(/&[a-zA-Z0-9#]+;/g, (m) => {
+    if (entityMap[m]) return entityMap[m];
+    const numMatch = m.match(/^&#(\d+);$/);
+    if (numMatch) {
+      try {
+        return String.fromCharCode(Number(numMatch[1]));
+      } catch {
+        return m;
+      }
+    }
+    const hexMatch = m.match(/^&#x([0-9a-fA-F]+);$/);
+    if (hexMatch) {
+      try {
+        return String.fromCharCode(parseInt(hexMatch[1], 16));
+      } catch {
+        return m;
+      }
+    }
+    return m;
+  });
+  return s;
+}
+
+/**
+ * Format an HTML fragment from product.introduction into an array of lines.
+ * - Converts </li>, </p>, <br> to newlines
+ * - Removes tags
+ * - Decodes HTML entities (&amp; etc.)
+ * - Normalizes whitespace
+ * - Returns array of non-empty lines
+ */
+function formatIntroduction(html?: string): string[] {
+  if (!html) return [];
+  let s = String(html);
+
+  // Ensure list items and paragraphs break into lines
+  s = s.replace(/<\/li>/gi, "\n");
+  s = s.replace(/<\/p>/gi, "\n");
+  s = s.replace(/<br\s*\/?>/gi, "\n");
+
+  // Remove opening <li> and other tags but keep the text content
+  s = s.replace(/<li[^>]*>/gi, "");
+  // Remove other tags but keep their content (we already converted some tags to newlines)
+  s = s.replace(/<[^>]+>/gi, "");
+
+  // Decode HTML entities like &amp; &nbsp;
+  s = decodeHTMLEntities(s);
+
+  // Normalize whitespace and newlines
+  s = s.replace(/\r\n|\r/g, "\n");
+  // collapse multiple newlines into one
+  s = s.replace(/\n\s*\n+/g, "\n");
+  // trim each line and remove empty lines
+  const lines = s
+    .split("\n")
+    .map((l) => l.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  return lines;
 }
 
 function buildImageUrl(src?: string | null) {
@@ -472,13 +551,16 @@ export default function ProductGoodProduct() {
 
         <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
         <View style={{padding: 24}}>
-          <Text typography='t5' fontWeight='medium' style={{ marginBottom: 30 }}>
-            {(product.introduction ?? "")
-              .replace(/<[^>]+>/g, "")
-              .replace(/&nbsp;/g, " ")
-              .replace(/\s+/g, " ")
-              .trim()}
-          </Text>
+          {/* Render introduction with bullet handling and HTML entity decoding */}
+          {(() => {
+            const lines = formatIntroduction(product?.introduction ?? "");
+            if (lines.length === 0) return null;
+            return lines.map((ln, i) => (
+              <Text key={i} typography="t5" fontWeight="medium" style={{ marginBottom: 8 }}>
+                {`• ${ln}`}
+              </Text>
+            ));
+          })()}
         </View>
 
         <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
