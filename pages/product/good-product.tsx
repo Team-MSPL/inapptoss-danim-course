@@ -37,7 +37,7 @@ import WebView from "@granite-js/native/react-native-webview";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// Use import.meta.env as requested
+// Use import.meta.env directly as requested
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 const QUERY_PRODUCT_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`;
 const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY ?? "";
@@ -184,7 +184,7 @@ export default function ProductGoodProduct() {
   const flatListRef = useRef<FlatList>(null);
   const [imgIndex, setImgIndex] = useState(0);
 
-  // New: control whether PDML (상품 설명 등) is expanded
+  // New: control whether PDML (상품 설명 etc.) is expanded
   const [pdmlExpanded, setPdmlExpanded] = useState(false);
 
   useEffect(() => {
@@ -281,7 +281,22 @@ export default function ProductGoodProduct() {
     return payload;
   };
 
-  // Reservation handlers (unchanged)
+  // Helper to find SKU index for a selection map (used for ticket combos)
+  const findSkuIndexForSelection = (skus: any[], selection: Record<string, string>): number | null => {
+    const entries = Object.entries(selection);
+    if (entries.length === 0) return null;
+    for (let i = 0; i < skus.length; i++) {
+      const sku = skus[i];
+      const refs: Array<{ spec_item_id?: string; spec_value_id?: string }> = sku?.specs_ref ?? [];
+      const ok = entries.every(([spec_oid, spec_item_oid]) =>
+        refs.some(r => String(r.spec_item_id) === String(spec_oid) && String(r.spec_value_id) === String(spec_item_oid))
+      );
+      if (ok) return i;
+    }
+    return null;
+  };
+
+  // Reservation handlers
   const handleReservePress = async () => {
     if (!selectedPkgNo) return;
     setReservationLoading(true);
@@ -319,9 +334,58 @@ export default function ProductGoodProduct() {
         firstItem?.b2c_price ??
         null;
 
-      const specs = firstItem?.specs;
+      const specs = firstItem?.specs ?? [];
+      const skus = firstItem?.skus ?? [];
       const payloadDateSetting = extractDateSettingPayload(product ?? {});
 
+      // NEW: If the only spec is the ticket spec ("티켓 종류"), handle it here and DO NOT navigate to select-spec.
+      const isOnlyTicketSpec = Array.isArray(specs) && specs.length === 1 && typeof specs[0]?.spec_title === "string" && specs[0].spec_title.trim().toLowerCase() === "티켓 종류";
+
+      if (isOnlyTicketSpec) {
+        const ticketSpec = specs[0];
+        const combos: Array<{ selectedSpecs: Record<string, string>; matchedSkuIndex: number; matchedSku: any }> = [];
+
+        for (const ticketItem of ticketSpec.spec_items ?? []) {
+          const sel: Record<string, string> = { [ticketSpec.spec_oid]: ticketItem.spec_item_oid };
+          const skuIndex = findSkuIndexForSelection(skus, sel);
+          if (skuIndex != null) {
+            combos.push({
+              selectedSpecs: sel,
+              matchedSkuIndex: skuIndex,
+              matchedSku: skus[skuIndex],
+            });
+          }
+        }
+
+        if (combos.length === 0) {
+          Alert.alert('조합 없음', '상품의 티켓 조합을 찾을 수 없습니다. 다른 옵션을 선택해주세요.');
+          setReservationLoading(false);
+          return;
+        }
+
+        // Navigate directly to reservation with ticket_combinations (select-spec page is skipped)
+        navigation.navigate("/product/reservation", {
+          prod_no: product?.prod_no ?? params.prod_no,
+          prod_name: product?.prod_name ?? params.prod_name,
+          pkg_no: selectedPkgNo,
+          pkgData: data,
+          ...(payloadDateSetting.date_setting ? { date_setting: payloadDateSetting.date_setting } : {}),
+          ...(payloadDateSetting.min_date !== undefined ? { min_date: payloadDateSetting.min_date } : {}),
+          ...(payloadDateSetting.max_date !== undefined ? { max_date: payloadDateSetting.max_date } : {}),
+          has_ticket_combinations: true,
+          ticket_combinations: combos.map(c => ({
+            selectedSpecs: c.selectedSpecs,
+            matchedSkuIndex: c.matchedSkuIndex,
+            matchedSku: c.matchedSku,
+          })),
+          ...(itemUnit != null ? { item_unit: itemUnit } : {}),
+        });
+
+        setReservationLoading(false);
+        return;
+      }
+
+      // Existing behavior: if there's exactly 1 spec and it's "spec-single", go straight to reservation
       if (Array.isArray(specs) && specs.length === 1) {
         const onlySpec = specs[0];
         if (onlySpec?.spec_oid === "spec-single") {
@@ -340,6 +404,7 @@ export default function ProductGoodProduct() {
         }
       }
 
+      // If there are specs, go to select-spec (unchanged)
       if (Array.isArray(specs) && specs.length >= 1) {
         navigation.navigate("/product/select-spec", {
           prod_no: product?.prod_no ?? params.prod_no,
@@ -355,6 +420,7 @@ export default function ProductGoodProduct() {
         return;
       }
 
+      // Fallback: go to select-spec (keeps previous default behavior)
       navigation.navigate("/product/select-spec", {
         prod_no: product?.prod_no ?? params.prod_no,
         prod_name: product?.prod_name ?? params.prod_name,

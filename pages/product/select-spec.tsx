@@ -28,13 +28,23 @@ function ProductSelectSpec() {
     return { ...pre };
   });
 
-  // If there are no selectable specs (specs.length < 2) immediately navigate to reservation
+  // Helper: find the ticket spec with EXACT title "티켓 종류" (case-insensitive, trimmed)
+  const ticketSpec = useMemo(() => {
+    return specs.find(s => {
+      if (!s?.spec_title) return false;
+      const title = String(s.spec_title).trim().toLowerCase();
+      return title === '티켓 종류';
+    }) ?? null;
+  }, [specs]);
+
+  // If there are no selectable specs (excluding ticketSpec) immediately navigate to reservation
   useEffect(() => {
     if (!pkgData) return;
-    if ((specs?.length ?? 0) < 2) {
-      // No option groups to select -> navigate directly
+
+    const selectableSpecs = specs.filter(s => !(ticketSpec && s.spec_oid === ticketSpec.spec_oid));
+    if ((selectableSpecs?.length ?? 0) < 1) {
+      // No option groups to select (excluding ticketSpec) -> navigate directly
       const matchedSkuIndex = (() => {
-        // attempt to find a default SKU index based on initialSelectedSpecs or empty selection
         const entries = Object.entries(selectedMap);
         if (entries.length === 0) return null;
         for (let i = 0; i < skus.length; i++) {
@@ -48,7 +58,6 @@ function ProductSelectSpec() {
         return null;
       })();
 
-      // navigate with or without matchedSkuIndex
       navigation.navigate('/product/reservation', {
         prod_no: params?.prod_no ?? pkgData?.prod_no,
         pkg_no: params?.pkg_no ?? (pkgData?.pkg && pkgData.pkg[0]?.pkg_no) ?? pkgData?.pkg_no,
@@ -56,7 +65,8 @@ function ProductSelectSpec() {
         date_setting: params?.date_setting ?? null,
         max_date: params?.max_date ?? null,
         min_date: params?.min_date ?? null,
-        has_ticket_combinations: false,
+        has_ticket_combinations: Array.isArray(ticketSpec?.spec_items) && ticketSpec?.spec_items.length > 0,
+        // If ticketSpec exists, reservation page (or upstream code) can handle ticket combinations.
         selectedSpecs: selectedMap,
         selectedSkuIndex: matchedSkuIndex,
         selectedSku: matchedSkuIndex != null ? skus[matchedSkuIndex] : undefined,
@@ -65,16 +75,7 @@ function ProductSelectSpec() {
     }
     // run once on mount dependent on pkgData/specs length
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pkgData]);
-
-  // Helper: find the ticket spec with EXACT title "티켓 종류" (case-insensitive, trimmed)
-  const ticketSpec = useMemo(() => {
-    return specs.find(s => {
-      if (!s?.spec_title) return false;
-      const title = String(s.spec_title).trim().toLowerCase();
-      return title === '티켓 종류';
-    }) ?? null;
-  }, [specs]);
+  }, [pkgData, specs, ticketSpec]);
 
   // Compute matched SKU index for current full selection (same logic as before)
   const matchedSkuIndex = useMemo(() => {
@@ -334,5 +335,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
   },
 });
-
-export default ProductSelectSpec;
