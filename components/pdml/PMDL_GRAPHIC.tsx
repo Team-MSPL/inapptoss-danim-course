@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image, TouchableOpacity } from "react-native";
 import ModuleShell from "./ModuleShell";
 import { Text, colors } from "@toss-design-system/react-native";
@@ -6,9 +6,10 @@ import { buildImageUrl } from "../../utill/imageUrl";
 
 /**
  * PMDL_GRAPHIC (updated)
- * - uses buildImageUrl for all images
- * - onError logging
+ * - shows a centered white placeholder box with "이미지 로드 실패" text when image fails to load
+ * - no console warnings on image load failure
  */
+
 function stripHtmlTags(html?: string) {
   if (!html) return "";
   return String(html).replace(/<\/?[^>]+(>|$)/g, "").trim();
@@ -29,6 +30,9 @@ export default function PMDL_GRAPHIC({
   const list = Array.isArray(content?.list) ? content.list : [];
   if (list.length === 0) return null;
 
+  // track failed image loads by index
+  const [failedMap, setFailedMap] = useState<Record<number, boolean>>({});
+
   return (
     <ModuleShell title={title}>
       <View style={{ marginTop: 4 }}>
@@ -38,18 +42,57 @@ export default function PMDL_GRAPHIC({
           const firstMedia = mediaArr[0] ?? null;
           const src = firstMedia?.source_content ?? null;
           const uri = buildImageUrl(src);
+
+          const isFailed = Boolean(failedMap[idx]);
+
           return (
             <View key={idx} style={{ marginBottom: 20 }}>
-              {desc ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 12 }}>{stripHtmlTags(desc)}</Text> : null}
+              {desc ? (
+                <Text typography="t7" color={colors.grey800} style={{ marginBottom: 12 }}>
+                  {stripHtmlTags(desc)}
+                </Text>
+              ) : null}
+
               {uri ? (
-                <TouchableOpacity activeOpacity={0.9} onPress={() => onOpenMedia?.(uri)}>
-                  <Image
-                    source={{ uri }}
-                    style={{ width: "100%", aspectRatio: 16 / 9, borderRadius: 10, backgroundColor: colors.grey50 }}
-                    resizeMode="cover"
-                    onError={(e) => console.warn("[PMDL_GRAPHIC] image load error:", uri, e.nativeEvent)}
-                  />
-                </TouchableOpacity>
+                isFailed ? (
+                  // placeholder box shown when image failed to load
+                  <View
+                    style={{
+                      width: "100%",
+                      aspectRatio: 16 / 9,
+                      borderRadius: 10,
+                      backgroundColor: "#fff",
+                      borderWidth: 1,
+                      borderColor: colors.grey100,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text typography="t7" color={colors.grey500}>
+                      이미지 로드 실패
+                    </Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => onOpenMedia?.(uri)}
+                  >
+                    <Image
+                      source={{ uri }}
+                      style={{
+                        width: "100%",
+                        aspectRatio: 16 / 9,
+                        borderRadius: 10,
+                        backgroundColor: colors.grey50,
+                      }}
+                      resizeMode="cover"
+                      onError={() => {
+                        // mark this index as failed (no console logs)
+                        setFailedMap((prev) => ({ ...prev, [idx]: true }));
+                      }}
+                    />
+                  </TouchableOpacity>
+                )
               ) : null}
             </View>
           );

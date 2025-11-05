@@ -7,6 +7,7 @@ import {
   Image,
   Alert,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import axiosAuth from "../../redux/api";
@@ -36,7 +37,7 @@ import WebView from "@granite-js/native/react-native-webview";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// Use import.meta.env directly as requested
+// Use import.meta.env as requested
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 const QUERY_PRODUCT_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`;
 const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY ?? "";
@@ -65,7 +66,6 @@ function stripHtmlTags(html?: string) {
 
 /**
  * Decode a few common HTML entities and numeric entities.
- * Add mappings as needed.
  */
 function decodeHTMLEntities(str: string) {
   if (!str) return str;
@@ -78,7 +78,6 @@ function decodeHTMLEntities(str: string) {
     "&quot;": '"',
     "&#39;": "'",
     "&apos;": "'",
-    // add more if needed
   };
   s = s.replace(/&[a-zA-Z0-9#]+;/g, (m) => {
     if (entityMap[m]) return entityMap[m];
@@ -104,35 +103,27 @@ function decodeHTMLEntities(str: string) {
 }
 
 /**
- * Format an HTML fragment from product.introduction into an array of lines.
- * - Converts </li>, </p>, <br> to newlines
- * - Removes tags
- * - Decodes HTML entities (&amp; etc.)
- * - Normalizes whitespace
- * - Returns array of non-empty lines
+ * Convert HTML introduction into array of cleaned lines.
  */
 function formatIntroduction(html?: string): string[] {
   if (!html) return [];
   let s = String(html);
 
-  // Ensure list items and paragraphs break into lines
+  // convert closing tags to newlines
   s = s.replace(/<\/li>/gi, "\n");
   s = s.replace(/<\/p>/gi, "\n");
   s = s.replace(/<br\s*\/?>/gi, "\n");
 
-  // Remove opening <li> and other tags but keep the text content
+  // remove opening li tags and other tags
   s = s.replace(/<li[^>]*>/gi, "");
-  // Remove other tags but keep their content (we already converted some tags to newlines)
   s = s.replace(/<[^>]+>/gi, "");
 
-  // Decode HTML entities like &amp; &nbsp;
+  // decode entities
   s = decodeHTMLEntities(s);
 
-  // Normalize whitespace and newlines
+  // normalize newlines and whitespace
   s = s.replace(/\r\n|\r/g, "\n");
-  // collapse multiple newlines into one
-  s = s.replace(/\n\s*\n+/g, "\n");
-  // trim each line and remove empty lines
+  s = s.replace(/\n\s*\n+/g, "\n"); // collapse multiple newlines
   const lines = s
     .split("\n")
     .map((l) => l.replace(/\s+/g, " ").trim())
@@ -180,7 +171,6 @@ function extractLocationFromModuleContent(moduleContent?: any) {
 }
 
 export default function ProductGoodProduct() {
-  // Hooks (top-level)
   const navigation = useNavigation();
   const params = Route.useParams();
 
@@ -193,7 +183,9 @@ export default function ProductGoodProduct() {
   const setPdt = useProductStore((state) => state.setPdt);
   const flatListRef = useRef<FlatList>(null);
   const [imgIndex, setImgIndex] = useState(0);
-  // end hooks
+
+  // New: control whether PDML (상품 설명 등) is expanded
+  const [pdmlExpanded, setPdmlExpanded] = useState(false);
 
   useEffect(() => {
     async function fetchProductDetail() {
@@ -244,7 +236,7 @@ export default function ProductGoodProduct() {
     }
     if (!product || !product.detail_loaded) fetchProductDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params, product]);
+  }, [params, product, setPdt]);
 
   // Derived values
   const discountPrice = typeof product?.b2b_min_price === "number" ? product.b2b_min_price : Number(product?.b2b_min_price || 0);
@@ -289,7 +281,7 @@ export default function ProductGoodProduct() {
     return payload;
   };
 
-  // Reservation handlers
+  // Reservation handlers (unchanged)
   const handleReservePress = async () => {
     if (!selectedPkgNo) return;
     setReservationLoading(true);
@@ -305,14 +297,17 @@ export default function ProductGoodProduct() {
 
       if (data?.result === "02" || data?.result_code === "02") {
         Alert.alert("지원 불가", "해당 상품은 현재 어플리케이션에서 지원하지 않는 상품입니다.");
+        setReservationLoading(false);
         return;
       }
       if (data?.result === "03" || data?.result_code === "03") {
         Alert.alert("알림", "해당 여행 상품은 현재 판매가 종료되었습니다.");
+        setReservationLoading(false);
         return;
       }
       if (!Array.isArray(data?.item) || data.item.length === 0) {
         Alert.alert("알림", "해당 패키지의 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
+        setReservationLoading(false);
         return;
       }
 
@@ -657,74 +652,99 @@ export default function ProductGoodProduct() {
 
         {/* divider line + PDML section (옵션 선택 아래에 구분선, PDML 렌더) */}
         <View style={{ height: 12, backgroundColor: colors.grey100, width: '100%' }} />
-        <View style={{ paddingHorizontal: 20, paddingTop: 20 }} />
 
-        <View>
-          {orderedModuleKeys.map((key) => {
-            const moduleData = modulesRoot[key];
-            if (!moduleData) return null;
-
-            const PdmlComponent = (Pdml as any)[key];
-            if (PdmlComponent) {
-              return <PdmlComponent key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
-            }
-
-            const normalizedKey = key.replace(/\./g, "_");
-            const PdmlComponent2 = (Pdml as any)[normalizedKey];
-            if (PdmlComponent2) {
-              return <PdmlComponent2 key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
-            }
-
-            // fallback: simple safe render for text/list/media
-            const moduleTitle = moduleData.module_title ?? moduleData.title ?? key;
-            const content = moduleData.content ?? moduleData;
-            if (moduleData?.use_html && content?.type === "text" && content?.desc) {
-              const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/></head><body>${content.desc}</body></html>`;
-              return (
-                <View style={{ paddingHorizontal: 20, marginBottom: 40 }} key={key}>
-                  <Text typography="t6" style={{ marginBottom: 8, color: colors.grey800, fontSize: 16, lineHeight: 22, fontWeight: "600" }}>{moduleTitle}</Text>
-                  <View style={{ height: 200, marginTop: 8, borderRadius: 8, overflow: "hidden", backgroundColor: colors.grey50 }}>
-                    <WebView originWhitelist={["*"]} source={{ html }} style={{ flex: 1 }} javaScriptEnabled domStorageEnabled />
-                  </View>
-                </View>
-              );
-            }
-
-            if (content?.type === "text" && content?.desc) {
-              return (
-                <View style={{ paddingHorizontal: 20, marginBottom: 40 }} key={key}>
-                  <Text typography="t6" style={{ marginBottom: 8, color: colors.grey800, fontSize: 16, lineHeight: 22, fontWeight: "600" }}>{moduleTitle}</Text>
-                  <Text typography="t7" color={colors.grey700}>{stripHtmlTags(content.desc)}</Text>
-                </View>
-              );
-            }
-
-            if (Array.isArray(content?.list) && content.list.length > 0) {
-              return (
-                <View key={key} style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-                  <Text typography="t6" style={{ marginBottom: 8, color: colors.grey800, fontSize: 16, lineHeight: 22, fontWeight: "600" }}>{moduleTitle}</Text>
-                  {content.list.map((it: any, idx: number) => {
-                    const desc = it?.desc ?? "";
-                    const mediaArr = Array.isArray(it?.media) ? it.media : [];
-                    const first = mediaArr[0]?.source_content ?? null;
-                    const uri = buildImageUrl(first);
-                    return (
-                      <View key={idx} style={{ marginBottom: 16 }}>
-                        {desc ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 8 }}>{stripHtmlTags(desc)}</Text> : null}
-                        {uri ? <Image source={{ uri }} style={{ width: "100%", aspectRatio: 16 / 9, borderRadius: 8, backgroundColor: colors.grey50 }} resizeMode="cover" /> : null}
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            }
-
-            return null;
-          })}
+        {/* Toggle button to expand/collapse PDML (centered text with icon) */}
+        <View style={{ paddingVertical: 18, paddingHorizontal: 20 }}>
+          <TouchableOpacity
+            onPress={() => setPdmlExpanded((v) => !v)}
+            style={{
+              alignSelf: "center",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+            }}
+            activeOpacity={0.8}
+          >
+            <Text typography="t5" color={colors.blue600} fontWeight="bold" style={{ textAlign: "center" }}>
+              {pdmlExpanded ? "상품 설명 접기" : "상품 설명 전체보기"}
+            </Text>
+            <Icon
+              name={pdmlExpanded ? "icon-chevron-up" : "icon-chevron-down"}
+              size={18}
+              color={colors.teal400}
+              style={{ marginLeft: 6 }}
+            />
+          </TouchableOpacity>
         </View>
 
-        {/* bottom spacer + CTA */}
-        <View style={{ height: 90 }} />
+        {/* Render PDML only when expanded */}
+        {pdmlExpanded ? (
+          <View>
+            {orderedModuleKeys.map((key) => {
+              const moduleData = modulesRoot[key];
+              if (!moduleData) return null;
+
+              const PdmlComponent = (Pdml as any)[key];
+              if (PdmlComponent) {
+                return <PdmlComponent key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
+              }
+
+              const normalizedKey = key.replace(/\./g, "_");
+              const PdmlComponent2 = (Pdml as any)[normalizedKey];
+              if (PdmlComponent2) {
+                return <PdmlComponent2 key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
+              }
+
+              // fallback: simple safe render for text/list/media
+              const moduleTitle = moduleData.module_title ?? moduleData.title ?? key;
+              const content = moduleData.content ?? moduleData;
+              if (moduleData?.use_html && content?.type === "text" && content?.desc) {
+                const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/></head><body>${content.desc}</body></html>`;
+                return (
+                  <View style={{ paddingHorizontal: 20, marginBottom: 40 }} key={key}>
+                    <Text typography="t6" style={{ marginBottom: 8, color: colors.grey800, fontSize: 16, lineHeight: 22, fontWeight: "600" }}>{moduleTitle}</Text>
+                    <View style={{ height: 200, marginTop: 8, borderRadius: 8, overflow: "hidden", backgroundColor: colors.grey50 }}>
+                      <WebView originWhitelist={["*"]} source={{ html }} style={{ flex: 1 }} javaScriptEnabled domStorageEnabled />
+                    </View>
+                  </View>
+                );
+              }
+
+              if (content?.type === "text" && content?.desc) {
+                return (
+                  <View style={{ paddingHorizontal: 20, marginBottom: 40 }} key={key}>
+                    <Text typography="t6" style={{ marginBottom: 8, color: colors.grey800, fontSize: 16, lineHeight: 22, fontWeight: "600" }}>{moduleTitle}</Text>
+                    <Text typography="t7" color={colors.grey700}>{stripHtmlTags(content.desc)}</Text>
+                  </View>
+                );
+              }
+
+              if (Array.isArray(content?.list) && content.list.length > 0) {
+                return (
+                  <View key={key} style={{ paddingHorizontal: 20, marginBottom: 24 }}>
+                    <Text typography="t6" style={{ marginBottom: 8, color: colors.grey800, fontSize: 16, lineHeight: 22, fontWeight: "600" }}>{moduleTitle}</Text>
+                    {content.list.map((it: any, idx: number) => {
+                      const desc = it?.desc ?? "";
+                      const mediaArr = Array.isArray(it?.media) ? it.media : [];
+                      const first = mediaArr[0]?.source_content ?? null;
+                      const uri = buildImageUrl(first);
+                      return (
+                        <View key={idx} style={{ marginBottom: 16 }}>
+                          {desc ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 8 }}>{stripHtmlTags(desc)}</Text> : null}
+                          {uri ? <Image source={{ uri }} style={{ width: "100%", aspectRatio: 16 / 9, borderRadius: 8, backgroundColor: colors.grey50 }} resizeMode="cover" /> : null}
+                        </View>
+                      );
+                    })}
+                  </View>
+                );
+              }
+
+              return null;
+            })}
+          </View>
+        ) : null}
 
         <FixedBottomCTA onPress={goReservation}>
           {reservationLoading ? '로딩 중...' : '예약하기'}
