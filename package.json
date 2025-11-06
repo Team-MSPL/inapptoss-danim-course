@@ -19,6 +19,7 @@
     "@toss-design-system/react-native": "^1.2.1",
     "axios": "^1.11.0",
     "moment": "^2.30.1",
+    "nanoid": "^5.1.6",
     "react": "^18.2.0",
     "react-native": "^0.72.6",
     "react-native-calendar-picker": "^8.0.5",
@@ -26,6 +27,7 @@
     "react-native-image-picker": "^8.2.1",
     "react-native-linear-gradient": "^2.8.3",
     "react-redux": "^9.2.0",
+    "shortid": "^2.2.17",
     "uuid": "^8.3.2",
     "zustand": "^5.0.8"
   },
@@ -52,6 +54,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "18.3.3",
     "@types/react-native-calendar-picker": "^8.0.0",
+    "@types/shortid": "^2.2.0",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
     "@typescript-eslint/parser": "^8.44.0",
     "eslint": "^9.35.0",

@@ -13,6 +13,7 @@ import {
 import { appLogin } from '@apps-in-toss/framework';
 import { useAppDispatch, useAppSelector } from 'store';
 import { socialConnect, tossUser, travelSliceActions } from '../redux/travle-slice';
+import useAuthStore from "../zustand/useAuthStore";
 
 export const Route = createRoute('/', {
   validateParams: (params) => params,
@@ -43,12 +44,16 @@ export function Index() {
     }
   };
 
+  const setUserKey = useAuthStore((s) => s.setUserKey);
+
   const handleLogin = useCallback(async () => {
     try {
       const { authorizationCode, referrer } = await appLogin();
       const userData = await dispatch(tossUser({ authorizationCode, referrer })).unwrap();
       if (userData?.resultType == 'SUCCESS') {
         await dispatch(socialConnect({ userToken: userData?.success?.userKey }));
+        const userKey = userData.success?.userKey ?? null;
+        setUserKey(userKey);
         navigation.navigate(`/${import.meta.env.APP_START_MODE}`);
       } else {
         open('로그인에 잠시 문제가 생겼어요', {
