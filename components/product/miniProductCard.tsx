@@ -16,18 +16,31 @@ export function MiniProductCard({
                                   percent,
                                   perPersonText,
                                 }: {
-  image?: string;
+  image?: string | string[]; // string 또는 string[] 둘 다 받고 처리
   title: string;
   originPrice?: number;
   salePrice?: number;
   percent?: number;
   perPersonText?: string;
 }) {
+  // 안전한 이미지 URL 결정: image가 배열이면 첫번째, 아니면 문자열 그대로
+  const imageUrl =
+    Array.isArray(image) ? image[0] ?? "" : typeof image === "string" ? image : "";
+
+  // optional: placeholder 로컬 리소스로 대체하려면 여기에서 설정
+  // const placeholder = require('../../assets/placeholder.png');
+  // source = imageUrl ? { uri: imageUrl } : placeholder;
+
   return (
     <View style={styles.cardWrap}>
       <View style={styles.cardInner}>
         <View style={styles.imageCol}>
-          <Image source={{ uri: image[0] ?? "" }} style={styles.image} resizeMode="cover" />
+          <Image
+            // 직접 imageUrl을 사용하도록 변경 (이미지가 없으면 빈 문자열)
+            source={{ uri: imageUrl ?? "" }}
+            style={styles.image}
+            resizeMode="cover"
+          />
           <Badge
             type={"red"}
             badgeStyle="fill"
@@ -68,9 +81,10 @@ export function MiniProductCard({
             </View>
           </View>
 
-          {/*<Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 6 }}>*/}
-          {/*  {perPersonText ?? ""}*/}
-          {/*</Text>*/}
+          {/* 필요하면 perPersonText 노출 */}
+          {/* <Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 6 }}>
+            {perPersonText ?? ""}
+          </Text> */}
         </View>
       </View>
     </View>
