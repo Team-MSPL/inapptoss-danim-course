@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Dimensions } from 'react-native';
 import { Image } from '@granite-js/react-native';
 import { Text, Badge, Icon, colors } from '@toss-design-system/react-native';
+import { parseKkdayCategoryKorean } from '../../kkday/kkdayCategoryToKorean';
 
 export type SmallProduct = {
   prod_no: number | string;
@@ -22,6 +23,9 @@ type HorizontalProductCardProps = {
 };
 
 export default function HorizontalProductCard({ product, onPress, style }: HorizontalProductCardProps) {
+  const CARD_WIDTH = 165;
+  const IMAGE_HEIGHT = 165;
+
   const originPrice = product.b2c_price ?? 0;
   const salePrice = product.b2b_price ?? 0;
   const percent =
@@ -29,17 +33,19 @@ export default function HorizontalProductCard({ product, onPress, style }: Horiz
       ? Math.floor(100 - (salePrice / originPrice) * 100)
       : 0;
 
+  const categories = parseKkdayCategoryKorean(product.product_category ?? {}).filter(Boolean);
+
   return (
-    <Pressable style={[styles.cardWrap, style]} onPress={onPress}>
+    <Pressable style={[styles.cardWrap, { width: CARD_WIDTH }, style]} onPress={onPress}>
       <View style={styles.card}>
-        <View style={styles.imageWrap}>
+        <View style={[styles.imageWrap, { height: IMAGE_HEIGHT }]}>
           <Image
             source={{ uri: product.prod_img_url ?? '' }}
-            style={styles.image}
+            style={[styles.image, { height: IMAGE_HEIGHT }]}
             resizeMode="cover"
           />
           <Badge
-            type={"red"}
+            type="red"
             badgeStyle="fill"
             size="tiny"
             style={styles.priceBadge}
@@ -49,7 +55,7 @@ export default function HorizontalProductCard({ product, onPress, style }: Horiz
         </View>
 
         <View style={styles.info}>
-          <Text typography="t6" fontWeight="medium" color={colors.grey800} numberOfLines={1} style={{ width: '100%' }}>
+          <Text typography="t5" fontWeight="bold" color={colors.grey800} numberOfLines={1} style={{ width: '100%' }}>
             {product.prod_name}
           </Text>
 
@@ -67,6 +73,10 @@ export default function HorizontalProductCard({ product, onPress, style }: Horiz
             </View>
           </View>
 
+          <Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 6 }}>
+            {product.introduction}
+          </Text>
+
           <View style={styles.metaRow}>
             <Icon name="icon-star-yellow" color={colors.yellow500} size={12} />
             <Text typography="t7" color={colors.grey800} style={{ marginLeft: 6 }}>
@@ -76,6 +86,14 @@ export default function HorizontalProductCard({ product, onPress, style }: Horiz
               ({product.rating_count ?? 0})
             </Text>
           </View>
+
+          <View style={styles.tagsRow}>
+            {categories.slice(0, 3).map((cat, idx) => (
+              <Badge key={cat + idx} type="blue" badgeStyle="weak" style={styles.tagBadge}>
+                {cat}
+              </Badge>
+            ))}
+          </View>
         </View>
       </View>
     </Pressable>
@@ -84,25 +102,22 @@ export default function HorizontalProductCard({ product, onPress, style }: Horiz
 
 const styles = StyleSheet.create({
   cardWrap: {
-    width: 200,
     marginRight: 12,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.grey100,
+    // 외곽선 제거: 기존 borderWidth 제거 (요청사항)
   },
   imageWrap: {
     width: '100%',
-    height: 120,
+    borderRadius: 12,
     backgroundColor: '#eee',
     position: 'relative',
   },
   image: {
     width: '100%',
-    height: '100%',
+    borderRadius: 12,
   },
   priceBadge: {
     position: 'absolute',
@@ -114,7 +129,7 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-    paddingTop: 8,
+    paddingTop: 12,
   },
   priceRow: {
     marginTop: 6,
@@ -130,5 +145,14 @@ const styles = StyleSheet.create({
     marginTop: 8,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+  },
+  tagBadge: {
+    marginRight: 6,
+    marginTop: 4,
   },
 });

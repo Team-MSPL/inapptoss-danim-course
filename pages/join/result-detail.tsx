@@ -114,22 +114,6 @@ interface recommnedProductType {
   topK: number;
 }
 
-const recommendProduct = createAsyncThunk(
-  '/sellingProduct/recommend',
-  async (data: recommnedProductType, {rejectWithValue}) => {
-    try {
-      const response = await axiosAuth.post(`sellingProduct/recommend`, data);
-      return response.data;
-    } catch (error: any) {
-      throw rejectWithValue(error.code);
-    }
-  },
-);
-
-/* -------------------------
-   Utility: flatten & extractor
-   ------------------------- */
-
 /** fallback flatten helper for environments without Array.prototype.flat */
 function flattenArray(arr: any[]): any[] {
   const out: any[] = [];
