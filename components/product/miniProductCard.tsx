@@ -16,7 +16,7 @@ export function MiniProductCard({
                                   percent,
                                   perPersonText,
                                 }: {
-  image?: string | null;
+  image?: string;
   title: string;
   originPrice?: number;
   salePrice?: number;
@@ -27,7 +27,7 @@ export function MiniProductCard({
     <View style={styles.cardWrap}>
       <View style={styles.cardInner}>
         <View style={styles.imageCol}>
-          <Image source={{ uri: image ?? "" }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: image[0] ?? "" }} style={styles.image} resizeMode="cover" />
           <Badge
             type={"red"}
             badgeStyle="fill"
@@ -68,9 +68,9 @@ export function MiniProductCard({
             </View>
           </View>
 
-          <Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 6 }}>
-            {perPersonText ?? ""}
-          </Text>
+          {/*<Text typography="t7" color={colors.grey700} numberOfLines={1} style={{ marginTop: 6 }}>*/}
+          {/*  {perPersonText ?? ""}*/}
+          {/*</Text>*/}
         </View>
       </View>
     </View>

@@ -33,7 +33,7 @@ const SORT_OPTIONS = [
 ] as const;
 
 const GUIDE_OPTIONS = [
-  { label: '한국어', value: 'ko' },
+  { label: '한국어', value: 'kr' },
   { label: '영어', value: 'en' },
 ] as const;
 
@@ -101,6 +101,7 @@ export default function MainTravelShop() {
       start: page * PAGE_SIZE,
       page_size: PAGE_SIZE,
       sort: getSortApiCode(sortType),
+      state: "KR",
     };
     if (minPriceInput) body.price_from = minPriceInput;
     if (maxPriceInput) body.price_to = maxPriceInput;
@@ -120,6 +121,7 @@ export default function MainTravelShop() {
       if (recent && recent.recentSelectList) {
         //TODO : Recommend로 변경
         const body = buildSearchBody();
+        console.log(body);
         const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 10000,

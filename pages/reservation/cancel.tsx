@@ -139,7 +139,6 @@ export default function ReservationCancel() {
   }
 
   // map selected reason label to cancel_type code
-  // NOTE: You can change this mapping if you prefer different codes.
   const reasonToCancelType = (reason: string | null): string | null => {
     if (!reason) return null;
     switch (reason) {
@@ -214,16 +213,13 @@ export default function ReservationCancel() {
               navigation.navigate("/reservation/cancel-fail", { cancelResponse: data });
             }
           } catch (err: any) {
-            // axios error can contain err.response with status/data
             const status = err?.response?.status;
             const respData = err?.response?.data;
             console.error("[ReservationCancel] Cancel API error - message:", err?.message);
             console.error("[ReservationCancel] Cancel API error - status:", status);
             console.error("[ReservationCancel] Cancel API error - response data:", respData);
-            // Also print the entire error object for deep inspection
             console.error("[ReservationCancel] Cancel API error - full error:", err);
 
-            // Navigate to fail screen and pass error details for debugging/UX
             navigation.navigate("/reservation/cancel-fail", {
               error: String(err?.message ?? "Unknown error"),
               status,
@@ -258,22 +254,33 @@ export default function ReservationCancel() {
         );
         const data = res?.data ?? {};
         const prod = data?.prod ?? null;
+        console.log("[ReservationCancel] QueryProduct result prod:", prod);
         if (mounted) {
           if (prod) {
-            // Prepare props for MiniProductCard
+            // Choose first available image: prefer prod.img_list[0], then prod.prod_img_url, then prod.prod_img
+            const firstImage =
+              (Array.isArray(prod.img_list) && prod.img_list.length > 0 && prod.img_list[0]) ||
+              prod.prod_img_url ||
+              prod.prod_img ||
+              "";
+
             const originPrice = prod.b2c_min_price ?? prod.b2c_price ?? 0;
             const salePrice = prod.b2b_min_price ?? prod.b2b_price ?? 0;
             const percent =
               originPrice > 0 && originPrice > salePrice
                 ? Math.floor(100 - (salePrice / originPrice) * 100)
                 : 0;
+
+            // mini object uses 'image' key (not img_list)
             const mini = {
-              image: prod.prod_img_url ?? prod.prod_img ?? "",
+              image: firstImage,
               title: prod.prod_name ?? prod.prod_nm ?? "",
               originPrice,
               salePrice,
               percent,
               perPersonText: prod.unit ? String(prod.unit) : prod.introduction ?? "",
+              // keep original raw prod too for debug if needed
+              raw: prod,
             };
             setProduct(mini);
           } else {
@@ -308,14 +315,13 @@ export default function ReservationCancel() {
           }
         />
 
-        {/* FixedBottomCTAProvider handles scrolling so we place content directly */}
         <View style={styles.container}>
           {/* Mini product card (if available) */}
-          {/* TODO: 디자인 적용 */}
           {product ? (
             <View style={{ marginBottom: 16 }}>
               <MiniProductCard
-                image={product.image}
+                // Use product.image (set above). This avoids accessing undefined img_list.
+                image={product.image ?? ""}
                 title={product.title}
                 originPrice={product.originPrice}
                 salePrice={product.salePrice}
@@ -411,7 +417,6 @@ export default function ReservationCancel() {
           <View style={{ height: 120 }} />
         </View>
 
-        {/* Bottom double CTA */}
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: "white" }}
           leftButton={
