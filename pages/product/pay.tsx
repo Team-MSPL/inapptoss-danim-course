@@ -225,59 +225,70 @@ function ProductPay() {
   const { loading: bookingLoading, error: bookingError, run } = useBookingApi();
 
   async function onPay() {
-    const store = useBookingStore.getState();
-    const customArray = store.getCustomArray();
-
-    // 기존 검증
-    if (uses.includes("cus_01") && !customArray.some((c) => c.cus_type === "cus_01")) {
-      Alert.alert("입력 오류", "예약자 정보(필수)를 입력해주세요.");
+    // FINAL validation on press: re-run validation against current booking store before sending
+    if (!rawFields) {
+      Alert.alert("입력 오류", "입력 필드 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
       return;
     }
-    const sendGroup = store.customMap?.["send"] ?? {};
-    if (sendGroup?.check_in_date && sendGroup?.check_out_date) {
-      const inT = new Date(sendGroup.check_in_date).getTime();
-      const outT = new Date(sendGroup.check_out_date).getTime();
-      if (!isNaN(inT) && !isNaN(outT) && inT > outT) {
-        Alert.alert("입력 오류", "체크인 날짜는 체크아웃 날짜 이전이어야 합니다.");
+
+    const validateSectionFn = makeValidateSectionBuilt(rawFields, requiredMap);
+    const sectionsToCheck = Object.keys(requiredMap)
+      .map((k) => Number(k))
+      .filter((n) => !Number.isNaN(n) && n !== 12); // exclude 요청사항 (12)
+
+    for (const sectionIndex of sectionsToCheck) {
+      const missing = typeof validateSectionFn === "function"
+        ? validateSectionFn(sectionIndex)
+        : validateSectionHelper(rawFields, sectionIndex, {
+          hasCus01, hasCus02, hasContact, hasSend,
+          hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03,
+          hasPickup03, hasPickup04, hasVoucher
+        });
+
+      // If any missing fields, stop and alert user
+      if (Array.isArray(missing) && missing.length > 0) {
+        Alert.alert("입력 오류", `다음 항목이 비어있습니다:\n${missing.slice(0,20).join("\n")}`);
         return;
       }
     }
 
-    // 빌드 페이로드
+    // also require mandatory agreements
+    if (!agreePersonal || !agreeService) {
+      Alert.alert("약관 동의 필요", "개인정보 처리방침 및 서비스 이용 약관에 동의해 주세요.");
+      return;
+    }
+
+    // all good -> proceed
+    const store = useBookingStore.getState();
+    const customArray = store.getCustomArray();
+
+    // build payload
     const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
     console.debug("[ProductPay] onPay - payload:", payload);
 
     try {
-      // run은 useBookingApi().run
       const res = await run(payload);
       console.debug("[ProductPay] run result:", res);
 
-      // 멀티 스펙 결과 처리
       if (res && Array.isArray(res.results)) {
         const results = res.results;
-        // 성공 판정: bookingResponse에 order_no 존재 (또는 resp 형태)
         const successes = results.filter(r => {
           const br = r?.bookingResponse;
           if (!br) return false;
-          // bookingResponse may be normalized resp already
           return Boolean(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
         });
         const failures = results.filter(r => !successes.includes(r));
         console.debug("[ProductPay] successes:", successes, "failures:", failures);
 
         if (failures.length === 0) {
-          // 모두 성공
           navigation.replace("/product/pay-success");
         } else {
-          // 일부 또는 전체 실패
           navigation.replace("/product/pay-fail");
         }
         return;
       }
 
-      // 단일 결과 처리 (기존 호환)
       const bookingResp = res?.bookingResponse ?? res?.bookingResponse;
-      // bookingResp may be normalized already (resp)
       const orderNo = bookingResp?.order_no ?? bookingResp?.orderNo ?? (bookingResp?.data && bookingResp.data.order_no);
 
       if (orderNo) {
@@ -287,7 +298,6 @@ function ProductPay() {
       }
     } catch (err: any) {
       console.error("[ProductPay] onPay error:", err);
-      // 이미 useBookingApi에서 save API는 호출됨. 실패시 이동
       navigation.replace("/product/pay-fail");
     }
   }
@@ -663,14 +673,13 @@ function ProductPay() {
 
         <View style={[styles.sectionContainer, { paddingHorizontal: 24, paddingVertical: 24 }]}>
           <Text typography="t3" fontWeight='bold' style={{ marginBottom: 12 }}>결제 수단</Text>
-          <View style={styles.paymentRow}>
-            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "toss" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("toss")}><Text>tosspay</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "naver" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("naver")}><Text>npay</Text></TouchableOpacity>
-          </View>
-          <View style={styles.paymentRow}>
-            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "kakao" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("kakao")}><Text>kpay</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "card" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("card")}><Text>신용카드/체크카드</Text></TouchableOpacity>
-          </View>
+          <TouchableOpacity style={[styles.paymentBtn, selectedPayment === "toss" && styles.paymentBtnActive]} onPress={() => setSelectedPayment("toss")}>
+            <Icon name='icn-bank-toss' />
+            <View style={{flexDirection: 'row', gap: 4}}>
+              <Text typography="t3" fontWeight='bold'>toss</Text>
+              <Text typography="t3" fontWeight='medium'>pay</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={{ paddingVertical: 8, paddingHorizontal: 20 }}>
@@ -684,6 +693,9 @@ function ProductPay() {
           <TouchableOpacity onPress={() => setAgreeMarketing(s => !s)} style={styles.agreeRow}><View style={styles.checkbox}>{agreeMarketing && <Icon name="icon-check" size={14} color={colors.blue500} />}</View><Text style={{ marginLeft: 8 }}>(선택) 마케팅 수신 동의</Text></TouchableOpacity>
         </View>
 
+        {/* 변경: 버튼 활성화는 이제 '결제 버튼 누를 때' 최종 검증을 수행하도록 변경했습니다.
+            즉 UI에서의 실시간 전체-섹션 검증(모든 필드를 구독해서 실시간으로 검사)로 인한 무한 렌더 루프를 피하기 위해,
+            버튼은 bookingLoading 상태일 때만 비활성화되고, 실제 필드 체크는 onPay()에서 수행됩니다. */}
         <FixedBottomCTA onPress={onPay} disabled={bookingLoading}>
           {bookingLoading ? "결제중입니다..." : "결제하기"}
         </FixedBottomCTA>
@@ -738,10 +750,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 46,
     marginRight: 8,
+    marginTop: 12,
     borderRadius: 10,
     backgroundColor: "#fff",
     borderWidth: 1,
+    gap: 12,
     borderColor: colors.grey200,
+    flexDirection: 'row',
     alignItems: "center",
     justifyContent: "center",
   },
@@ -761,6 +776,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.grey300,
     alignItems: "center",
+    marginRight: 8,
     justifyContent: "center",
   },
   smallOption: {
