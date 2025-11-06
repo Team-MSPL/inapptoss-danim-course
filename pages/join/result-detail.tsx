@@ -1,13 +1,16 @@
-import React, {useEffect} from 'react';
-import { View, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { View, Image, StyleSheet, ScrollView, Dimensions, FlatList } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { PlaceResult } from "../../components/join/type";
 import { Badge, BottomCTA, colors, FixedBottomCTAProvider, Text } from '@toss-design-system/react-native';
-import { useAppDispatch } from "../../src/store";
+import {useAppDispatch, useAppSelector} from "../../src/store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { useRegionSearchStore } from "../../zustand/regionSearchStore";
 import { koreaCityList } from "../../utill/city-list";
 import { useRegionModeStore } from '../../zustand/modeStore';
+import axiosAuth from "../../redux/api";
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import HorizontalProductCard, { SmallProduct } from '../../components/product/HorizontalProductCard';
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
@@ -17,7 +20,7 @@ export const Route = createRoute('/join/result-detail', {
 // 이름 기반 상태 업데이트 로직
 function getRegionStateByName(name: string) {
   // 하드코딩 케이스
-  const hardCodeMap: Record<string, { cityIndex: number }> = {
+  const hardCodeMap: Record<string, { cityIndex: number; subIdx?: number }> = {
     '서울': { cityIndex: 1 },
     '제주': { cityIndex: 11 },
     '부산': { cityIndex: 2, subIdx: 0 },
@@ -103,6 +106,79 @@ function PopularPlaceCard({ place, idx }: { place: PlaceResult, idx: number }) {
   );
 }
 
+interface recommnedProductType {
+  pathList: [[any]];
+  country: 'strng';
+  cityList: ['strng'];
+  selectList: [[number]];
+  topK: number;
+}
+
+const recommendProduct = createAsyncThunk(
+  '/sellingProduct/recommend',
+  async (data: recommnedProductType, {rejectWithValue}) => {
+    try {
+      const response = await axiosAuth.post(`sellingProduct/recommend`, data);
+      return response.data;
+    } catch (error: any) {
+      throw rejectWithValue(error.code);
+    }
+  },
+);
+
+/* -------------------------
+   Utility: flatten & extractor
+   ------------------------- */
+
+/** fallback flatten helper for environments without Array.prototype.flat */
+function flattenArray(arr: any[]): any[] {
+  const out: any[] = [];
+  (function f(a: any[]) {
+    for (const v of a) {
+      if (Array.isArray(v)) f(v);
+      else out.push(v);
+    }
+  })(arr);
+  return out;
+}
+
+/** robust extractor: return an array of product objects from many possible shapes */
+function extractProductsFromResponse(res: any): any[] {
+  if (!res) return [];
+
+  // If raw array
+  if (Array.isArray(res)) {
+    // common nested shape: [ [ {...}, {...} ] ]
+    if (res.length === 1 && Array.isArray(res[0])) {
+      return res[0].filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+    }
+    // flatten fully
+    const flat = (res as any).flat ? (res as any).flat(Infinity) : flattenArray(res);
+    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+  }
+
+  // object shapes
+  if (res.prods && Array.isArray(res.prods)) return res.prods;
+  if (res.products && Array.isArray(res.products)) return res.products;
+  if (res.data && Array.isArray(res.data)) {
+    const flat = (res.data as any).flat ? (res.data as any).flat(Infinity) : flattenArray(res.data);
+    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+  }
+
+  // try to find arrays in object values
+  const maybeArrays = Object.values(res).filter(v => Array.isArray(v));
+  if (maybeArrays.length > 0) {
+    const flat = maybeArrays.flatMap(a => (a as any).flat ? (a as any).flat(Infinity) : flattenArray(a));
+    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+  }
+
+  return [];
+}
+
+/* -------------------------
+   Component
+   ------------------------- */
+
 function JoinResultDetail() {
   const params = Route.useParams();
   const place: PlaceResult = params.place;
@@ -110,13 +186,99 @@ function JoinResultDetail() {
   const navigation = useNavigation();
   const storeState = useRegionSearchStore((state) => state);
   const dispatch = useAppDispatch();
+  const tendencyList = storeState.selectList;
+
+  const { region, cityIndex, cityDistance } = getRegionStateByName(place?.name ?? '');
+  const {presetDatas, season, country} = useAppSelector(
+    state => state.travelSlice,
+  );
+
+  const countryList = [
+    {ko: '한국', en: 'Korea'},
+    {ko: '일본', en: 'Japan'},
+    {ko: '중국', en: 'China'},
+    {ko: '베트남', en: 'Vietnam'},
+    {ko: '태국', en: 'Thailand'},
+    {ko: '필리핀', en: 'Philippines'},
+    {ko: '싱가포르', en: 'Singapore'},
+  ];
+
+  console.log('presetDatas', presetDatas);
+  console.log('country', country);
+
+  // <-- recommended products state & loading -->
+  const [recommended, setRecommended] = useState<SmallProduct[]>([]);
+  const [recLoading, setRecLoading] = useState(false);
+
+  // useEffect: 페이지 렌더시 자동으로 추천 API 호출
+  useEffect(() => {
+    handleProduct(); // 기존 handleProduct를 재사용하여 추천 호출
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // handleProduct: uses direct axios + robust extraction (keeps original UI)
+  async function handleProduct() {
+    try {
+      setRecLoading(true);
+
+      const data: any = {
+        pathList: [
+          (presetDatas?.[0]?.[0] ?? []).map((group: any) =>
+            (group ?? []).filter((fi: any) => !fi.name?.includes('추천')).map((v: any) => ({ name: v?.name }))
+          ),
+        ],
+        selectList: [...(tendencyList ?? []), (season ?? [])],
+        country:
+          region.some(r => r.includes('홍콩')) || region.some(r => r.includes('마카오'))
+            ? '홍콩과 마카오'
+            : region[0]?.includes('해외')
+              ? countryList.find((check) => check.en == region[0]?.split('/')[1])?.ko ?? '한국'
+              : '한국',
+        cityList: region,
+        topK: 10,
+      };
+
+      console.debug('[handleProduct] REQUEST body:', JSON.stringify(data, null, 2));
+      try { console.debug('[handleProduct] axiosAuth.defaults.headers:', axiosAuth.defaults?.headers); } catch (e) {}
+
+      // direct axios for debugging (shows exactly what server returns)
+      const directResp = await axiosAuth.post('sellingProduct/recommend', data, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      });
+
+      console.debug('[handleProduct] axios direct status:', directResp.status);
+      console.debug('[handleProduct] axios direct data type:', Object.prototype.toString.call(directResp.data));
+      console.debug('[handleProduct] axios direct data sample:', Array.isArray(directResp.data) ? directResp.data.slice(0,2) : directResp.data);
+
+      // extract products robustly
+      const prods = extractProductsFromResponse(directResp.data);
+      console.debug('[handleProduct] extracted count:', prods.length);
+
+      const mapped: SmallProduct[] = (prods ?? []).map((p:any, idx:number) => ({
+        prod_no: p.prod_no ?? p._id ?? p.prodNo ?? `idx_${idx}`,
+        prod_name: p.prod_name ?? p.prodName ?? p.name ?? '',
+        prod_img_url: p.prod_img_url ?? p.prod_img ?? p.product_img_url ?? '',
+        b2c_price: typeof p.b2c_price === 'number' ? p.b2c_price : (p.price ?? 0),
+        b2b_price: typeof p.b2b_price === 'number' ? p.b2b_price : (p.sale_price ?? 0),
+        avg_rating_star: p.avg_rating_star ?? p.avgRating ?? 0,
+        rating_count: p.rating_count ?? p.review_count ?? 0,
+        introduction: p.introduction ?? '',
+        product_category: p.product_category ?? {},
+      }));
+
+      console.debug('[handleProduct] mapped length:', mapped.length, mapped.slice(0,3));
+
+      setRecommended(mapped);
+    } catch (err) {
+      console.warn('[handleProduct] error', err);
+      setRecommended([]);
+    } finally {
+      setRecLoading(false);
+    }
+  }
 
   const handleNext = () => {
-    const tendencyList = storeState.selectList;
-
-    // 이름 기반으로 상태 추출
-    const { region, cityIndex, cityDistance } = getRegionStateByName(place?.name ?? '');
-
     // 필드 업데이트
     dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
     dispatch(travelSliceActions.updateFiled({ field: 'country', value: 0 }));
@@ -164,6 +326,38 @@ function JoinResultDetail() {
               </View>
             </View>
           )}
+
+          {/* 여행 상품 추천 */}
+          <View style={styles.popularSection}>
+            <Text typography="t4" fontWeight="bold" color={colors.black}>여행 상품 추천</Text>
+            <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{ marginBottom: 20 }}>현재 서울에서 인기 있는 여행 상품이에요!</Text>
+
+            {/* --- 가로 스크롤 추천 상품 (추가) --- */}
+            {recLoading ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingVertical: 8 }}>
+                {[...Array(3)].map((_, i) => (
+                  <View key={i} style={{ width: 200, height: 180, marginRight: 12, borderRadius: 12, backgroundColor: '#f0f0f0' }} />
+                ))}
+              </ScrollView>
+            ) : (
+              <FlatList
+                data={recommended}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(it, idx) => `${it.prod_no ?? 'prod'}_${idx}`}
+                renderItem={({ item }) => (
+                  <HorizontalProductCard
+                    product={item}
+                    onPress={() => navigation.navigate('/product/good-product', { product: item })}
+                  />
+                )}
+                contentContainerStyle={{ paddingVertical: 8 }}
+              />
+            )}
+            {/* --- /가로 스크롤 추천 상품 --- */}
+
+          </View>
+
         </View>
         <BottomCTA.Single
           type="primary"
