@@ -61,6 +61,7 @@ export function Index() {
         });
       }
     } catch (e) {
+      console.log(e);
       open('로그인 중 오류가 발생했어요', {
         icon: 'icon-warning-circle',
       });

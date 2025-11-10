@@ -77,6 +77,9 @@ export function buildReservationPayload({ params, pkgData, pdt, s_date, orderNot
     return item.skus.find((s: any) => String(s?.sku_id ?? s?.id) === String(skuId)) ?? null;
   };
 
+  // Generate or reuse a partner_order_no for idempotency
+  const partnerOrderNo = String(params?.partner_order_no ?? params?.order_no ?? `order-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`);
+
   // If params.skus provided, normalize and use
   if (Array.isArray(params?.skus) && params.skus.length > 0) {
     const normalized: Array<{ sku_id: any; qty: number; price: number }> = [];
@@ -109,7 +112,7 @@ export function buildReservationPayload({ params, pkgData, pdt, s_date, orderNot
     const payload: Record<string, any> = {
       guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
       pay_type: "01",
-      partner_order_no: "1",
+      partner_order_no: partnerOrderNo,
       prod_no: params?.prod_no ?? (pdt?.prod_no ?? undefined),
       pkg_no: params?.pkg_no ?? undefined,
       item_no: itemNo,
@@ -208,7 +211,7 @@ export function buildReservationPayload({ params, pkgData, pdt, s_date, orderNot
   const payload: Record<string, any> = {
     guid: params?.pkgData?.guid ?? pkgData?.guid ?? undefined,
     pay_type: "01",
-    partner_order_no: "1",
+    partner_order_no: partnerOrderNo,
     prod_no: params?.prod_no ?? (pdt?.prod_no ?? undefined),
     pkg_no: params?.pkg_no ?? undefined,
     item_no: itemNo,
@@ -237,6 +240,7 @@ export function buildReservationPayload({ params, pkgData, pdt, s_date, orderNot
 
   console.log('[buildReservationPayload] derived skus:', payload.skus);
   console.log('[buildReservationPayload] total_price:', payload.total_price);
+  console.log('[buildReservationPayload] partner_order_no:', payload.partner_order_no);
 
   return payload;
 }
