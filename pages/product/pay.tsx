@@ -495,7 +495,7 @@ function ProductPay() {
     // --- Replace your existing make-payment block with this snippet ---
 
 // ensure there's an orderNo to make request idempotent
-    const orderNoForMake = payload?.partner_order_no ?? payload?.order_no ?? `order-${Date.now().toString(36)}`;
+    const orderNoForMake = `order-${Date.now().toString(36)}`;
 
 // 1) make-payment (with retries + detailed logging)
     const makeBody: any = {
@@ -512,6 +512,12 @@ function ProductPay() {
       console.debug("[ProductPay] make-payment response:", makeResp.status, makeResp.data);
       const makeData = makeResp.data ?? {};
       payToken = makeData?.success?.payToken ?? makeData?.payToken ?? makeData?.checkout?.payToken ?? null;
+
+      if (payToken) {
+        // overwrite partner_order_no so booking will store payToken as partner_order_no
+        payload.partner_order_no = String(payToken);
+        console.debug("[ProductPay] using payToken as partner_order_no for booking:", payload.partner_order_no);
+      }
 
       // if no payToken but checkoutPage present, try extract
       if (!payToken && (makeData?.checkoutPage || makeData?.checkout_page || makeData?.checkout_url)) {
@@ -592,6 +598,16 @@ function ProductPay() {
 
         const checkoutPage = creation?.checkoutPage ?? creation?.checkout_page ?? creation?.checkout_url ?? null;
         const v2PayToken = creation?.payToken ?? null;
+        if (v2PayToken) {
+          // set partner_order_no to payToken before storing pending payload
+          payload.partner_order_no = String(v2PayToken);
+          setPendingBookingPayload(payload);
+          setPendingPayToken(v2PayToken);
+          setPendingAmount(amount);
+
+          openCheckoutPage(checkoutPage, retUrl);
+          return;
+        }
 
         if (!checkoutPage) {
           console.error("[ProductPay] createTossPayment returned no checkoutPage:", creation);

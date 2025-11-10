@@ -5,7 +5,6 @@ import {
   Alert,
   TouchableOpacity,
   Pressable,
-  FlatList,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import {
@@ -20,6 +19,7 @@ import {
   BottomSheet,
 } from "@toss-design-system/react-native";
 import axiosAuth from "../../redux/api";
+import axios from "axios";
 import MiniProductCard from "../../components/product/miniProductCard";
 
 export const Route = createRoute("/reservation/cancel", {
@@ -157,6 +157,98 @@ export default function ReservationCancel() {
     }
   };
 
+  // helper: find payToken in dtl object (partner_order_no priority)
+  const findPayTokenFromDtl = (dtlObj: any): string | null => {
+    if (!dtlObj) return null;
+
+    // 1) partner_order_no may have been set to payToken at booking time
+    if (dtlObj.partner_order_no) {
+      try {
+        return String(dtlObj.partner_order_no);
+      } catch {}
+    }
+
+    const candidates = [
+      dtlObj.payToken,
+      dtlObj.pay_token,
+      dtlObj.payment?.payToken,
+      dtlObj.payment?.pay_token,
+      dtlObj.transaction?.payToken,
+      dtlObj.toss?.payToken,
+      dtlObj.payment_key,
+      dtlObj.paymentKey,
+    ];
+    for (const v of candidates) if (v) return String(v);
+
+    // if there is an array of payments, try first entry
+    if (Array.isArray(dtlObj.payments) && dtlObj.payments.length > 0) {
+      const p = dtlObj.payments[0];
+      if (p?.payToken) return String(p.payToken);
+      if (p?.pay_token) return String(p.pay_token);
+    }
+
+    return null;
+  };
+
+  // Utility to show confirm dialog and return user's choice as Promise
+  const promptChoice = (title: string, message: string, buttons: { text: string; style?: any }[]) =>
+    new Promise<number>((resolve) => {
+      Alert.alert(
+        title,
+        message,
+        buttons.map((b, i) => ({ text: b.text, style: b.style, onPress: () => resolve(i) })),
+        { cancelable: true }
+      );
+    });
+
+  // ---- DIRECT Toss refund function (TEST ONLY) ----
+  // WARNING: For production you MUST call Toss refunds from server. This client-side call uses an API key and is insecure.
+  const TOSS_TEST_API_KEY = "sk_test_j8a4JZ3jNDj8aa0d0g8D"; // <- only for local tests; do NOT use in production
+
+  async function refundTossDirect(payToken: string, amount: number, reason?: string) {
+    if (!payToken) {
+      return { success: false, error: "no_paytoken" };
+    }
+
+    const url = "https://pay.toss.im/api/v2/refunds";
+    const refundNo = `refund-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
+
+    const amt = Math.round(Number(amount) || 0);
+
+    // IMPORTANT:
+    // - If original payment used tax breakdown, you MUST set amountTaxable/amountTaxFree/amountVat accordingly.
+    // - Here we assume simple case: all taxable.
+    const body: any = {
+      apiKey: TOSS_TEST_API_KEY,
+      payToken: String(payToken),
+      refundNo,
+      amount: amt,
+      amountTaxable: amt,
+      amountTaxFree: 0,
+      amountVat: 0,
+      amountServiceFee: 0,
+      reason: reason ? String(reason).slice(0, 255) : undefined,
+    };
+
+    try {
+      console.debug("[refundTossDirect] POST", url, body);
+      const resp = await axios.post(url, body, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 20000,
+      });
+      console.debug("[refundTossDirect] toss resp:", resp.status, resp.data);
+      return { success: true, data: resp.data };
+    } catch (err: any) {
+      console.error("[refundTossDirect] error:", {
+        message: err?.message,
+        code: err?.code,
+        status: err?.response?.status,
+        data: err?.response?.data,
+      });
+      return { success: false, error: err?.response?.data ?? err?.message ?? err };
+    }
+  }
+
   async function onConfirmCancel() {
     if (!canCancel) {
       Alert.alert("취소 불가", "이 상품은 취소할 수 없습니다.");
@@ -176,55 +268,150 @@ export default function ReservationCancel() {
           const body = {
             order_no: String(params.order_no ?? ""),
             cancel_type: cancelType ?? "",
-            // send the chosen reason text as cancel_desc because the API requires a non-empty desc
             cancel_desc: selectedReason ?? "",
           };
 
-          // Log the exact payload we will send
           console.log("[ReservationCancel] sending cancel body:", body);
 
           try {
-            // Call cancel API
-            const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
+            // 1) determine payToken (prefer partner_order_no)
+            let payToken: string | null = findPayTokenFromDtl(dtl);
+            console.debug("[ReservationCancel] initial payToken from dtl:", payToken);
 
-            // Log headers we will use (for debugging header-related 400 cases)
-            const headers = { "Content-Type": "application/json", Accept: "application/json" };
-            console.log("[ReservationCancel] POST", CANCEL_API, "headers:", headers);
+            // 2) if none and refund required, try server lookup (best-effort)
+            if (!payToken && refundAmount > 0) {
+              try {
+                const FIND_PAYTOKEN_API = `${import.meta.env.API_ROUTE_RELEASE}/payments/find`;
+                console.debug("[ReservationCancel] querying server for payToken by order_no:", body.order_no, FIND_PAYTOKEN_API);
+                const r = await axiosAuth.get(FIND_PAYTOKEN_API, {
+                  params: { orderNo: String(body.order_no ?? "") },
+                  headers: { Accept: "application/json" },
+                });
+                const d = r?.data ?? {};
+                if (d?.payToken) {
+                  payToken = String(d.payToken);
+                  console.debug("[ReservationCancel] server returned payToken:", payToken);
+                } else {
+                  console.debug("[ReservationCancel] server did not return payToken, response:", d);
+                }
+              } catch (findErr) {
+                console.warn("[ReservationCancel] unable to query server for payToken:", findErr);
+              }
+            }
 
-            // Send JSON explicitly (axios will stringify automatically, but logging the string helps)
-            const bodyString = JSON.stringify(body);
-            console.log("[ReservationCancel] POST bodyString:", bodyString);
+            // 3) If refundAmount <= 0 just call cancel API
+            if (refundAmount <= 0) {
+              console.debug("[ReservationCancel] refundAmount <= 0, skipping refund and calling Cancel API");
+              const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
+              const headers = { "Content-Type": "application/json", Accept: "application/json" };
+              const res = await axiosAuth.post(CANCEL_API, JSON.stringify(body), { headers });
+              const data = res?.data ?? {};
+              const ok = data?.result === "00" || data?.result === 0 || data?.success === true;
+              if (ok) {
+                navigation.navigate("/reservation/cancel-success", { cancelResponse: data, email: params.dtl?.buyer_email });
+              } else {
+                navigation.navigate("/reservation/cancel-fail", { cancelResponse: data });
+              }
+              return;
+            }
 
-            const res = await axiosAuth.post(CANCEL_API, bodyString, {
-              headers,
-            });
+            // 4) If no payToken, ask user whether to proceed without refund
+            if (!payToken) {
+              const proceedNoRefund = await new Promise<boolean>((resolve) => {
+                Alert.alert(
+                  "결제 정보 없음",
+                  "이 예약건에 대한 결제 토큰(payToken)을 찾을 수 없습니다. 자동 환불을 진행할 수 없습니다. 그래도 예약 취소(환불 없음)를 진행하시겠습니까?",
+                  [
+                    { text: "아니오", style: "cancel", onPress: () => resolve(false) },
+                    { text: "예(환불 없음)", onPress: () => resolve(true) },
+                  ]
+                );
+              });
+              if (!proceedNoRefund) {
+                return;
+              }
+              // proceed to cancel without refund
+              const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
+              const headers = { "Content-Type": "application/json", Accept: "application/json" };
+              const res = await axiosAuth.post(CANCEL_API, JSON.stringify(body), { headers });
+              const data = res?.data ?? {};
+              const ok = data?.result === "00" || data?.result === 0 || data?.success === true;
+              if (ok) {
+                navigation.navigate("/reservation/cancel-success", { cancelResponse: data, email: params.dtl?.buyer_email });
+              } else {
+                navigation.navigate("/reservation/cancel-fail", { cancelResponse: data });
+              }
+              return;
+            }
 
-            // Log status and response body
-            console.log("[ReservationCancel] Cancel response status:", res?.status);
-            console.log("[ReservationCancel] Cancel response data:", res?.data);
+            // 5) We have payToken -> attempt direct Toss refund (TEST ONLY)
+            const refundReq = {
+              payToken,
+              amount: Math.round(refundAmount),
+              reason: selectedReason ?? "user_cancel",
+            };
 
-            const data = res?.data ?? {};
-            const ok = data?.result === "00" || data?.result === 0 || data?.success === true;
-            if (ok) {
-              console.log("[ReservationCancel] cancel succeeded, navigating to success screen");
-              navigation.navigate("/reservation/cancel-success", { cancelResponse: data, email: params.dtl.buyer_email });
+            console.debug("[ReservationCancel] attempting direct Toss refund (TEST ONLY)", refundReq);
+
+            const refundResult = await refundTossDirect(payToken, refundAmount, selectedReason ?? "user_cancel");
+
+            if (!refundResult.success) {
+              console.warn("[ReservationCancel] direct refund failed:", refundResult.error);
+
+              // Offer user choice: retry / abort / proceed without refund
+              const userChoice = await new Promise<"retry"|"abort"|"proceed">((resolve) => {
+                Alert.alert(
+                  "환불 실패",
+                  "환불 처리가 실패했습니다. 재시도 또는 환불 없이 취소를 진행할 수 있습니다.",
+                  [
+                    { text: "취소", style: "cancel", onPress: () => resolve("abort") },
+                    { text: "재시도", onPress: () => resolve("retry") },
+                    { text: "환불 없이 취소 진행", onPress: () => resolve("proceed") },
+                  ]
+                );
+              });
+
+              if (userChoice === "retry") {
+                const retryResult = await refundTossDirect(payToken, refundAmount, selectedReason ?? "user_cancel");
+                if (!retryResult.success) {
+                  Alert.alert("환불 실패", "재시도에도 환불이 실패했습니다. 관리자에 문의하세요.");
+                  navigation.navigate("/reservation/cancel-fail", { cancelResponse: retryResult.error });
+                  return;
+                }
+                // else continue to cancel
+              } else if (userChoice === "abort") {
+                return;
+              } else {
+                // proceed without refund
+              }
             } else {
-              console.warn("[ReservationCancel] cancel returned failure payload, navigating to fail screen", data);
-              navigation.navigate("/reservation/cancel-fail", { cancelResponse: data });
+              console.debug("[ReservationCancel] direct refund succeeded:", refundResult.data);
+            }
+
+            // 6) Call Cancel API after refund (or user chose to proceed without refund)
+            try {
+              const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
+              console.debug("[ReservationCancel] calling Cancel API after refund:", CANCEL_API, body);
+              const cancelRes = await axiosAuth.post(CANCEL_API, JSON.stringify(body), { headers: { "Content-Type": "application/json" } });
+              const cancelData = cancelRes?.data ?? {};
+              console.log("[ReservationCancel] Cancel response after refund:", cancelData);
+              const cancelOk = cancelData?.result === "00" || cancelData?.result === 0 || cancelData?.success === true;
+              if (cancelOk) {
+                navigation.navigate("/reservation/cancel-success", { cancelResponse: cancelData, email: params.dtl?.buyer_email });
+              } else {
+                navigation.navigate("/reservation/cancel-fail", { cancelResponse: cancelData });
+              }
+              return;
+            } catch (cancelErr2: any) {
+              console.error("[ReservationCancel] Cancel API failed after refund:", cancelErr2);
+              // IMPORTANT: we may have already refunded. DO NOT attempt to undo refund here.
+              navigation.navigate("/reservation/cancel-fail", { error: String(cancelErr2?.message ?? "Cancel API error (after refund)"), response: cancelErr2?.response?.data });
+              return;
             }
           } catch (err: any) {
-            const status = err?.response?.status;
-            const respData = err?.response?.data;
-            console.error("[ReservationCancel] Cancel API error - message:", err?.message);
-            console.error("[ReservationCancel] Cancel API error - status:", status);
-            console.error("[ReservationCancel] Cancel API error - response data:", respData);
-            console.error("[ReservationCancel] Cancel API error - full error:", err);
-
-            navigation.navigate("/reservation/cancel-fail", {
-              error: String(err?.message ?? "Unknown error"),
-              status,
-              response: respData,
-            });
+            console.error("[ReservationCancel] unexpected error in refund-then-cancel flow:", err);
+            Alert.alert("오류", "처리 중 오류가 발생했습니다. 콘솔을 확인하세요.");
+            return;
           }
         },
       },
@@ -435,6 +622,7 @@ export default function ReservationCancel() {
             </Button>
           }
         />
+
       </FixedBottomCTAProvider>
     </View>
   );
