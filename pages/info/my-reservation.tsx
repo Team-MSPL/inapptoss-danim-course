@@ -196,7 +196,7 @@ export default function MyReservation() {
       Alert.alert("바우처 없음", "바우처 정보가 존재하지 않습니다.");
       return;
     }
-    navigation.navigate("/reservation/voucher", { order_no });
+    Alert.alert("이메일 전송 상태", "주문한 이메일에서 바우처를 확인해주세요.");
   }
 
   function onDetail(m: MergedBooking) {
