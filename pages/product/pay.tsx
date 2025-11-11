@@ -244,7 +244,7 @@ function ProductPay() {
   const userKey = useAuthStore.getState().userKey;
 
   // TEST API KEY from your message (client-side test only)
-  const TOSS_TEST_API_KEY = "sk_test_j8a4JZ3jNDj8aa0d0g8D";
+  const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY;
 
   // --- helper: axios post with retries (network blips) ---
   async function postWithRetry(url: string, body: any, headers: any, retries = 2) {
@@ -268,7 +268,7 @@ function ProductPay() {
     const url = "https://pay.toss.im/api/v2/refunds";
     const refundNo = `refund-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
     const body: any = {
-      apiKey: TOSS_TEST_API_KEY,
+      apiKey: TOSS_PAY_API_KEY,
       payToken,
       refundNo,
       amount,
@@ -312,7 +312,7 @@ function ProductPay() {
       amount,
       amountTaxFree: 0,
       productDesc,
-      apiKey: TOSS_TEST_API_KEY,
+      apiKey: TOSS_PAY_API_KEY,
       autoExecute: true,
       resultCallback: "",
       retUrl,

@@ -203,7 +203,7 @@ export default function ReservationCancel() {
 
   // ---- DIRECT Toss refund function (TEST ONLY) ----
   // WARNING: For production you MUST call Toss refunds from server. This client-side call uses an API key and is insecure.
-  const TOSS_TEST_API_KEY = "sk_test_j8a4JZ3jNDj8aa0d0g8D"; // <- only for local tests; do NOT use in production
+  const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY; // <- only for local tests; do NOT use in production
 
   async function refundTossDirect(payToken: string, amount: number, reason?: string) {
     if (!payToken) {
@@ -219,7 +219,7 @@ export default function ReservationCancel() {
     // - If original payment used tax breakdown, you MUST set amountTaxable/amountTaxFree/amountVat accordingly.
     // - Here we assume simple case: all taxable.
     const body: any = {
-      apiKey: TOSS_TEST_API_KEY,
+      apiKey: TOSS_PAY_API_KEY,
       payToken: String(payToken),
       refundNo,
       amount: amt,

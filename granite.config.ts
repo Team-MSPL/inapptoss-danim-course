@@ -73,6 +73,15 @@ export default defineConfig({
 
       //앱 시작 모드 enroll/title(여행 일정 추천), main(메인 화면)
       APP_START_MODE: 'main',
+
+      //토스페이 API 키 (테스트)
+      TOSS_PAY_TEST_API: 'sk_test_j8a4JZ3jNDj8aa0d0g8D',
+
+      //토스페이 API 키
+      TOSS_PAY_LIVE_API: 'sk_live_PkwJ63ob8DPkwaxwpmND',
+
+      //토스페이 API 적용 키
+      TOSS_PAY_API_KEY:'sk_test_j8a4JZ3jNDj8aa0d0g8D',
     }),
     router(),
   ],
