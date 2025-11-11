@@ -5,7 +5,7 @@ import useBookingStore from "../../../zustand/useBookingStore";
 
 type Props = { trafficType: string; label?: string; placeholder?: string; required?: boolean; onValueChange?: (v: number | null) => void; };
 
-export default function SafetyseatSupInfantInput({ trafficType, label = "유아 보조석(대여) 수(인펀트)", placeholder = "0", required = false, onValueChange }: Props) {
+export default function SafetyseatSupInfantInput({ trafficType, label = "유아 카시트 공급사 제공 수량", placeholder = "0", required = false, onValueChange }: Props) {
   const stored = useBookingStore((s) => s.trafficArray?.find(it => String(it?.traffic_type) === String(trafficType))?.safetyseat_sup_infant ?? "");
   const setTrafficField = useBookingStore((s) => s.setTrafficField);
   const [value, setValue] = useState<string>(stored !== undefined && stored !== null ? String(stored) : "");

@@ -5,7 +5,7 @@ import useBookingStore from "../../../zustand/useBookingStore";
 
 type Props = { trafficType: string; label?: string; placeholder?: string; required?: boolean; onValueChange?: (v: number | null) => void; };
 
-export default function LuggageCarryInput({ trafficType, label = "기내 수하물 수", placeholder = "0", required = false, onValueChange }: Props) {
+export default function LuggageCarryInput({ trafficType, label = "휴대수하물 (20인치 이하)", placeholder = "0", required = false, onValueChange }: Props) {
   const stored = useBookingStore((s) => s.trafficArray?.find(it => String(it?.traffic_type) === String(trafficType))?.luggage_carry ?? "");
   const setTrafficField = useBookingStore((s) => s.setTrafficField);
   const [value, setValue] = useState<string>(stored !== undefined && stored !== null ? String(stored) : "");

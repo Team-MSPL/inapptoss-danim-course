@@ -13,7 +13,7 @@ type Props = {
 
 export default function SafetyseatSelfInfantInput({
                                                     trafficType,
-                                                    label = "유아 카시트(본인 소유) 수",
+                                                    label = "유아 카시트 개인 카시트 사용",
                                                     placeholder = "0",
                                                     required = false,
                                                     onValueChange,
