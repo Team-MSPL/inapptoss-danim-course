@@ -414,7 +414,7 @@ export default function ReservationDetail() {
           </View>
         </ScrollView>
 
-        <FixedBottomCTA type={canCancel ? "danger" : "default"} onPress={onCancelPress}>
+        <FixedBottomCTA type={canCancel ? "danger" : "danger"} onPress={onCancelPress}>
           {canCancel ? "취소하기" : "취소 불가 상품이에요"}
         </FixedBottomCTA>
       </FixedBottomCTAProvider>
@@ -461,7 +461,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.grey100,
     marginBottom: 12,
-    shadowColor: "#00000005",
     elevation: 1,
   },
   infoRow: {
