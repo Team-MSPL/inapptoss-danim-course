@@ -96,6 +96,7 @@ import useBookingApi from "../../hooks/useBookingApi";
 import axios from "axios";
 import { TossPay } from "@apps-in-toss/framework";
 import useAuthStore from "../../zustand/useAuthStore";
+import { ConvertUrl } from "@tosspayments/widget-sdk-react-native/src/utils/convertUrl";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -246,6 +247,29 @@ function ProductPay() {
   // TEST API KEY from your message (client-side test only)
   const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY;
 
+  // ProductPay 함수 내부에 추가
+  const urlConverter = useCallback((url: string): boolean => {
+    if (!url) return true;
+    try {
+      const convertUrl = new ConvertUrl(url);
+      if (convertUrl.isAppLink && convertUrl.isAppLink()) {
+        // 앱 링크인 경우 WebView에서 로드하지 말고 앱 실행 시도
+        convertUrl.launchApp().then((launched: boolean) => {
+          // launched === false 면 앱 미설치로 PlayStore/앱마켓 이동 등 SDK가 처리함
+          console.debug('[ProductPay] ConvertUrl.launchApp result:', launched);
+        }).catch((e: any) => {
+          console.warn('[ProductPay] ConvertUrl.launchApp threw', e);
+        });
+        // WebView는 해당 URL을 로드하지 않음
+        return false;
+      }
+    } catch (e) {
+      console.warn('[ProductPay] urlConverter parse error', e);
+      // fallback: allow WebView to load
+    }
+    // not an app link -> allow WebView to load
+    return true;
+  }, []);
   // --- helper: axios post with retries (network blips) ---
   async function postWithRetry(url: string, body: any, headers: any, retries = 2) {
     for (let i = 0; i <= retries; i++) {
@@ -1143,17 +1167,29 @@ function ProductPay() {
               <View style={{ width: 40 }} />
             </View>
 
-            {checkoutPageUrl ? (
+            {showPaymentWebView && checkoutPageUrl ? (
               <WebView
-                ref={(r) => (webViewRef.current = r)}
-                source={{ uri: checkoutPageUrl }}
-                onNavigationStateChange={handleWebViewNavigationStateChange}
-                startInLoadingState
+                ref={webViewRef}
                 originWhitelist={['*']}
-                onShouldStartLoadWithRequest={(event) => {
-                  // allow navigation; onNavigationStateChange will handle retUrl matching
-                  return true;
+                source={{ uri: checkoutPageUrl }}
+                javaScriptEnabled
+                domStorageEnabled
+                // Android에서는 onShouldStartLoadWithRequest가 권장됨
+                onShouldStartLoadWithRequest={(request) => {
+                  const shouldLoad = urlConverter(request.url);
+                  return shouldLoad;
                 }}
+                onNavigationStateChange={(navState) => {
+                  // 먼저 앱 스킴/intent 처리를 시도하고, 이후 기존 네비게이션 핸들러로 처리
+                  const allowed = urlConverter(navState.url);
+                  if (allowed) {
+                    // 기존에 작성한 결제 완료/retUrl 검사 로직 사용
+                    handleWebViewNavigationStateChange(navState);
+                  }
+                  // if not allowed, urlConverter already launched app and we block further WebView action
+                }}
+                startInLoadingState
+                mixedContentMode="always"
               />
             ) : (
               <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
