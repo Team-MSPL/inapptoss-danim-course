@@ -2,35 +2,70 @@ export function getRefundTag(pkg: any): string | null {
   if (!pkg) return null;
 
   try {
-    // 우선 refund_policy_v2.partial_refund 우선 사용, 없으면 pkg.partial_refund 체크
+    // Prefer refund_policy_v2.partial_refund, fallback to pkg.partial_refund
     const partial =
       pkg?.refund_policy_v2?.partial_refund ?? pkg?.partial_refund ?? null;
 
     if (Array.isArray(partial) && partial.length > 0) {
-      // partial 배열 안에 REFUNDABLE 항목이 있는지 확인
-      const hasRefundable = partial.some((p: any) =>
-        (p?.fee_type === 'REFUNDABLE') ||
-        // 일부 응답 구조에서는 fee 배열이 있으면 환불 규칙이 있다는 의미일 수 있음
-        (Array.isArray(p?.fee) && p.fee.length > 0)
-      );
-      if (hasRefundable) return '일부 환불 가능';
+      // Helper to safely read numeric fields from display_rule
+      const readNumber = (obj: any, keys: string[]) => {
+        if (!obj) return undefined;
+        for (const k of keys) {
+          const v = obj[k];
+          if (v !== undefined && v !== null && v !== "") {
+            const n = Number(v);
+            if (!Number.isNaN(n)) return n;
+          }
+        }
+        return undefined;
+      };
 
-      // partial에 NON_REFUNDABLE 만 있는 경우 환불 불가
-      const hasNonRefundable = partial.some((p: any) => p?.fee_type === 'NON_REFUNDABLE');
-      if (hasNonRefundable && !hasRefundable) return '환불 불가';
+      // 1) FULL_REFUND takes highest priority
+      const full = partial.find((p: any) => String(p?.fee_type) === "FULL_REFUND");
+      if (full) {
+        const dr = full?.display_rule ?? null;
+        // If no display_rule at all -> free cancel
+        if (!dr) return "무료 취소";
+        // Prefer day_min, then value
+        const dayMin = readNumber(dr, ["day_min", "dayMin", "value"]);
+        if (typeof dayMin === "number") {
+          return `${dayMin}일 전까지 무료 취소`;
+        }
+        // fallback when display_rule exists but no day_min -> treat as free cancel
+        return "무료 취소";
+      }
 
-      // 그 외 partial이 있으나 정확히 구분하기 어려운 경우 수수료 부과로 표기
-      return '수수료 부과';
+      // 2) REFUNDABLE -> needs manual check / details
+      const refundable = partial.find((p: any) => String(p?.fee_type) === "REFUNDABLE");
+      if (refundable) {
+        return "취소 규정 확인";
+      }
+
+      // 3) NON_REFUNDABLE handling
+      const non = partial.find((p: any) => String(p?.fee_type) === "NON_REFUNDABLE");
+      if (non) {
+        const dr = non?.display_rule ?? null;
+        if (!dr) {
+          return "취소 불가";
+        }
+        // If there is a day_max, show "X일 전부터 취소 불가" as requested
+        const dayMax = readNumber(dr, ["day_max", "dayMax"]);
+        if (typeof dayMax === "number") {
+          return `${dayMax}일 전부터 취소 불가`;
+        }
+        // If display_rule exists but no day_max, still signal non-refundable
+        return "취소 불가";
+      }
+
+      // 4) If partial exists but none of above matched, fall back to generic indication
+      return "취소 규정 확인";
     }
 
-    // partial 정보가 없을 때 refund_type 필드로 유추
-    // (예: refund_type === '1' 이면 수수료 부과 등)
-    if (pkg?.refund_type === '1') return '수수료 부과';
+    // If no partial info, fall back to refund_type heuristic
+    if (pkg?.refund_type === "1") return "수수료 부과";
 
-    // 기타 케이스: 명확한 정보가 없으면 null 반환(표시 없음)
     return null;
   } catch (err) {
-    // 안전하게 실패 처리
     return null;
   }
 }
