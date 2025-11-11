@@ -1,8 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ActivityIndicator, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Text as RNText, Modal, Alert } from 'react-native';
+import {
+  View,
+  ActivityIndicator,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Text as RNText,
+  Modal,
+  Alert,
+  Pressable
+} from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
-import { FixedBottomCTAProvider, Button, colors, Text } from "@toss-design-system/react-native";
+import {FixedBottomCTAProvider, Button, colors, Text, Icon} from "@toss-design-system/react-native";
 import dayjs from 'dayjs';
 import { formatPrice, makeCalendarData, WEEKDAYS } from "../../components/product/reservation-calander";
 import { useReservationStore } from "../../zustand/useReservationStore";
@@ -716,6 +727,7 @@ function ProductReservation() {
           </Button>
         </View>
 
+        {/* time selection modal — replace existing Modal block with this */}
         <Modal
           visible={timeModalVisible}
           transparent
@@ -727,66 +739,96 @@ function ProductReservation() {
           }}
         >
           <View style={modalStyles.backdrop}>
-            <View style={modalStyles.container}>
-              <Text typography="t6" style={{ marginBottom: 12 }}>시간을 선택하세요</Text>
-
-              <View style={{ marginBottom: 12, padding: 8, borderRadius: 8, backgroundColor: '#fafafa', borderWidth: 1, borderColor: colors.grey100 }}>
-                <Text style={{ fontWeight: 'bold' }}>
-                  선택된 시간: {modalSelectedTime ?? '선택 안됨'}
-                </Text>
-                <Text style={{ color: colors.grey600, marginTop: 6 }}>
-                  {modalSelectedTime
-                    ? (() => {
-                      const found = timeOptions.find((t) => t.time === modalSelectedTime);
-                      return found ? formatCompactPrice(found.price) : '';
-                    })()
-                    : '시간을 선택하면 가격이 표시됩니다.'}
-                </Text>
+            <View style={modalStyles.modalCard}>
+              {/* Header */}
+              <View style={modalStyles.headerRow}>
+                <Text typography="t6" fontWeight="bold" color={colors.grey900}>시간 선택</Text>
+                <Pressable
+                  onPress={() => {
+                    setTimeModalVisible(false);
+                    setPendingDate(null);
+                    setModalSelectedTime(null);
+                  }}
+                  hitSlop={{ top: 12, left: 12, right: 12, bottom: 12 }}
+                >
+                  <Icon name="icon-close" size={20} color={colors.grey700} />
+                </Pressable>
               </View>
 
-              <ScrollView style={{ maxHeight: 300, marginBottom: 12 }}>
-                {timeOptions.map((opt) => {
-                  const active = modalSelectedTime === opt.time;
-                  return (
-                    <TouchableOpacity
-                      key={opt.time}
-                      style={[modalStyles.timeRow, active ? modalStyles.timeRowActive : undefined]}
-                      onPress={() => setModalSelectedTime(opt.time)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={active ? { color: '#fff', fontWeight: 'bold' } : undefined}>{opt.time}</Text>
-                      <Text style={active ? { color: '#fff' } : { color: colors.grey600 }}>{opt.price ? formatCompactPrice(opt.price) : ''}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
+              {/* Selected date + price summary */}
+              <View style={modalStyles.metaRow}>
+                <Text typography="t7" color={colors.grey700}>
+                  {pendingDate ? dayjs(pendingDate).format("M월 D일 (ddd)") : "날짜 선택"}
+                </Text>
+                <View style={modalStyles.priceBadge}>
+                  <Text typography="t7" color={colors.white} fontWeight="semibold">
+                    {modalSelectedTime
+                      ? (() => {
+                        const found = timeOptions.find((t) => t.time === modalSelectedTime);
+                        return found && found.price ? formatCompactPrice(found.price) : "가격 없음";
+                      })()
+                      : "시간 선택 시 가격 표시"}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Chip grid of times */}
+              <ScrollView contentContainerStyle={{ paddingVertical: 6 }}>
+                <View style={modalStyles.chipsWrap}>
+                  {timeOptions.map((opt) => {
+                    const active = modalSelectedTime === opt.time;
+                    return (
+                      <TouchableOpacity
+                        key={opt.time}
+                        activeOpacity={0.85}
+                        onPress={() => setModalSelectedTime(opt.time)}
+                        style={[
+                          modalStyles.timeChip,
+                          active ? modalStyles.timeChipActive : undefined
+                        ]}
+                      >
+                        <Text
+                          typography="t6"
+                          style={active ? modalStyles.timeTextActive : modalStyles.timeText}
+                        >
+                          {opt.time}
+                        </Text>
+                        <Text
+                          typography="t7"
+                          style={active ? modalStyles.priceTextActive : modalStyles.priceText}
+                        >
+                          {opt.price ? formatCompactPrice(opt.price) : ""}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </ScrollView>
 
-              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
-                <View style={{ marginRight: 8 }}>
-                  <Button
-                    type="dark"
-                    style="fill"
-                    display="inline"
-                    size="medium"
-                    onPress={() => {
-                      setTimeModalVisible(false);
-                      setPendingDate(null);
-                      setModalSelectedTime(null);
-                    }}
-                  >
-                    취소
-                  </Button>
-                </View>
+              {/* Actions */}
+              <View style={modalStyles.actionsRow}>
+                <Button
+                  type="dark"
+                  size="medium"
+                  style="outline"
+                  onPress={() => {
+                    setTimeModalVisible(false);
+                    setPendingDate(null);
+                    setModalSelectedTime(null);
+                  }}
+                >
+                  취소
+                </Button>
+
+                <View style={{ width: 12 }} />
+
                 <Button
                   type="primary"
-                  style="fill"
-                  display="inline"
                   size="medium"
+                  style="fill"
                   disabled={!modalSelectedTime}
                   onPress={() => {
-                    if (modalSelectedTime) {
-                      handleChooseTime(modalSelectedTime);
-                    }
+                    if (modalSelectedTime) handleChooseTime(modalSelectedTime);
                   }}
                 >
                   확인
@@ -816,23 +858,77 @@ const modalStyles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  container: {
-    width: Math.min(560, SCREEN_WIDTH - 48),
+  modalCard: {
+    width: Math.min(640, SCREEN_WIDTH - 48),
+    maxHeight: '80%',
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
   },
-  timeRow: {
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.grey100,
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
-  timeRowActive: {
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  priceBadge: {
     backgroundColor: colors.blue500,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+  },
+  chipsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8, // RN does not support gap widely; main spacing handled by margin on chip
+    paddingVertical: 4,
+  },
+  timeChip: {
+    minWidth: 96,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: colors.grey100,
+    marginRight: 8,
+    marginBottom: 8,
+    alignItems: 'center',
+  },
+  timeChipActive: {
+    backgroundColor: colors.blue500,
+    borderColor: colors.blue500,
+  },
+  timeText: {
+    color: colors.grey900,
+    fontWeight: '600',
+  },
+  timeTextActive: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+  priceText: {
+    color: colors.grey600,
+    marginTop: 4,
+    fontSize: 12,
+  },
+  priceTextActive: {
+    color: '#fff',
+    marginTop: 4,
+    fontSize: 12,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 12,
   },
 });
 
