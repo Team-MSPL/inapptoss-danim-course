@@ -461,7 +461,8 @@ function ProductPay() {
         });
 
       if (Array.isArray(missing) && missing.length > 0) {
-        Alert.alert("입력 오류", `다음 항목이 비어있습니다:\n${missing.slice(0,20).join("\n")}`);
+        // 간단한 문구로 변경
+        Alert.alert("입력 오류", "입력이 필요한 정보를 모두 입력해주세요");
         return;
       }
     }
@@ -723,6 +724,7 @@ function ProductPay() {
       try { setIsPaying(false); } catch {}
     }
   }
+
   const requiredMap = useMemo(() => {
     const map: Record<number, Array<any>> = {};
     const pushField = (section: number, item: any) => {
