@@ -47,7 +47,7 @@ export default function PMDL_EXCHANGE_LOCATION({ moduleKey, moduleData }: { modu
             <TouchableOpacity activeOpacity={0.9} onPress={() => toggle(idx)} style={{ paddingHorizontal: 16, paddingVertical: 14, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <View style={{ flex: 1, paddingRight: 12 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 6 }}>
-                  <View style={{ backgroundColor: "#F8CFC8", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, marginRight: 10 }}>
+                  <View style={{ backgroundColor: "#ff4929", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, marginRight: 10 }}>
                     <Text typography="t8" color={colors.white}>{firstStation?.provide_service?.desc ?? "교환 가능"}</Text>
                   </View>
                   <Text typography="t6" fontWeight="bold" numberOfLines={2} style={{ flexShrink: 1 }}>{storeName}</Text>
@@ -67,7 +67,7 @@ export default function PMDL_EXCHANGE_LOCATION({ moduleKey, moduleData }: { modu
                   {photoUri ? (
                     <Image source={{ uri: photoUri }} style={{ width: 92, height: 68, borderRadius: 8 }} resizeMode="cover" onError={(e) => console.warn("[PMDL_EXCHANGE_LOCATION] photo load error:", photoUri, e.nativeEvent)} />
                   ) : (
-                    <View style={{ width: 92, height: 68, borderRadius: 8, backgroundColor: colors.grey50 }} />
+                    <View style={{ width: 0, height: 0, borderRadius: 8, backgroundColor: colors.grey50 }} />
                   )}
 
                   <View style={{ flex: 1, marginLeft: 12 }}>
