@@ -7,9 +7,9 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@granite-js/react-native";
-import axios from "axios";
 import {
   colors,
   Text,
@@ -39,46 +39,22 @@ const GUIDE_OPTIONS = [
 
 const PRICE_MIN = 0;
 const PRICE_MAX = 100000;
-
 const SEARCH_API_URL = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Search`;
+const PAGE_SIZE = 10;
 
-type Country = {
-  code: string;
-  dial: string;
-  label: string;
-  lang: string;
-};
-
-type ProductCategory = {
-  main: string;
-  sub: string[];
-};
-
+type Country = { code: string; dial: string; label: string; lang: string };
 type SearchApiResponse = {
-  metadata: {
-    result: string;
-    result_msg: string;
-    total_count: number;
-    start: number;
-    count: number;
-  };
+  metadata: { result: string; result_msg: string; total_count: number; start: number; count: number };
   prods: Product[];
 };
 
-const PAGE_SIZE = 10;
-
 function getSortApiCode(sortType: string) {
   switch (sortType) {
-    case "RECOMMEND":
-      return "RECOMMEND";
-    case "PDESC":
-      return "PDESC";
-    case "PASC":
-      return "PASC";
-    case "SDESC":
-      return "SDESC";
-    default:
-      return "RECOMMEND";
+    case "RECOMMEND": return "RECOMMEND";
+    case "PDESC": return "PDESC";
+    case "PASC": return "PASC";
+    case "SDESC": return "SDESC";
+    default: return "RECOMMEND";
   }
 }
 
@@ -97,26 +73,29 @@ export default function MainTravelShop() {
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();
 
+  // state
   const [productList, setProductList] = useState<Product[]>([]);
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false); // initial/load filters
   const [error, setError] = useState<string | null>(null);
 
   const [sortType, setSortType] = useState<typeof SORT_OPTIONS[number]["value"]>("RECOMMEND");
   const [minPriceInput, setMinPriceInput] = useState<string>(String(PRICE_MIN));
   const [maxPriceInput, setMaxPriceInput] = useState<string>(String(PRICE_MAX));
-  const [guideSel, setGuideSel] = useState<string[]>([]); // 멀티 선택
-  const [selectedCountry, setSelectedCountry] = useState<string>("KR"); // 기본 한국
+  const [guideSel, setGuideSel] = useState<string[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string>("KR");
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(0);
+
+  // pagination state (we will control fetch by passing page param)
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const totalCountRef = useRef(0);
 
-  const buildSearchBody = useCallback(() => {
+  const buildSearchBody = useCallback((pageIndex: number) => {
     const body: Record<string, any> = {
-      start: page * PAGE_SIZE,
+      start: pageIndex * PAGE_SIZE,
       page_size: PAGE_SIZE,
       sort: getSortApiCode(sortType),
       state: selectedCountry || "KR",
@@ -125,72 +104,95 @@ export default function MainTravelShop() {
     if (maxPriceInput) body.price_to = maxPriceInput;
     if (guideSel.length > 0) body.guide_langs = guideSel;
     return body;
-  }, [page, sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry]);
+  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry]);
 
-  const fetchProducts = useCallback(
-    async (reset = false) => {
-      const nextPage = reset ? 0 : page;
-      if (reset) setLoading(true);
-      else setIsLoadingMore(true);
-      setError(null);
+  // fetchProducts now accepts pageIndex and reset flag to avoid relying on a useEffect that triggers on page change.
+  const fetchProducts = useCallback(async (pageIndex = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setIsLoadingMore(true);
+    setError(null);
 
-      try {
-        // keep recent logic if needed
-        await getRecentSelectList();
+    try {
+      await getRecentSelectList(); // keep if required
 
-        const body = buildSearchBody();
-        const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
-          headers: { "Content-Type": "application/json" },
-          timeout: 10000,
-        });
+      const body = buildSearchBody(pageIndex);
+      const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 10000,
+      });
 
-        if (response.status === 200 && response.data && Array.isArray(response.data.prods)) {
-          if (reset) {
-            setProductList(response.data.prods.filter(Boolean));
-          } else {
-            setProductList((prev) => [...prev, ...response.data.prods.filter(Boolean)]);
-          }
-          setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
-          totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
+      if (response.status === 200 && response.data && Array.isArray(response.data.prods)) {
+        if (reset) {
+          setProductList(response.data.prods.filter(Boolean));
+          setCurrentPage(0);
         } else {
-          if (reset) setProductList([]);
-          setError("상품을 불러오는데 실패했습니다.");
+          // append to existing list
+          setProductList((prev) => {
+            // append but avoid duplicates by prod_no (preserve order)
+            const map = new Map<string, Product>();
+            for (const p of prev) {
+              if (p && p.prod_no != null) map.set(String(p.prod_no), p);
+            }
+            for (const p of response.data.prods.filter(Boolean)) {
+              if (p && p.prod_no != null) map.set(String(p.prod_no), p);
+            }
+            return Array.from(map.values());
+          });
+          setCurrentPage(pageIndex);
         }
-      } catch (e: any) {
-        setError("상품을 불러오는데 실패했습니다.");
-        if (reset) setProductList([]);
-      } finally {
-        setLoading(false);
-        setIsLoadingMore(false);
-      }
-    },
-    [page, buildSearchBody]
-  );
 
+        setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
+        totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
+      } else {
+        if (reset) setProductList([]);
+        setError("상품을 불러오는데 실패했습니다.");
+      }
+    } catch (e: any) {
+      if (reset) setProductList([]);
+      setError("상품을 불러오는데 실패했습니다.");
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [buildSearchBody]);
+
+  // initial load and when filters/sort change -> reset (page 0)
   useEffect(() => {
-    setPage(0);
-    fetchProducts(true);
-  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry, fetchProducts]);
+    // reset page to 0 and fetch page 0
+    fetchProducts(0, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setPage(0);
-    fetchProducts(true).finally(() => setRefreshing(false));
+    // reset and fetch first page
+    fetchProducts(0, true).finally(() => setRefreshing(false));
   }, [fetchProducts]);
 
-  const handleLoadMore = () => {
-    if (!loading && !isLoadingMore && productList.length < totalCountRef.current) {
-      setPage((prev) => prev + 1);
-    }
-  };
+  // Manual "더 불러오기" handler - does not change global 'loading' flag so page won't show skeleton
+  const handleLoadMore = useCallback(() => {
+    if (loading || isLoadingMore) return;
+    if (productList.length >= totalCountRef.current) return;
+    const nextPage = currentPage + 1;
+    setIsLoadingMore(true);
+    // call fetchProducts directly with nextPage, append mode
+    fetchProducts(nextPage, false).catch(() => { /* handled inside */ });
+  }, [loading, isLoadingMore, productList.length, currentPage, fetchProducts]);
 
-  useEffect(() => {
-    if (page === 0) return;
-    fetchProducts(false);
-  }, [page, fetchProducts]);
+  // stable renderItem and header
+  const renderItem = useCallback(({ item }: { item: Product }) => {
+    if (!item) return null;
+    return (
+      <ProductCard
+        product={item}
+        onPress={() => {
+          navigation.navigate("/product/good-product", { product: item });
+        }}
+      />
+    );
+  }, [navigation]);
 
-  // 멀티선택 가이드 버튼
-  const renderGuideOptions = (selectedList: string[], onChange: (arr: string[]) => void) => (
+  const renderGuideOptions = useCallback((selectedList: string[], onChange: (arr: string[]) => void) => (
     <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 12 }}>
       {GUIDE_OPTIONS.map((opt) => {
         const checked = selectedList.includes(opt.value);
@@ -209,25 +211,19 @@ export default function MainTravelShop() {
             }}
             onPress={() => {
               let next: string[];
-              if (checked) {
-                next = selectedList.filter((v) => v !== opt.value);
-              } else {
-                next = [...selectedList, opt.value];
-              }
+              if (checked) next = selectedList.filter((v) => v !== opt.value);
+              else next = [...selectedList, opt.value];
               onChange(next);
             }}
           >
-            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>
-              {opt.label}
-            </Text>
+            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>{opt.label}</Text>
           </TouchableOpacity>
         );
       })}
     </View>
-  );
+  ), []);
 
-  // 국가 단일 선택 UI
-  const renderCountryOptions = (selectedCode: string, onChange: (code: string) => void) => (
+  const renderCountryOptions = useCallback((selectedCode: string, onChange: (code: string) => void) => (
     <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 12 }}>
       {COUNTRY_OPTIONS.map((c) => {
         const checked = selectedCode === c.code;
@@ -247,17 +243,14 @@ export default function MainTravelShop() {
             }}
             onPress={() => onChange(c.code)}
           >
-            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>
-              {c.label}
-            </Text>
+            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>{c.label}</Text>
           </TouchableOpacity>
         );
       })}
     </View>
-  );
+  ), []);
 
-  // 정렬 바텀시트
-  const openSortSheet = () => {
+  const openSortSheet = useCallback(() => {
     bottomSheet.open({
       children: (
         <View style={{ paddingVertical: 24 }}>
@@ -265,19 +258,10 @@ export default function MainTravelShop() {
             {SORT_OPTIONS.map((option) => (
               <Pressable
                 key={option.value}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingVertical: 20,
-                }}
-                onPress={() => {
-                  setSortType(option.value);
-                  bottomSheet.close();
-                }}
+                style={{ flexDirection: "row", alignItems: "center", paddingVertical: 20 }}
+                onPress={() => { setSortType(option.value); bottomSheet.close(); }}
               >
-                <Text typography="t5" fontWeight="medium" color={colors.grey700} style={{ flex: 1 }}>
-                  {option.label}
-                </Text>
+                <Text typography="t5" fontWeight="medium" color={colors.grey700} style={{ flex: 1 }}>{option.label}</Text>
                 {sortType === option.value && <Icon name="icon-check-mono" color={colors.blue500} size={24} />}
               </Pressable>
             ))}
@@ -286,9 +270,9 @@ export default function MainTravelShop() {
         </View>
       ),
     });
-  };
+  }, [bottomSheet, sortType]);
 
-  const openFilterSheet = () => {
+  const openFilterSheet = useCallback(() => {
     function FilterSheetContent() {
       const [tempGuide, setTempGuide] = useState<string[]>(guideSel);
       const [tempMinPrice, setTempMinPrice] = useState<string>(minPriceInput);
@@ -297,99 +281,45 @@ export default function MainTravelShop() {
 
       return (
         <ScrollView style={{ padding: 24, paddingBottom: 32 }}>
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
-            국가
-          </Text>
+          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>국가</Text>
           {renderCountryOptions(tempCountry, setTempCountry)}
 
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
-            가이드
-          </Text>
+          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>가이드</Text>
           {renderGuideOptions(tempGuide, setTempGuide)}
 
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>
-            가격
-          </Text>
+          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>가격</Text>
           <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-            <TextInput
-              value={tempMinPrice}
-              keyboardType="numeric"
-              onChangeText={setTempMinPrice}
-              placeholder="최소"
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                borderColor: colors.grey300,
-                borderRadius: 8,
-                padding: 8,
-                marginRight: 6,
-              }}
-            />
+            <TextInput value={tempMinPrice} keyboardType="numeric" onChangeText={setTempMinPrice} placeholder="최소"
+                       style={{ flex: 1, borderWidth: 1, borderColor: colors.grey300, borderRadius: 8, padding: 8, marginRight: 6 }} />
             <Text style={{ marginHorizontal: 6, color: colors.grey700 }}>~</Text>
-            <TextInput
-              value={tempMaxPrice}
-              keyboardType="numeric"
-              onChangeText={setTempMaxPrice}
-              placeholder="최대"
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                borderColor: colors.grey300,
-                borderRadius: 8,
-                padding: 8,
-                marginLeft: 6,
-              }}
-            />
+            <TextInput value={tempMaxPrice} keyboardType="numeric" onChangeText={setTempMaxPrice} placeholder="최대"
+                       style={{ flex: 1, borderWidth: 1, borderColor: colors.grey300, borderRadius: 8, padding: 8, marginLeft: 6 }} />
           </View>
-          <BottomSheet.CTA
-            onPress={() => {
-              setGuideSel(tempGuide);
-              setMinPriceInput(tempMinPrice);
-              setMaxPriceInput(tempMaxPrice);
-              setSelectedCountry(tempCountry);
-              setPage(0);
-              bottomSheet.close();
-            }}
-          >
-            적용하기
-          </BottomSheet.CTA>
+          <BottomSheet.CTA onPress={() => {
+            setGuideSel(tempGuide);
+            setMinPriceInput(tempMinPrice);
+            setMaxPriceInput(tempMaxPrice);
+            setSelectedCountry(tempCountry);
+            // reset list to first page after applying filters
+            fetchProducts(0, true);
+            bottomSheet.close();
+          }}>적용하기</BottomSheet.CTA>
         </ScrollView>
       );
     }
     bottomSheet.open({ children: <FilterSheetContent /> });
-  };
+  }, [bottomSheet, fetchProducts, guideSel, minPriceInput, maxPriceInput, selectedCountry, renderCountryOptions, renderGuideOptions]);
 
-  const renderHeader = () => (
+  const renderHeader = useCallback(() => (
     <View style={{ backgroundColor: "#fff" }}>
       <StepText title={"나그네님을 위한 맞춤 여행 상품"} subTitle1={"상품 추천"} subTitle2={"내 여정과 어울리는 여행 상품을 추천해드려요"} />
       <View style={{ paddingHorizontal: 20 }}>
-        <View
-          style={{
-            backgroundColor: colors.red50,
-            borderRadius: 18,
-            alignItems: "center",
-            flexDirection: "row",
-            padding: 10,
-            width: 232,
-            marginBottom: 14,
-          }}
-        >
+        <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
           <Icon name="icon-shopping-bag-red" color={colors.red300} size={22} style={{ marginHorizontal: 6 }} />
-          <Text typography="t6" color={colors.red400} fontWeight="medium">
-            최저가로 즐기는 특별한 여행!
-          </Text>
+          <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!</Text>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          <Text typography="t7" color={colors.grey700}>
-            총 {total}개
-          </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Pressable style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }} onPress={openFilterSheet}>
               <Icon name="icon-filter-mono" color={colors.blue500} size={18} />
@@ -404,20 +334,17 @@ export default function MainTravelShop() {
         </View>
       </View>
     </View>
-  );
+  ), [total, sortType, openFilterSheet, openSortSheet]);
 
   const isNoProduct = !loading && Array.isArray(productList) && productList.length === 0;
 
-  if (loading && !refreshing) {
+  // only show full-page skeleton on initial load (when product list is empty and loading)
+  if (loading && productList.length === 0 && !refreshing) {
     return (
       <AnimateSkeleton delay={400} withGradient={true} withShimmer={true}>
         {[...Array(4)].map((_, i) => (
-          <Skeleton
-            key={i}
-            height={110}
-            width={Dimensions.get("window").width - 32}
-            style={{ marginTop: i > 0 ? 24 : 0, alignSelf: "center", borderRadius: 16 }}
-          />
+          <Skeleton key={i} height={110} width={Dimensions.get("window").width - 32}
+                    style={{ marginTop: i > 0 ? 24 : 0, alignSelf: "center", borderRadius: 16 }} />
         ))}
       </AnimateSkeleton>
     );
@@ -429,7 +356,7 @@ export default function MainTravelShop() {
         <Text typography="t4" color={colors.red400} style={{ marginBottom: 14 }}>
           {typeof error === "string" ? error : "상품을 불러오는데 실패했습니다."}
         </Text>
-        <Button onPress={onRefresh}>다시 시도</Button>
+        <Button onPress={() => fetchProducts(0, true)}>다시 시도</Button>
       </View>
     );
   }
@@ -438,35 +365,25 @@ export default function MainTravelShop() {
     <View style={{ flex: 1 }}>
       <FlatList
         data={productList.filter((item, idx, arr) => arr.findIndex((v) => v.prod_no === item.prod_no) === idx)}
-        keyExtractor={(item, idx) => `${item.prod_no}_${idx}`} // 중복 키 방지
-        renderItem={({ item }) => {
-          if (!item) return null;
-          return (
-            <ProductCard
-              product={item}
-              onPress={() => {
-                navigation.navigate("/product/good-product", { product: item });
-                console.log(item.prod_no);
-              }}
-            />
-          );
-        }}
+        keyExtractor={(item) => String(item.prod_no)}
+        renderItem={renderItem}
         ListHeaderComponent={renderHeader}
         contentContainerStyle={{ paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
+        initialNumToRender={6}
+        windowSize={11}
+        removeClippedSubviews={Platform.OS === "android"}
         ListFooterComponent={
           productList.length < totalCountRef.current ? (
             <View style={{ paddingVertical: 20, alignItems: "center", alignSelf: "center" }}>
               <TouchableOpacity
-                style={{ backgroundColor: "white", width: Dimensions.get("window").width, height: 180, alignItems: "center" }}
+                style={{ backgroundColor: "white", width: Dimensions.get("window").width, height: 56, alignItems: "center", justifyContent: "center" }}
                 onPress={handleLoadMore}
                 disabled={isLoadingMore}
               >
-                <Text typography="t5" fontWeight="bold">
-                  더 불러오기
-                </Text>
+                <Text typography="t5" fontWeight="bold">{isLoadingMore ? "불러오는 중..." : "더 불러오기"}</Text>
               </TouchableOpacity>
             </View>
           ) : null

@@ -54,7 +54,7 @@ export function MiniProductCard({
               zIndex: 2,
             }}
           >
-            최저가
+            {' '}최저가{' '}
           </Badge>
         </View>
 

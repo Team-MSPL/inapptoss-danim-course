@@ -50,7 +50,7 @@ export default function HorizontalProductCard({ product, onPress, style }: Horiz
             size="tiny"
             style={styles.priceBadge}
           >
-            최저가
+            {' '}최저가{' '}
           </Badge>
         </View>
 

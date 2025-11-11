@@ -66,7 +66,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
               zIndex: 2,
             }}
           >
-            최저가
+            {' '}최저가{' '}
           </Badge>
         </View>
         {/* 상품 정보 */}
