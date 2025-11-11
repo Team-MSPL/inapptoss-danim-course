@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import axios from 'axios';
-import {FixedBottomCTAProvider, Button, colors, Text, Icon} from "@toss-design-system/react-native";
+import {FixedBottomCTAProvider, Button, colors, Text, Icon, FixedBottomCTA} from "@toss-design-system/react-native";
 import dayjs from 'dayjs';
 import { formatPrice, makeCalendarData, WEEKDAYS } from "../../components/product/reservation-calander";
 import { useReservationStore } from "../../zustand/useReservationStore";
@@ -714,18 +714,9 @@ function ProductReservation() {
           </ScrollView>
         </View>
 
-        <View style={{ padding: 24, backgroundColor: '#fff' }}>
-          <Button
-            type="primary"
-            style="fill"
-            display="block"
-            size="large"
-            disabled={nextButtonDisabled}
-            onPress={goNext}
-          >
-            다음으로
-          </Button>
-        </View>
+        <FixedBottomCTA onPress={goNext} disabled={nextButtonDisabled}>
+          다음으로
+        </FixedBottomCTA>
 
         {/* time selection modal — replace existing Modal block with this */}
         <Modal

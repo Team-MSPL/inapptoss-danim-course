@@ -14,6 +14,9 @@ type Env = {
   CRYPTO_KEY: string;
   Tripadvisor_KEy: string;
   APP_START_MODE: string;
+  TOSS_PAY_TEST_API: string;
+  TOSS_PAY_LIVE_API: string;
+  TOSS_PAY_API_KEY: string;
 };
 
 interface ImportMeta {
