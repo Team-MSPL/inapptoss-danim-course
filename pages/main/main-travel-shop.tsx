@@ -18,12 +18,15 @@ import {
   Skeleton,
   AnimateSkeleton,
   useBottomSheet,
-  BottomSheet,
+  BottomSheet, FixedBottomCTAProvider,
 } from "@toss-design-system/react-native";
 import ProductCard, { Product } from "../../components/main/product-card";
 import { StepText } from "../../components/step-text";
 import axiosAuth from "../../redux/api";
 import { getRecentSelectList } from "../../zustand/api";
+import CountrySelector from "../../components/main/CountrySelector";
+import {CustomProgressBar} from "../../components/progress-bar";
+import {RouteButton} from "../../components/route-button";
 
 const SORT_OPTIONS = [
   { label: "추천순", value: "RECOMMEND" },
@@ -48,16 +51,6 @@ type SearchApiResponse = {
   prods: Product[];
 };
 
-function getSortApiCode(sortType: string) {
-  switch (sortType) {
-    case "RECOMMEND": return "RECOMMEND";
-    case "PDESC": return "PDESC";
-    case "PASC": return "PASC";
-    case "SDESC": return "SDESC";
-    default: return "RECOMMEND";
-  }
-}
-
 const COUNTRY_OPTIONS: Country[] = [
   { code: "KR", dial: "82", label: "한국", lang: "ko" },
   { code: "JP", dial: "81", label: "일본", lang: "ja" },
@@ -68,6 +61,16 @@ const COUNTRY_OPTIONS: Country[] = [
   { code: "TH", dial: "66", label: "태국", lang: "th" },
   { code: "HK", dial: "852", label: "홍콩", lang: "zh-hk" },
 ];
+
+function getSortApiCode(sortType: string) {
+  switch (sortType) {
+    case "RECOMMEND": return "RECOMMEND";
+    case "PDESC": return "PDESC";
+    case "PASC": return "PASC";
+    case "SDESC": return "SDESC";
+    default: return "RECOMMEND";
+  }
+}
 
 export default function MainTravelShop() {
   const navigation = useNavigation();
@@ -92,6 +95,9 @@ export default function MainTravelShop() {
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const totalCountRef = useRef(0);
+
+  // show country picker on first visit (or until user selects)
+  const [showCountryPicker, setShowCountryPicker] = useState<boolean>(true);
 
   const buildSearchBody = useCallback((pageIndex: number) => {
     const body: Record<string, any> = {
@@ -158,10 +164,12 @@ export default function MainTravelShop() {
 
   // initial load and when filters/sort change -> reset (page 0)
   useEffect(() => {
-    // reset page to 0 and fetch page 0
-    fetchProducts(0, true);
+    // only fetch when not showing country picker
+    if (!showCountryPicker) {
+      fetchProducts(0, true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry]);
+  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry, showCountryPicker]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -347,6 +355,29 @@ export default function MainTravelShop() {
                     style={{ marginTop: i > 0 ? 24 : 0, alignSelf: "center", borderRadius: 16 }} />
         ))}
       </AnimateSkeleton>
+    );
+  }
+
+  if (showCountryPicker) {
+    // show full-screen country selector before showing products
+    return (
+      <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 20, paddingHorizontal: 8}}>
+        <FixedBottomCTAProvider>
+          <StepText
+            title={'여행상품을 찾으시나요?'}
+            subTitle1={'원하는 국가를 선택해주세요!'}
+          ></StepText>
+          <CountrySelector
+            countries={COUNTRY_OPTIONS}
+            onSelect={(code) => {
+              setSelectedCountry(code);
+              setShowCountryPicker(false);
+              // fetch now for chosen country
+              fetchProducts(0, true);
+            }}
+          />
+        </FixedBottomCTAProvider>
+      </View>
     );
   }
 
