@@ -5,19 +5,6 @@ import MediaGallery from "./MediaGallery";
 import { Text, colors } from "@toss-design-system/react-native";
 import { View, Linking, Alert } from "react-native";
 
-/**
- * GenericModule
- * - Renders moduleData content with improved text handling:
- *   - HTML blocks (use_html) are rendered by HtmlRenderer (fallback to WebView inside that component).
- *   - Plain text blocks are run through a lightweight RichTextRenderer that:
- *     - decodes common HTML entities (&nbsp;, &amp; ...)
- *     - converts simple list markers and <li> into bullets
- *     - preserves paragraph breaks (renders each paragraph in its own <Text> so line spacing is preserved)
- *     - detects <a href> anchors and inline raw URLs and makes them tappable via Linking.openURL
- *
- * This keeps previous behavior for media but improves line breaks, entity decoding, list bullets and link handling for text-based PDML.
- */
-
 /* ---------- Small RichTextRenderer (self-contained) ---------- */
 function decodeHtmlEntities(str: string) {
   if (!str) return "";
@@ -207,90 +194,184 @@ export default function GenericModule({
   if (!moduleData) return null;
   const title = moduleData.module_title ?? moduleData.title ?? moduleKey;
   const content = moduleData.content ?? moduleData;
-  if (!content) return null;
 
-  // If module has HTML and contains complex tags, prefer HtmlRenderer/WebView for fidelity
-  if (moduleData?.use_html && content?.type === "text" && content?.desc) {
-    const htmlStr = String(content.desc || "");
-    const hasComplex = /<(table|img|iframe|script|form|video|audio)\b/i.test(htmlStr);
-    if (hasComplex) {
+  // Ensure ModuleShell always rendered so wrappers that just delegate to GenericModule show up.
+  // Show a helpful placeholder if content is empty to aid debugging.
+  const hasContent =
+    !!(content && (
+      (content.type === "text" && content.desc) ||
+      (content.media && Array.isArray(content.media) && content.media.length > 0) ||
+      (Array.isArray(content.list) && content.list.length > 0) ||
+      (content.type === "properties" && content.properties && Object.keys(content.properties).length > 0) ||
+      (content.properties && typeof content.properties === "object" && Object.keys(content.properties).length > 0) // <-- handle server data without explicit type
+    ));
+
+  // Debug: light log to help track empty-wrapper cases (won't spam in production unless dev console enabled)
+  try {
+    if (!hasContent) {
+      console.debug(`[GenericModule] No renderable content for moduleKey=${moduleKey}`);
+    }
+  } catch {
+    /* noop */
+  }
+
+  // Simple helper to open media or fallback to onOpenMedia
+  const openUrl = (url?: string) => {
+    if (!url) return;
+    if (onOpenMedia) {
+      try {
+        onOpenMedia(url);
+        return;
+      } catch {
+        // fallthrough to Linking
+      }
+    }
+    Linking.openURL(url).catch(() => Alert.alert("링크 열기 실패", "브라우저를 열 수 없습니다."));
+  };
+
+  // Helper to render a property value (recursive-ish)
+  const renderPropertyValue = (value: any, key?: string) => {
+    if (!value) return null;
+
+    // If value is object that looks like a text/content block
+    if (value.type === "text" && value.desc) {
+      return <RichTextRenderer text={String(value.desc)} />;
+    }
+
+    // If it's a content block with use_html
+    if (value.type === "content" && value.desc) {
+      return value.use_html ? <HtmlRenderer html={String(value.desc)} onOpenMedia={openUrl} /> : <RichTextRenderer text={String(value.desc)} />;
+    }
+
+    // If it's a list
+    if (Array.isArray(value.list) && value.list.length > 0) {
       return (
-        <ModuleShell title={title}>
-          <HtmlRenderer html={htmlStr} />
-        </ModuleShell>
+        <View>
+          {value.title ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 8 }}>{value.title}</Text> : null}
+          {value.list.map((it: any, idx: number) => {
+            const desc = it?.desc ?? "";
+            const mediaArr = Array.isArray(it?.media) ? it.media : [];
+            // If this list entry is a location object (location_info) try to print store_name / latlng.desc etc.
+            if (it?.location_info?.properties) {
+              const props = it.location_info.properties;
+              return (
+                <View key={idx} style={{ marginBottom: 12 }}>
+                  {props.store_name?.desc ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 6 }}>{props.store_name.desc}</Text> : null}
+                  {props.latlng?.desc ? <Text typography="t7" color={colors.grey700} style={{ marginBottom: 6 }}>{props.latlng.desc}</Text> : null}
+                  {it?.station_list?.list ? renderPropertyValue(it.station_list, `station_list-${idx}`) : null}
+                  {mediaArr.length > 0 ? <MediaGallery media={mediaArr} onOpen={(m) => openUrl(m)} /> : null}
+                </View>
+              );
+            }
+
+            return (
+              <View key={idx} style={{ marginBottom: 12 }}>
+                {desc ? <RichTextRenderer text={String(desc)} /> : null}
+                {mediaArr.length > 0 ? <MediaGallery media={mediaArr} onOpen={(m) => openUrl(m)} /> : null}
+                {/* render nested properties if present */}
+                {it?.properties ? Object.entries(it.properties).map(([k, v]) => <View key={k}>{renderPropertyValue(v, k)}</View>) : null}
+              </View>
+            );
+          })}
+        </View>
       );
     }
 
-    // For simple HTML blocks, render natively with tokenization (anchors -> clickable links)
-    return (
-      <ModuleShell title={title}>
-        <RichTextRenderer text={String(content.desc)} />
-      </ModuleShell>
-    );
-  }
+    // If it's a properties-like object (nested)
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      // If it has title/desc directly
+      if (value.desc && !value.list) {
+        return <RichTextRenderer text={String(value.desc)} />;
+      }
 
-  // Plain text: use RichTextRenderer instead of raw Text so paragraphs, bullets and links are preserved
-  if (content?.type === "text" && content?.desc) {
-    return (
-      <ModuleShell title={title}>
-        <RichTextRenderer text={String(content.desc)} />
-      </ModuleShell>
-    );
-  }
+      // If it has properties nested
+      if (value.properties) {
+        return (
+          <View>
+            {Object.entries(value.properties).map(([k, v]) => (
+              <View key={k} style={{ marginBottom: 8 }}>
+                {v?.title ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 6 }}>{v.title}</Text> : null}
+                {renderPropertyValue(v, k)}
+              </View>
+            ))}
+          </View>
+        );
+      }
+    }
 
-  // Media handling unchanged
-  if (content?.media && Array.isArray(content.media) && content.media.length > 0) {
-    return (
-      <ModuleShell title={title}>
-        <MediaGallery media={content.media} onOpen={onOpenMedia} />
-      </ModuleShell>
-    );
-  }
+    // Fallback: stringify small objects or show nothing
+    try {
+      if (typeof value === "string") return <RichTextRenderer text={value} />;
+      if (typeof value === "number" || typeof value === "boolean") return <Text typography="t7" color={colors.grey700}>{String(value)}</Text>;
+      // last resort for other shapes
+      return <Text typography="t7" color={colors.grey700} numberOfLines={6}>{JSON.stringify(value)}</Text>;
+    } catch {
+      return null;
+    }
+  };
 
-  // List entries: render desc through RichTextRenderer and include media gallery for each entry
-  if (Array.isArray(content?.list) && content.list.length > 0) {
-    return (
-      <ModuleShell title={title}>
-        {content.list.map((it: any, idx: number) => {
-          const desc = it?.desc ?? "";
-          const mediaArr = Array.isArray(it?.media) ? it.media : [];
-          return (
-            <View key={idx} style={{ marginBottom: 12 }}>
-              {desc ? <RichTextRenderer text={String(desc)} /> : null}
-              <MediaGallery media={mediaArr} onOpen={onOpenMedia} />
-            </View>
-          );
-        })}
-      </ModuleShell>
-    );
-  }
+  return (
+    <ModuleShell title={title}>
+      {/* If there is no content, show a small placeholder so wrapper components are visible */}
+      {!hasContent ? (
+        <View style={{ paddingVertical: 8 }}>
+          <Text typography="t7" color={colors.grey500}>(내용 없음)</Text>
+        </View>
+      ) : null}
 
-  // properties -> preserve use_html for 'content' entries, otherwise use RichTextRenderer
-  if (content?.type === "properties" && content?.properties) {
-    return (
-      <ModuleShell title={title}>
-        {Object.entries(content.properties).map(([k, v]: any) => {
-          if (!v) return null;
-          if (v.type === "text" && v.desc) {
-            return <RichTextRenderer key={k} text={String(v.desc)} />;
+      {/* Html text handling */}
+      {moduleData?.use_html && content?.type === "text" && content?.desc ? (
+        (() => {
+          const htmlStr = String(content.desc || "");
+          const hasComplex = /<(table|img|iframe|script|form|video|audio)\b/i.test(htmlStr);
+          if (hasComplex) {
+            return <HtmlRenderer html={htmlStr} onOpenMedia={openUrl} />;
           }
-          if (v.type === "list" && Array.isArray(v.list)) {
+          return <RichTextRenderer text={String(content.desc)} />;
+        })()
+      ) : null}
+
+      {/* Plain text fallback */}
+      {!moduleData?.use_html && content?.type === "text" && content?.desc ? (
+        <RichTextRenderer text={String(content.desc)} />
+      ) : null}
+
+      {/* Media */}
+      {content?.media && Array.isArray(content.media) && content.media.length > 0 ? (
+        <MediaGallery media={content.media} onOpen={(m) => openUrl(m)} />
+      ) : null}
+
+      {/* List entries */}
+      {Array.isArray(content?.list) && content.list.length > 0 ? (
+        <>
+          {content.list.map((it: any, idx: number) => {
+            const desc = it?.desc ?? "";
+            const mediaArr = Array.isArray(it?.media) ? it.media : [];
             return (
-              <View key={k} style={{ marginTop: 8 }}>
-                {v.title ? <Text typography="t7" color={colors.grey800}>{v.title}</Text> : null}
-                {v.list.map((li: any, i: number) => <RichTextRenderer key={i} text={String(li?.desc ?? "")} />)}
+              <View key={idx} style={{ marginBottom: 12 }}>
+                {desc ? <RichTextRenderer text={String(desc)} /> : null}
+                {mediaArr.length > 0 ? <MediaGallery media={mediaArr} onOpen={(m) => openUrl(m)} /> : null}
+                {it?.properties ? Object.entries(it.properties).map(([k, v]) => <View key={k}>{renderPropertyValue(v, k)}</View>) : null}
               </View>
             );
-          }
-          if (v.type === "content" && v.desc) {
-            return v.use_html ? <HtmlRenderer key={k} html={String(v.desc)} /> : <RichTextRenderer key={k} text={String(v.desc)} />;
-          }
-          return null;
-        })}
-      </ModuleShell>
-    );
-  }
+          })}
+        </>
+      ) : null}
 
-  // fallback: nothing
-  return null;
+      {/* Properties — handle even when content.type is not explicitly "properties" */}
+      {content?.properties && typeof content.properties === "object" && Object.keys(content.properties).length > 0 ? (
+        <>
+          {Object.entries(content.properties).map(([propKey, propVal]: any) => {
+            // propVal can be { title, desc } or { list: [...], title } or nested structure
+            return (
+              <View key={propKey} style={{ marginBottom: 12 }}>
+                {propVal?.title ? <Text typography="t7" color={colors.grey800} style={{ marginBottom: 6 }}>{propVal.title}</Text> : null}
+                {renderPropertyValue(propVal, propKey)}
+              </View>
+            );
+          })}
+        </>
+      ) : null}
+    </ModuleShell>
+  );
 }

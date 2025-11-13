@@ -72,15 +72,15 @@ export default function PMDL_EXCHANGE_LOCATION({ moduleKey, moduleData }: { modu
 
                   <View style={{ flex: 1, marginLeft: 12 }}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 12 }}>
-                      <Text typography="t7" color={colors.grey800}>서비스 제공</Text>
-                      <Text typography="t7">{provideService ?? "-"}</Text>
+                      <Text typography="t6" color={colors.grey800}>서비스 제공</Text>
+                      <Text typography="t6">{provideService ?? "-"}</Text>
                     </View>
 
                     <View style={{ height: 12 }} />
 
                     {Array.isArray(activeTimeList) && activeTimeList.length > 0 ? (
                       <View style={{ marginTop: 8 }}>
-                        <Text typography="t7" color={colors.grey800} style={{ marginBottom: 8 }}>운영 시간</Text>
+                        <Text typography="t6" color={colors.grey800} style={{ marginBottom: 8 }}>운영 시간</Text>
                         <View style={{ borderWidth: 1, borderColor: colors.grey100, borderRadius: 8, overflow: "hidden" }}>
                           <View style={{ flexDirection: "row", backgroundColor: colors.grey50, paddingVertical: 10 }}>
                             <View style={{ flex: 1, paddingLeft: 12 }}><Text typography="t8" color={colors.grey700}>주</Text></View>

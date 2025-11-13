@@ -154,7 +154,7 @@ export default function PMDL_GRAPHIC({
           return (
             <View key={idx} style={{ marginBottom: 20 }}>
               {desc ? (
-                <Text typography="t7" color={colors.grey800} style={{ marginBottom: 12 }}>
+                <Text typography="t6" color={colors.grey800} style={{ marginBottom: 12 }}>
                   {stripHtmlTags(desc)}
                 </Text>
               ) : null}
@@ -162,7 +162,7 @@ export default function PMDL_GRAPHIC({
               {thumbUrl ? (
                 isFailed ? (
                   <View style={[styles.placeholder, { aspectRatio }]}>
-                    <Text typography="t7" color={colors.grey500}>이미지 로드 실패</Text>
+                    <Text typography="t6" color={colors.grey500}>이미지 로드 실패</Text>
                   </View>
                 ) : isYouTube ? (
                   // YouTube: either show thumbnail with play button, or inline player when playing

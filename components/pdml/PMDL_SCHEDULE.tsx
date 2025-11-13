@@ -59,9 +59,9 @@ export default function PMDL_SCHEDULE({ moduleKey, moduleData }: { moduleKey: st
               return (
                 <View key={rIdx} style={{ marginBottom: 12 }}>
                   <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                    {timeText ? <Text typography="t7" color={colors.grey700} style={{ width: 84 }}>{timeText}</Text> : <View style={{ width: 84 }} />}
+                    {timeText ? <Text typography="t6" color={colors.grey700} style={{ width: 84 }}>{timeText}</Text> : <View style={{ width: 84 }} />}
                     <View style={{ flex: 1 }}>
-                      {contentText ? <Text typography="t7" color={colors.grey800}>{contentText}</Text> : null}
+                      {contentText ? <Text typography="t6" color={colors.grey800}>{contentText}</Text> : null}
                       {Array.isArray(mediaArr) && mediaArr.length > 0 ? (
                         <View style={{ marginTop: 8 }}>
                           <MediaGallery media={mediaArr} />
