@@ -1017,7 +1017,7 @@ export default function ProductGoodProduct() {
                 opacity: (() => {
                   if (!modalPkg) return 1;
                   const isSoldOut = !(modalPkg.sale_s_date && modalPkg.sale_e_date);
-                  return isSoldOut ? 0.7 : 1;
+                  return 1;
                 })(),
               }}
             >
