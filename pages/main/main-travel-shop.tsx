@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
   FlatList,
-  Pressable,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
   Dimensions,
   Platform,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@granite-js/react-native";
 import {
@@ -17,39 +15,18 @@ import {
   Button,
   Skeleton,
   AnimateSkeleton,
-  useBottomSheet,
-  BottomSheet, FixedBottomCTAProvider,
+  FixedBottomCTAProvider,
 } from "@toss-design-system/react-native";
 import ProductCard, { Product } from "../../components/main/product-card";
 import { StepText } from "../../components/step-text";
 import axiosAuth from "../../redux/api";
 import { getRecentSelectList } from "../../zustand/api";
 import CountrySelector from "../../components/main/CountrySelector";
-import {CustomProgressBar} from "../../components/progress-bar";
-import {RouteButton} from "../../components/route-button";
+import { useRecommendStore } from "../../zustand/recommendStore";
 
-const SORT_OPTIONS = [
-  { label: "추천순", value: "RECOMMEND" },
-  { label: "높은 가격순", value: "PDESC" },
-  { label: "낮은 가격순", value: "PASC" },
-  { label: "높은 평점순", value: "SDESC" },
-] as const;
-
-const GUIDE_OPTIONS = [
-  { label: "한국어", value: "kr" },
-  { label: "영어", value: "en" },
-] as const;
-
-const PRICE_MIN = 0;
-const PRICE_MAX = 100000;
-const SEARCH_API_URL = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Search`;
-const PAGE_SIZE = 10;
+const RECOMMEND_API_URL = `${import.meta.env.API_ROUTE_RELEASE}/sellingProduct/recommend`;
 
 type Country = { code: string; dial: string; label: string; lang: string };
-type SearchApiResponse = {
-  metadata: { result: string; result_msg: string; total_count: number; start: number; count: number };
-  prods: Product[];
-};
 
 const COUNTRY_OPTIONS: Country[] = [
   { code: "KR", dial: "82", label: "한국", lang: "ko" },
@@ -62,318 +39,277 @@ const COUNTRY_OPTIONS: Country[] = [
   { code: "HK", dial: "852", label: "홍콩", lang: "zh-hk" },
 ];
 
-function getSortApiCode(sortType: string) {
-  switch (sortType) {
-    case "RECOMMEND": return "RECOMMEND";
-    case "PDESC": return "PDESC";
-    case "PASC": return "PASC";
-    case "SDESC": return "SDESC";
-    default: return "RECOMMEND";
-  }
+const COUNTRY_NAME_MAP: Record<string, string> = {
+  KR: "한국",
+  JP: "일본",
+  US: "미국",
+  VN: "베트남",
+  TW: "대만",
+  CN: "중국",
+  TH: "태국",
+  HK: "홍콩",
+};
+
+/* -------------------------
+   Helpers
+   ------------------------- */
+
+function flattenArray(arr: any[]): any[] {
+  const out: any[] = [];
+  (function f(a: any[]) {
+    for (const v of a) {
+      if (Array.isArray(v)) f(v);
+      else out.push(v);
+    }
+  })(arr);
+  return out;
 }
+
+function extract2DArray(maybe: any): any[] | null {
+  if (!maybe) return null;
+  if (Array.isArray(maybe) && maybe.length > 0 && Array.isArray(maybe[0])) return maybe;
+  if (typeof maybe === "object") {
+    if (Array.isArray((maybe as any).recentSelectList) && (maybe as any).recentSelectList.length > 0 && Array.isArray((maybe as any).recentSelectList[0])) {
+      return (maybe as any).recentSelectList;
+    }
+    if (Array.isArray((maybe as any).selectList) && (maybe as any).selectList.length > 0 && Array.isArray((maybe as any).selectList[0])) {
+      return (maybe as any).selectList;
+    }
+    for (const v of Object.values(maybe)) {
+      if (Array.isArray(v) && v.length > 0 && Array.isArray((v as any)[0])) return v as any[];
+    }
+  }
+  return null;
+}
+
+function extractProductArrayFromResponseData(data: any): any[] | null {
+  if (!data) return null;
+
+  if (data.prods && Array.isArray(data.prods)) return data.prods;
+  if (Array.isArray(data)) {
+    // nested arrays case e.g. [ [ {...}, {...} ] ]
+    if (data.length > 0 && Array.isArray(data[0])) {
+      const flat = (data as any).flat ? (data as any).flat(Infinity) : flattenArray(data);
+      return flat.filter((it: any) => it && typeof it === "object" && !Array.isArray(it));
+    }
+    // simple array of objects
+    return data;
+  }
+  if (Array.isArray(data.products)) return data.products;
+  if (Array.isArray(data.data)) return data.data;
+
+  if (typeof data === "object") {
+    for (const v of Object.values(data)) {
+      if (Array.isArray(v)) {
+        if (v.length > 0 && Array.isArray(v[0])) {
+          const flat = (v as any).flat ? (v as any).flat(Infinity) : flattenArray(v);
+          return flat.filter((it: any) => it && typeof it === "object" && !Array.isArray(it));
+        }
+        if (v.length === 0 || typeof v[0] === "object") return v as any[];
+      }
+    }
+  }
+  return null;
+}
+
+function mapRecommendItemToProduct(item: any, idx: number): Product {
+  return {
+    prod_no: item.prod_no ?? item._id ?? item.prodNo ?? `idx_${idx}`,
+    prod_name: item.prod_name ?? item.prodName ?? item.name ?? "",
+    prod_img_url: item.prod_img_url ?? item.prod_img ?? item.prodImg ?? item.prod_img_url ?? "",
+    b2c_price: typeof item.b2c_price === "number" ? item.b2c_price : (item.b2c_price ?? item.b2cPrice ?? item.price ?? 0),
+    b2b_price: typeof item.b2b_price === "number" ? item.b2b_price : (item.b2b_price ?? item.b2bPrice ?? item.sale_price ?? 0),
+    avg_rating_star: item.avg_rating_star ?? item.avgRating ?? 0,
+    rating_count: item.rating_count ?? item.review_count ?? item.sellingProductReviewCount ?? 0,
+    introduction: item.introduction ?? (Array.isArray(item.productPlaces) ? item.productPlaces[1] ?? "" : ""),
+    product_category: item.product_category ?? item.product_category ?? {},
+  } as Product;
+}
+
+/* -------------------------
+   Component
+   ------------------------- */
 
 export default function MainTravelShop() {
   const navigation = useNavigation();
-  const bottomSheet = useBottomSheet();
 
-  // state
   const [productList, setProductList] = useState<Product[]>([]);
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false); // initial/load filters
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [sortType, setSortType] = useState<typeof SORT_OPTIONS[number]["value"]>("RECOMMEND");
-  const [minPriceInput, setMinPriceInput] = useState<string>(String(PRICE_MIN));
-  const [maxPriceInput, setMaxPriceInput] = useState<string>(String(PRICE_MAX));
-  const [guideSel, setGuideSel] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("KR");
-
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  // pagination state (we will control fetch by passing page param)
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-
+  // removed client-side pagination state: we will render all returned items
   const totalCountRef = useRef(0);
-
-  // show country picker on first visit (or until user selects)
   const [showCountryPicker, setShowCountryPicker] = useState<boolean>(true);
 
-  const buildSearchBody = useCallback((pageIndex: number) => {
-    const body: Record<string, any> = {
-      start: pageIndex * PAGE_SIZE,
-      page_size: PAGE_SIZE,
-      sort: getSortApiCode(sortType),
-      state: selectedCountry || "KR",
-    };
-    if (minPriceInput) body.price_from = minPriceInput;
-    if (maxPriceInput) body.price_to = maxPriceInput;
-    if (guideSel.length > 0) body.guide_langs = guideSel;
-    return body;
-  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry]);
+  // debug state to inspect raw response on screen (optional)
+  const [debugResponse, setDebugResponse] = useState<any | null>(null);
 
-  // fetchProducts now accepts pageIndex and reset flag to avoid relying on a useEffect that triggers on page change.
-  const fetchProducts = useCallback(async (pageIndex = 0, reset = false) => {
-    if (reset) setLoading(true);
-    else setIsLoadingMore(true);
-    setError(null);
+  // read recommend body from zustand without subscribing to avoid re-renders
+  const recommendStoreGet = useCallback(() => useRecommendStore.getState(), []);
 
-    try {
-      await getRecentSelectList(); // keep if required
+  const prepareLocalRecommendBody = useCallback(
+    (countryCode?: string) => {
+      const store = recommendStoreGet();
+      const storedBody = store?.recommendBody ?? {
+        cityList: [],
+        country: "",
+        pathList: [[]],
+        selectList: [[]],
+        topK: 10,
+      };
+      const countryName = countryCode ? COUNTRY_NAME_MAP[countryCode] ?? "" : storedBody.country ?? "";
+      // copy
+      return { ...storedBody, country: countryName };
+    },
+    [recommendStoreGet]
+  );
 
-      const body = buildSearchBody(pageIndex);
-      const response = await axiosAuth.post<SearchApiResponse>(SEARCH_API_URL, body, {
-        headers: { "Content-Type": "application/json" },
-        timeout: 10000,
-      });
+  // fetchProducts: fetches and sets the ENTIRE product list returned by recommend API
+  const fetchProducts = useCallback(
+    async (overrideCountryCode?: string) => {
+      setLoading(true);
+      setError(null);
 
-      if (response.status === 200 && response.data && Array.isArray(response.data.prods)) {
-        if (reset) {
-          setProductList(response.data.prods.filter(Boolean));
-          setCurrentPage(0);
+      try {
+        // 1) obtain recent select list first
+        const recentRaw = await getRecentSelectList();
+        console.debug("[MainTravelShop] recentRaw from getRecentSelectList():", recentRaw);
+
+        // 2) prepare local recommend body
+        const localBody = prepareLocalRecommendBody(overrideCountryCode ?? selectedCountry);
+
+        // 3) override selectList if we can extract a 2D array
+        const recent2D = extract2DArray(recentRaw);
+        if (recent2D) {
+          localBody.selectList = recent2D;
+          console.debug("[MainTravelShop] Overrode selectList with recent2D:", recent2D);
         } else {
-          // append to existing list
-          setProductList((prev) => {
-            // append but avoid duplicates by prod_no (preserve order)
-            const map = new Map<string, Product>();
-            for (const p of prev) {
-              if (p && p.prod_no != null) map.set(String(p.prod_no), p);
-            }
-            for (const p of response.data.prods.filter(Boolean)) {
-              if (p && p.prod_no != null) map.set(String(p.prod_no), p);
-            }
-            return Array.from(map.values());
-          });
-          setCurrentPage(pageIndex);
+          console.debug("[MainTravelShop] No 2D selectList found in recentRaw; keeping stored selectList");
         }
 
-        setTotal(response.data.metadata?.total_count ?? response.data.prods.length);
-        totalCountRef.current = response.data.metadata?.total_count ?? response.data.prods.length;
-      } else {
-        if (reset) setProductList([]);
-        setError("상품을 불러오는데 실패했습니다.");
-      }
-    } catch (e: any) {
-      if (reset) setProductList([]);
-      setError("상품을 불러오는데 실패했습니다.");
-    } finally {
-      setLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [buildSearchBody]);
+        // 4) send final body exactly as-is (do not inject start/filters)
+        console.debug("[MainTravelShop] FINAL POST recommend body (about to send):", JSON.stringify(localBody, null, 2));
 
-  // initial load and when filters/sort change -> reset (page 0)
+        const response = await axiosAuth.post(RECOMMEND_API_URL, localBody, {
+          headers: { "Content-Type": "application/json" },
+          timeout: 15000,
+        });
+
+        // debug logs and store raw response so you can inspect in UI
+        try {
+          console.debug("[MainTravelShop] recommend response.status:", response.status);
+          console.debug("[MainTravelShop] recommend response.data (stringified):", JSON.stringify(response.data, null, 2));
+          setDebugResponse(response.data);
+        } catch (logErr) {
+          console.debug("[MainTravelShop] error logging response:", logErr);
+        }
+
+        // 5) robust extraction of product array and mapping
+        const rawProds = extractProductArrayFromResponseData(response.data);
+        if (!rawProds) {
+          console.debug("[MainTravelShop] No product array found in response.data:", response.data);
+          setProductList([]);
+          setTotal(0);
+          setError("상품을 불러오는데 실패했습니다.");
+        } else {
+          // IMPORTANT: set the full list as-is (no client-side slicing)
+          const mapped: Product[] = rawProds.map((p: any, i: number) => mapRecommendItemToProduct(p, i));
+          setProductList(mapped.filter(Boolean));
+          setTotal(mapped.length);
+          totalCountRef.current = mapped.length;
+        }
+      } catch (e: any) {
+        setProductList([]);
+        setTotal(0);
+        setError("상품을 불러오는데 실패했습니다.");
+        console.warn("[MainTravelShop] recommend fetch error:", e);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [prepareLocalRecommendBody, selectedCountry]
+  );
+
   useEffect(() => {
-    // only fetch when not showing country picker
     if (!showCountryPicker) {
-      fetchProducts(0, true);
+      // initial load after user picks country
+      fetchProducts(selectedCountry);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortType, minPriceInput, maxPriceInput, guideSel, selectedCountry, showCountryPicker]);
+  }, [showCountryPicker]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // reset and fetch first page
-    fetchProducts(0, true).finally(() => setRefreshing(false));
-  }, [fetchProducts]);
+    fetchProducts(selectedCountry).finally(() => setRefreshing(false));
+  }, [fetchProducts, selectedCountry]);
 
-  // Manual "더 불러오기" handler - does not change global 'loading' flag so page won't show skeleton
-  const handleLoadMore = useCallback(() => {
-    if (loading || isLoadingMore) return;
-    if (productList.length >= totalCountRef.current) return;
-    const nextPage = currentPage + 1;
-    setIsLoadingMore(true);
-    // call fetchProducts directly with nextPage, append mode
-    fetchProducts(nextPage, false).catch(() => { /* handled inside */ });
-  }, [loading, isLoadingMore, productList.length, currentPage, fetchProducts]);
-
-  // stable renderItem and header
-  const renderItem = useCallback(({ item }: { item: Product }) => {
-    if (!item) return null;
-    return (
-      <ProductCard
-        product={item}
-        onPress={() => {
-          navigation.navigate("/product/good-product", { product: item });
-        }}
-      />
-    );
-  }, [navigation]);
-
-  const renderGuideOptions = useCallback((selectedList: string[], onChange: (arr: string[]) => void) => (
-    <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 12 }}>
-      {GUIDE_OPTIONS.map((opt) => {
-        const checked = selectedList.includes(opt.value);
-        return (
-          <TouchableOpacity
-            key={opt.value}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 18,
-              borderWidth: 1,
-              borderColor: colors.grey200,
-              backgroundColor: checked ? colors.blue50 : "#fff",
-              marginRight: 8,
-              marginBottom: 8,
-            }}
-            onPress={() => {
-              let next: string[];
-              if (checked) next = selectedList.filter((v) => v !== opt.value);
-              else next = [...selectedList, opt.value];
-              onChange(next);
-            }}
-          >
-            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>{opt.label}</Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  ), []);
-
-  const renderCountryOptions = useCallback((selectedCode: string, onChange: (code: string) => void) => (
-    <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 12 }}>
-      {COUNTRY_OPTIONS.map((c) => {
-        const checked = selectedCode === c.code;
-        return (
-          <TouchableOpacity
-            key={c.code}
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 18,
-              borderWidth: 1,
-              borderColor: colors.grey200,
-              backgroundColor: checked ? colors.blue50 : "#fff",
-              marginRight: 8,
-              marginBottom: 8,
-              minWidth: 120,
-            }}
-            onPress={() => onChange(c.code)}
-          >
-            <Text typography="t6" color={checked ? colors.blue500 : colors.grey700}>{c.label}</Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  ), []);
-
-  const openSortSheet = useCallback(() => {
-    bottomSheet.open({
-      children: (
-        <View style={{ paddingVertical: 24 }}>
-          <View style={{ paddingHorizontal: 24 }}>
-            {SORT_OPTIONS.map((option) => (
-              <Pressable
-                key={option.value}
-                style={{ flexDirection: "row", alignItems: "center", paddingVertical: 20 }}
-                onPress={() => { setSortType(option.value); bottomSheet.close(); }}
-              >
-                <Text typography="t5" fontWeight="medium" color={colors.grey700} style={{ flex: 1 }}>{option.label}</Text>
-                {sortType === option.value && <Icon name="icon-check-mono" color={colors.blue500} size={24} />}
-              </Pressable>
-            ))}
-          </View>
-          <BottomSheet.CTA onPress={() => bottomSheet.close()}>취소</BottomSheet.CTA>
-        </View>
-      ),
-    });
-  }, [bottomSheet, sortType]);
-
-  const openFilterSheet = useCallback(() => {
-    function FilterSheetContent() {
-      const [tempGuide, setTempGuide] = useState<string[]>(guideSel);
-      const [tempMinPrice, setTempMinPrice] = useState<string>(minPriceInput);
-      const [tempMaxPrice, setTempMaxPrice] = useState<string>(maxPriceInput);
-      const [tempCountry, setTempCountry] = useState<string>(selectedCountry);
-
+  const renderItem = useCallback(
+    ({ item }: { item: Product }) => {
+      if (!item) return null;
       return (
-        <ScrollView style={{ padding: 24, paddingBottom: 32 }}>
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>국가</Text>
-          {renderCountryOptions(tempCountry, setTempCountry)}
-
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>가이드</Text>
-          {renderGuideOptions(tempGuide, setTempGuide)}
-
-          <Text typography="t4" fontWeight="bold" color={colors.grey900} style={{ marginBottom: 8 }}>가격</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-            <TextInput value={tempMinPrice} keyboardType="numeric" onChangeText={setTempMinPrice} placeholder="최소"
-                       style={{ flex: 1, borderWidth: 1, borderColor: colors.grey300, borderRadius: 8, padding: 8, marginRight: 6 }} />
-            <Text style={{ marginHorizontal: 6, color: colors.grey700 }}>~</Text>
-            <TextInput value={tempMaxPrice} keyboardType="numeric" onChangeText={setTempMaxPrice} placeholder="최대"
-                       style={{ flex: 1, borderWidth: 1, borderColor: colors.grey300, borderRadius: 8, padding: 8, marginLeft: 6 }} />
-          </View>
-          <BottomSheet.CTA onPress={() => {
-            setGuideSel(tempGuide);
-            setMinPriceInput(tempMinPrice);
-            setMaxPriceInput(tempMaxPrice);
-            setSelectedCountry(tempCountry);
-            // reset list to first page after applying filters
-            fetchProducts(0, true);
-            bottomSheet.close();
-          }}>적용하기</BottomSheet.CTA>
-        </ScrollView>
+        <ProductCard
+          product={item}
+          onPress={() => {
+            navigation.navigate("/product/good-product", { product: item });
+          }}
+        />
       );
-    }
-    bottomSheet.open({ children: <FilterSheetContent /> });
-  }, [bottomSheet, fetchProducts, guideSel, minPriceInput, maxPriceInput, selectedCountry, renderCountryOptions, renderGuideOptions]);
+    },
+    [navigation]
+  );
 
-  const renderHeader = useCallback(() => (
-    <View style={{ backgroundColor: "#fff" }}>
-      <StepText title={"나그네님을 위한 맞춤 여행 상품"} subTitle1={"상품 추천"} subTitle2={"내 여정과 어울리는 여행 상품을 추천해드려요"} />
-      <View style={{ paddingHorizontal: 20 }}>
-        <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
-          <Icon name="icon-shopping-bag-red" color={colors.red300} size={22} style={{ marginHorizontal: 6 }} />
-          <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!</Text>
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Pressable style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }} onPress={openFilterSheet}>
-              <Icon name="icon-filter-mono" color={colors.blue500} size={18} />
-            </Pressable>
-            <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={openSortSheet}>
-              <Text typography="t7" color={colors.blue500} style={{ marginRight: 2 }}>
-                {SORT_OPTIONS.find((opt) => opt.value === sortType)?.label || "RECOMMEND"}
-              </Text>
-              <Icon name="icon-chevron-down-mono" color={colors.blue500} size={16} />
-            </Pressable>
+  const renderHeader = useCallback(
+    () => (
+      <View style={{ backgroundColor: "#fff" }}>
+        <StepText
+          title={"나그네님을 위한 맞춤 여행 상품"}
+          subTitle1={"상품 추천"}
+          subTitle2={"내 여정과 어울리는 여행 상품을 추천해드려요"}
+        />
+        <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
+            <Icon name="icon-shopping-bag-red" color={colors.red300} size={22} style={{ marginHorizontal: 6 }} />
+            <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }} />
           </View>
         </View>
       </View>
-    </View>
-  ), [total, sortType, openFilterSheet, openSortSheet]);
+    ),
+    [total, debugResponse]
+  );
 
   const isNoProduct = !loading && Array.isArray(productList) && productList.length === 0;
 
-  // only show full-page skeleton on initial load (when product list is empty and loading)
   if (loading && productList.length === 0 && !refreshing) {
     return (
-      <AnimateSkeleton delay={400} withGradient={true} withShimmer={true}>
+      <AnimateSkeleton delay={400} withGradient withShimmer>
         {[...Array(4)].map((_, i) => (
-          <Skeleton key={i} height={110} width={Dimensions.get("window").width - 32}
-                    style={{ marginTop: i > 0 ? 24 : 0, alignSelf: "center", borderRadius: 16 }} />
+          <Skeleton key={i} height={110} width={Dimensions.get("window").width - 32} style={{ marginTop: i > 0 ? 24 : 0, alignSelf: "center", borderRadius: 16 }} />
         ))}
       </AnimateSkeleton>
     );
   }
 
   if (showCountryPicker) {
-    // show full-screen country selector before showing products
     return (
-      <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 20, paddingHorizontal: 8}}>
+      <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 20, paddingHorizontal: 8 }}>
         <FixedBottomCTAProvider>
-          <StepText
-            title={'여행상품을 찾으시나요?'}
-            subTitle1={'원하는 국가를 선택해주세요!'}
-          ></StepText>
+          <StepText title={'여행상품을 찾으시나요?'} subTitle1={'원하는 국가를 선택해주세요!'} />
           <CountrySelector
             countries={COUNTRY_OPTIONS}
             onSelect={(code) => {
               setSelectedCountry(code);
               setShowCountryPicker(false);
-              // fetch now for chosen country
-              fetchProducts(0, true);
+              // fetchProducts will be triggered by useEffect when showCountryPicker changes,
+              // but call explicitly to start faster
+              fetchProducts(code);
             }}
           />
         </FixedBottomCTAProvider>
@@ -387,13 +323,14 @@ export default function MainTravelShop() {
         <Text typography="t4" color={colors.red400} style={{ marginBottom: 14 }}>
           {typeof error === "string" ? error : "상품을 불러오는데 실패했습니다."}
         </Text>
-        <Button onPress={() => fetchProducts(0, true)}>다시 시도</Button>
+        <Button onPress={() => fetchProducts(selectedCountry)}>다시 시도</Button>
       </View>
     );
   }
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Show all returned products in a FlatList (no 'load more' footer). API may return 5~15 items; we'll render whatever comes back. */}
       <FlatList
         data={productList.filter((item, idx, arr) => arr.findIndex((v) => v.prod_no === item.prod_no) === idx)}
         keyExtractor={(item) => String(item.prod_no)}
@@ -403,31 +340,9 @@ export default function MainTravelShop() {
         showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        initialNumToRender={6}
+        initialNumToRender={15}
         windowSize={11}
         removeClippedSubviews={Platform.OS === "android"}
-        ListFooterComponent={
-          productList.length < totalCountRef.current ? (
-            <View style={{ paddingVertical: 20, alignItems: "center", alignSelf: "center" }}>
-              <TouchableOpacity
-                style={{ backgroundColor: "white", width: Dimensions.get("window").width, height: 56, alignItems: "center", justifyContent: "center" }}
-                onPress={handleLoadMore}
-                disabled={isLoadingMore}
-              >
-                <Text typography="t5" fontWeight="bold">{isLoadingMore ? "불러오는 중..." : "더 불러오기"}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : null
-        }
-        ListEmptyComponent={
-          isNoProduct ? (
-            <View style={{ alignItems: "center", marginTop: 40 }}>
-              <Text typography="t4" color={colors.grey500} style={{ marginBottom: 10 }}>
-                조건에 맞는 상품이 없습니다.
-              </Text>
-            </View>
-          ) : null
-        }
       />
     </View>
   );

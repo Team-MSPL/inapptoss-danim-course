@@ -9,17 +9,17 @@ import { useRegionSearchStore } from "../../zustand/regionSearchStore";
 import { koreaCityList } from "../../utill/city-list";
 import { useRegionModeStore } from '../../zustand/modeStore';
 import axiosAuth from "../../redux/api";
-import {createAsyncThunk} from "@reduxjs/toolkit";
 import HorizontalProductCard, { SmallProduct } from '../../components/product/HorizontalProductCard';
+import { useRecommendStore } from "../../zustand/recommendStore";
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
   component: JoinResultDetail,
 });
 
-// 이름 기반 상태 업데이트 로직
+/* ---------- helpers (unchanged) ---------- */
+
 function getRegionStateByName(name: string) {
-  // 하드코딩 케이스
   const hardCodeMap: Record<string, { cityIndex: number; subIdx?: number }> = {
     '서울': { cityIndex: 1 },
     '제주': { cityIndex: 11 },
@@ -32,10 +32,8 @@ function getRegionStateByName(name: string) {
     '세종': { cityIndex: 2, subIdx: 6 },
   };
 
-  // 서울/제주/부산/대구/인천/광주/대전/울산/세종
   if (name in hardCodeMap) {
     const info = hardCodeMap[name];
-    // 서울, 제주는 region을 ["전체"], cityDistance는 [0]
     if (name === '서울' || name === '제주') {
       return {
         region: ['전체'],
@@ -43,7 +41,6 @@ function getRegionStateByName(name: string) {
         cityDistance: [0],
       };
     }
-    // 부산~세종은 광역시 하위
     return {
       region: [name],
       cityIndex: info.cityIndex,
@@ -51,9 +48,7 @@ function getRegionStateByName(name: string) {
     };
   }
 
-  // 나머지는 '강원 동해시' 등 띄어쓰기
   const [title, subTitle] = name.split(' ');
-
   let cityIndex = -1;
   let cityDistance: number[] = [];
   let region: string[] = [];
@@ -70,7 +65,6 @@ function getRegionStateByName(name: string) {
     }
   }
 
-  // fallback: 만약 못찾으면 그냥 전체
   if (cityIndex === -1) {
     cityIndex = 0;
     cityDistance = [0];
@@ -79,6 +73,46 @@ function getRegionStateByName(name: string) {
 
   return { region, cityIndex, cityDistance };
 }
+
+function flattenArray(arr: any[]): any[] {
+  const out: any[] = [];
+  (function f(a: any[]) {
+    for (const v of a) {
+      if (Array.isArray(v)) f(v);
+      else out.push(v);
+    }
+  })(arr);
+  return out;
+}
+
+function extractProductsFromResponse(res: any): any[] {
+  if (!res) return [];
+
+  if (Array.isArray(res)) {
+    if (res.length === 1 && Array.isArray(res[0])) {
+      return res[0].filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+    }
+    const flat = (res as any).flat ? (res as any).flat(Infinity) : flattenArray(res);
+    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+  }
+
+  if (res.prods && Array.isArray(res.prods)) return res.prods;
+  if (res.products && Array.isArray(res.products)) return res.products;
+  if (res.data && Array.isArray(res.data)) {
+    const flat = (res.data as any).flat ? (res.data as any).flat(Infinity) : flattenArray(res.data);
+    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+  }
+
+  const maybeArrays = Object.values(res).filter(v => Array.isArray(v));
+  if (maybeArrays.length > 0) {
+    const flat = maybeArrays.flatMap(a => (a as any).flat ? (a as any).flat(Infinity) : flattenArray(a));
+    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
+  }
+
+  return [];
+}
+
+/* ---------- small UI helpers ---------- */
 
 function PopularPlaceCardBig({ place }: { place: PlaceResult }) {
   return (
@@ -106,62 +140,7 @@ function PopularPlaceCard({ place, idx }: { place: PlaceResult, idx: number }) {
   );
 }
 
-interface recommnedProductType {
-  pathList: [[any]];
-  country: 'strng';
-  cityList: ['strng'];
-  selectList: [[number]];
-  topK: number;
-}
-
-/** fallback flatten helper for environments without Array.prototype.flat */
-function flattenArray(arr: any[]): any[] {
-  const out: any[] = [];
-  (function f(a: any[]) {
-    for (const v of a) {
-      if (Array.isArray(v)) f(v);
-      else out.push(v);
-    }
-  })(arr);
-  return out;
-}
-
-/** robust extractor: return an array of product objects from many possible shapes */
-function extractProductsFromResponse(res: any): any[] {
-  if (!res) return [];
-
-  // If raw array
-  if (Array.isArray(res)) {
-    // common nested shape: [ [ {...}, {...} ] ]
-    if (res.length === 1 && Array.isArray(res[0])) {
-      return res[0].filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
-    }
-    // flatten fully
-    const flat = (res as any).flat ? (res as any).flat(Infinity) : flattenArray(res);
-    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
-  }
-
-  // object shapes
-  if (res.prods && Array.isArray(res.prods)) return res.prods;
-  if (res.products && Array.isArray(res.products)) return res.products;
-  if (res.data && Array.isArray(res.data)) {
-    const flat = (res.data as any).flat ? (res.data as any).flat(Infinity) : flattenArray(res.data);
-    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
-  }
-
-  // try to find arrays in object values
-  const maybeArrays = Object.values(res).filter(v => Array.isArray(v));
-  if (maybeArrays.length > 0) {
-    const flat = maybeArrays.flatMap(a => (a as any).flat ? (a as any).flat(Infinity) : flattenArray(a));
-    return flat.filter((it: any) => it && typeof it === 'object' && !Array.isArray(it));
-  }
-
-  return [];
-}
-
-/* -------------------------
-   Component
-   ------------------------- */
+/* ---------- Component ---------- */
 
 function JoinResultDetail() {
   const params = Route.useParams();
@@ -171,11 +150,8 @@ function JoinResultDetail() {
   const storeState = useRegionSearchStore((state) => state);
   const dispatch = useAppDispatch();
   const tendencyList = storeState.selectList;
-
   const { region, cityIndex, cityDistance } = getRegionStateByName(place?.name ?? '');
-  const {presetDatas, season, country} = useAppSelector(
-    state => state.travelSlice,
-  );
+  const {presetDatas, season, country} = useAppSelector(state => state.travelSlice);
 
   const countryList = [
     {ko: '한국', en: 'Korea'},
@@ -187,20 +163,18 @@ function JoinResultDetail() {
     {ko: '싱가포르', en: 'Singapore'},
   ];
 
-  console.log('presetDatas', presetDatas);
-  console.log('country', country);
-
-  // <-- recommended products state & loading -->
+  // recommended products state & loading
   const [recommended, setRecommended] = useState<SmallProduct[]>([]);
   const [recLoading, setRecLoading] = useState(false);
 
-  // useEffect: 페이지 렌더시 자동으로 추천 API 호출
+  // zustand store for recommend body
+  const setRecommendBody = useRecommendStore((s) => s.setRecommendBody);
+
   useEffect(() => {
-    handleProduct(); // 기존 handleProduct를 재사용하여 추천 호출
+    handleProduct();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // handleProduct: uses direct axios + robust extraction (keeps original UI)
   async function handleProduct() {
     try {
       setRecLoading(true);
@@ -222,10 +196,15 @@ function JoinResultDetail() {
         topK: 10,
       };
 
+      // --- SAVE THE REQUEST BODY TO ZUSTAND ---
+      // store the body so other components can read it later
+      setRecommendBody(data);
+
+      console.log(data);
+
       console.debug('[handleProduct] REQUEST body:', JSON.stringify(data, null, 2));
       try { console.debug('[handleProduct] axiosAuth.defaults.headers:', axiosAuth.defaults?.headers); } catch (e) {}
 
-      // direct axios for debugging (shows exactly what server returns)
       const directResp = await axiosAuth.post('sellingProduct/recommend', data, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 15000,
@@ -235,7 +214,6 @@ function JoinResultDetail() {
       console.debug('[handleProduct] axios direct data type:', Object.prototype.toString.call(directResp.data));
       console.debug('[handleProduct] axios direct data sample:', Array.isArray(directResp.data) ? directResp.data.slice(0,2) : directResp.data);
 
-      // extract products robustly
       const prods = extractProductsFromResponse(directResp.data);
       console.debug('[handleProduct] extracted count:', prods.length);
 
@@ -252,7 +230,6 @@ function JoinResultDetail() {
       }));
 
       console.debug('[handleProduct] mapped length:', mapped.length, mapped.slice(0,3));
-
       setRecommended(mapped);
     } catch (err) {
       console.warn('[handleProduct] error', err);
@@ -263,7 +240,6 @@ function JoinResultDetail() {
   }
 
   const handleNext = () => {
-    // 필드 업데이트
     dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
     dispatch(travelSliceActions.updateFiled({ field: 'country', value: 0 }));
     dispatch(travelSliceActions.updateFiled({ field: 'region', value: region }));
@@ -286,7 +262,6 @@ function JoinResultDetail() {
             resizeMode="cover"
           />
         </View>
-        {/* 여행지명 + 태그 */}
         <View style={styles.contentBox}>
           <Text typography="st5" fontWeight="bold" color={colors.black}>{place.name}</Text>
           <View style={{ backgroundColor: colors.grey100, width: Dimensions.get("window").width, height: 1, marginVertical: 20, right: 24 }}></View>
@@ -297,7 +272,7 @@ function JoinResultDetail() {
               </Badge>
             ))}
           </View>
-          {/* 인기 여행지 Top 5 */}
+
           {topPopularPlaceList.length > 0 && (
             <View style={styles.popularSection}>
               <Text typography="t4" fontWeight="bold" color={colors.black}>인기 여행지 Top 5</Text>
@@ -311,12 +286,10 @@ function JoinResultDetail() {
             </View>
           )}
 
-          {/* 여행 상품 추천 */}
           <View style={styles.popularSection}>
             <Text typography="t4" fontWeight="bold" color={colors.black}>여행 상품 추천</Text>
             <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{ marginBottom: 20 }}>현재 서울에서 인기 있는 여행 상품이에요!</Text>
 
-            {/* --- 가로 스크롤 추천 상품 (추가) --- */}
             {recLoading ? (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingVertical: 8 }}>
                 {[...Array(3)].map((_, i) => (
@@ -338,8 +311,6 @@ function JoinResultDetail() {
                 contentContainerStyle={{ paddingVertical: 8 }}
               />
             )}
-            {/* --- /가로 스크롤 추천 상품 --- */}
-
           </View>
 
         </View>
@@ -353,6 +324,8 @@ function JoinResultDetail() {
     </View>
   );
 }
+
+/* ---------- styles (unchanged) ---------- */
 
 const width = Dimensions.get('window').width;
 const IMAGE_HEIGHT = 220;
