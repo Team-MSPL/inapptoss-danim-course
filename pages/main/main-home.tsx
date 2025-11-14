@@ -28,10 +28,21 @@ export default function MainHome() {
   const handleNavigate = async (route: string) => {
     try {
       const data = await getRecentSelectList();
-      console.log(data);
-      if (data && data.recentSelectList) {
-        confirmRecommend(data, route);
+      console.log('getRecentSelectList result:', data);
+
+      // support both shapes: plain array OR { recentSelectList: [...] }
+      const recent = Array.isArray(data) ? data : data?.recentSelectList;
+
+      // valid only when recent is 2D array AND at least one inner array has length > 0
+      const hasValidRecent =
+        Array.isArray(recent) &&
+        recent.length > 0 &&
+        recent.some((inner) => Array.isArray(inner) && inner.length > 0);
+
+      if (hasValidRecent) {
+        confirmRecommend({ recentSelectList: recent }, route);
       } else {
+        // no meaningful recent -> skip confirm
         navigation.navigate(route);
       }
     } catch (error) {
@@ -39,6 +50,34 @@ export default function MainHome() {
       navigation.navigate(route);
     }
   };
+
+  // expectedLengths는 앱 스펙에 맞춰 조정하세요
+  const EXPECTED_LENGTHS = [7, 6, 6, 11, 4]; // 예시: 각 카테고리별 항목수
+
+  function normalizeSelectList(maybe: any): number[][] {
+    // ensure array-of-arrays
+    const out: number[][] = [];
+
+    if (!Array.isArray(maybe)) {
+      // invalid -> return zero-filled structure
+      return EXPECTED_LENGTHS.map((len) => Array.from({ length: len }, () => 0));
+    }
+
+    // for each expected category index, take provided inner array or zeros
+    for (let i = 0; i < EXPECTED_LENGTHS.length; i++) {
+      const expectedLen = EXPECTED_LENGTHS[i];
+      const provided = Array.isArray(maybe[i]) ? maybe[i] : [];
+      const normalized = new Array(expectedLen).fill(0);
+      for (let j = 0; j < Math.min(expectedLen, provided.length); j++) {
+        // try coerce to 0/1 number
+        const v = Number(provided[j]) || 0;
+        normalized[j] = v;
+      }
+      out.push(normalized);
+    }
+
+    return out;
+  }
 
   // 바텀시트 confirmRecommend 구현
   const confirmRecommend = (apiResult: any, route: string) => {
@@ -71,14 +110,17 @@ export default function MainHome() {
                 type="primary"
                 style="fill"
                 display="block"
+                // inside rightButton onPress
                 onPress={() => {
                   setRecentMode('recent');
-                  if(route === '/join/who') {// zustand selectList 업데이트
-                    setSelectList(apiResult.recentSelectList);
-                  }
-                  else {
-                    // redux travelSlice tendency 업데이트;
-                    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: apiResult.recentSelectList }));
+                  const recentRaw = apiResult?.recentSelectList ?? [];
+                  const normalized = normalizeSelectList(recentRaw);
+
+                  if(route === '/join/who') {
+                    setSelectList(normalized); // zustand에 안전하게 저장
+                  } else {
+                    // redux로 전달 전에 normalize
+                    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: normalized }));
                   }
                   bottomSheet.close();
                   navigation.navigate(route);
