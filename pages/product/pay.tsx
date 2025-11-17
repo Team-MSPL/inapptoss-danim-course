@@ -464,7 +464,16 @@ function ProductPay() {
   );
 
   async function onPay() {
-    // FINAL validation on press: re-run validation against current booking store before sending
+    // 0) Email validation: block if invalid (always check current store value)
+    const currentBuyerEmail = useBookingStore.getState().buyer_Email;
+    const emailValue = String(currentBuyerEmail ?? "").trim();
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(emailValue)) {
+      Alert.alert("이메일 형식 오류", "유효한 이메일을 입력해 주세요.");
+      return;
+    }
+
+    // Final validation on press: re-run validation against current booking store before sending
     if (!rawFields) {
       Alert.alert("입력 오류", "입력 필드 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
       return;
@@ -485,7 +494,6 @@ function ProductPay() {
         });
 
       if (Array.isArray(missing) && missing.length > 0) {
-        // 간단한 문구로 변경
         Alert.alert("입력 오류", "입력이 필요한 정보를 모두 입력해주세요");
         return;
       }
@@ -499,7 +507,7 @@ function ProductPay() {
     if (isPaying) return;
     setIsPaying(true);
 
-    // build payload for booking (kept for later)
+    // Build payload for booking (kept for later)
     const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
     console.debug("[ProductPay] onPay - payload:", payload);
     console.debug("[ProductPay] userKey:", userKey);
@@ -517,21 +525,20 @@ function ProductPay() {
     const makeUrl = `${payBase}/api-partner/v1/apps-in-toss/pay/make-payment`;
     const execUrl = `${payBase}/api-partner/v1/apps-in-toss/pay/execute-payment`;
 
-    // --- Replace your existing make-payment block with this snippet ---
-
-// ensure there's an orderNo to make request idempotent
+    // ensure there's an orderNo to make request idempotent
     const orderNoForMake = `order-${Date.now().toString(36)}`;
 
-// 1) make-payment (with retries + detailed logging)
+    // 1) make-payment (with retries + detailed logging)
     const makeBody: any = {
       amount,
       amountTaxFree: 0,
       isTestPayment: true,
-      productDesc: payload?.product?.name ?? payload?.productName ?? "앱인토스 테스트",
-      orderNo: String(orderNoForMake), // <<--- include orderNo to avoid duplicate-create errors
+      productDesc: payload?.product?.name ?? payload?.productName ?? title,
+      orderNo: String(orderNoForMake),
     };
 
     let payToken: string | null = null;
+
     try {
       const makeResp = await postWithRetry(makeUrl, makeBody, { "Content-Type": "application/json", "x-toss-user-key": userKey }, 2);
       console.debug("[ProductPay] make-payment response:", makeResp.status, makeResp.data);
@@ -544,18 +551,19 @@ function ProductPay() {
         console.debug("[ProductPay] using payToken as partner_order_no for booking:", payload.partner_order_no);
       }
 
-      // if no payToken but checkoutPage present, try extract
+      // if no payToken but checkoutPage present, try extract from url
       if (!payToken && (makeData?.checkoutPage || makeData?.checkout_page || makeData?.checkout_url)) {
         try {
           const checkoutUrl = makeData.checkoutPage ?? makeData.checkout_page ?? makeData.checkout_url;
           const urlObj = new URL(checkoutUrl);
           payToken = urlObj.searchParams.get("payToken");
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+          console.warn("[ProductPay] failed to extract payToken from checkoutPage", e);
+        }
       }
 
       if (!payToken) {
         console.warn("[ProductPay] make-payment did not return payToken (apps-in-toss). Will fallback to v2?", makeData);
-        // Continue to fallback below
         throw new Error("NO_PAYTOKEN_FROM_APPS_IN_TOSS");
       }
 
@@ -573,18 +581,15 @@ function ProductPay() {
       const execResp = await postWithRetry(execUrl, execBody, { "Content-Type": "application/json", "x-toss-user-key": userKey }, 2);
       console.debug("[ProductPay] execute-payment response:", execResp.status, execResp.data);
 
-      // after exec success -> continue to booking below (no changes)
-      // You can set execRespData if needed: execResp.data
-
+      // proceed to booking after successful exec
     } catch (primaryErr: any) {
       console.warn("[ProductPay] primary apps-in-toss flow failed:", primaryErr?.message ?? primaryErr);
 
-      // If primary fail has server response, handle duplicate-order cases earlier (existing logic).
+      // If primary fail has server response, handle potential token reuse
       const respData = primaryErr?.response?.data;
       if (respData) {
         const maybeToken = respData?.payToken ?? respData?.success?.payToken ?? respData?.checkout?.payToken ?? null;
         if (maybeToken) {
-          // reuse and proceed with SDK checkout if possible
           payToken = maybeToken;
           try {
             const checkoutResult = await TossPay.checkoutPayment({ payToken });
@@ -595,7 +600,6 @@ function ProductPay() {
             }
             const execBody = { payToken, isTestPayment: true };
             await postWithRetry(execUrl, execBody, { "Content-Type": "application/json", "x-toss-user-key": userKey }, 2);
-            // proceed to booking
           } catch (e) {
             console.error("[ProductPay] reuse-payToken flow failed:", e);
             Alert.alert("결제 오류", "결제 재시도 중 오류가 발생했습니다.");
@@ -603,10 +607,9 @@ function ProductPay() {
             return;
           }
         } else if (typeof respData?.message === "string" && /already|exists|duplicate|중복/i.test(respData.message)) {
-          // duplicate but no token => fallback to v2 creation (server should be consulted to get existing token ideally)
           console.warn("[ProductPay] duplicate order reported by apps-in-toss API; falling back to v2 createTossPayment");
+          // continue to fallback
         } else {
-          // other server-side error -> surface to user
           console.error("[ProductPay] apps-in-toss error body:", respData);
           Alert.alert("결제 생성 실패", "결제 생성 중 서버 오류가 발생했습니다. (콘솔 참조)");
           setIsPaying(false);
@@ -614,17 +617,17 @@ function ProductPay() {
         }
       }
 
-      // If primary error was network-level or we decided to fallback -> try v2 create + WebView flow
+      // Fallback: try v2 create + WebView flow
       try {
-        const orderNoForMake = payload?.partner_order_no ?? payload?.order_no ?? `order-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
+        const orderNoForMakeFallback = payload?.partner_order_no ?? payload?.order_no ?? `order-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
         const retUrl = "https://pay.toss.im/payfront/demo/completed";
-        const creation = await createTossPayment(orderNoForMake, amount, payload?.product?.name ?? title, retUrl);
+        const creation = await createTossPayment(orderNoForMakeFallback, amount, payload?.product?.name ?? title, retUrl);
         console.debug("[ProductPay] createTossPayment (v2) result:", creation);
 
         const checkoutPage = creation?.checkoutPage ?? creation?.checkout_page ?? creation?.checkout_url ?? null;
         const v2PayToken = creation?.payToken ?? null;
+
         if (v2PayToken) {
-          // set partner_order_no to payToken before storing pending payload
           payload.partner_order_no = String(v2PayToken);
           setPendingBookingPayload(payload);
           setPendingPayToken(v2PayToken);
@@ -641,14 +644,12 @@ function ProductPay() {
           return;
         }
 
-        // store pending booking info so WebView handler runs booking after payment success
+        // store pending booking info and open WebView
         setPendingBookingPayload(payload);
         setPendingPayToken(v2PayToken);
         setPendingAmount(amount);
-
-        // open WebView checkout (will handle booking on retUrl success)
         openCheckoutPage(checkoutPage, retUrl);
-        return; // return now — booking will be handled in WebView handler
+        return;
       } catch (v2Err: any) {
         console.error("[ProductPay] createTossPayment fallback failed:", v2Err?.response ?? v2Err);
         Alert.alert("결제 생성 실패", "결제 생성 중 오류가 발생했습니다. (대체 수단도 실패)");
@@ -657,51 +658,16 @@ function ProductPay() {
       }
     }
 
-    // 2) TossPay.checkoutPayment
-    let checkoutResult: { success: boolean; reason?: string } | null = null;
-    try {
-      checkoutResult = await TossPay.checkoutPayment({ payToken });
-      console.debug("[ProductPay] TossPay.checkoutPayment result:", checkoutResult);
-    } catch (checkoutErr) {
-      console.error("[ProductPay] TossPay.checkoutPayment threw:", checkoutErr);
-      Alert.alert("결제 인증 실패", String(checkoutErr?.message ?? checkoutErr));
-      setIsPaying(false);
-      return;
-    }
-
-    if (!checkoutResult?.success) {
-      console.debug("[ProductPay] TossPay checkout not successful:", checkoutResult);
-      Alert.alert("결제 취소", "결제가 취소되었습니다.");
-      setIsPaying(false);
-      return;
-    }
-
-    // 3) execute-payment (server-side finalization)
-    let execRespData: any = null;
-    try {
-      const execBody = { payToken, isTestPayment: true };
-      const execResp = await postWithRetry(execUrl, execBody, { "Content-Type": "application/json", "x-toss-user-key": userKey }, 2);
-      console.debug("[ProductPay] execute-payment response:", execResp.status, execResp.data);
-      execRespData = execResp.data ?? {};
-    } catch (execErr: any) {
-      console.error("[ProductPay] execute-payment failed (response):", execErr?.response ?? execErr);
-      Alert.alert("결제 실행 오류", `결제 승인에 실패했습니다: ${execErr?.response?.data ? JSON.stringify(execErr.response.data) : execErr?.message ?? execErr}`);
-      setIsPaying(false);
-      navigation.replace("/product/pay-fail");
-      return;
-    }
-
-    // payment succeeded. Now run booking API. If booking fails, refund the payment.
+    // If we reach here, primary apps-in-toss flow succeeded and exec was done.
+    // Now run booking API. If booking fails, refund the payment.
     try {
       const runResult = await run(payload);
       console.debug("[ProductPay] booking runResult:", runResult);
 
-      // determine booking overall success
       let bookingAllSucceeded = true;
 
       if (Array.isArray((runResult as any).results)) {
-        const results = (runResult as any).results as any[];
-        for (const r of results) {
+        for (const r of (runResult as any).results as any[]) {
           const br = r?.bookingResponse;
           const ok = !!(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
           if (!ok) {
@@ -720,7 +686,6 @@ function ProductPay() {
         navigation.replace("/product/pay-success");
         return;
       } else {
-        // booking failed => attempt refund
         console.warn("[ProductPay] booking failed after payment. Initiating refund for payToken:", payToken);
         const refundRes = await refundTossPayment(payToken, amount);
         if (refundRes.success) {
@@ -735,20 +700,25 @@ function ProductPay() {
     } catch (bookingRunErr: any) {
       console.error("[ProductPay] booking.run threw:", bookingRunErr);
       // run threw => refund
-      const refundRes = await refundTossPayment(payToken, amount);
-      if (refundRes.success) {
-        Alert.alert("예약 오류 및 환불 완료", "예약 처리 중 오류가 발생하여 결제 금액을 환불했습니다.");
-      } else {
-        Alert.alert("예약 오류 - 환불 실패", `예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요. (${String(refundRes.error)})`);
+      try {
+        const refundRes = await refundTossPayment(payToken, amount);
+        if (refundRes.success) {
+          Alert.alert("예약 오류 및 환불 완료", "예약 처리 중 오류가 발생하여 결제 금액을 환불했습니다.");
+        } else {
+          Alert.alert("예약 오류 - 환불 실패", `예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요. (${String(refundRes.error)})`);
+        }
+      } catch (refundErr) {
+        console.error("[ProductPay] refund after booking.run threw:", refundErr);
+        Alert.alert("예약 오류", "예약 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.");
+      } finally {
+        setIsPaying(false);
+        navigation.replace("/product/pay-fail");
+        return;
       }
-      setIsPaying(false);
-      navigation.replace("/product/pay-fail");
-      return;
     } finally {
       try { setIsPaying(false); } catch {}
     }
   }
-
   const requiredMap = useMemo(() => {
     const map: Record<number, Array<any>> = {};
     const pushField = (section: number, item: any) => {

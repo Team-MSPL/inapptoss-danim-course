@@ -52,6 +52,8 @@ export function PresetDayCard({ item, index, day, handleItemLayout }: Props) {
 
   const [addressList, setAddressList] = useState<(string | undefined)[]>([]);
 
+  console.log(item);
+
   useEffect(() => {
     Promise.all(
       item.map(async (v) => {

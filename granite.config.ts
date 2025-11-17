@@ -81,7 +81,7 @@ export default defineConfig({
       TOSS_PAY_LIVE_API: 'sk_live_PkwJ63ob8DPkwaxwpmND',
 
       //토스페이 API 적용 키
-      TOSS_PAY_API_KEY:'sk_test_j8a4JZ3jNDj8aa0d0g8D',
+      TOSS_PAY_API_KEY:'sk_live_PkwJ63ob8DPkwaxwpmND',
     }),
     router(),
   ],
