@@ -352,7 +352,7 @@ function Timetable() {
                   />
                 );
               }}
-              ListFooterComponent={<View style={{ height: 160 }} />}
+              ListFooterComponent={<View style={{ height: 200 }} />}
             />
           </View>
           {modify && (
