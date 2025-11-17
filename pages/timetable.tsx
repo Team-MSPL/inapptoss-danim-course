@@ -345,6 +345,7 @@ function Timetable() {
                   onLayout={(e) => handleItemLayout(e, index)}
                 />
               )}
+              ListFooterComponent={<View style={{ height: 160 }} />}
             />
           </View>
           {modify && (

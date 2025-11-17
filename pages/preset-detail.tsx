@@ -98,16 +98,16 @@ function PresetDetail() {
         result = await dispatch(
           isOverseas
             ? recommendTripadvisor({
-                ...opts,
-                category: opts.apiCategory,
-                radius: Number(opts.radius) * 1.5,
-                name: opts.status.name,
-              })
+              ...opts,
+              category: opts.apiCategory,
+              radius: Number(opts.radius) * 1.5,
+              name: opts.status.name,
+            })
             : recommendApi({
-                ...opts,
-                category: opts.apiCategory,
-                radius: Number(opts.radius) * 1.5,
-              }),
+              ...opts,
+              category: opts.apiCategory,
+              radius: Number(opts.radius) * 1.5,
+            }),
         ).unwrap();
         result = isOverseas ? result.data : result;
         return result ?? [];
@@ -242,10 +242,10 @@ function PresetDetail() {
   );
 
   const handleAutoRecommend = async ({
-    item,
-    copy,
-    idx,
-  }: HandleAutoRecommendOptions): Promise<any[]> => {
+                                       item,
+                                       copy,
+                                       idx,
+                                     }: HandleAutoRecommendOptions): Promise<any[]> => {
     try {
       let updated = [...item];
       const handleItems = item.map(async (value, index) => {
@@ -591,6 +591,7 @@ function PresetDetail() {
               handleItemLayout={handleItemLayout}
             />
           )}
+          ListFooterComponent={<View style={{ height: 160 }} />}
         />
         <FixedBottomCTA onPress={handleAccommodation} disabled={isLoading}>
           {isLoading ? '잠시만 기다려주세요...' : '이 여행 일정 선택하기'}

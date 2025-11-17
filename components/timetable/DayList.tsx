@@ -94,7 +94,7 @@ export function DayList({
       style={{
         position: 'relative',
         borderRadius: 13,
-        paddingVertical: 20,
+        paddingVertical: 14,
         marginTop: 10,
         borderBottomWidth: 1,
         borderBottomColor: colors.grey200,
