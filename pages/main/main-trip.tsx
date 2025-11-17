@@ -308,7 +308,7 @@ export default function MainTrip() {
                     }).result
                     : ''}
                   {'\n'}
-                  <Badge type="teal" badgeStyle="weak">
+                  <Badge style={{paddingVertical: 10}} type="teal" badgeStyle="weak">
                     {regionLabel}
                   </Badge>
                 </Top.SubtitleParagraph>
