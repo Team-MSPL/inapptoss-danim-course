@@ -329,22 +329,29 @@ function Timetable() {
               showsVerticalScrollIndicator={false}
               onViewableItemsChanged={onViewableItemsChanged.current}
               viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
-              renderItem={({ item, index }) => (
-                <DayList
-                  dayItems={item}
-                  dayIndex={index}
-                  modify={modify}
-                  tooltips={tooltips}
-                  setTooltips={setTooltips}
-                  copyTimetable={copyTimetable}
-                  navigation={navigation}
-                  showHourBottomSheet={showHourBottomSheet}
-                  handleRemoveCheck={handleRemoveCheck}
-                  setCopyTimetable={setCopyTimetable}
-                  setModify={setModify}
-                  onLayout={(e) => handleItemLayout(e, index)}
-                />
-              )}
+              renderItem={({ item, index }) => {
+                if (__DEV__) {
+                  // console.debug(`[Timetable] renderItem dayIndex=${index} itemsCount=${Array.isArray(item) ? item.length : 0}`);
+                  // console.table(item) // 원하면 배열 내용을 테이블로 확인
+                }
+
+                return (
+                  <DayList
+                    dayItems={item}
+                    dayIndex={index}
+                    modify={modify}
+                    tooltips={tooltips}
+                    setTooltips={setTooltips}
+                    copyTimetable={copyTimetable}
+                    navigation={navigation}
+                    showHourBottomSheet={showHourBottomSheet}
+                    handleRemoveCheck={handleRemoveCheck}
+                    setCopyTimetable={setCopyTimetable}
+                    setModify={setModify}
+                    onLayout={(e) => handleItemLayout(e, index)}
+                  />
+                );
+              }}
               ListFooterComponent={<View style={{ height: 160 }} />}
             />
           </View>
