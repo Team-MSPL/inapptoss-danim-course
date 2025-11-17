@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Text as RNText,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
-import { Text, colors, Icon, FixedBottomCTAProvider, Top, Badge } from "@toss-design-system/react-native";
+import { Text, colors, Icon, FixedBottomCTAProvider, Top } from "@toss-design-system/react-native";
 import axiosAuth from "../../redux/api";
 
 export const Route = createRoute("/info/my-reservation", {
@@ -65,19 +66,11 @@ function isPastDate(dateStr?: string | null) {
 
 /**
  * Normalize unit and build people/ticket text.
- * Rules:
- * - If dtl.skus exists, sum qty.
- * - If a sku.spec contains 티켓 종류 or Ticket Type, use that string as ticketType.
- * - If unit exists (non-empty string), append it after count (e.g. "2명", "3개", "1대", or "Traveler").
- * - If ticketType exists: show "티켓종류 count+unit" (e.g. "대인 2명").
- * - If unit missing: fall back to "인원수 N명" (Korean default) or `${N}개` for listItem-only fallback.
  */
 function buildPeopleTextFromDtl(dtl?: any, listItem?: any): string {
-  // dtl.skus preferred
   if (dtl && Array.isArray(dtl.skus) && dtl.skus.length > 0) {
     const count = dtl.skus.reduce((s: number, sk: any) => s + (Number(sk?.qty ?? 1) || 0), 0);
     const unit = (dtl?.unit ?? "").toString().trim();
-    // try multiple keys for ticket type
     const skuWithSpec =
       dtl.skus.find(
         (sk: any) =>
@@ -95,15 +88,44 @@ function buildPeopleTextFromDtl(dtl?: any, listItem?: any): string {
     return `인원수 ${count}명`;
   }
 
-  // fallback to listItem.skus
   if (listItem && Array.isArray(listItem.skus) && listItem.skus.length > 0) {
     const count = listItem.skus.reduce((s: number, sk: any) => s + (Number(sk?.qty ?? 1) || 0), 0);
-    // no unit known here => generic "개"
     return `${count}개`;
   }
 
-  // last resort
   return "1명";
+}
+
+/**
+ * InlineBadge - Toss TDS Badge를 일시 교체하기 위한 경량 구현.
+ * 목적: 라이브러리 내부 에러 우회(개발용). 디자인은 단순화.
+ */
+function InlineBadge({ children, type = "dark" }: { children: React.ReactNode; type?: string }) {
+  // map a few types to colors; extend as needed
+  const bgMap: Record<string, string> = {
+    yellow: "#FFF6E5",
+    blue: "#EBF6FF",
+    dark: "#F2F3F5",
+    red: "#FFF2F2",
+    teal: "#E8F7F4",
+  };
+  const textMap: Record<string, string> = {
+    yellow: "#8A6B00",
+    blue: "#1E73BF",
+    dark: "#63666A",
+    red: "#9B2C2C",
+    teal: "#007A6B",
+  };
+
+  const safeType = typeof type === "string" && bgMap[type] ? type : "dark";
+  const bg = bgMap[safeType] ?? bgMap.dark;
+  const color = textMap[safeType] ?? textMap.dark;
+
+  return (
+    <View style={{ backgroundColor: bg, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 12, marginRight: 10, alignItems: 'center', justifyContent: 'center' }}>
+      <RNText style={{ color, fontSize: 12 }}>{String(children)}</RNText>
+    </View>
+  );
 }
 
 export default function MyReservation() {
@@ -173,7 +195,6 @@ export default function MyReservation() {
     };
   }, []);
 
-  // group merged items by month
   const sections = useMemo(() => {
     if (!Array.isArray(merged) || merged.length === 0) return [];
     const sorted = [...merged].sort((a, b) => {
@@ -228,7 +249,7 @@ export default function MyReservation() {
         />
         <SectionList
           sections={sections}
-          keyExtractor={(item) => item.listItem._id}
+          keyExtractor={(item, index) => String(item.listItem._id ?? item.listItem.order_no ?? index)}
           contentContainerStyle={{ paddingBottom: 120 }}
           scrollEnabled={false}
           nestedScrollEnabled={false}
@@ -239,7 +260,7 @@ export default function MyReservation() {
               </Text>
             </View>
           )}
-          renderItem={({ item: m }) => {
+          renderItem={({ item: m, index }) => {
             const item = m.listItem;
             const dtlInfo = m.dtlInfo;
             const dtl = m.dtl;
@@ -251,7 +272,6 @@ export default function MyReservation() {
               item.event_time ??
               "";
 
-            // build people text using helper
             const peopleText = buildPeopleTextFromDtl(dtl, item);
 
             const titleText =
@@ -289,15 +309,28 @@ export default function MyReservation() {
               return "dark";
             })();
 
-            const badgeTypeProp = badgeVariant;
-            const badgeKey = item.order_no ? `badge_${item.order_no}` : `badge_${item._id}`;
+            const badgeKey = item.order_no ? `badge_${item.order_no}` : `badge_${item._id ?? index}`;
+
+            try {
+              console.log("[MyReservation] renderItem", {
+                id: item._id ?? null,
+                order_no: item.order_no ?? null,
+                s_date: item.s_date ?? null,
+                dayLabel,
+                badgeVariant,
+                index,
+              });
+            } catch (e) {}
 
             return (
               <View style={[styles.cardWrap, past && styles.cardWrapPast]}>
                 <View style={styles.cardHeader}>
-                  <Badge key={badgeKey} size="small" badgeStyle="weak" type={badgeTypeProp}>
-                    {dayLabel}
-                  </Badge>
+                  {/* InlineBadge: toss Badge 내부 에러 우회용 (개발 디버깅) */}
+                  {typeof dayLabel === "string" && dayLabel.trim() !== "" ? (
+                    <InlineBadge key={badgeKey} type={badgeVariant}>
+                      {String(dayLabel)}
+                    </InlineBadge>
+                  ) : null}
 
                   <Text typography="t4" fontWeight="bold" style={styles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
                     {titleText}
