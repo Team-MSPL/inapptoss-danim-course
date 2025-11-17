@@ -2,7 +2,7 @@ import {
   Button,
   colors,
   FixedBottomCTA,
-  FixedBottomCTAProvider,
+  FixedBottomCTAProvider, Icon,
   ListRow,
   Tab,
   useBottomSheet,
@@ -278,6 +278,11 @@ function Timetable() {
                 topProps={{ color: colors.grey500, typography: 't7', fontWeight: 'regular' }}
                 bottomProps={{ color: colors.grey900, typography: 't5', fontWeight: 'bold' }}
               />
+            }
+            right={
+              <TouchableOpacity onPress={() => {navigation.navigate('/recommend-product')}}>
+                <ListRow.Icon name="icon-shopping-bag-mono" />
+              </TouchableOpacity>
             }
           />
         </>
