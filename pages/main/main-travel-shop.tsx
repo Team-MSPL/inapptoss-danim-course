@@ -268,7 +268,7 @@ export default function MainTravelShop() {
         <StepText
           title={"나그네님을 위한 맞춤 여행 상품"}
           subTitle1={"상품 추천"}
-          subTitle2={"내 여정과 어울리는 여행 상품을 추천해드려요"}
+          subTitle2={"선택하신 코스에 꼭 맞는 상품을 모아봤어요"}
         />
         <View style={{ paddingHorizontal: 20 }}>
           <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
