@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, Pressable, View } from 'react-native';
+import { Dimensions, Pressable, View, StyleSheet, Image as RNImage } from 'react-native';
 import { useNavigation } from '@granite-js/react-native';
 import { Image } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
@@ -34,21 +34,23 @@ function getMonthLabel(dateStr: string) {
   return `${date.year()}년 ${date.month() + 1}월`;
 }
 
-// 느리게 시작하는 여행 순으로 정렬
-function sortTravelListByStartDay(list: any[]) {
+// (수정) 최근 시작일(가장 나중에 시작하는 여행)부터 내림차순 정렬
+function sortTravelListByStartDayDesc(list: any[]) {
   return [...list].sort((a, b) => {
-    const aStart = Array.isArray(a.day) && a.day.length > 0 ? moment(a.day[0]) : moment('3000-01-01');
-    const bStart = Array.isArray(b.day) && b.day.length > 0 ? moment(b.day[0]) : moment('3000-01-01');
-    return aStart.diff(bStart);
+    const aStart = Array.isArray(a.day) && a.day.length > 0 ? moment(a.day[0]) : moment('0000-01-01');
+    const bStart = Array.isArray(b.day) && b.day.length > 0 ? moment(b.day[0]) : moment('0000-01-01');
+    return bStart.diff(aStart); // b - a => descending
   });
 }
 
-// 월별 헤더 포함하는 리스트로 가공
-function makeMonthHeaderizedList(travelList) {
+// (수정) 내림차순 정렬된 리스트를 받아, 최신 월부터 헤더를 붙이는 함수
+function makeMonthHeaderizedListDescending(travelList) {
   if (!travelList || travelList.length === 0) return [];
-  let result = [];
+  // Ensure list is sorted descending by start day
+  const sorted = sortTravelListByStartDayDesc(travelList);
+  const result = [];
   let lastMonthKey = '';
-  travelList.forEach(item => {
+  for (const item of sorted) {
     const travelEndDay =
       Array.isArray(item.day) && item.day.length > 0
         ? typeof item.nDay === 'number' && item.nDay > 0 && item.nDay <= item.day.length
@@ -63,7 +65,7 @@ function makeMonthHeaderizedList(travelList) {
       lastMonthKey = monthKey;
     }
     result.push({ type: 'item', item });
-  });
+  }
   return result;
 }
 
@@ -80,7 +82,8 @@ export default function MainTrip() {
     try {
       setLoading(true);
       const data = await dispatch(getMyTravelList({ userId })).unwrap();
-      setList(sortTravelListByStartDay(data));
+      // (수정) 정렬: 최신 시작일 순으로 정렬
+      setList(sortTravelListByStartDayDesc(data));
     } catch (err) {
       setList([]);
     } finally {
@@ -169,8 +172,8 @@ export default function MainTrip() {
     return { result, endFlag };
   }, []);
 
-  // 월 헤더 포함 리스트로 가공
-  const monthHeaderizedList = useMemo(() => makeMonthHeaderizedList(list), [list]);
+  // (수정) 월 헤더 포함 리스트: 최신월부터 내려오도록 만듦
+  const monthHeaderizedList = useMemo(() => makeMonthHeaderizedListDescending(list), [list]);
 
   // 여행 리스트 로딩 or 없을 때
   if (loading) {
@@ -183,74 +186,57 @@ export default function MainTrip() {
     );
   }
 
-  if (list.length === 0) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          marginBottom: 100,
+  // 커스텀 Empty State (기존 컴포넌트와 유사하되 간단 구현)
+  const EmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <View style={styles.emptyUpper}>
+        <RNImage
+          style={styles.emptyImage}
+          source={{
+            uri: 'https://static.toss.im/2d-emojis/png/4x/u1F3DC.png',
+          }}
+        />
+      </View>
+      <Text typography="t3" style={styles.emptyTitle}>
+        지금 바로 여행 일정을 추천받아{'\n'}신나는 여행을 떠나보세요
+      </Text>
+      <Text typography="t7" color={colors.grey700} style={styles.emptySubtitle}>
+        나그네님을 위한 일정이 곧 채워질 거에요
+      </Text>
+      <Button
+        viewStyle={{ alignSelf: 'center', marginTop: 24 }}
+        size="medium"
+        style="weak"
+        onPress={() => {
+          dispatch(
+            travelSliceActions.reset({
+              userId,
+              userJwtToken,
+            }),
+          );
+          navigation.replace('/enroll/title');
         }}
       >
-        <Top.Root
-          upper={
-            <Top.UpperAssetContent
-              content={
-                <Image
-                  style={{ width: 68, height: 68 }}
-                  source={{
-                    uri: 'https://static.toss.im/2d-emojis/png/4x/u1F3DC.png',
-                  }}
-                />
-              }
-            />
-          }
-          title={
-            <Top.TitleParagraph typography="t3">
-              지금 바로 여행 일정을 추천받아{`\n`}신나는 여행을 떠나보세요
-            </Top.TitleParagraph>
-          }
-          subtitle1={
-            <Top.SubtitleParagraph typography="t7" color={colors.grey700} fontWeight="regular">
-              나그네님을 위한 일정이 곧 채워질 거에요
-            </Top.SubtitleParagraph>
-          }
-          style={{ width: Dimensions.get('window').width - 20 }}
-        />
-        <Button
-          viewStyle={{ alignSelf: 'center', marginTop: 24 }}
-          size="medium"
-          style="weak"
-          onPress={() => {
-            dispatch(
-              travelSliceActions.reset({
-                userId,
-                userJwtToken,
-              }),
-            );
-            navigation.replace('/enroll/title');
-          }}
-        >
-          여행 일정 추천 받으러 가기
-        </Button>
-      </View>
-    );
+        여행 일정 추천 받으러 가기
+      </Button>
+    </View>
+  );
+
+  if (list.length === 0) {
+    return <EmptyState />;
   }
 
-  // 여행 리스트 있을 때
+  // 리스트 아이템 레이아웃 (Top.Root 기반 월헤더와 기존 컴포넌트 타이틀 유지)
   const renderItem = ({ item }: { item: any }) => {
     if (item.type === 'header') {
       return (
         <Top.Root
           title={
             <Top.TitleParagraph typography="t7" color={colors.grey700}>
-              {item.isCurrentMonth
-                ? '이번달'
-                : getMonthLabel(item.dateStr)}
+              {item.isCurrentMonth ? '이번달' : getMonthLabel(item.dateStr)}
             </Top.TitleParagraph>
           }
+          style={{ backgroundColor: '#fff' }}
         />
       );
     }
@@ -269,51 +255,54 @@ export default function MainTrip() {
       'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80';
     const thumbnail = travelItem.thumbnail || DEFAULT_THUMBNAIL;
 
+    const dateLine =
+      travelStartDay && travelEndDay
+        ? `${moment(travelStartDay).format('YYYY/MM/DD')} - ${moment(travelEndDay).format('YYYY/MM/DD')}`
+        : '';
+
+    const dDayText =
+      travelStartDay && travelEndDay
+        ? dDayCalculate({
+          startDay: travelStartDay,
+          endDay: travelEndDay,
+        }).result
+        : '';
+
     return (
-      <Pressable onPress={() => goMyTravelDetail(travelItem)}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 8 }}>
+      <Pressable onPress={() => goMyTravelDetail(travelItem)} style={styles.itemPressable}>
+        <View style={styles.itemRow}>
           <Image
             source={{ uri: thumbnail }}
-            style={{
-              width: 105,
-              height: 105,
-              borderRadius: 10,
-              marginRight: 4,
-              marginLeft: 24,
-              backgroundColor: '#eee',
-            }}
+            style={styles.thumbnail}
             resizeMode="cover"
           />
-          <View style={{ flex: 1 }}>
-            <Top.Root
-              right={<Icon name="icon-arrow-right-mono" color={colors.grey400} />}
-              title={<Top.TitleParagraph typography="t3">{travelItem.travelName}</Top.TitleParagraph>}
-              subtitle1={
-                <Top.SubtitleParagraph
-                  typography="t7"
-                  color={colors.grey700}
-                  fontWeight="regular"
-                >
-                  {travelStartDay && travelEndDay
-                    ? `${moment(travelStartDay).format('YYYY년 MM월 DD일')} ~ ${moment(travelEndDay).format('MM월 DD일')}`
-                    : ''}
-                </Top.SubtitleParagraph>
-              }
-              subtitle2={
-                <Top.SubtitleParagraph typography="t7" color={colors.blue600} fontWeight="medium">
-                  {travelStartDay && travelEndDay
-                    ? dDayCalculate({
-                      startDay: travelStartDay,
-                      endDay: travelEndDay,
-                    }).result
-                    : ''}
-                  {'\n'}
-                  <Badge style={{paddingVertical: 10}} type="teal" badgeStyle="weak">
-                    {regionLabel}
-                  </Badge>
-                </Top.SubtitleParagraph>
-              }
-            />
+
+          <View style={styles.itemContent}>
+            {/* date */}
+            <Text typography="t7" color={colors.grey400} style={styles.dateText}>
+              {dateLine}
+            </Text>
+
+            {/* title */}
+            <Text typography="t5" color={colors.grey900} fontWeight="bold" numberOfLines={1} style={styles.titleText}>
+              {travelItem.travelName}
+            </Text>
+
+            {/* d-day / subtitle */}
+            <Text typography="t7" color={colors.blue600} fontWeight="medium" numberOfLines={1} style={styles.ddayText}>
+              {dDayText}
+            </Text>
+
+            {/* badge row */}
+            <View style={styles.metaRow}>
+              <Badge style={styles.badge} type="teal" badgeStyle="weak">
+                {regionLabel}
+              </Badge>
+            </View>
+          </View>
+
+          <View style={styles.iconWrap}>
+            <Icon name="icon-arrow-right-mono" color={colors.grey400} />
           </View>
         </View>
       </Pressable>
@@ -322,6 +311,7 @@ export default function MainTrip() {
 
   return (
     <View>
+      {/* (수정) 기존 컴포넌트 사용: Top.Root로 페이지 타이틀 유지 */}
       <Top.Root
         title={
           <Top.TitleParagraph typography="t3" color={colors.grey900}>
@@ -329,16 +319,96 @@ export default function MainTrip() {
           </Top.TitleParagraph>
         }
       />
+
       <FlatList
         data={monthHeaderizedList}
         style={{ marginBottom: 100 }}
         renderItem={renderItem}
         initialNumToRender={20}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item, idx) => item.type === 'header' ? `header-${item.monthKey}-${idx}` : item.item?._id}
+        keyExtractor={(item, idx) => (item.type === 'header' ? `header-${item.monthKey}-${idx}` : item.item?._id)}
         nestedScrollEnabled
         extraData={monthHeaderizedList.length}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 100,
+    paddingHorizontal: 20,
+  },
+  emptyUpper: {
+    marginBottom: 12,
+  },
+  emptyImage: {
+    width: 68,
+    height: 68,
+  },
+  emptyTitle: {
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  emptySubtitle: {
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  monthHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+  },
+  itemPressable: {
+    paddingVertical: 8,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 8,
+  },
+  thumbnail: {
+    width: 105,
+    height: 105,
+    borderRadius: 10,
+    marginRight: 12,
+    marginLeft: 24,
+    backgroundColor: '#eee',
+  },
+  itemContent: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  dateText: {
+    marginBottom: 4,
+  },
+  titleText: {
+    marginBottom: 4,
+  },
+  ddayText: {
+    marginBottom: 6,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  badge: {
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+  },
+  iconWrap: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  pageTitleWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
+    backgroundColor: '#fff',
+  },
+});
