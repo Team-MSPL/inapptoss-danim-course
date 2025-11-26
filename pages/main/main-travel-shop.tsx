@@ -28,26 +28,34 @@ const RECOMMEND_API_URL = `${import.meta.env.API_ROUTE_RELEASE}/sellingProduct/r
 
 type Country = { code: string; dial: string; label: string; lang: string };
 
+/*
+  Updated country list as requested:
+  {ko: '한국', en: 'Korea'},
+  {ko: '일본', en: 'Japan'},
+  {ko: '중국', en: 'China'},
+  {ko: '베트남', en: 'Vietnam'},
+  {ko: '태국', en: 'Thailand'},
+  {ko: '필리핀', en: 'Philippines'},
+  {ko: '싱가포르', en: 'Singapore'},
+*/
 const COUNTRY_OPTIONS: Country[] = [
   { code: "KR", dial: "82", label: "한국", lang: "ko" },
   { code: "JP", dial: "81", label: "일본", lang: "ja" },
-  { code: "US", dial: "1", label: "미국", lang: "en" },
-  { code: "VN", dial: "84", label: "베트남", lang: "vi" },
-  { code: "TW", dial: "886", label: "대만", lang: "zh-tw" },
   { code: "CN", dial: "86", label: "중국", lang: "zh-cn" },
+  { code: "VN", dial: "84", label: "베트남", lang: "vi" },
   { code: "TH", dial: "66", label: "태국", lang: "th" },
-  { code: "HK", dial: "852", label: "홍콩", lang: "zh-hk" },
+  { code: "PH", dial: "63", label: "필리핀", lang: "en" },
+  { code: "SG", dial: "65", label: "싱가포르", lang: "en" },
 ];
 
 const COUNTRY_NAME_MAP: Record<string, string> = {
   KR: "한국",
   JP: "일본",
-  US: "미국",
-  VN: "베트남",
-  TW: "대만",
   CN: "중국",
+  VN: "베트남",
   TH: "태국",
-  HK: "홍콩",
+  PH: "필리핀",
+  SG: "싱가포르",
 };
 
 /* -------------------------
@@ -243,7 +251,7 @@ export default function MainTravelShop() {
 
         try {
           console.debug("[MainTravelShop] recommend response.status:", response.status);
-          console.debug("[MainTravelShop] recommend response.data (stringified):", JSON.stringify(response.data, null, 2));
+          // console.debug("[MainTravelShop] recommend response.data (stringified):", JSON.stringify(response.data, null, 2));
           setDebugResponse(response.data);
         } catch (logErr) {
           console.debug("[MainTravelShop] error logging response:", logErr);
@@ -363,7 +371,7 @@ export default function MainTravelShop() {
         <StepText
           title={"나그네님을 위한 맞춤 여행 상품"}
           subTitle1={"상품 추천"}
-          subTitle2={"내 여정과 어울리는 여행 상품을 추천해드립니다."}
+          subTitle2={"나만의 여정에 어울리는 상품을 추천해드립니다."}
         />
         <View style={{ paddingHorizontal: 20 }}>
           <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>

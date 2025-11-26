@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, Image } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { Text } from "@toss-design-system/react-native";
 import TendencyButton from "../tendency-button";
 
@@ -8,29 +8,31 @@ type Country = { code: string; dial?: string; label: string; lang?: string; icon
 /**
  * CountrySelector
  * - Renders a simple grid of country buttons using the project's TendencyButton component.
- * - Uses an explicit mapping for the 8 known country codes (without the `-white` suffix),
- *   and falls back to a flag image from flagcdn if the icon is not available.
+ * - Uses an explicit mapping for known country codes, and falls back to a flag image from flagcdn if the icon is not available.
  *
  * Usage:
  * <CountrySelector countries={COUNTRY_OPTIONS} onSelect={(code) => ...} columns={2} selectedCode={selectedCountry}/>
  *
- * The TendencyButton props mirror how other screens use it (marginBottom, bgColor, divide, imageUrl, onPress).
+ * Notes:
+ * - TendencyButton will render an <Image> when imageUrl starts with 'http' (flagcdn) or render an internal icon when a named icon string is provided.
+ * - The layout tries to evenly space items; last item in a row doesn't get extra right margin.
  */
 
 const ICON_BY_CODE: Record<string, string> = {
   kr: "icon-flag-kr",
   jp: "icon-flag-jp",
-  us: "icon-flag-us",
-  vn: "icon-flag-vn",
-  tw: "icon-flag-tw",
   cn: "icon-flag-cn",
+  vn: "icon-flag-vn",
   th: "icon-flag-th",
-  hk: "icon-flag-hk",
+  ph: "icon-flag-ph",
+  sg: "icon-flag-sg",
 };
 
 function makeFlagImageUrl(code?: string, size = 40) {
   if (!code) return undefined;
   const c = String(code).trim().toLowerCase();
+  // flagcdn supports paths like /w40/{cc}.png
+  // ensure two-letter code is passed (kr, jp, cn, vn, th, ph, sg)
   return `https://flagcdn.com/w${size}/${c}.png`;
 }
 
@@ -52,22 +54,24 @@ export default function CountrySelector({
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
       {chunked.map((row, rIdx) => (
         <View key={rIdx} style={styles.row}>
           {row.map((c, idx) => {
             const code = (c.code ?? "").toLowerCase();
             // prefer explicit iconName if provided; otherwise use known mapping
             const mappedIcon = c.iconName ?? ICON_BY_CODE[code];
-            // TendencyButton renders <Image> if imageUrl startsWith('http')
-            // So we pass either the icon name (string) or a fallback image url
+            // fallback to flagcdn image if no mapped icon
             const flagImage = makeFlagImageUrl(code, 40);
             const imageUrl = mappedIcon ? mappedIcon : flagImage;
             const isSelected = selectedCode ? selectedCode.toLowerCase() === code : false;
 
+            // determine style for cell: remove right margin for last item in row
+            const isLastInRow = idx === row.length - 1;
+            const cellStyle = [styles.cell, isLastInRow && styles.cellLast];
+
             return (
-              <View key={`${c.code}-${idx}`} style={styles.cell}>
+              <View key={`${c.code}-${idx}`} style={cellStyle}>
                 <TendencyButton
                   marginBottom={0}
                   bgColor={isSelected}
@@ -80,7 +84,10 @@ export default function CountrySelector({
             );
           })}
           {/* fill empty cells if row shorter than columns */}
-          {row.length < columns && Array.from({ length: columns - row.length }).map((_, i) => <View key={`fill-${i}`} style={styles.cell} />)}
+          {row.length < columns &&
+            Array.from({ length: columns - row.length }).map((_, i) => (
+              <View key={`fill-${i}`} style={[styles.cell, styles.cellLast]} />
+            ))}
         </View>
       ))}
     </ScrollView>
@@ -101,5 +108,9 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     marginRight: 8,
+  },
+  // remove right margin for last element in row so visual center alignment is correct
+  cellLast: {
+    marginRight: 0,
   },
 });
