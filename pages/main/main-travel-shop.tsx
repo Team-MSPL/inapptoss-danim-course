@@ -4,7 +4,7 @@ import {
   FlatList,
   Dimensions,
   Platform,
-  ScrollView,
+  ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@granite-js/react-native";
@@ -85,6 +85,9 @@ function extract2DArray(maybe: any): any[] | null {
 function extractProductArrayFromResponseData(data: any): any[] | null {
   if (!data) return null;
 
+  // prefer standardized 'products' field if present (list mode)
+  if (Array.isArray(data.products)) return data.products;
+
   if (data.prods && Array.isArray(data.prods)) return data.prods;
   if (Array.isArray(data)) {
     // nested arrays case e.g. [ [ {...}, {...} ] ]
@@ -136,12 +139,20 @@ export default function MainTravelShop() {
   const [productList, setProductList] = useState<Product[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedCountry, setSelectedCountry] = useState<string>("KR");
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  // removed client-side pagination state: we will render all returned items
+  // pagination & mode
+  const [mode] = useState<"recommend" | "list">("list"); // fixed to 'list' as requested
+  const [keyword, setKeyword] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(20);
+  const [totalPage, setTotalPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(false);
+
   const totalCountRef = useRef(0);
   const [showCountryPicker, setShowCountryPicker] = useState<boolean>(true);
 
@@ -168,13 +179,30 @@ export default function MainTravelShop() {
     [recommendStoreGet]
   );
 
-  // fetchProducts: fetches and sets the ENTIRE product list returned by recommend API
+  // fetchProducts: fetches products in 'list' mode and supports page-based append
   const fetchProducts = useCallback(
-    async (overrideCountryCode?: string) => {
-      setLoading(true);
-      setError(null);
+    async (opts?: {
+      overrideCountryCode?: string;
+      optPage?: number;
+      optLimit?: number;
+      optKeyword?: string;
+      append?: boolean;
+    }) => {
+      const {
+        overrideCountryCode,
+        optPage = 1,
+        optLimit = limit,
+        optKeyword = keyword,
+        append = false,
+      } = opts ?? {};
+
+      if (append && loadingMore) return;
 
       try {
+        if (append) setLoadingMore(true);
+        else setLoading(true);
+        setError(null);
+
         // 1) obtain recent select list first
         const recentRaw = await getRecentSelectList();
         console.debug("[MainTravelShop] recentRaw from getRecentSelectList():", recentRaw);
@@ -191,15 +219,28 @@ export default function MainTravelShop() {
           console.debug("[MainTravelShop] No 2D selectList found in recentRaw; keeping stored selectList");
         }
 
-        // 4) send final body exactly as-is (do not inject start/filters)
-        console.debug("[MainTravelShop] FINAL POST recommend body (about to send):", JSON.stringify(localBody, null, 2));
+        const finalPage = Math.max(1, Number(optPage ?? 1));
+        const finalLimit = Math.max(1, Number(optLimit ?? 20));
 
-        const response = await axiosAuth.post(RECOMMEND_API_URL, localBody, {
+        // build request body for 'list' mode
+        const postBody: any = {
+          pathList: localBody.pathList ?? [[]],
+          country: localBody.country ?? "",
+          cityList: localBody.cityList ?? [],
+          selectList: localBody.selectList ?? [[]],
+          mode: "list",
+          page: finalPage,
+          limit: finalLimit,
+          keyword: optKeyword ?? "",
+        };
+
+        console.debug("[MainTravelShop] FINAL POST body (about to send):", JSON.stringify(postBody, null, 2));
+
+        const response = await axiosAuth.post(RECOMMEND_API_URL, postBody, {
           headers: { "Content-Type": "application/json" },
           timeout: 15000,
         });
 
-        // debug logs and store raw response so you can inspect in UI
         try {
           console.debug("[MainTravelShop] recommend response.status:", response.status);
           console.debug("[MainTravelShop] recommend response.data (stringified):", JSON.stringify(response.data, null, 2));
@@ -208,44 +249,98 @@ export default function MainTravelShop() {
           console.debug("[MainTravelShop] error logging response:", logErr);
         }
 
-        // 5) robust extraction of product array and mapping
-        const rawProds = extractProductArrayFromResponseData(response.data);
+        // Expect response.data.products, response.data.totalCount, response.data.totalPage
+        const resp = response.data ?? {};
+        const rawProds = Array.isArray(resp.products) ? resp.products : extractProductArrayFromResponseData(resp);
+        const respTotalCount = typeof resp.totalCount === "number" ? resp.totalCount : undefined;
+        const respTotalPage = typeof resp.totalPage === "number" ? resp.totalPage : undefined;
+
         if (!rawProds) {
           console.debug("[MainTravelShop] No product array found in response.data:", response.data);
-          setProductList([]);
-          setTotal(0);
+          if (!append) {
+            setProductList([]);
+            setTotal(0);
+          }
           setError("상품을 불러오는데 실패했습니다.");
+          setHasMore(false);
         } else {
-          // IMPORTANT: set the full list as-is (no client-side slicing)
           const mapped: Product[] = rawProds.map((p: any, i: number) => mapRecommendItemToProduct(p, i));
-          setProductList(mapped.filter(Boolean));
-          setTotal(mapped.length);
-          totalCountRef.current = mapped.length;
+          if (append) {
+            const existingIds = new Set(productList.map((p) => String(p.prod_no)));
+            const uniques = mapped.filter((m) => !existingIds.has(String(m.prod_no)));
+            const newList = [...productList, ...uniques];
+            setProductList(newList);
+            const newTotal = respTotalCount ?? newList.length;
+            setTotal(newTotal);
+            totalCountRef.current = newList.length;
+
+            // determine pagination state
+            const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? newList.length) / finalLimit));
+            setTotalPage(tp);
+            // if finalPage >= totalPage then no more
+            if (finalPage >= tp || uniques.length === 0 || mapped.length < finalLimit) {
+              setHasMore(false);
+            } else {
+              setHasMore(true);
+            }
+          } else {
+            // replace
+            setProductList(mapped.filter(Boolean));
+            const newTotal = respTotalCount ?? mapped.length;
+            setTotal(newTotal);
+            totalCountRef.current = mapped.length;
+
+            const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? mapped.length) / finalLimit));
+            setTotalPage(tp);
+            // if only one page or returned less than limit -> no more
+            if (finalPage >= tp || mapped.length < finalLimit) setHasMore(false);
+            else setHasMore(true);
+            // ensure page state matches server
+            setPage(finalPage);
+          }
         }
       } catch (e: any) {
-        setProductList([]);
-        setTotal(0);
-        setError("상품을 불러오는데 실패했습니다.");
         console.warn("[MainTravelShop] recommend fetch error:", e);
+        if (!append) {
+          setProductList([]);
+          setTotal(0);
+        }
+        setError("상품을 불러오는데 실패했습니다.");
+        setHasMore(false);
       } finally {
-        setLoading(false);
+        if (append) setLoadingMore(false);
+        else setLoading(false);
       }
     },
-    [prepareLocalRecommendBody, selectedCountry]
+    [prepareLocalRecommendBody, selectedCountry, limit, keyword, productList, loadingMore]
   );
 
+  // initial load after user picks country (reset pagination)
   useEffect(() => {
     if (!showCountryPicker) {
-      // initial load after user picks country
-      fetchProducts(selectedCountry);
+      setPage(1);
+      setHasMore(true);
+      fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCountryPicker]);
 
+  // refresh handler (pull to refresh)
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchProducts(selectedCountry).finally(() => setRefreshing(false));
-  }, [fetchProducts, selectedCountry]);
+    setPage(1);
+    setHasMore(true);
+    fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false })
+      .finally(() => setRefreshing(false));
+  }, [fetchProducts, limit, keyword]);
+
+  // "더 불러오기" handler
+  const loadMore = useCallback(() => {
+    if (!hasMore || loadingMore) return;
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchProducts({ optPage: nextPage, optLimit: limit, optKeyword: keyword, append: true });
+  }, [fetchProducts, page, limit, keyword, hasMore, loadingMore]);
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => {
@@ -268,7 +363,7 @@ export default function MainTravelShop() {
         <StepText
           title={"나그네님을 위한 맞춤 여행 상품"}
           subTitle1={"상품 추천"}
-          subTitle2={"선택하신 코스에 꼭 맞는 상품을 모아봤어요"}
+          subTitle2={"내 여정과 어울리는 여행 상품을 추천해드립니다."}
         />
         <View style={{ paddingHorizontal: 20 }}>
           <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
@@ -282,7 +377,7 @@ export default function MainTravelShop() {
         </View>
       </View>
     ),
-    [total, debugResponse]
+    [total]
   );
 
   const isNoProduct = !loading && Array.isArray(productList) && productList.length === 0;
@@ -307,9 +402,9 @@ export default function MainTravelShop() {
             onSelect={(code) => {
               setSelectedCountry(code);
               setShowCountryPicker(false);
-              // fetchProducts will be triggered by useEffect when showCountryPicker changes,
-              // but call explicitly to start faster
-              fetchProducts(code);
+              setPage(1);
+              setHasMore(true);
+              fetchProducts({ overrideCountryCode: code, optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
             }}
           />
         </FixedBottomCTAProvider>
@@ -323,19 +418,52 @@ export default function MainTravelShop() {
         <Text typography="t4" color={colors.red400} style={{ marginBottom: 14 }}>
           {typeof error === "string" ? error : "상품을 불러오는데 실패했습니다."}
         </Text>
-        <Button onPress={() => fetchProducts(selectedCountry)}>다시 시도</Button>
+        <Button onPress={() => {
+          setPage(1);
+          setHasMore(true);
+          fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
+        }}>다시 시도</Button>
       </View>
     );
   }
 
+  // Footer: loading indicator / centered plain-text "더 불러오기" / no-more message
+  const ListFooter = () => {
+    if (loadingMore) {
+      return (
+        <View style={{ padding: 16, alignItems: "center" }}>
+          <ActivityIndicator />
+          <Text style={{ marginTop: 8 }}>상품을 불러오는 중입니다...</Text>
+        </View>
+      );
+    }
+    if (hasMore) {
+      return (
+        <View style={{ paddingVertical: 18, alignItems: "center", justifyContent: "center" }}>
+          <TouchableOpacity onPress={loadMore} activeOpacity={0.7} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+            <Text typography="t5" color={colors.grey600} >
+              상품 더 불러오기
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    // no more
+    return (
+      <View style={{ padding: 16, alignItems: "center" }}>
+        <Text typography="t7" color={colors.grey400}>더 불러올 상품이 없습니다.</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      {/* Show all returned products in a FlatList (no 'load more' footer). API may return 5~15 items; we'll render whatever comes back. */}
       <FlatList
         data={productList.filter((item, idx, arr) => arr.findIndex((v) => v.prod_no === item.prod_no) === idx)}
         keyExtractor={(item) => String(item.prod_no)}
         renderItem={renderItem}
         ListHeaderComponent={renderHeader}
+        ListFooterComponent={ListFooter}
         contentContainerStyle={{ paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
         refreshing={refreshing}
