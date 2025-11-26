@@ -28,16 +28,10 @@ const RECOMMEND_API_URL = `${import.meta.env.API_ROUTE_RELEASE}/sellingProduct/r
 
 type Country = { code: string; dial: string; label: string; lang: string };
 
-/*
-  Updated country list as requested:
-  {ko: '한국', en: 'Korea'},
-  {ko: '일본', en: 'Japan'},
-  {ko: '중국', en: 'China'},
-  {ko: '베트남', en: 'Vietnam'},
-  {ko: '태국', en: 'Thailand'},
-  {ko: '필리핀', en: 'Philippines'},
-  {ko: '싱가포르', en: 'Singapore'},
-*/
+type Props = {
+  initialCountry?: string | null;
+};
+
 const COUNTRY_OPTIONS: Country[] = [
   { code: "KR", dial: "82", label: "한국", lang: "ko" },
   { code: "JP", dial: "81", label: "일본", lang: "ja" },
@@ -59,7 +53,7 @@ const COUNTRY_NAME_MAP: Record<string, string> = {
 };
 
 /* -------------------------
-   Helpers
+   Helpers (unchanged)
    ------------------------- */
 
 function flattenArray(arr: any[]): any[] {
@@ -141,7 +135,7 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
    Component
    ------------------------- */
 
-export default function MainTravelShop() {
+export default function MainTravelShop({ initialCountry = null }: Props) {
   const navigation = useNavigation();
 
   const [productList, setProductList] = useState<Product[]>([]);
@@ -150,11 +144,14 @@ export default function MainTravelShop() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [selectedCountry, setSelectedCountry] = useState<string>("KR");
+  // If initialCountry is provided, we start with that selected and hide the picker.
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(initialCountry ?? null);
+  const [showCountryPicker, setShowCountryPicker] = useState<boolean>(!initialCountry);
+
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   // pagination & mode
-  const [mode] = useState<"recommend" | "list">("list"); // fixed to 'list' as requested
+  const [mode] = useState<"recommend" | "list">("list"); // fixed to 'list'
   const [keyword, setKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
@@ -162,7 +159,6 @@ export default function MainTravelShop() {
   const [hasMore, setHasMore] = useState<boolean>(false);
 
   const totalCountRef = useRef(0);
-  const [showCountryPicker, setShowCountryPicker] = useState<boolean>(true);
 
   // debug state to inspect raw response on screen (optional)
   const [debugResponse, setDebugResponse] = useState<any | null>(null);
@@ -204,6 +200,9 @@ export default function MainTravelShop() {
         append = false,
       } = opts ?? {};
 
+      const countryToUse = overrideCountryCode ?? selectedCountry;
+      if (!countryToUse) return; // nothing to fetch
+
       if (append && loadingMore) return;
 
       try {
@@ -216,7 +215,7 @@ export default function MainTravelShop() {
         console.debug("[MainTravelShop] recentRaw from getRecentSelectList():", recentRaw);
 
         // 2) prepare local recommend body
-        const localBody = prepareLocalRecommendBody(overrideCountryCode ?? selectedCountry);
+        const localBody = prepareLocalRecommendBody(countryToUse);
 
         // 3) override selectList if we can extract a 2D array
         const recent2D = extract2DArray(recentRaw);
@@ -251,7 +250,6 @@ export default function MainTravelShop() {
 
         try {
           console.debug("[MainTravelShop] recommend response.status:", response.status);
-          // console.debug("[MainTravelShop] recommend response.data (stringified):", JSON.stringify(response.data, null, 2));
           setDebugResponse(response.data);
         } catch (logErr) {
           console.debug("[MainTravelShop] error logging response:", logErr);
@@ -323,26 +321,29 @@ export default function MainTravelShop() {
     [prepareLocalRecommendBody, selectedCountry, limit, keyword, productList, loadingMore]
   );
 
-  // initial load after user picks country (reset pagination)
+  // If initialCountry prop changes later, update selection
   useEffect(() => {
-    if (!showCountryPicker) {
+    setSelectedCountry(initialCountry ?? null);
+    setShowCountryPicker(!initialCountry);
+  }, [initialCountry]);
+
+  // Load products when selectedCountry changes (initial load and when user selects a country)
+  useEffect(() => {
+    if (selectedCountry) {
       setPage(1);
       setHasMore(true);
       fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showCountryPicker]);
+  }, [selectedCountry, limit, keyword]);
 
-  // refresh handler (pull to refresh)
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setPage(1);
     setHasMore(true);
-    fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false })
-      .finally(() => setRefreshing(false));
+    fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false }).finally(() => setRefreshing(false));
   }, [fetchProducts, limit, keyword]);
 
-  // "더 불러오기" handler
   const loadMore = useCallback(() => {
     if (!hasMore || loadingMore) return;
     const nextPage = page + 1;
@@ -380,15 +381,46 @@ export default function MainTravelShop() {
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
             <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }} />
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {/* If a country is selected show a change-country link */}
+              {selectedCountry && (
+                <TouchableOpacity onPress={() => {
+                  setShowCountryPicker(true);
+                  setSelectedCountry(null);
+                }}>
+                  <Text typography="t7" color={colors.grey600}>다른 나라 선택</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
       </View>
     ),
-    [total]
+    [total, selectedCountry]
   );
 
   const isNoProduct = !loading && Array.isArray(productList) && productList.length === 0;
+
+  if (!selectedCountry && showCountryPicker) {
+    // show country picker screen
+    return (
+      <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 20, paddingHorizontal: 8 }}>
+        <FixedBottomCTAProvider>
+          <StepText title={'여행상품을 찾으시나요?'} subTitle1={'원하는 국가를 선택해주세요!'} />
+          <CountrySelector
+            countries={COUNTRY_OPTIONS}
+            selectedCode={undefined}
+            onSelect={(code) => {
+              // set selection and allow effect to trigger data load
+              setSelectedCountry(code);
+              setShowCountryPicker(false);
+            }}
+            columns={2}
+          />
+        </FixedBottomCTAProvider>
+      </View>
+    );
+  }
 
   if (loading && productList.length === 0 && !refreshing) {
     return (
@@ -397,26 +429,6 @@ export default function MainTravelShop() {
           <Skeleton key={i} height={110} width={Dimensions.get("window").width - 32} style={{ marginTop: i > 0 ? 24 : 0, alignSelf: "center", borderRadius: 16 }} />
         ))}
       </AnimateSkeleton>
-    );
-  }
-
-  if (showCountryPicker) {
-    return (
-      <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 20, paddingHorizontal: 8 }}>
-        <FixedBottomCTAProvider>
-          <StepText title={'여행상품을 찾으시나요?'} subTitle1={'원하는 국가를 선택해주세요!'} />
-          <CountrySelector
-            countries={COUNTRY_OPTIONS}
-            onSelect={(code) => {
-              setSelectedCountry(code);
-              setShowCountryPicker(false);
-              setPage(1);
-              setHasMore(true);
-              fetchProducts({ overrideCountryCode: code, optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
-            }}
-          />
-        </FixedBottomCTAProvider>
-      </View>
     );
   }
 

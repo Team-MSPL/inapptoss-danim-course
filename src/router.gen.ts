@@ -34,6 +34,8 @@ import { Route as _JoinResultRoute } from '../pages/join/result';
 import { Route as _JoinSeasonRoute } from '../pages/join/season';
 import { Route as _JoinThemeRoute } from '../pages/join/theme';
 import { Route as _JoinWhoRoute } from '../pages/join/who';
+import { Route as _MainCountrySelectionRoute } from '../pages/main/country-selection';
+import { Route as _MainTravelShopScreenRoute } from '../pages/main/travel-shop-screen';
 import { Route as _MyTravleListRoute } from '../pages/my-travle-list';
 import { Route as _PresetDetailRoute } from '../pages/preset-detail';
 import { Route as _PresetRoute } from '../pages/preset';
@@ -90,6 +92,8 @@ declare module '@granite-js/react-native' {
     '/join/season': ReturnType<typeof _JoinSeasonRoute.useParams>;
     '/join/theme': ReturnType<typeof _JoinThemeRoute.useParams>;
     '/join/who': ReturnType<typeof _JoinWhoRoute.useParams>;
+    '/main/country-selection': ReturnType<typeof _MainCountrySelectionRoute.useParams>;
+    '/main/travel-shop-screen': ReturnType<typeof _MainTravelShopScreenRoute.useParams>;
     '/my-travle-list': ReturnType<typeof _MyTravleListRoute.useParams>;
     '/preset-detail': ReturnType<typeof _PresetDetailRoute.useParams>;
     '/preset': ReturnType<typeof _PresetRoute.useParams>;
