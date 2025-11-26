@@ -345,8 +345,6 @@ export default function ProductGoodProduct() {
           QUERY_PRODUCT_API,
           {
             prod_no: params.product?.prod_no ?? params.prod_no,
-            locale: "kr",
-            state: "KR",
           },
           { headers: { "Content-Type": "application/json" } }
         );
