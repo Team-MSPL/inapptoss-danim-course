@@ -385,6 +385,29 @@ export default function ProductGoodProduct() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, product, setPdt]);
 
+  // NEW: if pkgList is empty after product loaded, show alert + goBack
+  useEffect(() => {
+    if (!loading && product?.detail_loaded && Array.isArray(pkgList) && pkgList.length === 0) {
+      Alert.alert(
+        "알림",
+        "패키지 수량이 마감되었습니다.",
+        [
+          {
+            text: "확인",
+            onPress: () => {
+              try {
+                navigation.goBack();
+              } catch {
+                // ignore
+              }
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  }, [loading, product, pkgList, navigation]);
+
   // Derived values (hooks-free)
   const discountPrice = typeof product?.b2b_min_price === "number" ? product.b2b_min_price : Number(product?.b2b_min_price || 0);
   const originalPrice = typeof product?.b2c_min_price === "number" ? product.b2c_min_price : Number(product?.b2c_min_price || 0);
@@ -585,7 +608,10 @@ export default function ProductGoodProduct() {
   };
 
   const goReservation = () => {
-    if (!selectedPkgNo) return;
+    if (!selectedPkgNo) {
+      console.log("패키지넘거바없음")
+      return;
+    }
     handleReservePress();
   };
 
