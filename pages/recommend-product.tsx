@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, FlatList, Dimensions, Platform, ScrollView } from 'react-native';
+import { View, FlatList, Dimensions } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import {
   colors,
@@ -102,15 +102,28 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
   } as Product;
 }
 
-/* Component */
+/**
+ * NOTE: New recommend API expects a 'mode' field and supports 'list' mode for paginated list requests.
+ * This component reads optional `cityList` or `region` param from route params and, if present, uses it as cityList in the request body.
+ * Limit is set to 5 for this screen.
+ */
+
 export default function RecommendProduct() {
   const navigation = useNavigation();
+  // read params passed from Timetable (if any)
+  const params = Route.useParams?.() ?? ({} as any);
+  // prefer explicit cityList param, fallback to region param
+  const overrideCityList = params?.cityList ?? params?.region ?? null;
 
   const [productList, setProductList] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [debugResponse, setDebugResponse] = useState<any | null>(null);
+
+  // show exactly 5 items
+  const [page] = useState<number>(1);
+  const [limit] = useState<number>(5);
 
   const recommendStoreGet = useCallback(() => (useRecommendStore as any).getState(), []);
   const setRecommendBody = useRecommendStore((s: any) => s.setRecommendBody);
@@ -147,23 +160,51 @@ export default function RecommendProduct() {
       }
 
       const localBody: any = prepareLocalRecommendBody(overrideCountryName);
-      console.log('[RecommendProduct] initial localBody ->', localBody);
-      try { console.log('[RecommendProduct] initial localBody JSON ->', JSON.stringify(localBody, null, 2)); } catch (e) {}
+      // set country/city from travelSlice
+      localBody.country = getCountryByIndex(country) ?? localBody.country ?? '';
+      localBody.cityList = region ?? localBody.cityList ?? [];
+
+      // If route param provided, override cityList with it (Timetable passed region/cityList)
+      if (overrideCityList) {
+        localBody.cityList = overrideCityList;
+        console.log('[RecommendProduct] override cityList from route params ->', overrideCityList);
+      }
 
       const recent2D = extract2DArray(recentRaw);
-      if (recent2D) {
-        if(localBody.selectList.length <= 0) {
-          localBody.selectList = recent2D;
-        }
-        else {
-          localBody.selectList = tendency;
-        }
-        console.log(getCountryByIndex(country));
-        localBody.country = getCountryByIndex(country);
-        localBody.cityList = region;
+      if (recent2D && (!localBody.selectList || localBody.selectList.length === 0)) {
+        localBody.selectList = recent2D;
         console.log('[RecommendProduct] Overrode selectList with recent2D ->', recent2D);
       } else {
-        console.log('[RecommendProduct] No 2D selectList found in recentRaw; using stored selectList');
+        // keep existing selectList (tendency)
+      }
+
+      // Build list-mode body (new API schema) with limit = 5
+      const postBody: any = {
+        pathList: localBody.pathList ?? [[]],
+        country: localBody.country ?? "",
+        cityList: localBody.cityList ?? [],
+        selectList: localBody.selectList ?? [[]],
+        mode: "list",
+        page,
+        limit,
+        keyword: "", // could expose as state if needed
+      };
+
+      // --- Console output of the body (user requested) ---
+      try {
+        console.log('[RecommendProduct] POST body (object):', postBody);
+        // pretty JSON
+        console.log('[RecommendProduct] POST body (json):', JSON.stringify(postBody, null, 2));
+        // if cityList is array of strings, show table for quick inspection
+        if (Array.isArray(postBody.cityList) && postBody.cityList.every((v: any) => typeof v === 'string')) {
+          console.table(postBody.cityList);
+        } else if (Array.isArray(postBody.cityList)) {
+          // limited table for array of objects (show up to 10 keys)
+          console.log('[RecommendProduct] cityList preview:', postBody.cityList.slice(0, 20));
+        }
+      } catch (logErr) {
+        // don't break main flow if logging fails
+        console.warn('[RecommendProduct] failed to console.log postBody', logErr);
       }
 
       try { setRecommendBody(localBody); } catch (e) { console.warn('[RecommendProduct] setRecommendBody failed', e); }
@@ -174,7 +215,7 @@ export default function RecommendProduct() {
 
       let res;
       try {
-        res = await axiosAuth.post(url, localBody, {
+        res = await axiosAuth.post(url, postBody, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 15000,
         });
@@ -193,9 +234,10 @@ export default function RecommendProduct() {
 
       setDebugResponse(res.data);
 
-      const rawProds = extractProductsFromResponse(res.data);
+      // New API in list mode returns { products: [...], totalCount, totalPage }
+      const resp = res.data ?? {};
+      const rawProds = Array.isArray(resp.products) ? resp.products : extractProductsFromResponse(resp);
       console.log('[RecommendProduct] extracted rawProds count ->', rawProds?.length ?? 0);
-      try { console.log('[RecommendProduct] extracted sample ->', JSON.stringify((rawProds ?? []).slice(0,3), null, 2)); } catch (e) {}
 
       if (!rawProds || rawProds.length === 0) {
         setProductList([]);
@@ -204,7 +246,8 @@ export default function RecommendProduct() {
       }
 
       const mapped = rawProds.map((p: any, i: number) => mapRecommendItemToProduct(p, i));
-      setProductList(mapped.filter(Boolean));
+      // ensure we only keep up to 5 items even if backend returns more
+      setProductList(mapped.filter(Boolean).slice(0, 5));
       console.log('[RecommendProduct] mapped length ->', mapped.length);
     } catch (e: any) {
       console.warn('[RecommendProduct] fetchProducts error (outer):', e && e.message ? e.message : e);
@@ -213,7 +256,7 @@ export default function RecommendProduct() {
     } finally {
       setLoading(false);
     }
-  }, [prepareLocalRecommendBody, setRecommendBody]);
+  }, [prepareLocalRecommendBody, setRecommendBody, country, region, page, limit, overrideCityList]);
 
   useEffect(() => {
     fetchProducts().catch(() => {});
@@ -284,10 +327,9 @@ export default function RecommendProduct() {
             showsVerticalScrollIndicator={false}
             refreshing={refreshing}
             onRefresh={onRefresh}
-            initialNumToRender={10}
-            scrollEnabled={false}
+            initialNumToRender={5}
             windowSize={11}
-            removeClippedSubviews={Platform.OS === 'android'}
+            removeClippedSubviews={false}
             ListEmptyComponent={!loading ? (
               <View style={{ padding: 24 }}>
                 <Text typography="t5" color={colors.grey600}>검색 결과가 없습니다.</Text>
@@ -298,9 +340,7 @@ export default function RecommendProduct() {
 
         <FixedBottomCTA
           onPress={() => {
-            fetchProducts().finally(() => {
-              navigation.reset({ index: 0, routes: [{ name: '/my-travle-list' }] });
-            });
+            navigation.reset({ index: 0, routes: [{ name: '/my-travle-list' }] });
           }}
         >
           {'건너뛰기'}

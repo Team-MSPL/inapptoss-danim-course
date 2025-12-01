@@ -30,9 +30,10 @@ export const Route = createRoute('/timetable', {
 });
 
 function Timetable() {
-  const { nDay, day, travelName, timetable, userId, region, transit, tendency, travelId } =
+  const { nDay, day, travelName, timetable, userId, region, transit, tendency, travelId, country } =
     useAppSelector((state) => state.travelSlice);
 
+  console.log(region);
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();
@@ -280,7 +281,10 @@ function Timetable() {
               />
             }
             right={
-              <TouchableOpacity onPress={() => {navigation.navigate('/recommend-product')}}>
+              <TouchableOpacity onPress={() => {
+                // pass region as navigation param to recommend-product
+                navigation.navigate('/recommend-product', { region });
+              }}>
                 <ListRow.Icon name="icon-shopping-bag-mono" />
               </TouchableOpacity>
             }
