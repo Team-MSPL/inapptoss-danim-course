@@ -368,7 +368,7 @@ function Timetable() {
               style="weak"
               onPress={() => {
                 // navigate to recommend-product with current region
-                navigation.navigate('/recommend-product', { timetable });
+                navigation.navigate('/recommend-product', { timetable, region });
               }}
             >
               이 코스에 필요한 옵션 살펴보기

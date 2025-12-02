@@ -81,13 +81,6 @@ function extractProductsFromResponse(res: any): any[] {
   return [];
 }
 
-export function getCountryByIndex(idx: number): string | undefined {
-  const countries = ['한국', '일본', '중국', '베트남', '태국', '필리핀', '싱가포르'];
-  if (!Number.isFinite(idx)) return undefined;
-  const i = Math.floor(idx);
-  return countries[i];
-}
-
 function mapRecommendItemToProduct(item: any, idx: number): Product {
   return {
     prod_no: item.prod_no ?? item._id ?? item.prodNo ?? `idx_${idx}`,
@@ -103,12 +96,20 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
   } as Product;
 }
 
+export function getCountryByIndex(idx: number): string | undefined {
+  const countries = ['한국', '일본', '중국', '베트남', '태국', '필리핀', '싱가포르'];
+  if (!Number.isFinite(idx)) return undefined;
+  const i = Math.floor(idx);
+  return countries[i];
+}
+
 export default function RecommendProduct() {
   const navigation = useNavigation();
-  // read params passed from Timetable (if any)
   const params = Route.useParams?.() ?? ({} as any);
-  // prefer explicit cityList param, fallback to region param
-  const overrideCityList = params?.cityList ?? params?.region ?? null;
+
+  // incoming overrideCityList (legacy) or region param (new)
+  const overrideCityList = params?.cityList ?? null;
+  const incomingRegionParam = params?.region ?? null; // could be string or array
 
   const cameFromSave = Boolean(params?.fromSave);
 
@@ -116,9 +117,7 @@ export default function RecommendProduct() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [debugResponse, setDebugResponse] = useState<any | null>(null);
 
-  // show exactly 5 items
   const [page] = useState<number>(1);
   const [limit] = useState<number>(5);
 
@@ -129,7 +128,7 @@ export default function RecommendProduct() {
     (state) => state.travelSlice,
   );
 
-  // regionCheck getter (reads latest from zustand)
+  // regionCheck getter (reads latest from zustand timetableStore)
   const getRegionCheck = useCallback(() => {
     try {
       return (useRegionCheckStore as any).getState()?.regionCheck ?? [];
@@ -151,10 +150,82 @@ export default function RecommendProduct() {
     return body;
   }, [recommendStoreGet, tendency]);
 
+  // country defs to map en/ko inputs -> Korean country string required by API
+  const countryDefs = [
+    { ko: '한국', en: 'Korea', alt: ['korea', 'southkorea', '대한민국'] },
+    { ko: '일본', en: 'Japan', alt: ['japan'] },
+    { ko: '중국', en: 'China', alt: ['china'] },
+    { ko: '베트남', en: 'Vietnam', alt: ['vietnam'] },
+    { ko: '태국', en: 'Thailand', alt: ['thailand'] },
+    { ko: '필리핀', en: 'Philippines', alt: ['philippines'] },
+    { ko: '싱가포르', en: 'Singapore', alt: ['singapore'] },
+    // hong kong / macau map to single ko string "홍콩과 마카오"
+    { ko: '홍콩과 마카오', en: 'HongKongMacao', alt: ['hongkong', 'hong kong', 'macao', 'macau', '마카오', '홍콩'] },
+  ];
+
+  // normalize helper for matching
+  const normalizeKey = (s?: string) => (s ?? '').toString().replace(/\s+/g, '').toLowerCase();
+
+  // map input token (en or ko or variants) -> Korean country string if found
+  const mapTokenToKoreanCountry = (token?: string) => {
+    if (!token) return '';
+    const key = normalizeKey(token);
+    for (const def of countryDefs) {
+      if (normalizeKey(def.ko) === key) return def.ko;
+      if (normalizeKey(def.en) === key) return def.ko;
+      if (def.alt && def.alt.some((a) => normalizeKey(a) === key)) return def.ko;
+    }
+    return '';
+  };
+
+  // helper: parse region param into { countryStr, cityList }
+  const parseRegionParam = useCallback((regionParam: any) => {
+    // returns { countryStr: string, cityList: string[] }
+    if (!regionParam) return { countryStr: '', cityList: [] };
+
+    const items = Array.isArray(regionParam) ? regionParam : [String(regionParam)];
+    const derivedCityList: string[] = [];
+    let derivedCountryStr = '';
+
+    for (const raw of items) {
+      if (!raw || typeof raw !== 'string') continue;
+      const trimmed = raw.trim();
+      if (trimmed.includes('/')) {
+        const parts = trimmed.split('/').map(p => p.trim()).filter(Boolean);
+        // Expect patterns like ['해외','중간','도시', ...]
+        // Use middle part as country token when available
+        if (parts.length >= 2) {
+          const middle = parts[1];
+          const last = parts[parts.length - 1];
+          const mapped = mapTokenToKoreanCountry(middle);
+          if (mapped) {
+            derivedCountryStr = mapped;
+          } else {
+            // If middle token not recognized, still set it as-is (but user requested Korean names)
+            // so we try to fallback: if middle is '홍콩'/'마카오' handled by mapTokenToKoreanCountry,
+            // otherwise we keep empty so API may decide or existing country state used.
+            derivedCountryStr = middle || derivedCountryStr;
+          }
+          derivedCityList.push(last);
+        } else {
+          // can't parse, treat whole trimmed as city
+          derivedCityList.push(trimmed);
+        }
+      } else {
+        // No slash -> domestic (한국)
+        if (!derivedCountryStr) derivedCountryStr = '한국';
+        derivedCityList.push(trimmed);
+      }
+    }
+
+    // If multiple items produce multiple country candidates, prefer the first valid mapped ko country.
+    // derivedCountryStr already set by first mapped middle token.
+    return { countryStr: derivedCountryStr, cityList: derivedCityList };
+  }, []);
+
   const fetchProducts = useCallback(async (overrideCountryName?: string) => {
     setLoading(true);
     setError(null);
-    setDebugResponse(null);
     try {
       let recentRaw: any = null;
       try {
@@ -166,13 +237,23 @@ export default function RecommendProduct() {
       }
 
       const localBody: any = prepareLocalRecommendBody(overrideCountryName);
-      // set country/city from travelSlice
+      // default fill from travelSlice
       localBody.country = getCountryByIndex(country) ?? localBody.country ?? '';
       localBody.cityList = region ?? localBody.cityList ?? [];
       localBody.pathList = params?.timetable ?? [[]];
 
-      // If route param provided, override cityList with it (Timetable passed region/cityList)
-      if (overrideCityList) {
+      // If route param 'region' provided, parse it and override country/cityList accordingly
+      if (incomingRegionParam) {
+        const parsed = parseRegionParam(incomingRegionParam);
+        if (parsed.countryStr) {
+          localBody.country = parsed.countryStr; // Korean name ensured by parseRegionParam
+        }
+        if (Array.isArray(parsed.cityList) && parsed.cityList.length > 0) {
+          localBody.cityList = parsed.cityList;
+          console.log('[RecommendProduct] override cityList from parsed region param ->', parsed.cityList);
+        }
+      } else if (overrideCityList) {
+        // legacy override (explicit cityList param)
         localBody.cityList = overrideCityList;
         console.log('[RecommendProduct] override cityList from route params ->', overrideCityList);
       }
@@ -181,11 +262,9 @@ export default function RecommendProduct() {
       if (recent2D && (!localBody.selectList || localBody.selectList.length === 0)) {
         localBody.selectList = recent2D;
         console.log('[RecommendProduct] Overrode selectList with recent2D ->', recent2D);
-      } else {
-        // keep existing selectList (tendency)
       }
 
-      // If cityList is empty at this point, try to use regionCheck from zustand
+      // If cityList still empty, try to use regionCheck from zustand
       if ((!Array.isArray(localBody.cityList) || localBody.cityList.length === 0)) {
         const rc = getRegionCheck();
         if (Array.isArray(rc) && rc.length > 0) {
@@ -242,9 +321,6 @@ export default function RecommendProduct() {
       try { console.log('[RecommendProduct] response.headers ->', res.headers); } catch (e) {}
       try { console.log('[RecommendProduct] response.data (json) ->', JSON.stringify(res.data, null, 2)); } catch (e) { console.log('[RecommendProduct] response.data ->', res.data); }
 
-      setDebugResponse(res.data);
-
-      // New API in list mode returns { products: [...], totalCount, totalPage }
       const resp = res.data ?? {};
       const rawProds = Array.isArray(resp.products) ? resp.products : extractProductsFromResponse(resp);
       console.log('[RecommendProduct] extracted rawProds count ->', rawProds?.length ?? 0);
@@ -256,7 +332,6 @@ export default function RecommendProduct() {
       }
 
       const mapped = rawProds.map((p: any, i: number) => mapRecommendItemToProduct(p, i));
-      // ensure we only keep up to 5 items even if backend returns more
       setProductList(mapped.filter(Boolean).slice(0, 5));
       console.log('[RecommendProduct] mapped length ->', mapped.length);
     } catch (e: any) {
@@ -266,7 +341,7 @@ export default function RecommendProduct() {
     } finally {
       setLoading(false);
     }
-  }, [prepareLocalRecommendBody, setRecommendBody, country, region, page, limit, overrideCityList, getRegionCheck, params]);
+  }, [prepareLocalRecommendBody, setRecommendBody, country, region, page, limit, overrideCityList, getRegionCheck, incomingRegionParam, params, parseRegionParam]);
 
   useEffect(() => {
     fetchProducts().catch(() => {});
@@ -351,7 +426,6 @@ export default function RecommendProduct() {
         {cameFromSave ? (
           <FixedBottomCTA
             onPress={() => {
-              // when reached from SaveBottomSheet, keep the "skip" behavior and go to my-travle-list
               navigation.reset({ index: 0, routes: [{ name: '/my-travle-list' }] });
             }}
           >
@@ -360,7 +434,6 @@ export default function RecommendProduct() {
         ) : (
           <FixedBottomCTA
             onPress={() => {
-              // otherwise, treat CTA as a back action
               navigation.goBack();
             }}
           >
