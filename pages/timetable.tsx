@@ -278,7 +278,7 @@ function Timetable() {
 
     Alert.alert(
       '삭제',
-      '현재 일정을 삭제하시겠습니까? 삭제 후 메인 화면으로 이동합니다.',
+      '현재 일정을 삭제하시겠습니까?',
       [
         { text: '취소', style: 'cancel' },
         {
@@ -292,7 +292,7 @@ function Timetable() {
               });
               openToast('여행이 삭제되었습니다.', { icon: 'icon-check-circle' });
               // reset navigation stack to main (index 0) — adjust route name if your main route is different
-              navigation.reset({ index: 0, routes: [{ name: '/' }] });
+              navigation.goBack();
             } catch (err) {
               console.error('deleteTravelCourse error', err);
               openToast('삭제 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.', { icon: 'icon-warning-circle' });
