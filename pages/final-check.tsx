@@ -37,6 +37,7 @@ import { EnrollTour } from './enroll/tour';
 import {useRecentModeStore, useRegionModeStore} from "../zustand/modeStore";
 import { koreaCityList } from "../utill/city-list";
 import {patchRecentSelectList} from "../zustand/api";
+import {regionList} from "./enroll/essential-search";
 
 export const Route = createRoute('/final-check', {
   validateParams: (params) => params,
@@ -150,7 +151,8 @@ function FinalCheck() {
           version: 3,
           password: '(주)나그네들_g5hb87r8765rt68i7ur78',
         };
-        console.log('join mode apiBody:', apiBody);
+
+        dispatch(travelSliceActions.selectRegion(regionList));
       } else {
         // enroll 등 나머지 모드는 기존 방식
         let regionList = region.map((item) => cityViewList[country][cityIndex].title + ' ' + item);
@@ -219,13 +221,12 @@ function FinalCheck() {
           };
         }
 
-        console.log(apiBody);
+        dispatch(travelSliceActions.selectRegion(regionList));
       }
 
-      const result = await dispatch(getTravelAi(apiBody)).unwrap();
+      console.log(apiBody);
 
-      // 상태 region은 원본만 저장!
-      dispatch(travelSliceActions.selectRegion(region));
+      const result = await dispatch(getTravelAi(apiBody)).unwrap();
 
       if (result) {
         dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendency }));
