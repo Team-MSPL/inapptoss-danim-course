@@ -56,7 +56,13 @@ export default function RegionSearchLoading() {
         await patchRecentSelectList(storeState.selectList);
         const result = await postRegionSearch(storeState);
         if (cancelled) return;
-        navigation.reset({ index: 0, routes: [{ name: `/join/result`, params: { result } }] });
+        navigation.reset({
+          index: 1,
+          routes: [
+            { name: `/${import.meta.env.APP_START_MODE}` },
+            { name: `/join/result`, params: { result } },
+          ],
+        });
       } catch (e: any) {
         // if 405 -> modify selectPopular and distanceSensitivity, retry automatically
         if (e?.response?.status === 405) {
@@ -93,7 +99,13 @@ export default function RegionSearchLoading() {
             const retryResult = await postRegionSearch(retryPayload);
             if (cancelled) return;
             // success -> navigate to result
-            navigation.reset({ index: 0, routes: [{ name: `/join/result`, params: { result: retryResult } }] });
+            navigation.reset({
+              index: 1,
+              routes: [
+                { name: `/${import.meta.env.APP_START_MODE}` },
+                { name: `/join/result`, params: { result: retryResult } },
+              ],
+            });
             return;
           } catch (retryErr: any) {
             console.warn('[RegionSearchLoading] retry postRegionSearch failed', retryErr);

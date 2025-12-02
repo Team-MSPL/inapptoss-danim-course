@@ -40,7 +40,9 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: Sav
       </Text>
       <BottomSheet.CTA.Double
         leftButton={
-          <Button type="dark" style="weak" display="block" onPress={closeView}>
+          <Button type="dark" style="weak" display="block" onPress={() => {
+            navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }] });
+          }}>
             나가기
           </Button>
         }
@@ -53,10 +55,7 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: Sav
               bottomSheet.close();
               onSave();
               // IMPORTANT: include fromSave param so recommend-product can detect this flow
-              navigation.reset({
-                index: 0,
-                routes: [{ name: getResetRoute(), params: { fromSave: true } }],
-              });
+              navigation.navigate(getResetRoute(), { fromSave: true });
             }}
           >
             저장 후 나가기

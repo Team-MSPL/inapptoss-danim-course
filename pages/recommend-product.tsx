@@ -426,7 +426,13 @@ export default function RecommendProduct() {
         {cameFromSave ? (
           <FixedBottomCTA
             onPress={() => {
-              navigation.reset({ index: 0, routes: [{ name: '/my-travle-list' }] });
+              navigation.reset({
+                index: 1, // active route will be routes[1]
+                routes: [
+                  { name: `/${import.meta.env.APP_START_MODE}` },
+                  { name: '/my-travle-list' },
+                ],
+              });
             }}
           >
             {'건너뛰기'}
