@@ -152,86 +152,6 @@ export default function MainHome() {
         ></Top>
         <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 20, marginTop: 30 }}>
           <TouchableOpacity
-            onPress={() => handleNavigate('/join/who')}
-            style={{
-              width: Dimensions.get('window').width - 48,
-              alignSelf: 'center',
-              height: 165,
-              borderRadius: 20,
-              overflow: 'hidden',
-              marginBottom: 0,
-              backgroundColor: '#eee',
-            }}
-            activeOpacity={0.8}
-          >
-            <Image
-              source={{
-                uri: 'https://firebasestorage.googleapis.com/v0/b/danim-image/o/appintoss_main%2Fappintoss-main2.png?alt=media&token=a2875a2d-2f7f-4218-bd13-1254198cea3c',
-              }}
-              style={{
-                width: '100%',
-                height: '100%',
-                resizeMode: 'cover',
-                position: 'absolute',
-              }}
-            />
-            <Badge
-              size="medium"
-              type="blue"
-              badgeStyle="fill"
-              style={{
-                position: 'absolute',
-                top: 18,
-                right: 18,
-                zIndex: 2,
-              }}
-            >
-              여행 지역 추천
-            </Badge>
-            <View
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1,
-              }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text
-                  typography="t4"
-                  fontWeight="bold"
-                  color="#fff"
-                  style={{
-                    textAlign: 'center',
-                    textShadowColor: 'rgba(0,0,0,0.18)',
-                    textShadowOffset: { width: 0, height: 2 },
-                    textShadowRadius: 6,
-                  }}
-                >
-                  여행은 가고 싶은데{'\n'}어디로 갈지 고민이라면?
-                </Text>
-                <Text
-                  typography="t1"
-                  fontWeight="bold"
-                  color="#fff"
-                  style={{
-                    marginLeft: 10,
-                    textShadowColor: 'rgba(0,0,0,0.12)',
-                    textShadowOffset: { width: 0, height: 2 },
-                    textShadowRadius: 6,
-                    fontSize: 22,
-                  }}
-                >
-                  →
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
             onPress={() => handleNavigate('/enroll/title')}
             style={{
               width: Dimensions.get('window').width - 48,
@@ -282,7 +202,7 @@ export default function MainHome() {
             >
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text
-                  typography="t4"
+                  typography="t3"
                   fontWeight="bold"
                   color="#fff"
                   style={{
@@ -293,6 +213,86 @@ export default function MainHome() {
                   }}
                 >
                   여행지는 골랐는데{'\n'}계획 세우기 귀찮다면?
+                </Text>
+                <Text
+                  typography="t1"
+                  fontWeight="bold"
+                  color="#fff"
+                  style={{
+                    marginLeft: 10,
+                    textShadowColor: 'rgba(0,0,0,0.12)',
+                    textShadowOffset: { width: 0, height: 2 },
+                    textShadowRadius: 6,
+                    fontSize: 22,
+                  }}
+                >
+                  →
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleNavigate('/join/who')}
+            style={{
+              width: Dimensions.get('window').width - 48,
+              alignSelf: 'center',
+              height: 165,
+              borderRadius: 20,
+              overflow: 'hidden',
+              marginBottom: 0,
+              backgroundColor: '#eee',
+            }}
+            activeOpacity={0.8}
+          >
+            <Image
+              source={{
+                uri: 'https://firebasestorage.googleapis.com/v0/b/danim-image/o/appintoss_main%2Fappintoss-main2.png?alt=media&token=a2875a2d-2f7f-4218-bd13-1254198cea3c',
+              }}
+              style={{
+                width: '100%',
+                height: '100%',
+                resizeMode: 'cover',
+                position: 'absolute',
+              }}
+            />
+            <Badge
+              size="medium"
+              type="blue"
+              badgeStyle="fill"
+              style={{
+                position: 'absolute',
+                top: 18,
+                right: 18,
+                zIndex: 2,
+              }}
+            >
+              여행 지역 추천
+            </Badge>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 1,
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text
+                  typography="t3"
+                  fontWeight="bold"
+                  color="#fff"
+                  style={{
+                    textAlign: 'center',
+                    textShadowColor: 'rgba(0,0,0,0.18)',
+                    textShadowOffset: { width: 0, height: 2 },
+                    textShadowRadius: 6,
+                  }}
+                >
+                  여행은 가고 싶은데{'\n'}어디로 갈지 고민이라면?
                 </Text>
                 <Text
                   typography="t1"
