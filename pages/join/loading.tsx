@@ -6,6 +6,7 @@ import LottieView from '@granite-js/native/lottie-react-native';
 import { StepText } from '../../components/step-text';
 import { FixedBottomCTAProvider } from '@toss-design-system/react-native';
 import { useRegionSearchStore } from '../../zustand/regionSearchStore';
+import { useCountryStore } from '../../zustand/countryStore';
 import { getRecentSelectList, patchRecentSelectList, postRegionSearch } from '../../zustand/api';
 
 const LOTTIE_URL = "https://static.toss.im/lotties/loading/load-ripple.json";
@@ -19,30 +20,23 @@ function safeNavToPopular(navigation: any) {
   try {
     navigation.navigate('/join/popular');
   } catch {
-    // fallback in case route names differ
     navigation.goBack();
   }
 }
 
 function applyRetryDefaultsToStore() {
-  // set store-level defaults for retry: selectPopular -> [0,100], distanceSensitivity -> 10
-  // useRegionSearchStore is a Zustand hook; its .setState is available to update state directly
   try {
-    // set only the keys we need; preserve others
     (useRegionSearchStore as any).setState({
       selectPopular: [0, 100],
       distanceSensitivity: 10,
     });
   } catch (e) {
-    // ignore if setState not available; we'll still proceed with local retry payload
     console.warn('[RegionSearchLoading] setState failed', e);
   }
 }
 
 export default function RegionSearchLoading() {
   const navigation = useNavigation();
-
-  // local UI flag to show alternate title when retrying after 405
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
@@ -50,7 +44,40 @@ export default function RegionSearchLoading() {
 
     async function fetchData() {
       try {
-        // get freshest store state at runtime
+        // ---- NEW: read selected country (Korean) and map to English for API ----
+        const selectedCountryKo = (useCountryStore as any).getState?.()?.selectedCountryKo;
+        // mapping based on provided list (includes common variants)
+        const countryMap: Record<string, string> = {
+          '대한민국': 'Korea',
+          '한국': 'Korea',
+          '일본': 'Japan',
+          '중국': 'China',
+          '베트남': 'Vietnam',
+          '태국': 'Thailand',
+          '필리핀': 'Philippines',
+          '싱가포르': 'Singapore',
+          // keep flexibility for other labels (e.g. '홍콩과 마카오' not in this map)
+        };
+
+        if (selectedCountryKo) {
+          const key = String(selectedCountryKo).trim();
+          const mappedEn = countryMap[key];
+          if (mappedEn) {
+            try {
+              // update regionSearchStore.country to English value before building payload
+              (useRegionSearchStore as any).setState({ country: mappedEn });
+              console.log('[RegionSearchLoading] region store country set to', mappedEn);
+            } catch (e) {
+              console.warn('[RegionSearchLoading] failed to set region store country', e);
+            }
+          } else {
+            console.log('[RegionSearchLoading] selected country not mapped to English:', selectedCountryKo);
+            // If not mapped, do not override store.country (leave existing)
+          }
+        }
+        // ---- END new country mapping ----
+
+        // get freshest store state at runtime (after possible country update)
         const storeState = (useRegionSearchStore as any).getState();
         // persist recent select list first (same as original flow)
         await patchRecentSelectList(storeState.selectList);
@@ -64,41 +91,34 @@ export default function RegionSearchLoading() {
           ],
         });
       } catch (e: any) {
-        // if 405 -> modify selectPopular and distanceSensitivity, retry automatically
         if (e?.response?.status === 405) {
-          // switch UI title
           setRetrying(true);
-
-          // update store values (best-effort). We'll also construct a local retry payload.
           applyRetryDefaultsToStore();
 
           try {
-            // obtain updated store state after applying defaults (if setState worked)
             const updatedState = (useRegionSearchStore as any).getState();
 
-            // If updatedState.selectList exists use it, otherwise fallback to previous stored value
-            const selectListToPatch = updatedState?.selectList ?? (e?.config && e?.config.data && (JSON.parse(e.config.data)?.selectList ?? null)) ?? null;
+            const selectListToPatch =
+              updatedState?.selectList ??
+              (e?.config && e?.config.data && (JSON.parse(e.config.data)?.selectList ?? null)) ??
+              null;
+
             if (selectListToPatch) {
               try {
                 await patchRecentSelectList(selectListToPatch);
               } catch (patchErr) {
                 console.warn('[RegionSearchLoading] patchRecentSelectList on retry failed', patchErr);
-                // continue to attempt postRegionSearch anyway
               }
             }
 
-            // Build payload for retry: prefer updatedState but fallback to partial info from original error if available
             const retryPayload = {
               ...(updatedState ?? {}),
-              // ensure selectPopular and distanceSensitivity are set regardless
               selectPopular: [0, 100],
               distanceSensitivity: 10,
             };
 
-            // Attempt retry
             const retryResult = await postRegionSearch(retryPayload);
             if (cancelled) return;
-            // success -> navigate to result
             navigation.reset({
               index: 1,
               routes: [
@@ -109,7 +129,6 @@ export default function RegionSearchLoading() {
             return;
           } catch (retryErr: any) {
             console.warn('[RegionSearchLoading] retry postRegionSearch failed', retryErr);
-            // show alert and navigate back to popular selection so user can adjust manually
             Alert.alert(
               '추천 지역 없음',
               '자동 재시도에서도 적절한 추천 지역을 찾지 못했습니다. 인기도 범위를 재조정한 뒤 다시 시도해주세요.',
@@ -125,7 +144,6 @@ export default function RegionSearchLoading() {
           }
         }
 
-        // non-405 errors: log and show generic message (fallback to previous UX if desired)
         console.error('[RegionSearchLoading] postRegionSearch error', e);
         Alert.alert(
           '오류가 발생했습니다',
@@ -134,7 +152,6 @@ export default function RegionSearchLoading() {
             {
               text: '확인',
               onPress: () => {
-                // back to previous screen
                 navigation.goBack();
               },
             },
@@ -149,7 +166,7 @@ export default function RegionSearchLoading() {
     return () => {
       cancelled = true;
     };
-    // intentionally run once on mount; navigation is stable
+    // run once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

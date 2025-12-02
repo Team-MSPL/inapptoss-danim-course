@@ -11,6 +11,7 @@ import { useRegionModeStore } from '../../zustand/modeStore';
 import axiosAuth from "../../redux/api";
 import HorizontalProductCard, { SmallProduct } from '../../components/product/HorizontalProductCard';
 import { useRecommendStore } from "../../zustand/recommendStore";
+import { useCountryStore } from '../../zustand/countryStore';
 
 export const Route = createRoute('/join/result-detail', {
   validateParams: (params) => params,
@@ -153,15 +154,8 @@ function JoinResultDetail() {
   const { region, cityIndex, cityDistance } = getRegionStateByName(place?.name ?? '');
   const {presetDatas, season, country} = useAppSelector(state => state.travelSlice);
 
-  const countryList = [
-    {ko: '한국', en: 'Korea'},
-    {ko: '일본', en: 'Japan'},
-    {ko: '중국', en: 'China'},
-    {ko: '베트남', en: 'Vietnam'},
-    {ko: '태국', en: 'Thailand'},
-    {ko: '필리핀', en: 'Philippines'},
-    {ko: '싱가포르', en: 'Singapore'},
-  ];
+  // get selected country in Korean from country store (if user selected earlier)
+  const selectedCountryKo = useCountryStore((s) => s.selectedCountryKo);
 
   // recommended products state & loading
   const [recommended, setRecommended] = useState<SmallProduct[]>([]);
@@ -179,30 +173,25 @@ function JoinResultDetail() {
     try {
       setRecLoading(true);
 
+      // Build API body according to requested rules:
+      // 1) country should be the Korean string from countryStore (fallback to '한국')
+      // 2) pathList must be [[]]
+      // 3) selectList stays as constructed (tendencyList + season)
+      // 4) cityList should be [place.name]
+      const apiCountry = selectedCountryKo ?? '한국';
+
       const data: any = {
-        pathList: [
-          (presetDatas?.[0]?.[0] ?? []).map((group: any) =>
-            (group ?? []).filter((fi: any) => !fi.name?.includes('추천')).map((v: any) => ({ name: v?.name }))
-          ),
-        ],
+        pathList: [[]],
         selectList: [...(tendencyList ?? []), (season ?? [])],
-        country:
-          region.some(r => r.includes('홍콩')) || region.some(r => r.includes('마카오'))
-            ? '홍콩과 마카오'
-            : region[0]?.includes('해외')
-              ? countryList.find((check) => check.en == region[0]?.split('/')[1])?.ko ?? '한국'
-              : '한국',
-        cityList: region,
+        country: apiCountry,
+        cityList: [place.name],
         topK: 10,
       };
 
       // --- SAVE THE REQUEST BODY TO ZUSTAND ---
-      // store the body so other components can read it later
       setRecommendBody(data);
 
-      console.log(data);
-
-      console.debug('[handleProduct] REQUEST body:', JSON.stringify(data, null, 2));
+      console.log('[handleProduct] REQUEST body:', JSON.stringify(data, null, 2));
       try { console.debug('[handleProduct] axiosAuth.defaults.headers:', axiosAuth.defaults?.headers); } catch (e) {}
 
       const directResp = await axiosAuth.post('sellingProduct/recommend', data, {
@@ -241,6 +230,7 @@ function JoinResultDetail() {
 
   const handleNext = () => {
     dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
+    // keep existing travelSlice country handling as-is; the UX/state mapping may expect numeric index
     dispatch(travelSliceActions.updateFiled({ field: 'country', value: 0 }));
     dispatch(travelSliceActions.updateFiled({ field: 'region', value: region }));
     dispatch(travelSliceActions.updateFiled({ field: 'popular', value: 10 }));
@@ -251,6 +241,8 @@ function JoinResultDetail() {
     useRegionModeStore.getState().setRegionMode('join');
     navigation.navigate('/join/enroll-route')
   };
+
+  const locationLabel = place?.name ?? (selectedCountryKo ?? '한국');
 
   return (
     <View style={{ flex: 1 }}>
@@ -288,7 +280,9 @@ function JoinResultDetail() {
 
           <View style={styles.popularSection}>
             <Text typography="t4" fontWeight="bold" color={colors.black}>여행 상품 추천</Text>
-            <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{ marginBottom: 20 }}>현재 서울에서 인기 있는 여행 상품이에요!</Text>
+            <Text typography="t6" fontWeight="normal" color={colors.grey600} style={{ marginBottom: 20 }}>
+              {`현재 ${locationLabel}에서 인기 있는 여행 상품이에요!`}
+            </Text>
 
             {recLoading ? (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingVertical: 8 }}>

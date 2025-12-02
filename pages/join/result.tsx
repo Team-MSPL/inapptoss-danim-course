@@ -107,6 +107,8 @@ function PlaceCard({ place }: { place: PlaceResult }) {
 function JoinResult() {
   const params = Route.useParams();
   const result: PlaceResult[] = params.result ?? [];
+
+  console.log(result);
   const navigation = useNavigation();
 
   // 탭 목록을 result에서 동적으로 만듦(중복없음, takenDay 오름차순)
