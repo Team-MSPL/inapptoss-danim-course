@@ -91,26 +91,30 @@ function Preset() {
             >
               홈으로 이동시 지역 추천이 끝나요.{`\n`}일정 선택 후에 종료해야 저장 할 수 있어요.
             </Text>
-            <Button
-              type="dark"
-              style="weak"
-              display="block"
-              onPress={() => {
-                navigation.popToTop();
-              }}
-            >
-              {'종료하기'}
-            </Button>
-            <Button
-              type="primary"
-              style="fill"
-              display="block"
-              onPress={() => {
-                bottomSheet.close();
-              }}
-            >
-              {'선택하러 가기'}
-            </Button>
+            <View style={{paddingHorizontal: 18, paddingVertical: 12, marginTop: 12}}>
+              <Button
+                type="dark"
+                style="weak"
+                display="block"
+                onPress={() => {
+                  navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }] });
+                }}
+              >
+                {'종료하기'}
+              </Button>
+            </View>
+            <View style={{paddingHorizontal: 18, paddingBottom: 20}}>
+              <Button
+                type="primary"
+                style="fill"
+                display="block"
+                onPress={() => {
+                  bottomSheet.close();
+                }}
+              >
+                {'선택하러 가기'}
+              </Button>
+            </View>
           </>
         ),
       }),
