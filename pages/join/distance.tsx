@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { getCurrentLocation, Accuracy } from '@apps-in-toss/framework';
 import {
@@ -15,8 +15,9 @@ import { createRoute, useNavigation } from '@granite-js/react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import type { GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 import { StepText } from '../../components/step-text';
-import { useRegionSearchStore} from "../../zustand/regionSearchStore";
-import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
+import { useRegionSearchStore } from '../../zustand/regionSearchStore';
+import { CustomProgressBarJoin } from '../../components/join/custom-progress-bar-join';
+import { useCountryStore } from '../../zustand/countryStore';
 
 export const Route = createRoute('/join/distance', {
   validateParams: (params) => params,
@@ -26,37 +27,75 @@ export const Route = createRoute('/join/distance', {
 const KOREA_CENTER = { latitude: 36.5, longitude: 127.8 };
 const INPUT_WIDTH = Math.min(340, Dimensions.get('window').width - 36);
 
-function getRadiusByRange(range: number) {
-  const map = [50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000, 450000, 500000];
-  // @ts-ignore
-  return map[range - 1] * 0.00057;
+/**
+ * Base radius table (meters) for slider steps 1..10.
+ */
+const BASE_RADIUS_METERS = [
+  50_000, 100_000, 150_000, 200_000, 250_000,
+  300_000, 350_000, 400_000, 450_000, 500_000,
+];
+
+/**
+ * Country centroid map (approximate "central" point of country) in Korean keys.
+ */
+const COUNTRY_CENTERS: Record<string, { latitude: number; longitude: number }> = {
+  한국: { latitude: 36.5, longitude: 127.8 },
+  일본: { latitude: 36.204824, longitude: 138.252924 },
+  중국: { latitude: 35.861660, longitude: 104.195397 },
+  베트남: { latitude: 14.058324, longitude: 108.277199 },
+  태국: { latitude: 15.870032, longitude: 100.992541 },
+  필리핀: { latitude: 12.879721, longitude: 121.774017 },
+  싱가포르: { latitude: 1.352083, longitude: 103.819839 },
+  '홍콩과 마카오': { latitude: 22.3193039, longitude: 114.1693611 },
+};
+
+/**
+ * Country scale factors to reflect relative country "size" for map radius / zoom.
+ * Increased 일본 scale so the maximum slider includes farther 북부(예: 삿포로)까지 보이도록 조정했습니다.
+ */
+const COUNTRY_SCALE: Record<string, number> = {
+  한국: 1.0,
+  일본: 3.0, // 조정: 기존 1.4 -> 3.0 (더 넓게 보여주기 위해)
+  중국: 6.0,
+  베트남: 2.2,
+  태국: 1.8,
+  필리핀: 2.5,
+  싱가포르: 0.6,
+  '홍콩과 마카오': 0.5,
+};
+
+function getRadiusByRangeAndScale(range: number, countryScale: number) {
+  const idx = Math.max(0, Math.min(BASE_RADIUS_METERS.length - 1, range - 1));
+  const meters = BASE_RADIUS_METERS[idx] * countryScale;
+  const mapUnit = meters * 0.00057;
+  return mapUnit;
 }
-function getZoomByRange(range: number) {
-  return 5 * 0.9;
+
+function getZoomByRangeAndScale(range: number, countryScale: number) {
+  const idx = Math.max(0, Math.min(BASE_RADIUS_METERS.length - 1, range - 1));
+  const meters = BASE_RADIUS_METERS[idx] * countryScale;
+  const km = Math.max(1, meters / 1000);
+  const zoom = Math.max(2, 13 - Math.log2(km));
+  return zoom;
 }
 
 export default function JoinDistance() {
   const navigation = useNavigation();
-  // Zustand 사용
   const distanceSensitivity = useRegionSearchStore((state) => state.distanceSensitivity);
   const setDistanceSensitivity = useRegionSearchStore((state) => state.setDistanceSensitivity);
   const recentPosition = useRegionSearchStore((state) => state.recentPosition);
   const setRecentPosition = useRegionSearchStore((state) => state.setRecentPosition);
 
+  const selectedCountryKo = useCountryStore((s) => s.selectedCountryKo);
+
   const autocompleteRef = useRef<GooglePlacesAutocompleteRef>(null);
 
-  // 슬라이더 초기값: distanceSensitivity 있으면, 없으면 5
-  const [range, setRange] = useState(
-    distanceSensitivity > 0 ? distanceSensitivity : 5,
-  );
-  // 내 위치
+  const [range, setRange] = useState(distanceSensitivity > 0 ? distanceSensitivity : 5);
   const [location, setLocation] = useState<any>(null);
-  // 검색 선택 지역
   const [selectedLocation, setSelectedLocation] = useState<null | { lat: number; lng: number; name?: string }>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 위치 권한 요청 및 위치 요청
   const requestLocationAndFetch = async () => {
     setLoading(true);
     setError(null);
@@ -72,33 +111,38 @@ export default function JoinDistance() {
     setLoading(false);
   };
 
-  // 최초 마운트 시 위치 요청
   useEffect(() => {
     requestLocationAndFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 지도 중심 좌표 계산
-  let lat: number, lng: number;
-  if (range <= 10 && selectedLocation) {
-    lat = selectedLocation.lat;
-    lng = selectedLocation.lng;
-  } else if (range <= 10 && location?.coords) {
-    lat = location.coords.latitude;
-    lng = location.coords.longitude;
-  } else {
-    lat = KOREA_CENTER.latitude;
-    lng = KOREA_CENTER.longitude;
-  }
+  const countryScale = (() => {
+    if (!selectedCountryKo) return COUNTRY_SCALE['한국'] ?? 1.0;
+    return COUNTRY_SCALE[selectedCountryKo] ?? COUNTRY_SCALE['한국'] ?? 1.0;
+  })();
 
-  // 슬라이더 변경 시, zustand에 distanceSensitivity, recentPosition 업데이트
+  const center = useMemo(() => {
+    if (selectedLocation) {
+      return { latitude: selectedLocation.lat, longitude: selectedLocation.lng };
+    }
+
+    if (selectedCountryKo && COUNTRY_CENTERS[selectedCountryKo]) {
+      return COUNTRY_CENTERS[selectedCountryKo];
+    }
+
+    if (location?.coords) {
+      return { latitude: location.coords.latitude, longitude: location.coords.longitude };
+    }
+
+    return KOREA_CENTER;
+  }, [selectedLocation, selectedCountryKo, location]);
+
   const handleRangeChange = (value: number) => {
     setRange(value);
     setDistanceSensitivity(value);
-    setRecentPosition({ lat, lng });
+    setRecentPosition({ lat: center.latitude, lng: center.longitude });
   };
 
-  // 구글 플레이스에서 지역 선택 시, zustand에 recentPosition 반영
   const handlePlaceSelect = async (data: any, details: any) => {
     if (details?.geometry?.location) {
       const { lat, lng } = details.geometry.location;
@@ -107,26 +151,26 @@ export default function JoinDistance() {
     }
   };
 
-  // 컴포넌트 마운트/슬라이더 변경시 zustand에도 반영
   useEffect(() => {
     setDistanceSensitivity(range);
-    setRecentPosition({ lat, lng });
+    setRecentPosition({ lat: center.latitude, lng: center.longitude });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [range, lat, lng]);
+  }, [range, center.latitude, center.longitude]);
+
+  const mapRadius = useMemo(() => getRadiusByRangeAndScale(range, countryScale), [range, countryScale]);
+  const mapZoom = useMemo(() => getZoomByRangeAndScale(range, countryScale), [range, countryScale]);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <NavigationBar />
       <CustomProgressBarJoin currentIndex={6} />
       <FixedBottomCTAProvider>
-        {/* Step Header */}
         <StepText
           title={'현재 위치에서 추천받을 여행 반경\n을 선택해주세요'}
           subTitle1={'3. 원하는 반경의 지역을 추천해드려요'}
           subTitle2={'그림은 이해를 돕기 위한 예시이므로 실제 결과와는 \n차이가 있을 수 있어요.'}
         />
         <View style={{ marginHorizontal: 24, marginBottom: 0 }}>
-          {/* 검색/다른 위치 입력창 */}
           <View style={styles.searchBox}>
             <GooglePlacesAutocomplete
               placeholder="지역을 검색해보세요"
@@ -178,19 +222,17 @@ export default function JoinDistance() {
           </View>
         </View>
 
-        {/* 지도 */}
         <View style={{ alignItems: 'center', marginTop: 12 }}>
           <CustomMapView
-            lat={lat}
-            lng={lng}
-            zoom={getZoomByRange(range)}
-            range={getRadiusByRange(range)}
+            lat={center.latitude}
+            lng={center.longitude}
+            zoom={mapZoom}
+            range={mapRadius}
             style={styles.mapView}
             contentRatio={1}
           />
         </View>
 
-        {/* 로딩/에러/위치 권한 안내 메시지 */}
         <View style={{ alignItems: 'center', marginTop: 10, minHeight: 28 }}>
           {loading && <Text>위치를 불러오는 중입니다...</Text>}
           {!loading && error && (
@@ -198,16 +240,17 @@ export default function JoinDistance() {
           )}
           {!loading && !location && !selectedLocation && (
             <Text style={{ color: colors.grey400 }}>
-              위치 권한이 없으면 대한민국 중심을 기준으로 보여집니다.
+              위치 권한이 없으면 {selectedCountryKo ?? '대한민국'}의 중심을 기준으로 보여집니다.
             </Text>
           )}
         </View>
 
-        {/* 슬라이더 */}
         <View style={{ marginHorizontal: 32 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 }}>
             <Text style={{ fontSize: 15, color: colors.grey700 }}>내 근처/선택지역</Text>
-            <Text style={{ fontSize: 15, color: colors.grey700 }}>한국 전체</Text>
+            <Text style={{ fontSize: 15, color: colors.grey700 }}>
+              {selectedCountryKo ? selectedCountryKo : '한국 전체'}
+            </Text>
           </View>
           <Slider
             value={range}
@@ -218,7 +261,7 @@ export default function JoinDistance() {
             color={colors.green300}
           />
         </View>
-        {/* 하단 버튼 */}
+
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: 'white' }}
           leftButton={
