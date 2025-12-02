@@ -12,10 +12,11 @@ import {
   Top,
 } from '@toss-design-system/react-native';
 import axiosAuth from "../redux/api";
-import { getRecentSelectList} from "../zustand/api";
+import { getRecentSelectList } from "../zustand/api";
 import ProductCardLarge, { Product } from "../components/main/product-card-large";
 import useRecommendStore from "../zustand/recommendStore";
-import {useAppSelector} from "../src/store";
+import { useAppSelector } from "../src/store";
+import { useRegionCheckStore } from "../zustand/timetableStore";
 
 export const Route = createRoute('/recommend-product', {
   validateParams: (params) => params,
@@ -102,18 +103,14 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
   } as Product;
 }
 
-/**
- * NOTE: New recommend API expects a 'mode' field and supports 'list' mode for paginated list requests.
- * This component reads optional `cityList` or `region` param from route params and, if present, uses it as cityList in the request body.
- * Limit is set to 5 for this screen.
- */
-
 export default function RecommendProduct() {
   const navigation = useNavigation();
   // read params passed from Timetable (if any)
   const params = Route.useParams?.() ?? ({} as any);
   // prefer explicit cityList param, fallback to region param
   const overrideCityList = params?.cityList ?? params?.region ?? null;
+
+  const cameFromSave = Boolean(params?.fromSave);
 
   const [productList, setProductList] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -132,6 +129,15 @@ export default function RecommendProduct() {
     (state) => state.travelSlice,
   );
 
+  // regionCheck getter (reads latest from zustand)
+  const getRegionCheck = useCallback(() => {
+    try {
+      return (useRegionCheckStore as any).getState()?.regionCheck ?? [];
+    } catch {
+      return useRegionCheckStore((s) => s.regionCheck);
+    }
+  }, []);
+
   const prepareLocalRecommendBody = useCallback((overrideCountryName?: string) => {
     const store = recommendStoreGet();
     const storedBody = store?.recommendBody ?? {
@@ -143,7 +149,7 @@ export default function RecommendProduct() {
     };
     const body = { ...storedBody };
     return body;
-  }, [recommendStoreGet]);
+  }, [recommendStoreGet, tendency]);
 
   const fetchProducts = useCallback(async (overrideCountryName?: string) => {
     setLoading(true);
@@ -179,6 +185,18 @@ export default function RecommendProduct() {
         // keep existing selectList (tendency)
       }
 
+      // If cityList is empty at this point, try to use regionCheck from zustand
+      if ((!Array.isArray(localBody.cityList) || localBody.cityList.length === 0)) {
+        const rc = getRegionCheck();
+        if (Array.isArray(rc) && rc.length > 0) {
+          localBody.cityList = rc;
+          console.log('[RecommendProduct] Replaced empty cityList with regionCheck from store ->', rc);
+        } else {
+          localBody.cityList = [];
+          console.log('[RecommendProduct] cityList empty and regionCheck empty — using []');
+        }
+      }
+
       // Build list-mode body (new API schema) with limit = 5
       const postBody: any = {
         pathList: localBody.pathList ?? [[]],
@@ -191,22 +209,12 @@ export default function RecommendProduct() {
         keyword: "", // could expose as state if needed
       };
 
-      console.log(postBody);
-      // --- Console output of the body (user requested) ---
+      // Log final body before sending
       try {
-        console.log('[RecommendProduct] POST body (object):', postBody);
-        // pretty JSON
-        console.log('[RecommendProduct] POST body (json):', JSON.stringify(postBody, null, 2));
-        // if cityList is array of strings, show table for quick inspection
-        if (Array.isArray(postBody.cityList) && postBody.cityList.every((v: any) => typeof v === 'string')) {
-          console.table(postBody.cityList);
-        } else if (Array.isArray(postBody.cityList)) {
-          // limited table for array of objects (show up to 10 keys)
-          console.log('[RecommendProduct] cityList preview:', postBody.cityList.slice(0, 20));
-        }
+        console.log('[RecommendProduct] final POST body (object):', postBody);
+        console.log('[RecommendProduct] final POST body (json):', JSON.stringify(postBody, null, 2));
       } catch (logErr) {
-        // don't break main flow if logging fails
-        console.warn('[RecommendProduct] failed to console.log postBody', logErr);
+        console.warn('[RecommendProduct] failed to console.log final postBody', logErr);
       }
 
       try { setRecommendBody(localBody); } catch (e) { console.warn('[RecommendProduct] setRecommendBody failed', e); }
@@ -258,7 +266,7 @@ export default function RecommendProduct() {
     } finally {
       setLoading(false);
     }
-  }, [prepareLocalRecommendBody, setRecommendBody, country, region, page, limit, overrideCityList]);
+  }, [prepareLocalRecommendBody, setRecommendBody, country, region, page, limit, overrideCityList, getRegionCheck, params]);
 
   useEffect(() => {
     fetchProducts().catch(() => {});
@@ -340,13 +348,25 @@ export default function RecommendProduct() {
           />
         </View>
 
-        <FixedBottomCTA
-          onPress={() => {
-            navigation.reset({ index: 0, routes: [{ name: '/my-travle-list' }] });
-          }}
-        >
-          {'건너뛰기'}
-        </FixedBottomCTA>
+        {cameFromSave ? (
+          <FixedBottomCTA
+            onPress={() => {
+              // when reached from SaveBottomSheet, keep the "skip" behavior and go to my-travle-list
+              navigation.reset({ index: 0, routes: [{ name: '/my-travle-list' }] });
+            }}
+          >
+            {'건너뛰기'}
+          </FixedBottomCTA>
+        ) : (
+          <FixedBottomCTA
+            onPress={() => {
+              // otherwise, treat CTA as a back action
+              navigation.goBack();
+            }}
+          >
+            {'뒤로 가기'}
+          </FixedBottomCTA>
+        )}
       </FixedBottomCTAProvider>
     </View>
   );

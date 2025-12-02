@@ -32,6 +32,7 @@ import {
 import { FlatList } from '@granite-js/native/react-native-gesture-handler';
 import moment from 'moment';
 import { cityViewList } from '../../utill/city-list';
+import { useRegionCheckStore } from "../../zustand/timetableStore";
 
 // 월 헤더 라벨
 function getMonthLabel(dateStr: string) {
@@ -151,6 +152,13 @@ export default function MainTrip() {
   const goMyTravelDetail = async (item: any) => {
     try {
       const data = await dispatch(getOneTravelCourse({ travelId: item._id })).unwrap();
+      console.log(data);
+
+      const setRegionCheck = useRegionCheckStore.getState?.()?.setRegionCheck ?? useRegionCheckStore((s) => s.setRegionCheck);
+      // Ensure we only pass an array; fallback to empty array for safety
+      const regionArray = Array.isArray(data?.region) ? data.region : [];
+      setRegionCheck(regionArray);
+
       dispatch(
         getRegionInfo({
           region: data?.region[0].includes('해외')

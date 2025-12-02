@@ -1,5 +1,6 @@
-import { closeView } from '@apps-in-toss/framework';
+import React from 'react';
 import { BottomSheet, Button, colors, Text } from '@toss-design-system/react-native';
+import { closeView } from '@apps-in-toss/framework';
 
 type SaveBottomSheetProps = {
   onSave: () => void;
@@ -51,7 +52,11 @@ export function SaveBottomSheet({ onSave, navigation, bottomSheet, isBack }: Sav
             onPress={() => {
               bottomSheet.close();
               onSave();
-              navigation.reset({ index: 0, routes: [{ name: getResetRoute() }] });
+              // IMPORTANT: include fromSave param so recommend-product can detect this flow
+              navigation.reset({
+                index: 0,
+                routes: [{ name: getResetRoute(), params: { fromSave: true } }],
+              });
             }}
           >
             저장 후 나가기
