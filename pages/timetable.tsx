@@ -10,7 +10,7 @@ import {
 } from '@toss-design-system/react-native';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, TouchableOpacity, View, Alert, StyleSheet } from 'react-native';
 import { createRoute, useBackEvent, useNavigation } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
 import CustomMapViewMarker from '../components/map-view-marker';
@@ -23,6 +23,7 @@ import { DayList } from '../components/timetable/DayList';
 import { RemoveBottomSheet } from '../components/timetable/remove-bottom-sheet';
 import { HourBottomSheetContent } from '../components/timetable/hour-bottom-sheet';
 import ArrowToggleButton from '../components/timetable/arrow-toggle-button';
+import axiosAuth from '../redux/api';
 
 export const Route = createRoute('/timetable', {
   validateParams: (params) => params,
@@ -265,6 +266,46 @@ function Timetable() {
 
   const [setPressed] = useState(false);
 
+  // deleting state for the "shopping bag" icon action
+  const [deleting, setDeleting] = useState(false);
+
+  // delete current travel and reset to main (index 0)
+  const handleDeleteTravelAndExit = () => {
+    if (!travelId) {
+      openToast('삭제할 여행이 없습니다.', { icon: 'icon-warning-circle' });
+      return;
+    }
+
+    Alert.alert(
+      '삭제',
+      '현재 일정을 삭제하시겠습니까? 삭제 후 메인 화면으로 이동합니다.',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setDeleting(true);
+              await axiosAuth.delete('/travelCourse/deleteTravelCourse', {
+                data: { travelId },
+              });
+              openToast('여행이 삭제되었습니다.', { icon: 'icon-check-circle' });
+              // reset navigation stack to main (index 0) — adjust route name if your main route is different
+              navigation.reset({ index: 0, routes: [{ name: '/' }] });
+            } catch (err) {
+              console.error('deleteTravelCourse error', err);
+              openToast('삭제 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.', { icon: 'icon-warning-circle' });
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <FixedBottomCTAProvider>
@@ -280,11 +321,19 @@ function Timetable() {
               />
             }
             right={
-              <TouchableOpacity onPress={() => {
-                // pass region as navigation param to recommend-product
-                navigation.navigate('/recommend-product', { region });
-              }}>
-                <ListRow.Icon name="icon-shopping-bag-mono" />
+              <TouchableOpacity
+                onPress={() => {
+                  // if deletion in progress show toast / ignore
+                  if (deleting) return;
+                  handleDeleteTravelAndExit();
+                }}
+                style={styles.iconButton}
+              >
+                {deleting ? (
+                  <Animated.View style={{ width: 24, height: 24 }} />
+                ) : (
+                  <ListRow.Icon name="icon-bin-mono" />
+                )}
               </TouchableOpacity>
             }
           />
@@ -299,8 +348,8 @@ function Timetable() {
         </Animated.View>
         <View>
           <View
-            onPress={handleToggleMapHeight}
-            activeOpacity={1}
+            // this outer view is clickable to toggle map height via the arrow button,
+            // keep ArrowToggleButton as before
             style={{
               width: Dimensions.get('window').width,
               height: 40,
@@ -311,6 +360,21 @@ function Timetable() {
           >
             <ArrowToggleButton expanded={isMapOpen} onPress={handleToggleMapHeight} />
           </View>
+
+          {/* NEW: recommend-product quick button inserted between the toggle and Tab as requested */}
+          <View style={styles.recommendWrapper}>
+            <Button
+              display="block"
+              style="weak"
+              onPress={() => {
+                // navigate to recommend-product with current region
+                navigation.navigate('/recommend-product', { timetable });
+              }}
+            >
+              이 코스에 필요한 옵션 살펴보기
+            </Button>
+          </View>
+
           <Tab fluid size="large" onChange={moveScroll} value={tabValue} style={{ marginTop: 5 }}>
             {timetable.map((_, idx) => (
               <Tab.Item key={idx} value={String(idx)}>
@@ -340,7 +404,6 @@ function Timetable() {
               renderItem={({ item, index }) => {
                 if (__DEV__) {
                   // console.debug(`[Timetable] renderItem dayIndex=${index} itemsCount=${Array.isArray(item) ? item.length : 0}`);
-                  // console.table(item) // 원하면 배열 내용을 테이블로 확인
                 }
 
                 return (
@@ -402,3 +465,14 @@ function Timetable() {
 }
 
 export default Timetable;
+
+const styles = StyleSheet.create({
+  recommendWrapper: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'white',
+  },
+  iconButton: {
+    padding: 8,
+  },
+});

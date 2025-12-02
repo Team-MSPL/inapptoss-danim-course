@@ -163,6 +163,7 @@ export default function RecommendProduct() {
       // set country/city from travelSlice
       localBody.country = getCountryByIndex(country) ?? localBody.country ?? '';
       localBody.cityList = region ?? localBody.cityList ?? [];
+      localBody.pathList = params?.timetable ?? [[]];
 
       // If route param provided, override cityList with it (Timetable passed region/cityList)
       if (overrideCityList) {
@@ -190,6 +191,7 @@ export default function RecommendProduct() {
         keyword: "", // could expose as state if needed
       };
 
+      console.log(postBody);
       // --- Console output of the body (user requested) ---
       try {
         console.log('[RecommendProduct] POST body (object):', postBody);
