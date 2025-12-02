@@ -14,6 +14,7 @@ import { Route as _EnrollPopularRoute } from '../pages/enroll/popular';
 import { Route as _EnrollRegionRoute } from '../pages/enroll/region';
 import { Route as _EnrollTitleRoute } from '../pages/enroll/title';
 import { Route as _EnrollTourRoute } from '../pages/enroll/tour';
+import { Route as _EnrollTransitBusyRoute } from '../pages/enroll/transit-busy';
 import { Route as _EnrollTransitRoute } from '../pages/enroll/transit';
 import { Route as _EnrollWhoRoute } from '../pages/enroll/who';
 import { Route as _FinalCheckRoute } from '../pages/final-check';
@@ -72,6 +73,7 @@ declare module '@granite-js/react-native' {
     '/enroll/region': ReturnType<typeof _EnrollRegionRoute.useParams>;
     '/enroll/title': ReturnType<typeof _EnrollTitleRoute.useParams>;
     '/enroll/tour': ReturnType<typeof _EnrollTourRoute.useParams>;
+    '/enroll/transit-busy': ReturnType<typeof _EnrollTransitBusyRoute.useParams>;
     '/enroll/transit': ReturnType<typeof _EnrollTransitRoute.useParams>;
     '/enroll/who': ReturnType<typeof _EnrollWhoRoute.useParams>;
     '/final-check': ReturnType<typeof _FinalCheckRoute.useParams>;

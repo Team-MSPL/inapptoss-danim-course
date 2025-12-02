@@ -43,27 +43,20 @@ export const routeStack = {
   },
   '/who': {
     prev: '/essential',
-    next: '/transit',
+    next: '/transit-busy',
     title: '누구와 함께 가나요?',
     subTitle1: '2. 여행 스타일을 알아볼게요',
     subTitle2: '* 중복 선택 가능',
   },
-  '/transit': {
+  '/transit-busy': {
     prev: '/who',
-    next: '/busy',
-    title: '이동 수단은 무엇인가요?',
-    subTitle1: '2. 여행 스타일을 알아볼게요',
-    subTitle2: '* 기본값 : 자동차(렌트카)',
-  },
-  '/busy': {
-    prev: '/transit',
     next: '/concept',
-    title: '원하는 여행 유형은 무엇인가요?',
+    title: '이동 수단과 여행 유형은 무엇인가요?',
     subTitle1: '2. 여행 스타일을 알아볼게요',
-    subTitle2: '* 기본값: 여유있는 일정',
+    subTitle2: '* 기본값 : 자동차(렌트카), 여유있는 일정',
   },
   '/concept': {
-    prev: '/busy',
+    prev: '/transit-busy',
     next: '/play',
     title: '여행 테마는 무엇인가요?',
     subTitle1: '2. 여행 스타일을 알아볼게요',
