@@ -232,7 +232,7 @@ export default function MainHome() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleNavigate('/join/who')}
+            onPress={() => handleNavigate('/join/country')}
             style={{
               width: Dimensions.get('window').width - 48,
               alignSelf: 'center',
