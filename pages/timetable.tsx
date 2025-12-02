@@ -30,10 +30,9 @@ export const Route = createRoute('/timetable', {
 });
 
 function Timetable() {
-  const { nDay, day, travelName, timetable, userId, region, transit, tendency, travelId, country } =
+  const { nDay, day, travelName, timetable, userId, region, transit, tendency, travelId } =
     useAppSelector((state) => state.travelSlice);
 
-  console.log(region);
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();

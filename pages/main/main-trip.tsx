@@ -1,5 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, Pressable, View, StyleSheet, Image as RNImage } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Dimensions,
+  View,
+  StyleSheet,
+  Image as RNImage,
+  ActivityIndicator,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import { useNavigation } from '@granite-js/react-native';
 import { Image } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
@@ -9,6 +17,7 @@ import {
   getRegionInfo,
   travelSliceActions,
 } from '../../redux/travle-slice';
+import axiosAuth from '../../redux/api';
 import {
   AnimateSkeleton,
   Badge,
@@ -44,11 +53,10 @@ function sortTravelListByStartDayDesc(list: any[]) {
 }
 
 // (수정) 내림차순 정렬된 리스트를 받아, 최신 월부터 헤더를 붙이는 함수
-function makeMonthHeaderizedListDescending(travelList) {
+function makeMonthHeaderizedListDescending(travelList: any[]) {
   if (!travelList || travelList.length === 0) return [];
-  // Ensure list is sorted descending by start day
   const sorted = sortTravelListByStartDayDesc(travelList);
-  const result = [];
+  const result: any[] = [];
   let lastMonthKey = '';
   for (const item of sorted) {
     const travelEndDay =
@@ -73,33 +81,48 @@ export default function MainTrip() {
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const { userId, userJwtToken } = useAppSelector((state) => state.travelSlice);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { open } = useToast();
 
+  // track currently deleting id to show spinner
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // map to track whether a long-press was activated for a given travelId
+  const longPressActivatedRef = useRef<Map<string, boolean>>(new Map());
+  // map to hold timers for press-in per travelId (for manual long-press)
+  const pressTimerMapRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
   // 여행 리스트 불러오기
-  const getTravelList = async () => {
+  const getTravelList = useCallback(async () => {
     try {
       setLoading(true);
       const data = await dispatch(getMyTravelList({ userId })).unwrap();
-      // (수정) 정렬: 최신 시작일 순으로 정렬
-      setList(sortTravelListByStartDayDesc(data));
+      setList(sortTravelListByStartDayDesc(data ?? []));
     } catch (err) {
       setList([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [dispatch, userId]);
 
   useEffect(() => {
     getTravelList();
+  }, [getTravelList]);
+
+  useEffect(() => {
+    // cleanup timers on unmount
+    return () => {
+      pressTimerMapRef.current.forEach((t) => clearTimeout(t));
+      pressTimerMapRef.current.clear();
+    };
   }, []);
 
   // 도시명 변환 함수
   const findCityFromPath = (path: string) => {
     const pathParts = path?.split('/');
     const targetCity = pathParts[2];
-    const countryIndex = {
+    const countryIndex: any = {
       Japan: 1,
       China: 2,
       Vietnam: 3,
@@ -107,7 +130,7 @@ export default function MainTrip() {
       Philippines: 5,
       Singapore: 6,
     };
-    for (const region of cityViewList[countryIndex[`${pathParts[1]}`]]) {
+    for (const region of cityViewList[countryIndex[`${pathParts[1]}`]] || []) {
       for (const city of region.sub) {
         if (city.subTitle === targetCity) {
           if (region.title !== '인기') {
@@ -121,6 +144,7 @@ export default function MainTrip() {
         }
       }
     }
+    return path;
   };
 
   // 여행 상세로 이동
@@ -172,61 +196,41 @@ export default function MainTrip() {
     return { result, endFlag };
   }, []);
 
-  // (수정) 월 헤더 포함 리스트: 최신월부터 내려오도록 만듦
+  // Long-press delete handler: show confirmation and call delete API
+  const confirmAndDelete = async (travelId: string) => {
+    Alert.alert(
+      '삭제',
+      '삭제하시겠습니까?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setDeletingId(travelId);
+              await axiosAuth.delete('/travelCourse/deleteTravelCourse', {
+                data: { travelId },
+              });
+              open('여행 일정이 삭제되었습니다.');
+              await getTravelList();
+            } catch (err) {
+              console.error('deleteTravelCourse error', err);
+              open('삭제 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.');
+            } finally {
+              setDeletingId(null);
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
+  // monthHeaderizedList (memoized)
   const monthHeaderizedList = useMemo(() => makeMonthHeaderizedListDescending(list), [list]);
 
-  // 여행 리스트 로딩 or 없을 때
-  if (loading) {
-    return (
-      <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
-        {[...Array(8)].map((_, i) => (
-          <Skeleton key={i} height={60} style={i > 0 ? { marginTop: 12 } : {}} />
-        ))}
-      </AnimateSkeleton>
-    );
-  }
-
-  // 커스텀 Empty State (기존 컴포넌트와 유사하되 간단 구현)
-  const EmptyState = () => (
-    <View style={styles.emptyContainer}>
-      <View style={styles.emptyUpper}>
-        <RNImage
-          style={styles.emptyImage}
-          source={{
-            uri: 'https://static.toss.im/2d-emojis/png/4x/u1F3DC.png',
-          }}
-        />
-      </View>
-      <Text typography="t3" style={styles.emptyTitle}>
-        지금 바로 여행 일정을 추천받아{'\n'}신나는 여행을 떠나보세요
-      </Text>
-      <Text typography="t7" color={colors.grey700} style={styles.emptySubtitle}>
-        나그네님을 위한 일정이 곧 채워질 거에요
-      </Text>
-      <Button
-        viewStyle={{ alignSelf: 'center', marginTop: 24 }}
-        size="medium"
-        style="weak"
-        onPress={() => {
-          dispatch(
-            travelSliceActions.reset({
-              userId,
-              userJwtToken,
-            }),
-          );
-          navigation.replace('/enroll/title');
-        }}
-      >
-        여행 일정 추천 받으러 가기
-      </Button>
-    </View>
-  );
-
-  if (list.length === 0) {
-    return <EmptyState />;
-  }
-
-  // 리스트 아이템 레이아웃 (Top.Root 기반 월헤더와 기존 컴포넌트 타이틀 유지)
+  // renderItem
   const renderItem = ({ item }: { item: any }) => {
     if (item.type === 'header') {
       return (
@@ -268,32 +272,65 @@ export default function MainTrip() {
         }).result
         : '';
 
+    // ensure map entry exists
+    if (!longPressActivatedRef.current.has(travelItem._id)) {
+      longPressActivatedRef.current.set(travelItem._id, false);
+    }
+
+    const handlePressIn = () => {
+      // start timer for 1s
+      const existing = pressTimerMapRef.current.get(travelItem._id);
+      if (existing) {
+        clearTimeout(existing);
+      }
+      longPressActivatedRef.current.set(travelItem._id, false);
+      const t = setTimeout(() => {
+        longPressActivatedRef.current.set(travelItem._id, true);
+        confirmAndDelete(travelItem._id);
+        pressTimerMapRef.current.delete(travelItem._id);
+      }, 1000); // 1 second
+      pressTimerMapRef.current.set(travelItem._id, t);
+    };
+
+    const handlePressOut = () => {
+      const t = pressTimerMapRef.current.get(travelItem._id);
+      if (t) {
+        clearTimeout(t);
+        pressTimerMapRef.current.delete(travelItem._id);
+      }
+      const wasLong = longPressActivatedRef.current.get(travelItem._id);
+      if (!wasLong) {
+        // treat as tap
+        goMyTravelDetail(travelItem);
+      } else {
+        // reset flag after handling
+        longPressActivatedRef.current.set(travelItem._id, false);
+      }
+    };
+
     return (
-      <Pressable onPress={() => goMyTravelDetail(travelItem)} style={styles.itemPressable}>
+      <TouchableOpacity
+        key={travelItem._id}
+        activeOpacity={0.7}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
         <View style={styles.itemRow}>
-          <Image
-            source={{ uri: thumbnail }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: thumbnail }} style={styles.thumbnail} resizeMode="cover" />
 
           <View style={styles.itemContent}>
-            {/* date */}
             <Text typography="t7" color={colors.grey400} style={styles.dateText}>
               {dateLine}
             </Text>
 
-            {/* title */}
             <Text typography="t5" color={colors.grey900} fontWeight="bold" numberOfLines={1} style={styles.titleText}>
               {travelItem.travelName}
             </Text>
 
-            {/* d-day / subtitle */}
             <Text typography="t7" color={colors.blue600} fontWeight="medium" numberOfLines={1} style={styles.ddayText}>
               {dDayText}
             </Text>
 
-            {/* badge row */}
             <View style={styles.metaRow}>
               <Badge style={styles.badge} type="teal" badgeStyle="weak">
                 {regionLabel}
@@ -302,16 +339,54 @@ export default function MainTrip() {
           </View>
 
           <View style={styles.iconWrap}>
-            <Icon name="icon-arrow-right-mono" color={colors.grey400} />
+            {deletingId === travelItem._id ? (
+              <ActivityIndicator />
+            ) : (
+              <Icon name="icon-arrow-right-mono" color={colors.grey400} />
+            )}
           </View>
         </View>
-      </Pressable>
+      </TouchableOpacity>
     );
   };
 
+  // Empty state
+  const EmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <View style={styles.emptyUpper}>
+        <RNImage style={styles.emptyImage} source={{ uri: 'https://static.toss.im/2d-emojis/png/4x/u1F3DC.png' }} />
+      </View>
+      <Text typography="t3" style={styles.emptyTitle}>
+        지금 바로 여행 일정을 추천받아{'\n'}신나는 여행을 떠나보세요
+      </Text>
+      <Text typography="t7" color={colors.grey700} style={styles.emptySubtitle}>
+        나그네님을 위한 일정이 곧 채워질 거에요
+      </Text>
+      <Button
+        viewStyle={{ alignSelf: 'center', marginTop: 24 }}
+        size="medium"
+        style="weak"
+        onPress={() => {
+          dispatch(
+            travelSliceActions.reset({
+              userId,
+              userJwtToken,
+            }),
+          );
+          navigation.replace('/enroll/title');
+        }}
+      >
+        여행 일정 추천 받으러 가기
+      </Button>
+    </View>
+  );
+
+  if (list.length === 0) {
+    return <EmptyState />;
+  }
+
   return (
     <View>
-      {/* (수정) 기존 컴포넌트 사용: Top.Root로 페이지 타이틀 유지 */}
       <Top.Root
         title={
           <Top.TitleParagraph typography="t3" color={colors.grey900}>
@@ -326,7 +401,9 @@ export default function MainTrip() {
         renderItem={renderItem}
         initialNumToRender={20}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item, idx) => (item.type === 'header' ? `header-${item.monthKey}-${idx}` : item.item?._id)}
+        keyExtractor={(item, idx) =>
+          item.type === 'header' ? `header-${item.monthKey}-${idx}` : item.item?._id
+        }
         nestedScrollEnabled
         extraData={monthHeaderizedList.length}
       />
@@ -362,13 +439,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#fff',
   },
-  itemPressable: {
-    paddingVertical: 8,
-  },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 8,
+    paddingVertical: 12,
+    paddingRight: 16,
+    backgroundColor: '#fff',
+  },
+  itemPressable: {
+    paddingVertical: 8,
   },
   thumbnail: {
     width: 105,
