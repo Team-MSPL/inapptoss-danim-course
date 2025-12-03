@@ -8,19 +8,7 @@ import CustomBottomBar from "../components/main/custom-bottom-bar";
 import { useTopNavigation } from "@apps-in-toss/framework";
 import { useNavigation } from "@granite-js/react-native";
 import { useRegionModeStore } from "../zustand/modeStore";
-
-/**
- * Main
- *
- * Behavior change:
- * - For tab index 2 we now show the country selection screen (CountrySelection).
- * - When the user picks a country, CountrySelection navigates to '/travel/shop' (a separate screen),
- *   so the product-list view is shown on a different route, not inside the Main tab content.
- *
- * Note:
- * - Ensure the route '/travel/shop' is registered in your app's router and points to TravelShopScreen.
- * - If you prefer to register '/country/select' and navigate there instead, adjust CountrySelection accordingly.
- */
+import MyReservation from "./info/my-reservation";
 
 export default function Main() {
   const [tab, setTab] = useState(0);
@@ -50,9 +38,11 @@ export default function Main() {
       case 1:
         return <MainTrip />;
       case 2:
+        return <MyReservation />;
+      case 3:
         // show country selection in main tab; selection navigates to a different route
         return <MainCountrySelection />;
-      case 3:
+      case 4:
         return <MainInfo />;
       default:
         return null;

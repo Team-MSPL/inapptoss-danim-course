@@ -7,10 +7,12 @@ import {
   ActivityIndicator,
   Alert,
   Text as RNText,
+  Image as RNImage,
 } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
-import { Text, colors, Icon, FixedBottomCTAProvider, Top } from "@toss-design-system/react-native";
+import {Text, colors, Icon, FixedBottomCTAProvider, Top, Button} from "@toss-design-system/react-native";
 import axiosAuth from "../../redux/api";
+import {travelSliceActions} from "../../redux/travle-slice";
 
 export const Route = createRoute("/info/my-reservation", {
   validateParams: (params) => params,
@@ -237,6 +239,44 @@ export default function MyReservation() {
     );
   }
 
+  if (sections.length === 0) {
+    return (
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 100,
+        paddingHorizontal: 20,
+      }}>
+        <View style={{marginBottom: 12}}>
+          <RNImage style={{width: 68, height:68}} source={{ uri: 'https://static.toss.im/2d-emojis/png/4x/u1F3DC.png' }} />
+        </View>
+        <Text typography="t3" fontWeight="semibold" style={{
+          textAlign: 'center',
+          marginTop: 8,
+        }}>
+          지금 바로 여행 상품을 추천받아{'\n'}신나는 여행을 떠나보세요!
+        </Text>
+        <Text typography="t7" color={colors.grey700} style={{
+          textAlign: 'center',
+          marginTop: 8,
+        }}>
+          나그네님을 위한 예약이 곧 채워질 거에요
+        </Text>
+        <Button
+          viewStyle={{ alignSelf: 'center', marginTop: 24 }}
+          size="medium"
+          style="weak"
+          onPress={() => {
+            navigation.navigate('/main/country-selection');
+          }}
+        >
+          여행 상품 찾으러 가기
+        </Button>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <FixedBottomCTAProvider>
@@ -395,11 +435,6 @@ export default function MyReservation() {
               </View>
             );
           }}
-          ListEmptyComponent={
-            <View style={styles.center}>
-              <Text color={colors.grey500}>예약 내역이 없습니다.</Text>
-            </View>
-          }
         />
       </FixedBottomCTAProvider>
     </View>

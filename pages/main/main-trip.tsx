@@ -364,7 +364,7 @@ export default function MainTrip() {
       <View style={styles.emptyUpper}>
         <RNImage style={styles.emptyImage} source={{ uri: 'https://static.toss.im/2d-emojis/png/4x/u1F3DC.png' }} />
       </View>
-      <Text typography="t3" style={styles.emptyTitle}>
+      <Text typography="t3" fontWeight="semibold" style={styles.emptyTitle}>
         지금 바로 여행 일정을 추천받아{'\n'}신나는 여행을 떠나보세요
       </Text>
       <Text typography="t7" color={colors.grey700} style={styles.emptySubtitle}>

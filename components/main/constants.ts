@@ -4,6 +4,7 @@ import React from 'react';
 export const TAB_ITEMS = [
   { label: '홈', icon: 'icon-home-mono' },
   { label: '내 여행', icon: 'icon-plane-mono' },
+  { label: '내 예약', icon: 'icon-paper-plane-mono'},
   { label: '여행 상품', icon: 'icon-shopping-bag-mono' },
   { label: '내 정보', icon: 'icon-user-mono' },
 ];
@@ -54,12 +55,12 @@ export const DUMMY_PRODUCTS = [
 ];
 
 export const INFO_MENU = [
-  {
-    key: 'reservation',
-    label: '내 예약',
-    icon: 'icon-order-paper',
-    onPressNav: '/info/my-reservation',
-  },
+  // {
+  //   key: 'reservation',
+  //   label: '내 예약',
+  //   icon: 'icon-order-paper',
+  //   onPressNav: '/info/my-reservation',
+  // },
   {
     key: 'letter',
     label: '쪽지함',
