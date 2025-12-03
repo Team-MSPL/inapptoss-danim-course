@@ -209,5 +209,3 @@ const styles = StyleSheet.create({
     maxHeight: 280,
   },
 });
-
-export default RegionSearchLoading;

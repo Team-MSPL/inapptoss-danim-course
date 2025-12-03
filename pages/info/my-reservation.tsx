@@ -12,7 +12,7 @@ import {
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import {Text, colors, Icon, FixedBottomCTAProvider, Top, Button} from "@toss-design-system/react-native";
 import axiosAuth from "../../redux/api";
-import {travelSliceActions} from "../../redux/travle-slice";
+import {useMainTabStore} from "../../zustand/mainTabStore";
 
 export const Route = createRoute("/info/my-reservation", {
   validateParams: (params) => params,
@@ -268,11 +268,12 @@ export default function MyReservation() {
           size="medium"
           style="weak"
           onPress={() => {
-            navigation.navigate('/main/country-selection');
+            useMainTabStore.getState().setTab(3);
           }}
         >
           여행 상품 찾으러 가기
         </Button>
+
       </View>
     )
   }

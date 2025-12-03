@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import MainHome from "./main/main-home";
 import MainTrip from "./main/main-trip";
@@ -9,9 +9,11 @@ import { useTopNavigation } from "@apps-in-toss/framework";
 import { useNavigation } from "@granite-js/react-native";
 import { useRegionModeStore } from "../zustand/modeStore";
 import MyReservation from "./info/my-reservation";
+import { useMainTabStore } from "../zustand/mainTabStore";
 
 export default function Main() {
-  const [tab, setTab] = useState(0);
+  const tab = useMainTabStore((s) => s.tab);
+  const setTab = useMainTabStore((s) => s.setTab);
   const navigation = useNavigation();
   const { addAccessoryButton } = useTopNavigation();
 
