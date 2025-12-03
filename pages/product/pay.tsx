@@ -403,7 +403,13 @@ function ProductPay() {
                 setPendingPayToken(null);
                 setPendingAmount(null);
                 setIsPaying(false);
-                navigation.replace("/product/pay-success");
+                navigation.reset({
+                  index: 1,
+                  routes: [
+                    { name: `/${import.meta.env.APP_START_MODE}` },
+                    { name: "/product/pay-success" },
+                  ],
+                });
                 return;
               } else {
                 // booking failed -> refund using pendingPayToken if available
@@ -422,14 +428,26 @@ function ProductPay() {
                 setPendingPayToken(null);
                 setPendingAmount(null);
                 setIsPaying(false);
-                navigation.replace("/product/pay-fail");
+                navigation.reset({
+                  index: 1,
+                  routes: [
+                    { name: `/${import.meta.env.APP_START_MODE}` },
+                    { name: "/product/pay-fail" },
+                  ],
+                });
                 return;
               }
             } else {
               // No pending booking payload -> just navigate success
               Alert.alert("결제 완료", "결제가 완료되었습니다. (테스트 결과)");
               setIsPaying(false);
-              navigation.replace("/product/pay-success");
+              navigation.reset({
+                index: 1,
+                routes: [
+                  { name: `/${import.meta.env.APP_START_MODE}` },
+                  { name: "/product/pay-success" },
+                ],
+              });
               return;
             }
           } catch (err: any) {
@@ -449,7 +467,13 @@ function ProductPay() {
             setPendingPayToken(null);
             setPendingAmount(null);
             setIsPaying(false);
-            navigation.replace("/product/pay-fail");
+            navigation.reset({
+              index: 1,
+              routes: [
+                { name: `/${import.meta.env.APP_START_MODE}` },
+                { name: "/product/pay-fail" },
+              ],
+            });
             return;
           }
         }
@@ -457,7 +481,13 @@ function ProductPay() {
         // status not success -> canceled or failed
         Alert.alert("결제 실패 또는 취소", `결제 상태: ${status ?? "UNKNOWN"}`);
         setIsPaying(false);
-        navigation.replace("/product/pay-fail");
+        navigation.reset({
+          index: 1,
+          routes: [
+            { name: `/${import.meta.env.APP_START_MODE}` },
+            { name: "/product/pay-fail" },
+          ],
+        });
       }
     },
     [expectedRetUrl, navigation, pendingBookingPayload, pendingPayToken, pendingAmount, run]
@@ -683,7 +713,13 @@ function ProductPay() {
       if (bookingAllSucceeded) {
         Alert.alert("예약 및 결제 성공", "결제 및 예약이 정상적으로 처리되었습니다.");
         setIsPaying(false);
-        navigation.replace("/product/pay-success");
+        navigation.reset({
+          index: 1,
+          routes: [
+            { name: `/${import.meta.env.APP_START_MODE}` },
+            { name: "/product/pay-success" },
+          ],
+        });
         return;
       } else {
         console.warn("[ProductPay] booking failed after payment. Initiating refund for payToken:", payToken);
@@ -694,7 +730,13 @@ function ProductPay() {
           Alert.alert("예약 실패 - 환불 실패", `예약 처리에 실패했습니다. 환불도 실패했습니다. 관리자에게 문의해주세요. (${String(refundRes.error)})`);
         }
         setIsPaying(false);
-        navigation.replace("/product/pay-fail");
+        navigation.reset({
+          index: 1,
+          routes: [
+            { name: `/${import.meta.env.APP_START_MODE}` },
+            { name: "/product/pay-fail" },
+          ],
+        });
         return;
       }
     } catch (bookingRunErr: any) {
@@ -712,7 +754,13 @@ function ProductPay() {
         Alert.alert("예약 오류", "예약 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.");
       } finally {
         setIsPaying(false);
-        navigation.replace("/product/pay-fail");
+        navigation.reset({
+          index: 1,
+          routes: [
+            { name: `/${import.meta.env.APP_START_MODE}` },
+            { name: "/product/pay-fail" },
+          ],
+        });
         return;
       }
     } finally {

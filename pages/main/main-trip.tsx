@@ -381,7 +381,13 @@ export default function MainTrip() {
               userJwtToken,
             }),
           );
-          navigation.replace('/enroll/title');
+          navigation.reset({
+            index: 1,
+            routes: [
+              { name: `/${import.meta.env.APP_START_MODE}` },
+              { name: '/enroll/title' },
+            ],
+          });
         }}
       >
         여행 일정 추천 받으러 가기
