@@ -36,9 +36,6 @@ function safe<T = any>(v: any, def: T): T {
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// -----------------------------
-// HTML/Text helpers & renderer
-// -----------------------------
 function decodeHtmlEntities(str: string) {
   if (!str) return "";
   return str
@@ -52,11 +49,6 @@ function decodeHtmlEntities(str: string) {
     .replace(/\u200B/g, "");
 }
 
-/**
- * Replace anchors like <a href="...">label</a> with a token [[[URL|label]]]
- * so we can later map token -> clickable link while rendering native Text.
- * We keep label readable.
- */
 function extractAndTokenizeAnchors(html: string) {
   if (!html) return html;
   // Replace anchors with token form: [[[url|label]]]
@@ -67,27 +59,21 @@ function extractAndTokenizeAnchors(html: string) {
   });
 }
 
-/**
- * Convert HTML (or plain) string into paragraph/list blocks.
- * Special tokens [[[url|label]]] are preserved.
- */
 function splitToBlocksWithAnchors(text: string): string[] {
   if (!text) return [];
   let t = String(text).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   t = decodeHtmlEntities(t);
 
-  // Tokenize anchors to avoid removing them when stripping tags
   t = extractAndTokenizeAnchors(t);
 
-  // Replace common tags with newlines/markers
   t = t.replace(/<br\s*\/?>/gi, "\n");
   t = t.replace(/<\/p>/gi, "\n\n");
   t = t.replace(/<li>/gi, "\n• ");
-  // remove remaining HTML tags (but keep our tokens)
+
   t = t.replace(/<\/?[^>]+(>|$)/g, "");
-  // collapse multiple spaces
+
   t = t.replace(/[ \t]{2,}/g, " ");
-  // normalize multiple newlines into paragraphs
+
   t = t.replace(/\n{3,}/g, "\n\n");
   t = t.trim();
   const parts = t.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
@@ -96,15 +82,10 @@ function splitToBlocksWithAnchors(text: string): string[] {
 
 const URL_REGEX = /((https?:\/\/|www\.)[^\s<>()]+)/gi;
 
-/**
- * Given a text piece, produce an array of parts where each part is either plain text or a url.
- * Also detect our tokenized anchors [[[url|label]]] and convert them to an object with url+label.
- */
 function tokenizeLinkParts(text: string): Array<{ text: string; url?: string; isAnchorLabel?: boolean }> {
   const parts: Array<{ text: string; url?: string; isAnchorLabel?: boolean }> = [];
   if (!text) return parts;
 
-  // First handle anchor tokens [[[url|label]]]
   const anchorTokenRegex = /\[\[\[\s*(.*?)\|(.*?)\s*\]\]\]/g;
   let lastIndex = 0;
   let m;
@@ -115,7 +96,6 @@ function tokenizeLinkParts(text: string): Array<{ text: string; url?: string; is
     const label = m[2];
     if (offset > lastIndex) {
       const before = text.slice(lastIndex, offset);
-      // further split before by raw URLs
       splitRawUrlsInto(parts, before);
     }
     parts.push({ text: label, url: ensureProtocol(url), isAnchorLabel: true });
@@ -129,7 +109,6 @@ function tokenizeLinkParts(text: string): Array<{ text: string; url?: string; is
   return parts;
 }
 
-/** Helper: split raw URLs in a text chunk and push into parts array */
 function splitRawUrlsInto(parts: Array<{ text: string; url?: string }>, chunk: string) {
   let last = 0;
   chunk.replace(URL_REGEX, (match: string, _p1: string, _p2: string, offset: number) => {
@@ -146,14 +125,12 @@ function splitRawUrlsInto(parts: Array<{ text: string; url?: string }>, chunk: s
   }
 }
 
-/** Ensure URL has protocol */
 function ensureProtocol(u: string) {
   if (!u) return u;
   if (/^https?:\/\//i.test(u)) return u;
   return `https://${u}`;
 }
 
-/** RichTextRenderer renders paragraphs, lists and clickable links (including anchor tokens). */
 function RichTextRenderer({ text }: { text: string }) {
   const blocks = splitToBlocksWithAnchors(text);
 
@@ -225,9 +202,6 @@ function RichTextRenderer({ text }: { text: string }) {
   );
 }
 
-// -----------------------------
-// ReservationDetail component
-// -----------------------------
 export default function ReservationDetail() {
   const navigation = useNavigation();
   const params: { dtl?: DtlRaw; dtlInfo?: any; order_no?: string; listItem?: any } = Route.useParams();
@@ -406,7 +380,6 @@ export default function ReservationDetail() {
     const moduleTitle = moduleObj.module_title ?? moduleObj.title ?? moduleKey;
     const content = moduleObj.content ?? moduleObj;
 
-    // If module explicitly contains HTML and also has complex tags, fallback to WebView for fidelity
     if (moduleObj?.use_html && content?.type === "text" && content?.desc) {
       const htmlStr = String(content.desc || "");
       const hasComplex = /<(table|img|iframe|script|form|video|audio)\b/i.test(htmlStr);
@@ -422,7 +395,6 @@ export default function ReservationDetail() {
         );
       }
 
-      // For simpler HTML, convert & tokenize anchors then render natively
       return (
         <View style={styles.section} key={moduleKey}>
           <Text typography="t6" style={styles.sectionTitle}>{moduleTitle}</Text>
@@ -433,7 +405,6 @@ export default function ReservationDetail() {
       );
     }
 
-    // Plain text content: render with RichTextRenderer to preserve paragraphs, bullets and links
     if (content?.type === "text" && content?.desc) {
       return (
         <View style={styles.section} key={moduleKey}>

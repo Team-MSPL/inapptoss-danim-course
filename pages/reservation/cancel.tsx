@@ -54,7 +54,6 @@ export default function ReservationCancel() {
   const dtlInfo = params?.dtlInfo ?? {};
   const canCancel = Boolean(dtl?.can_cancel ?? false);
 
-  // Cancellation reasons (5 items)
   const REASONS = [
     "예약 실수",
     "단순 변심",
@@ -65,7 +64,6 @@ export default function ReservationCancel() {
 
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
 
-  // Bottom sheet helper (uses same pattern you provided)
   const bottomSheet = useBottomSheet();
 
   const openReasonSheet = () => {
@@ -100,7 +98,6 @@ export default function ReservationCancel() {
     });
   };
 
-  // Refund policy extraction from dtlInfo -> PMDL_REFUND_POLICY
   const refundPolicy = useMemo(() => {
     try {
       const root = dtlInfo?.product_summary?.description_module_for_render ?? dtlInfo?.product_summary?.description_module;
@@ -120,7 +117,6 @@ export default function ReservationCancel() {
     }
   }, [dtlInfo]);
 
-  // amounts
   const totalPrice = Number(safe(dtl?.total_price ?? dtl?.total_pay ?? 0, 0));
   const cancelFee = Number(safe(dtl?.cancel_fee ?? 0, 0));
   const refundAmount = Math.max(0, totalPrice - cancelFee);
@@ -138,7 +134,6 @@ export default function ReservationCancel() {
     navigation.goBack();
   }
 
-  // map selected reason label to cancel_type code
   const reasonToCancelType = (reason: string | null): string | null => {
     if (!reason) return null;
     switch (reason) {
@@ -157,11 +152,9 @@ export default function ReservationCancel() {
     }
   };
 
-  // helper: find payToken in dtl object (partner_order_no priority)
   const findPayTokenFromDtl = (dtlObj: any): string | null => {
     if (!dtlObj) return null;
 
-    // 1) partner_order_no may have been set to payToken at booking time
     if (dtlObj.partner_order_no) {
       try {
         return String(dtlObj.partner_order_no);
@@ -180,7 +173,6 @@ export default function ReservationCancel() {
     ];
     for (const v of candidates) if (v) return String(v);
 
-    // if there is an array of payments, try first entry
     if (Array.isArray(dtlObj.payments) && dtlObj.payments.length > 0) {
       const p = dtlObj.payments[0];
       if (p?.payToken) return String(p.payToken);
@@ -190,7 +182,6 @@ export default function ReservationCancel() {
     return null;
   };
 
-  // Utility to show confirm dialog and return user's choice as Promise
   const promptChoice = (title: string, message: string, buttons: { text: string; style?: any }[]) =>
     new Promise<number>((resolve) => {
       Alert.alert(
@@ -201,8 +192,6 @@ export default function ReservationCancel() {
       );
     });
 
-  // ---- DIRECT Toss refund function (TEST ONLY) ----
-  // WARNING: For production you MUST call Toss refunds from server. This client-side call uses an API key and is insecure.
   const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY; // <- only for local tests; do NOT use in production
 
   async function refundTossDirect(payToken: string, amount: number, reason?: string) {
@@ -215,9 +204,6 @@ export default function ReservationCancel() {
 
     const amt = Math.round(Number(amount) || 0);
 
-    // IMPORTANT:
-    // - If original payment used tax breakdown, you MUST set amountTaxable/amountTaxFree/amountVat accordingly.
-    // - Here we assume simple case: all taxable.
     const body: any = {
       apiKey: TOSS_PAY_API_KEY,
       payToken: String(payToken),
@@ -231,20 +217,12 @@ export default function ReservationCancel() {
     };
 
     try {
-      console.debug("[refundTossDirect] POST", url, body);
       const resp = await axios.post(url, body, {
         headers: { "Content-Type": "application/json" },
         timeout: 20000,
       });
-      console.debug("[refundTossDirect] toss resp:", resp.status, resp.data);
       return { success: true, data: resp.data };
     } catch (err: any) {
-      console.error("[refundTossDirect] error:", {
-        message: err?.message,
-        code: err?.code,
-        status: err?.response?.status,
-        data: err?.response?.data,
-      });
       return { success: false, error: err?.response?.data ?? err?.message ?? err };
     }
   }
@@ -271,14 +249,10 @@ export default function ReservationCancel() {
             cancel_desc: selectedReason ?? "",
           };
 
-          console.log("[ReservationCancel] sending cancel body:", body);
-
           try {
-            // 1) determine payToken (prefer partner_order_no)
             let payToken: string | null = findPayTokenFromDtl(dtl);
             console.debug("[ReservationCancel] initial payToken from dtl:", payToken);
 
-            // 2) if none and refund required, try server lookup (best-effort)
             if (!payToken && refundAmount > 0) {
               try {
                 const FIND_PAYTOKEN_API = `${import.meta.env.API_ROUTE_RELEASE}/payments/find`;
@@ -299,7 +273,6 @@ export default function ReservationCancel() {
               }
             }
 
-            // 3) If refundAmount <= 0 just call cancel API
             if (refundAmount <= 0) {
               console.debug("[ReservationCancel] refundAmount <= 0, skipping refund and calling Cancel API");
               const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
@@ -315,7 +288,6 @@ export default function ReservationCancel() {
               return;
             }
 
-            // 4) If no payToken, ask user whether to proceed without refund
             if (!payToken) {
               const proceedNoRefund = await new Promise<boolean>((resolve) => {
                 Alert.alert(
@@ -330,7 +302,6 @@ export default function ReservationCancel() {
               if (!proceedNoRefund) {
                 return;
               }
-              // proceed to cancel without refund
               const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
               const headers = { "Content-Type": "application/json", Accept: "application/json" };
               const res = await axiosAuth.post(CANCEL_API, JSON.stringify(body), { headers });
@@ -344,7 +315,6 @@ export default function ReservationCancel() {
               return;
             }
 
-            // 5) We have payToken -> attempt direct Toss refund (TEST ONLY)
             const refundReq = {
               payToken,
               amount: Math.round(refundAmount),
@@ -358,7 +328,6 @@ export default function ReservationCancel() {
             if (!refundResult.success) {
               console.warn("[ReservationCancel] direct refund failed:", refundResult.error);
 
-              // Offer user choice: retry / abort / proceed without refund
               const userChoice = await new Promise<"retry"|"abort"|"proceed">((resolve) => {
                 Alert.alert(
                   "환불 실패",
@@ -385,16 +354,13 @@ export default function ReservationCancel() {
                 // proceed without refund
               }
             } else {
-              console.debug("[ReservationCancel] direct refund succeeded:", refundResult.data);
+              // console.debug("[ReservationCancel] direct refund succeeded:", refundResult.data);
             }
 
-            // 6) Call Cancel API after refund (or user chose to proceed without refund)
             try {
               const CANCEL_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Order/Cancel`;
-              console.debug("[ReservationCancel] calling Cancel API after refund:", CANCEL_API, body);
               const cancelRes = await axiosAuth.post(CANCEL_API, JSON.stringify(body), { headers: { "Content-Type": "application/json" } });
               const cancelData = cancelRes?.data ?? {};
-              console.log("[ReservationCancel] Cancel response after refund:", cancelData);
               const cancelOk = cancelData?.result === "00" || cancelData?.result === 0 || cancelData?.success === true;
               if (cancelOk) {
                 navigation.navigate("/reservation/cancel-success", { cancelResponse: cancelData, email: params.dtl?.buyer_email });
@@ -403,13 +369,10 @@ export default function ReservationCancel() {
               }
               return;
             } catch (cancelErr2: any) {
-              console.error("[ReservationCancel] Cancel API failed after refund:", cancelErr2);
-              // IMPORTANT: we may have already refunded. DO NOT attempt to undo refund here.
               navigation.navigate("/reservation/cancel-fail", { error: String(cancelErr2?.message ?? "Cancel API error (after refund)"), response: cancelErr2?.response?.data });
               return;
             }
           } catch (err: any) {
-            console.error("[ReservationCancel] unexpected error in refund-then-cancel flow:", err);
             Alert.alert("오류", "처리 중 오류가 발생했습니다. 콘솔을 확인하세요.");
             return;
           }
@@ -418,9 +381,6 @@ export default function ReservationCancel() {
     ]);
   }
 
-  // -------------------------
-  // MiniProductCard: fetch product by prod_no from dtl and display above cancel reason
-  // -------------------------
   const [product, setProduct] = useState<any | null>(null);
   const [productLoading, setProductLoading] = useState(false);
 
@@ -441,10 +401,8 @@ export default function ReservationCancel() {
         );
         const data = res?.data ?? {};
         const prod = data?.prod ?? null;
-        console.log("[ReservationCancel] QueryProduct result prod:", prod);
         if (mounted) {
           if (prod) {
-            // Choose first available image: prefer prod.img_list[0], then prod.prod_img_url, then prod.prod_img
             const firstImage =
               (Array.isArray(prod.img_list) && prod.img_list.length > 0 && prod.img_list[0]) ||
               prod.prod_img_url ||
@@ -458,7 +416,6 @@ export default function ReservationCancel() {
                 ? Math.floor(100 - (salePrice / originPrice) * 100)
                 : 0;
 
-            // mini object uses 'image' key (not img_list)
             const mini = {
               image: firstImage,
               title: prod.prod_name ?? prod.prod_nm ?? "",
@@ -466,7 +423,6 @@ export default function ReservationCancel() {
               salePrice,
               percent,
               perPersonText: prod.unit ? String(prod.unit) : prod.introduction ?? "",
-              // keep original raw prod too for debug if needed
               raw: prod,
             };
             setProduct(mini);
@@ -475,7 +431,6 @@ export default function ReservationCancel() {
           }
         }
       } catch (err) {
-        console.warn("[ReservationCancel] QueryProduct failed", err);
         if (mounted) setProduct(null);
       } finally {
         if (mounted) setProductLoading(false);
@@ -522,7 +477,6 @@ export default function ReservationCancel() {
             </View>
           ) : null}
 
-          {/* Section: 취소 사유 (uses bottom sheet selection) */}
           <View style={styles.section}>
             <View style={styles.sectionHeadingRow}>
               <View style={styles.headingAccent} />
@@ -539,7 +493,6 @@ export default function ReservationCancel() {
             </TouchableOpacity>
           </View>
 
-          {/* Section: 취소 규정 */}
           <View style={styles.section}>
             <View style={styles.sectionHeadingRow}>
               <View style={styles.headingAccent} />
@@ -555,7 +508,6 @@ export default function ReservationCancel() {
             </View>
           </View>
 
-          {/* Section: 주문 내역 (link) */}
           <View style={styles.section}>
             <View style={styles.sectionHeadingRow}>
               <View style={styles.headingAccent} />
@@ -570,7 +522,6 @@ export default function ReservationCancel() {
             </TouchableOpacity>
           </View>
 
-          {/* Section: 환불 안내 (total - cancelFee) */}
           <View style={styles.section}>
             <View style={styles.sectionHeadingRow}>
               <View style={styles.headingAccent} />
