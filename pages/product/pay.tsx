@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import React, { useEffect, useMemo, useState, useCallback, useRef, lazy, Suspense } from "react";
 import {
   View,
   TextInput,
@@ -7,7 +7,7 @@ import {
   Modal,
   StyleSheet,
 } from "react-native";
-import { WebView } from "react-native-webview";
+const WebView = lazy(() => import('react-native-webview'));
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { Image } from "@granite-js/react-native";
 import { FixedBottomCTAProvider, Button, Text, colors, Icon, FixedBottomCTA } from "@toss-design-system/react-native";
@@ -88,7 +88,7 @@ function ProductPay() {
   const [showPaymentWebView, setShowPaymentWebView] = useState<boolean>(false);
   const [checkoutPageUrl, setCheckoutPageUrl] = useState<string | null>(null);
   const [expectedRetUrl, setExpectedRetUrl] = useState<string | null>(null);
-  const webViewRef = useRef<WebView | null>(null);
+  const webViewRef = useRef<any>(null);
 
   const [pendingBookingPayload, setPendingBookingPayload] = useState<any | null>(null);
   const [pendingPayToken, setPendingPayToken] = useState<string | null>(null);
@@ -740,7 +740,7 @@ function ProductPay() {
 
         {rawFields?.guide_lang && (
           <CollapsibleSection title="가이드 언어" open={!!openSections[2]} onToggle={() => toggleSection(2)} completed={!!completedSections[2]}>
-            <GuideLangSelector rawFields={rawFields} onSelect={(code) => setGuideLangCode(code)} />
+            <PayField.GuideLangSelector rawFields={rawFields} onSelect={(code) => setGuideLangCode(code)} />
             <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(2)}>
               작성 완료
             </Button>
@@ -750,60 +750,60 @@ function ProductPay() {
         {hasCus01 && (
           <CollapsibleSection title="예약자 정보" open={!!openSections[3]} onToggle={() => toggleSection(3)} completed={!!completedSections[3]}>
             <View>
-              {engLastUse.includes("cus_01") && <EngLastNameInput cusType="cus_01" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {engFirstUse.includes("cus_01") && <EngFirstNameInput cusType="cus_01" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {genderUse.includes("cus_01") && <GenderSelector cusType="cus_01" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {nationalityUse.includes("cus_01") && <NationalitySelector cusType="cus_01" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {engLastUse.includes("cus_01") && <PayField.EngLastNameInput cusType="cus_01" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {engFirstUse.includes("cus_01") && <PayField.EngFirstNameInput cusType="cus_01" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {genderUse.includes("cus_01") && <PayField.GenderSelector cusType="cus_01" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {nationalityUse.includes("cus_01") && <PayField.NationalitySelector cusType="cus_01" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />}
               {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_01") && (
-                <MtpNoInput cusType="cus_01" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.MtpNoInput cusType="cus_01" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.id_no && Array.isArray(rawFields.custom.id_no.use) && rawFields.custom.id_no.use.includes("cus_01") && (
-                <IdNoInput cusType="cus_01" required={String(rawFields.custom.id_no.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.IdNoInput cusType="cus_01" required={String(rawFields.custom.id_no.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_01") && (
-                <PassportNoInput cusType="cus_01" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.PassportNoInput cusType="cus_01" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.passport_expdate && Array.isArray(rawFields.custom.passport_expdate.use) && rawFields.custom.passport_expdate.use.includes("cus_01") && (
-                <PassportExpDateInput cusType="cus_01" required={String(rawFields.custom.passport_expdate.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.PassportExpDateInput cusType="cus_01" required={String(rawFields.custom.passport_expdate.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.birth && Array.isArray(rawFields.custom.birth.use) && rawFields.custom.birth.use.includes("cus_01") && (
-                <BirthDateInput cusType="cus_01" required={String(rawFields.custom.birth.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.BirthDateInput cusType="cus_01" required={String(rawFields.custom.birth.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.height && Array.isArray(rawFields.custom.height.use) && rawFields.custom.height.use.includes("cus_01") && (
-                <HeightInput cusType="cus_01" required={String(rawFields.custom.height.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.HeightInput cusType="cus_01" required={String(rawFields.custom.height.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.height_unit && Array.isArray(rawFields.custom.height_unit.use) && rawFields.custom.height_unit.use.includes("cus_01") && (
-                <HeightUnitSelector cusType="cus_01" options={rawFields.custom.height_unit.list_option} required={String(rawFields.custom.height_unit.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.HeightUnitSelector cusType="cus_01" options={rawFields.custom.height_unit.list_option} required={String(rawFields.custom.height_unit.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.weight && Array.isArray(rawFields.custom.weight.use) && rawFields.custom.weight.use.includes("cus_01") && (
-                <WeightInput cusType="cus_01" required={String(rawFields.custom.weight.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.WeightInput cusType="cus_01" required={String(rawFields.custom.weight.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.weight_unit && Array.isArray(rawFields.custom.weight_unit.use) && rawFields.custom.weight_unit.use.includes("cus_01") && (
-                <WeightUnitSelector cusType="cus_01" options={rawFields.custom.weight_unit.list_option} required={String(rawFields.custom.weight_unit.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.WeightUnitSelector cusType="cus_01" options={rawFields.custom.weight_unit.list_option} required={String(rawFields.custom.weight_unit.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.shoe && Array.isArray(rawFields.custom.shoe.use) && rawFields.custom.shoe.use.includes("cus_01") && (
-                <ShoeInput cusType="cus_01" required={String(rawFields.custom.shoe.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.ShoeInput cusType="cus_01" required={String(rawFields.custom.shoe.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.shoe_unit && Array.isArray(rawFields.custom.shoe_unit.use) && rawFields.custom.shoe_unit.use.includes("cus_01") && (
-                <ShoeUnitSelector cusType="cus_01" options={rawFields.custom.shoe_unit.list_option} required={String(rawFields.custom.shoe_unit.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.ShoeUnitSelector cusType="cus_01" options={rawFields.custom.shoe_unit.list_option} required={String(rawFields.custom.shoe_unit.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.shoe_type && Array.isArray(rawFields.custom.shoe_type.use) && rawFields.custom.shoe_type.use.includes("cus_01") && (
-                <ShoeTypeSelector cusType="cus_01" options={rawFields.custom.shoe_type.list_option} required={String(rawFields.custom.shoe_type.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.ShoeTypeSelector cusType="cus_01" options={rawFields.custom.shoe_type.list_option} required={String(rawFields.custom.shoe_type.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.glass_degree && Array.isArray(rawFields.custom.glass_degree.use) && rawFields.custom.glass_degree.use.includes("cus_01") && (
-                <GlassDegreeSelector cusType="cus_01" options={rawFields.custom.glass_degree.list_option} required={String(rawFields.custom.glass_degree.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.GlassDegreeSelector cusType="cus_01" options={rawFields.custom.glass_degree.list_option} required={String(rawFields.custom.glass_degree.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.meal && Array.isArray(rawFields.custom.meal.use) && rawFields.custom.meal.use.includes("cus_01") && (
-                <MealSelector cusType="cus_01" options={rawFields.custom.meal.list_option} required={String(rawFields.custom.meal.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.MealSelector cusType="cus_01" options={rawFields.custom.meal.list_option} required={String(rawFields.custom.meal.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.allergy_food && Array.isArray(rawFields.custom.allergy_food.use) && rawFields.custom.allergy_food.use.includes("cus_01") && (
-                <AllergyFoodSelector cusType="cus_01" options={rawFields.custom.allergy_food.list_option} required={String(rawFields.custom.allergy_food.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.AllergyFoodSelector cusType="cus_01" options={rawFields.custom.allergy_food.list_option} required={String(rawFields.custom.allergy_food.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("cus_01") && (
-                <NativeLastNameInput cusType="cus_01" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.NativeLastNameInput cusType="cus_01" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />
               )}
               {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("cus_01") && (
-                <NativeFirstNameInput cusType="cus_01" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />
+                <PayField.NativeFirstNameInput cusType="cus_01" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />
               )}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(3)}>작성 완료</Button>
             </View>
@@ -813,27 +813,27 @@ function ProductPay() {
         {hasCus02 && (
           <CollapsibleSection title="여행자 정보" open={!!openSections[4]} onToggle={() => toggleSection(4)} completed={!!completedSections[4]}>
             <View>
-              {engLastUse.includes("cus_02") && <EngLastNameInput cusType="cus_02" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {engFirstUse.includes("cus_02") && <EngFirstNameInput cusType="cus_02" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {genderUse.includes("cus_02") && <GenderSelector cusType="cus_02" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {nationalityUse.includes("cus_02") && <NationalitySelector cusType="cus_02" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />}
-              {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_02") && (<MtpNoInput cusType="cus_02" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.id_no && Array.isArray(rawFields.custom.id_no.use) && rawFields.custom.id_no.use.includes("cus_02") && (<IdNoInput cusType="cus_02" required={String(rawFields.custom.id_no.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_02") && (<PassportNoInput cusType="cus_02" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.passport_expdate && Array.isArray(rawFields.custom.passport_expdate.use) && rawFields.custom.passport_expdate.use.includes("cus_02") && (<PassportExpDateInput cusType="cus_02" required={String(rawFields.custom.passport_expdate.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.birth && Array.isArray(rawFields.custom.birth.use) && rawFields.custom.birth.use.includes("cus_02") && (<BirthDateInput cusType="cus_02" required={String(rawFields.custom.birth.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.height && Array.isArray(rawFields.custom.height.use) && rawFields.custom.height.use.includes("cus_02") && (<HeightInput cusType="cus_02" required={String(rawFields.custom.height.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.height_unit && Array.isArray(rawFields.custom.height_unit.use) && rawFields.custom.height_unit.use.includes("cus_02") && (<HeightUnitSelector cusType="cus_02" options={rawFields.custom.height_unit.list_option} required={String(rawFields.custom.height_unit.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.weight && Array.isArray(rawFields.custom.weight.use) && rawFields.custom.weight.use.includes("cus_02") && (<WeightInput cusType="cus_02" required={String(rawFields.custom.weight.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.weight_unit && Array.isArray(rawFields.custom.weight_unit.use) && rawFields.custom.weight_unit.use.includes("cus_02") && (<WeightUnitSelector cusType="cus_02" options={rawFields.custom.weight_unit.list_option} required={String(rawFields.custom.weight_unit.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.shoe && Array.isArray(rawFields.custom.shoe.use) && rawFields.custom.shoe.use.includes("cus_02") && (<ShoeInput cusType="cus_02" required={String(rawFields.custom.shoe.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.shoe_unit && Array.isArray(rawFields.custom.shoe_unit.use) && rawFields.custom.shoe_unit.use.includes("cus_02") && (<ShoeUnitSelector cusType="cus_02" options={rawFields.custom.shoe_unit.list_option} required={String(rawFields.custom.shoe_unit.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.shoe_type && Array.isArray(rawFields.custom.shoe_type.use) && rawFields.custom.shoe_type.use.includes("cus_02") && (<ShoeTypeSelector cusType="cus_02" options={rawFields.custom.shoe_type.list_option} required={String(rawFields.custom.shoe_type.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.glass_degree && Array.isArray(rawFields.custom.glass_degree.use) && rawFields.custom.glass_degree.use.includes("cus_02") && (<GlassDegreeSelector cusType="cus_02" options={rawFields.custom.glass_degree.list_option} required={String(rawFields.custom.glass_degree.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.meal && Array.isArray(rawFields.custom.meal.use) && rawFields.custom.meal.use.includes("cus_02") && (<MealSelector cusType="cus_02" options={rawFields.custom.meal.list_option} required={String(rawFields.custom.meal.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.allergy_food && Array.isArray(rawFields.custom.allergy_food.use) && rawFields.custom.allergy_food.use.includes("cus_02") && (<AllergyFoodSelector cusType="cus_02" options={rawFields.custom.allergy_food.list_option} required={String(rawFields.custom.allergy_food.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("cus_02") && (<NativeLastNameInput cusType="cus_02" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("cus_02") && (<NativeFirstNameInput cusType="cus_02" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {engLastUse.includes("cus_02") && <PayField.EngLastNameInput cusType="cus_02" required={String(engLastSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {engFirstUse.includes("cus_02") && <PayField.EngFirstNameInput cusType="cus_02" required={String(engFirstSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {genderUse.includes("cus_02") && <PayField.GenderSelector cusType="cus_02" required={String(genderSpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {nationalityUse.includes("cus_02") && <PayField.NationalitySelector cusType="cus_02" options={nationalityOptions} required={String(nationalitySpec?.is_require ?? "").toLowerCase() === "true"} />}
+              {rawFields?.custom?.mtp_no && Array.isArray(rawFields.custom.mtp_no.use) && rawFields.custom.mtp_no.use.includes("cus_02") && (<PayField.MtpNoInput cusType="cus_02" required={String(rawFields.custom.mtp_no.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.id_no && Array.isArray(rawFields.custom.id_no.use) && rawFields.custom.id_no.use.includes("cus_02") && (<PayField.IdNoInput cusType="cus_02" required={String(rawFields.custom.id_no.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.passport_no && Array.isArray(rawFields.custom.passport_no.use) && rawFields.custom.passport_no.use.includes("cus_02") && (<PayField.PassportNoInput cusType="cus_02" required={String(rawFields.custom.passport_no.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.passport_expdate && Array.isArray(rawFields.custom.passport_expdate.use) && rawFields.custom.passport_expdate.use.includes("cus_02") && (<PayField.PassportExpDateInput cusType="cus_02" required={String(rawFields.custom.passport_expdate.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.birth && Array.isArray(rawFields.custom.birth.use) && rawFields.custom.birth.use.includes("cus_02") && (<PayField.BirthDateInput cusType="cus_02" required={String(rawFields.custom.birth.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.height && Array.isArray(rawFields.custom.height.use) && rawFields.custom.height.use.includes("cus_02") && (<PayField.HeightInput cusType="cus_02" required={String(rawFields.custom.height.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.height_unit && Array.isArray(rawFields.custom.height_unit.use) && rawFields.custom.height_unit.use.includes("cus_02") && (<PayField.HeightUnitSelector cusType="cus_02" options={rawFields.custom.height_unit.list_option} required={String(rawFields.custom.height_unit.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.weight && Array.isArray(rawFields.custom.weight.use) && rawFields.custom.weight.use.includes("cus_02") && (<PayField.WeightInput cusType="cus_02" required={String(rawFields.custom.weight.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.weight_unit && Array.isArray(rawFields.custom.weight_unit.use) && rawFields.custom.weight_unit.use.includes("cus_02") && (<PayField.WeightUnitSelector cusType="cus_02" options={rawFields.custom.weight_unit.list_option} required={String(rawFields.custom.weight_unit.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.shoe && Array.isArray(rawFields.custom.shoe.use) && rawFields.custom.shoe.use.includes("cus_02") && (<PayField.ShoeInput cusType="cus_02" required={String(rawFields.custom.shoe.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.shoe_unit && Array.isArray(rawFields.custom.shoe_unit.use) && rawFields.custom.shoe_unit.use.includes("cus_02") && (<PayField.ShoeUnitSelector cusType="cus_02" options={rawFields.custom.shoe_unit.list_option} required={String(rawFields.custom.shoe_unit.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.shoe_type && Array.isArray(rawFields.custom.shoe_type.use) && rawFields.custom.shoe_type.use.includes("cus_02") && (<PayField.ShoeTypeSelector cusType="cus_02" options={rawFields.custom.shoe_type.list_option} required={String(rawFields.custom.shoe_type.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.glass_degree && Array.isArray(rawFields.custom.glass_degree.use) && rawFields.custom.glass_degree.use.includes("cus_02") && (<PayField.GlassDegreeSelector cusType="cus_02" options={rawFields.custom.glass_degree.list_option} required={String(rawFields.custom.glass_degree.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.meal && Array.isArray(rawFields.custom.meal.use) && rawFields.custom.meal.use.includes("cus_02") && (<PayField.MealSelector cusType="cus_02" options={rawFields.custom.meal.list_option} required={String(rawFields.custom.meal.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.allergy_food && Array.isArray(rawFields.custom.allergy_food.use) && rawFields.custom.allergy_food.use.includes("cus_02") && (<PayField.AllergyFoodSelector cusType="cus_02" options={rawFields.custom.allergy_food.list_option} required={String(rawFields.custom.allergy_food.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("cus_02") && (<PayField.NativeLastNameInput cusType="cus_02" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("cus_02") && (<PayField.NativeFirstNameInput cusType="cus_02" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />)}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(4)}>작성 완료</Button>
             </View>
           </CollapsibleSection>
@@ -842,13 +842,13 @@ function ProductPay() {
         {hasContact && (
           <CollapsibleSection title="연락 수단" open={!!openSections[5]} onToggle={() => toggleSection(5)} completed={!!completedSections[5]}>
             <View>
-              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("contact") && (<NativeLastNameInput cusType="contact" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("contact") && (<NativeFirstNameInput cusType="contact" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("contact") && (<TelCountryCodeSelector cusType="contact" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("contact") && (<TelNumberInput cusType="contact" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.contact_app && Array.isArray(rawFields.custom.contact_app.list_option) && rawFields.custom.contact_app.use?.includes("contact") && (<ContactAppSelector cusType="contact" options={rawFields.custom.contact_app.list_option} required={String(rawFields.custom.contact_app.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.contact_app_account && Array.isArray(rawFields.custom.contact_app_account.use) && rawFields.custom.contact_app_account.use.includes("contact") && (<ContactAppAccountInput cusType="contact" required={String(rawFields.custom.contact_app_account.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.have_app && Array.isArray(rawFields.custom.have_app.use) && rawFields.custom.have_app.use.includes("contact") && (<HaveAppToggle cusType="contact" label="연락 앱 설치 여부" />)}
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("contact") && (<PayField.NativeLastNameInput cusType="contact" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("contact") && (<PayField.NativeFirstNameInput cusType="contact" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("contact") && (<PayField.TelCountryCodeSelector cusType="contact" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("contact") && (<PayField.TelNumberInput cusType="contact" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.contact_app && Array.isArray(rawFields.custom.contact_app.list_option) && rawFields.custom.contact_app.use?.includes("contact") && (<PayField.ContactAppSelector cusType="contact" options={rawFields.custom.contact_app.list_option} required={String(rawFields.custom.contact_app.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.contact_app_account && Array.isArray(rawFields.custom.contact_app_account.use) && rawFields.custom.contact_app_account.use.includes("contact") && (<PayField.ContactAppAccountInput cusType="contact" required={String(rawFields.custom.contact_app_account.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.have_app && Array.isArray(rawFields.custom.have_app.use) && rawFields.custom.have_app.use.includes("contact") && (<PayField.HaveAppToggle cusType="contact" label="연락 앱 설치 여부" />)}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(5)}>작성 완료</Button>
             </View>
           </CollapsibleSection>
@@ -857,18 +857,18 @@ function ProductPay() {
         {hasSend && (
           <CollapsibleSection title="투숙 정보" open={!!openSections[6]} onToggle={() => toggleSection(6)} completed={!!completedSections[6]}>
             <View>
-              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("send") && (<NativeLastNameInput cusType="send" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("send") && (<NativeFirstNameInput cusType="send" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("send") && (<TelCountryCodeSelector cusType="send" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("send") && (<TelNumberInput cusType="send" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.country_cities && Array.isArray(rawFields.custom.country_cities.list_option) && rawFields.custom.country_cities.use?.includes("send") && (<CountryCitiesSelector cusType="send" options={rawFields.custom.country_cities.list_option} required={String(rawFields.custom.country_cities.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.zipcode && Array.isArray(rawFields.custom.zipcode.use) && rawFields.custom.zipcode.use.includes("send") && (<ZipcodeInput cusType="send" required={String(rawFields.custom.zipcode.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.address && Array.isArray(rawFields.custom.address.use) && rawFields.custom.address.use.includes("send") && (<AddressInput cusType="send" required={String(rawFields.custom.address.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.hotel_name && Array.isArray(rawFields.custom.hotel_name.use) && rawFields.custom.hotel_name.use.includes("send") && (<HotelNameInput cusType="send" required={String(rawFields.custom.hotel_name.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.hotel_tel_number && Array.isArray(rawFields.custom.hotel_tel_number.use) && rawFields.custom.hotel_tel_number.use.includes("send") && (<HotelTelNumberInput cusType="send" required={String(rawFields.custom.hotel_tel_number.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.booking_order_no && Array.isArray(rawFields.custom.booking_order_no.use) && rawFields.custom.booking_order_no.use.includes("send") && (<BookingOrderNoInput cusType="send" required={String(rawFields.custom.booking_order_no.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.check_in_date && Array.isArray(rawFields.custom.check_in_date.use) && rawFields.custom.check_in_date.use.includes("send") && (<CheckInDateInput cusType="send" required={String(rawFields.custom.check_in_date.is_require ?? "").toLowerCase() === "true"} />)}
-              {rawFields?.custom?.check_out_date && Array.isArray(rawFields.custom.check_out_date.use) && rawFields.custom.check_out_date.use.includes("send") && (<CheckOutDateInput cusType="send" required={String(rawFields.custom.check_out_date.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.native_last_name && Array.isArray(rawFields.custom.native_last_name.use) && rawFields.custom.native_last_name.use.includes("send") && (<PayField.NativeLastNameInput cusType="send" required={String(rawFields.custom.native_last_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.native_first_name && Array.isArray(rawFields.custom.native_first_name.use) && rawFields.custom.native_first_name.use.includes("send") && (<PayField.NativeFirstNameInput cusType="send" required={String(rawFields.custom.native_first_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.tel_country_code && Array.isArray(rawFields.custom.tel_country_code.use) && rawFields.custom.tel_country_code.use.includes("send") && (<PayField.TelCountryCodeSelector cusType="send" options={rawFields.custom.tel_country_code.list_option} required={String(rawFields.custom.tel_country_code.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.tel_number && Array.isArray(rawFields.custom.tel_number.use) && rawFields.custom.tel_number.use.includes("send") && (<PayField.TelNumberInput cusType="send" required={String(rawFields.custom.tel_number.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.country_cities && Array.isArray(rawFields.custom.country_cities.list_option) && rawFields.custom.country_cities.use?.includes("send") && (<PayField.CountryCitiesSelector cusType="send" options={rawFields.custom.country_cities.list_option} required={String(rawFields.custom.country_cities.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.zipcode && Array.isArray(rawFields.custom.zipcode.use) && rawFields.custom.zipcode.use.includes("send") && (<PayField.ZipcodeInput cusType="send" required={String(rawFields.custom.zipcode.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.address && Array.isArray(rawFields.custom.address.use) && rawFields.custom.address.use.includes("send") && (<PayField.AddressInput cusType="send" required={String(rawFields.custom.address.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.hotel_name && Array.isArray(rawFields.custom.hotel_name.use) && rawFields.custom.hotel_name.use.includes("send") && (<PayField.HotelNameInput cusType="send" required={String(rawFields.custom.hotel_name.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.hotel_tel_number && Array.isArray(rawFields.custom.hotel_tel_number.use) && rawFields.custom.hotel_tel_number.use.includes("send") && (<PayField.HotelTelNumberInput cusType="send" required={String(rawFields.custom.hotel_tel_number.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.booking_order_no && Array.isArray(rawFields.custom.booking_order_no.use) && rawFields.custom.booking_order_no.use.includes("send") && (<PayField.BookingOrderNoInput cusType="send" required={String(rawFields.custom.booking_order_no.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.check_in_date && Array.isArray(rawFields.custom.check_in_date.use) && rawFields.custom.check_in_date.use.includes("send") && (<PayField.CheckInDateInput cusType="send" required={String(rawFields.custom.check_in_date.is_require ?? "").toLowerCase() === "true"} />)}
+              {rawFields?.custom?.check_out_date && Array.isArray(rawFields.custom.check_out_date.use) && rawFields.custom.check_out_date.use.includes("send") && (<PayField.CheckOutDateInput cusType="send" required={String(rawFields.custom.check_out_date.is_require ?? "").toLowerCase() === "true"} />)}
               <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(6)}>작성 완료</Button>
             </View>
           </CollapsibleSection>
@@ -876,37 +876,37 @@ function ProductPay() {
 
         {rawFields?.traffics && Array.isArray(rawFields.traffics) && rawFields.traffics.some((t:any) => t?.traffic_type?.traffic_type_value === "flight") && (
           <CollapsibleSection title="항공편 정보" open={!!openSections[7]} onToggle={() => toggleSection(7)} completed={!!completedSections[7]}>
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightType && (<ArrivalFlightTypeSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightType?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airport && (<ArrivalAirportSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airport?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airlineName && (<ArrivalAirlineInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airlineName?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightNo && (<ArrivalFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightNo?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_terminalNo && (<ArrivalTerminalInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_terminalNo?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_visa && (<ArrivalVisaToggle trafficType="flight" />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_date && (<ArrivalDateInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_date?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_time && (<ArrivalTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_time?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_flightType && (<DepartureFlightTypeSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_flightType?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_airport && (<DepartureAirportSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_airport?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_airlineName && (<DepartureAirlineInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_airlineName?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_flightNo && (<DepartureFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_flightNo?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_terminalNo && (<DepartureTerminalInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_terminalNo?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_haveBeenInCountry && (<DepartureHaveBeenInCountryInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_haveBeenInCountry?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_date && (<DepartureDateInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_date?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_time && (<DepartureTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_time?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightType && (<Traffic.ArrivalFlightTypeSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightType?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airport && (<Traffic.ArrivalAirportSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airport?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airlineName && (<Traffic.ArrivalAirlineInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airlineName?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightNo && (<Traffic.ArrivalFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightNo?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_terminalNo && (<Traffic.ArrivalTerminalInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_terminalNo?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_visa && (<Traffic.ArrivalVisaToggle trafficType="flight" />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_date && (<Traffic.ArrivalDateInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_date?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_time && (<Traffic.ArrivalTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_time?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_flightType && (<Traffic.DepartureFlightTypeSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_flightType?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_airport && (<Traffic.DepartureAirportSelector trafficType="flight" rawFields={rawFields} trafficTypeValue="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_airport?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_airlineName && (<Traffic.DepartureAirlineInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_airlineName?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_flightNo && (<Traffic.DepartureFlightNoInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_flightNo?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_terminalNo && (<Traffic.DepartureTerminalInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_terminalNo?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_haveBeenInCountry && (<Traffic.DepartureHaveBeenInCountryInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_haveBeenInCountry?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_date && (<Traffic.DepartureDateInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_date?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.departure_time && (<Traffic.DepartureTimeInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.departure_time?.is_require ?? "").toLowerCase() === "true"} />)}
             <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(7)}>작성 완료</Button>
           </CollapsibleSection>
         )}
 
         {hasPsgQty && (
           <CollapsibleSection title="탑승자 수" open={!!openSections[8]} onToggle={() => toggleSection(8)} completed={!!completedSections[8]}>
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_adult && (<CarPsgAdultInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_adult?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_child && (<CarPsgChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_child?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_infant && (<CarPsgInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_infant?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_child && (<SafetyseatSupChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_child?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_self_child && (<SafetyseatSelfChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_self_child?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_infant && (<SafetyseatSupInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_infant?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_self_infant && (<SafetyseatSelfInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_self_infant?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_carry && (<LuggageCarryInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_carry?.is_require ?? "").toLowerCase() === "true"} />)}
-            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_check && (<LuggageCheckInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_check?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_adult && (<Traffic.CarPsgAdultInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_adult?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_child && (<Traffic.CarPsgChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_child?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.carpsg_infant && (<Traffic.CarPsgInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.carpsg_infant?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_child && (<Traffic.SafetyseatSupChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_child?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_self_child && (<Traffic.SafetyseatSelfChildInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_self_child?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_sup_infant && (<Traffic.SafetyseatSupInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_sup_infant?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.safetyseat_self_infant && (<Traffic.SafetyseatSelfInfantInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.safetyseat_self_infant?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_carry && (<Traffic.LuggageCarryInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_carry?.is_require ?? "").toLowerCase() === "true"} />)}
+            {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "psg_qty")?.luggage_check && (<Traffic.LuggageCheckInput trafficType="psg_qty" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="psg_qty")?.luggage_check?.is_require ?? "").toLowerCase() === "true"} />)}
             <Button type="primary" style="fill" display="block" size="large" containerStyle={{ alignSelf: 'center', width: 130, height: 50, marginTop: 12 }} onPress={() => onCompletePress(8)}>작성 완료</Button>
           </CollapsibleSection>
         )}
@@ -921,13 +921,13 @@ function ProductPay() {
                 return (
                   <View key={`rentcar_${specIndex}`} style={{ marginBottom: 12 }}>
                     <Text typography="t5" color={colors.grey800} style={{ marginBottom: 8 }}>{requiredLabel}</Text>
-                    {spec?.s_location && (<RentcarLocationSelector trafficType={t} field="s_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.e_location && (<RentcarLocationSelector trafficType={t} field="e_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_location?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.s_date && (<RentcarDateInput trafficType={t} field="s_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_date?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.s_time && (<RentcarTimeInput trafficType={t} field="s_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_time?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.e_date && (<RentcarDateInput trafficType={t} field="e_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_date?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.e_time && (<RentcarTimeInput trafficType={t} field="e_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.is_rent_customize && (<RentcarCustomizeToggle trafficType={t} spec={spec} specIndex={specIndex} label={spec.is_rent_customize?.label ?? "직접 주소 입력"} onValueChange={(v) => console.log("rent customize", v)} />)}
+                    {spec?.s_location && (<Traffic.RentcarLocationSelector trafficType={t} field="s_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.e_location && (<Traffic.RentcarLocationSelector trafficType={t} field="e_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_location?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.s_date && (<Traffic.RentcarDateInput trafficType={t} field="s_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_date?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.s_time && (<Traffic.RentcarTimeInput trafficType={t} field="s_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_time?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.e_date && (<Traffic.RentcarDateInput trafficType={t} field="e_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_date?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.e_time && (<Traffic.RentcarTimeInput trafficType={t} field="e_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.is_rent_customize && (<Traffic.RentcarCustomizeToggle trafficType={t} spec={spec} specIndex={specIndex} label={spec.is_rent_customize?.label ?? "직접 주소 입력"} onValueChange={(v) => console.log("rent customize", v)} />)}
                   </View>
                 );
               })}
@@ -946,12 +946,12 @@ function ProductPay() {
                 return (
                   <View key={`pickup_${specIndex}`} style={{ marginBottom: 12 }}>
                     <Text typography="t5" color={colors.grey800} style={{ marginBottom: 8 }}>{label}</Text>
-                    {spec?.s_location && (<PickupLocationInput trafficType={t} field="s_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.s_date && (<PickupDateInput trafficType={t} field="s_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_date?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.s_time && (<PickupTimeInput trafficType={t} field="s_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_time?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.e_location && (<PickupLocationInput trafficType={t} field="e_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_location?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.e_date && (<PickupDateInput trafficType={t} field="e_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_date?.is_require ?? "").toLowerCase() === "true"} />)}
-                    {spec?.e_time && (<PickupTimeInput trafficType={t} field="e_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.s_location && (<Traffic.PickupLocationInput trafficType={t} field="s_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.s_date && (<Traffic.PickupDateInput trafficType={t} field="s_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_date?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.s_time && (<Traffic.PickupTimeInput trafficType={t} field="s_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_time?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.e_location && (<Traffic.PickupLocationInput trafficType={t} field="e_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_location?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.e_date && (<Traffic.PickupDateInput trafficType={t} field="e_date" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_date?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.e_time && (<Traffic.PickupTimeInput trafficType={t} field="e_time" rawFields={rawFields} specIndex={specIndex} required={String(spec.e_time?.is_require ?? "").toLowerCase() === "true"} />)}
                   </View>
                 );
               })}
@@ -968,7 +968,7 @@ function ProductPay() {
                 if (!t || t !== "voucher") return null;
                 return (
                   <View key={`voucher_${specIndex}`} style={{ marginBottom: 12 }}>
-                    {spec?.s_location && (<VoucherLocationInput trafficType={t} field="s_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"} />)}
+                    {spec?.s_location && (<Traffic.VoucherLocationInput trafficType={t} field="s_location" rawFields={rawFields} specIndex={specIndex} required={String(spec.s_location?.is_require ?? "").toLowerCase() === "true"} />)}
                   </View>
                 );
               })}
@@ -1017,9 +1017,6 @@ function ProductPay() {
           <TouchableOpacity onPress={() => setAgreeMarketing(s => !s)} style={styles.agreeRow}><View style={styles.checkbox}>{agreeMarketing && <Icon name="icon-check" size={14} color={colors.blue500} />}</View><Text style={{ marginLeft: 8 }}>(선택) 마케팅 수신 동의</Text></TouchableOpacity>
         </View>
 
-        {/* 변경: 버튼 활성화는 이제 '결제 버튼 누를 때' 최종 검증을 수행하도록 변경했습니다.
-            즉 UI에서의 실시간 전체-섹션 검증(모든 필드를 구독해서 실시간으로 검사)로 인한 무한 렌더 루프를 피하기 위해,
-            버튼은 bookingLoading 상태일 때만 비활성화되고, 실제 필드 체크는 onPay()에서 수행됩니다. */}
         <FixedBottomCTA onPress={onPay} disabled={bookingLoading}>
           {bookingLoading ? "결제중입니다..." : "결제하기"}
         </FixedBottomCTA>
@@ -1045,29 +1042,27 @@ function ProductPay() {
             </View>
 
             {showPaymentWebView && checkoutPageUrl ? (
-              <WebView
-                ref={webViewRef}
-                originWhitelist={['*']}
-                source={{ uri: checkoutPageUrl }}
-                javaScriptEnabled
-                domStorageEnabled
-                // Android에서는 onShouldStartLoadWithRequest가 권장됨
-                onShouldStartLoadWithRequest={(request) => {
-                  const shouldLoad = urlConverter(request.url);
-                  return shouldLoad;
-                }}
-                onNavigationStateChange={(navState) => {
-                  // 먼저 앱 스킴/intent 처리를 시도하고, 이후 기존 네비게이션 핸들러로 처리
-                  const allowed = urlConverter(navState.url);
-                  if (allowed) {
-                    // 기존에 작성한 결제 완료/retUrl 검사 로직 사용
-                    handleWebViewNavigationStateChange(navState);
-                  }
-                  // if not allowed, urlConverter already launched app and we block further WebView action
-                }}
-                startInLoadingState
-                mixedContentMode="always"
-              />
+              <Suspense fallback={<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}><Text>결제 페이지를 불러오는 중...</Text></View>}>
+                <WebView
+                  ref={webViewRef}
+                  originWhitelist={['*']}
+                  source={{ uri: checkoutPageUrl }}
+                  javaScriptEnabled
+                  domStorageEnabled
+                  onShouldStartLoadWithRequest={(request: any) => {
+                    const shouldLoad = urlConverter(request.url);
+                    return shouldLoad;
+                  }}
+                  onNavigationStateChange={(navState: any) => {
+                    const allowed = urlConverter(navState.url);
+                    if (allowed) {
+                      handleWebViewNavigationStateChange(navState);
+                    }
+                  }}
+                  startInLoadingState
+                  mixedContentMode="always"
+                />
+              </Suspense>
             ) : (
               <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                 <Text>결제 페이지를 불러오는 중입니다...</Text>
