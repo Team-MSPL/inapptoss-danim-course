@@ -42,7 +42,6 @@ export default function Main() {
       case 2:
         return <MyReservation />;
       case 3:
-        // show country selection in main tab; selection navigates to a different route
         return <MainCountrySelection />;
       case 4:
         return <MainInfo />;

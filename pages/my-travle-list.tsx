@@ -36,6 +36,7 @@ function MyTravleList() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const { userId, userJwtToken } = useAppSelector((state) => state.travelSlice);
+
   const getTravelList = async () => {
     try {
       //아이디
@@ -51,10 +52,13 @@ function MyTravleList() {
       //   dispatch(LoadingSliceActions.offLoading());
     }
   };
+
   useEffect(() => {
     getTravelList();
   }, []);
+
   const { open } = useToast();
+
   const findCityFromPath = (path: string) => {
     const pathParts = path?.split('/');
     const targetCity = pathParts[2];
@@ -81,6 +85,7 @@ function MyTravleList() {
       }
     }
   };
+
   const goMyTravelDetail = async (e: any) => {
     try {
       const data = await dispatch(getOneTravelCourse({ travelId: e._id })).unwrap();
@@ -102,10 +107,8 @@ function MyTravleList() {
       // dispatch(LoadingSliceActions.offLoading());
     }
   };
+
   const dDayCalculate = useCallback((e: any) => {
-    //e.startDay=시작날짜e.endDay=끝나느날짜
-    // 0~1 당일  -1 미래 1과거
-    //여행 전, 여행 당일 ,여행 중, 여행 끝나는날, 여행 끝나고
     let startSign = Math.sign(moment.duration(moment(e.startDay).hours(0).diff(moment())).asDays());
     let endSign = Math.sign(moment.duration(moment(e.endDay).hours(0).diff(moment())).asDays());
     let result = '';
@@ -133,6 +136,7 @@ function MyTravleList() {
     let data = { result: result, endFlag: endFlag };
     return data;
   }, []);
+
   const monthRef = useRef(moment().add(1, 'month').format('MM'));
   const renderItem = (item: any) => {
     let after = monthRef.current;
@@ -196,18 +200,6 @@ function MyTravleList() {
       <Skeleton height={60} style={{ marginTop: 12 }} />
     </AnimateSkeleton>
   ) : (
-    // <Lottie
-    //   height={"100%"}
-    //   src="https://firebasestorage.googleapis.com/v0/b/danim-image/o/loading-json%2Floading.json?alt=media&token=93dc5b78-a489-413f-bc77-29444985e83b"
-    //   autoPlay={true}
-    //   loop={true}
-    //   onAnimationFailure={() => {
-    //     console.log("Animation Failed");
-    //   }}
-    //   onAnimationFinish={() => {
-    //     console.log("Animation Finished");
-    //   }}
-    // />
     <View>
       {list.length == 0 ? (
         <View style={{ top: 240 }}>

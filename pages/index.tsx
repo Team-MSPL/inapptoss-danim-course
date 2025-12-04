@@ -30,7 +30,7 @@ export function Index() {
   const [loading, setLoading] = useState(false);
 
   const handleNext = async () => {
-    if (loading) return; // prevent double tap
+    if (loading) return;
     if (userId != null) {
       dispatch(travelSliceActions.reset({ userId: userId, userJwtToken: userJwtToken }));
         navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}`}] });

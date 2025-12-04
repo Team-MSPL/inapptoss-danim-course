@@ -65,7 +65,6 @@ function PresetDetail() {
   const [itemLayouts, setItemLayouts] = useState<number[]>([]);
   const scrollRef = useRef<FlatList<any>>(null);
 
-  // 지도 높이 애니메이션 관련
   const defaultHeight = (Dimensions.get('window').height * 240) / 812;
   const [isMapOpen, setIsMapOpen] = useState(true);
   const animatedHeight = useRef(new Animated.Value(defaultHeight)).current;
@@ -80,11 +79,6 @@ function PresetDetail() {
     setIsMapOpen(!isMapOpen);
   };
 
-  // ----------------------
-  // 추천 관련 핸들러
-  // ----------------------
-
-  // getRecommendList는 실패시 빈 배열만 반환, 화면 이동은 goNext에서만!
   const getRecommendList = async (opts: any): Promise<any[]> => {
     try {
       const isOverseas = region[0].startsWith('해외');
@@ -352,10 +346,6 @@ function PresetDetail() {
     }
   });
 
-  // ----------------------
-  // 성향 계산 함수
-  // ----------------------
-
   const calculateTendency = (tendencyObj: TendencyObj): string => {
     const { tendencyNameList, tendencyRanking } = tendencyObj || {};
     const filteredNames: string[] = [],
@@ -386,10 +376,6 @@ function PresetDetail() {
       (tendencyNameList[nextMinIdx] ? ', ' + tendencyNameList[nextMinIdx] : '')
     );
   };
-
-  // ----------------------
-  // CTA/BottomSheet 로직
-  // ----------------------
 
   const [isLoading, setIsLoading] = useState(false);
 

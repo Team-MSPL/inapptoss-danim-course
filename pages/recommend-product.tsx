@@ -25,7 +25,6 @@ export const Route = createRoute('/recommend-product', {
 
 const RECOMMEND_API_URL = `${import.meta.env.API_ROUTE_RELEASE ?? ''}/sellingProduct/recommend`;
 
-/* helpers (flatten/extract) - unchanged from before */
 function flattenArray(arr: any[]): any[] {
   const out: any[] = [];
   (function f(a: any[]) {
@@ -107,9 +106,8 @@ export default function RecommendProduct() {
   const navigation = useNavigation();
   const params = Route.useParams?.() ?? ({} as any);
 
-  // incoming overrideCityList (legacy) or region param (new)
   const overrideCityList = params?.cityList ?? null;
-  const incomingRegionParam = params?.region ?? null; // could be string or array
+  const incomingRegionParam = params?.region ?? null;
 
   const cameFromSave = Boolean(params?.fromSave);
 
@@ -128,7 +126,6 @@ export default function RecommendProduct() {
     (state) => state.travelSlice,
   );
 
-  // regionCheck getter (reads latest from zustand timetableStore)
   const getRegionCheck = useCallback(() => {
     try {
       return (useRegionCheckStore as any).getState()?.regionCheck ?? [];
@@ -150,7 +147,6 @@ export default function RecommendProduct() {
     return body;
   }, [recommendStoreGet, tendency]);
 
-  // country defs to map en/ko inputs -> Korean country string required by API
   const countryDefs = [
     { ko: '한국', en: 'Korea', alt: ['korea', 'southkorea', '대한민국'] },
     { ko: '일본', en: 'Japan', alt: ['japan'] },
@@ -163,10 +159,8 @@ export default function RecommendProduct() {
     { ko: '홍콩과 마카오', en: 'HongKongMacao', alt: ['hongkong', 'hong kong', 'macao', 'macau', '마카오', '홍콩'] },
   ];
 
-  // normalize helper for matching
   const normalizeKey = (s?: string) => (s ?? '').toString().replace(/\s+/g, '').toLowerCase();
 
-  // map input token (en or ko or variants) -> Korean country string if found
   const mapTokenToKoreanCountry = (token?: string) => {
     if (!token) return '';
     const key = normalizeKey(token);
@@ -178,9 +172,7 @@ export default function RecommendProduct() {
     return '';
   };
 
-  // helper: parse region param into { countryStr, cityList }
   const parseRegionParam = useCallback((regionParam: any) => {
-    // returns { countryStr: string, cityList: string[] }
     if (!regionParam) return { countryStr: '', cityList: [] };
 
     const items = Array.isArray(regionParam) ? regionParam : [String(regionParam)];
@@ -192,8 +184,6 @@ export default function RecommendProduct() {
       const trimmed = raw.trim();
       if (trimmed.includes('/')) {
         const parts = trimmed.split('/').map(p => p.trim()).filter(Boolean);
-        // Expect patterns like ['해외','중간','도시', ...]
-        // Use middle part as country token when available
         if (parts.length >= 2) {
           const middle = parts[1];
           const last = parts[parts.length - 1];
@@ -201,25 +191,17 @@ export default function RecommendProduct() {
           if (mapped) {
             derivedCountryStr = mapped;
           } else {
-            // If middle token not recognized, still set it as-is (but user requested Korean names)
-            // so we try to fallback: if middle is '홍콩'/'마카오' handled by mapTokenToKoreanCountry,
-            // otherwise we keep empty so API may decide or existing country state used.
             derivedCountryStr = middle || derivedCountryStr;
           }
           derivedCityList.push(last);
         } else {
-          // can't parse, treat whole trimmed as city
           derivedCityList.push(trimmed);
         }
       } else {
-        // No slash -> domestic (한국)
         if (!derivedCountryStr) derivedCountryStr = '한국';
         derivedCityList.push(trimmed);
       }
     }
-
-    // If multiple items produce multiple country candidates, prefer the first valid mapped ko country.
-    // derivedCountryStr already set by first mapped middle token.
     return { countryStr: derivedCountryStr, cityList: derivedCityList };
   }, []);
 
@@ -237,23 +219,21 @@ export default function RecommendProduct() {
       }
 
       const localBody: any = prepareLocalRecommendBody(overrideCountryName);
-      // default fill from travelSlice
+
       localBody.country = getCountryByIndex(country) ?? localBody.country ?? '';
       localBody.cityList = region ?? localBody.cityList ?? [];
       localBody.pathList = params?.timetable ?? [[]];
 
-      // If route param 'region' provided, parse it and override country/cityList accordingly
       if (incomingRegionParam) {
         const parsed = parseRegionParam(incomingRegionParam);
         if (parsed.countryStr) {
-          localBody.country = parsed.countryStr; // Korean name ensured by parseRegionParam
+          localBody.country = parsed.countryStr;
         }
         if (Array.isArray(parsed.cityList) && parsed.cityList.length > 0) {
           localBody.cityList = parsed.cityList;
           console.log('[RecommendProduct] override cityList from parsed region param ->', parsed.cityList);
         }
       } else if (overrideCityList) {
-        // legacy override (explicit cityList param)
         localBody.cityList = overrideCityList;
         console.log('[RecommendProduct] override cityList from route params ->', overrideCityList);
       }
@@ -264,7 +244,6 @@ export default function RecommendProduct() {
         console.log('[RecommendProduct] Overrode selectList with recent2D ->', recent2D);
       }
 
-      // If cityList still empty, try to use regionCheck from zustand
       if ((!Array.isArray(localBody.cityList) || localBody.cityList.length === 0)) {
         const rc = getRegionCheck();
         if (Array.isArray(rc) && rc.length > 0) {
@@ -276,7 +255,6 @@ export default function RecommendProduct() {
         }
       }
 
-      // Build list-mode body (new API schema) with limit = 5
       const postBody: any = {
         pathList: localBody.pathList ?? [[]],
         country: localBody.country ?? "",
@@ -285,10 +263,9 @@ export default function RecommendProduct() {
         mode: "list",
         page,
         limit,
-        keyword: "", // could expose as state if needed
+        keyword: "",
       };
 
-      // Log final body before sending
       try {
         console.log('[RecommendProduct] final POST body (object):', postBody);
         console.log('[RecommendProduct] final POST body (json):', JSON.stringify(postBody, null, 2));

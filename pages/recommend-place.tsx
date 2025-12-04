@@ -15,7 +15,6 @@ import {
   useToast,
 } from '@toss-design-system/react-native';
 import { ScrollView } from '@granite-js/native/react-native-gesture-handler';
-import CustomMapViewMarker from '../components/map-view-marker';
 import NavigationBar from '../components/navigation-bar';
 
 export const Route = createRoute('/recommend-place', {
@@ -63,7 +62,6 @@ function RecommendPlace() {
   const [recommendList, setRcommendList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 추천 실패시 바로 리셋/토스트/콘솔 대신, 빈 배열 반환만!
   const fetchRecommendList = async () => {
     try {
       setLoading(true);
@@ -115,7 +113,6 @@ function RecommendPlace() {
     }
   };
 
-  // 최초 진입 시 추천 리스트 fetch & 실패시 한 번만 안내
   useEffect(() => {
     (async () => {
       const result = await fetchRecommendList();

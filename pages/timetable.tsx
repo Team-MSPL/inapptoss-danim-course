@@ -266,10 +266,8 @@ function Timetable() {
 
   const [setPressed] = useState(false);
 
-  // deleting state for the "shopping bag" icon action
   const [deleting, setDeleting] = useState(false);
 
-  // delete current travel and reset to main (index 0)
   const handleDeleteTravelAndExit = () => {
     if (!travelId) {
       openToast('삭제할 여행이 없습니다.', { icon: 'icon-warning-circle' });
@@ -291,7 +289,6 @@ function Timetable() {
                 data: { travelId },
               });
               openToast('여행이 삭제되었습니다.', { icon: 'icon-check-circle' });
-              // reset navigation stack to main (index 0) — adjust route name if your main route is different
               navigation.goBack();
             } catch (err) {
               console.error('deleteTravelCourse error', err);
@@ -348,8 +345,6 @@ function Timetable() {
         </Animated.View>
         <View>
           <View
-            // this outer view is clickable to toggle map height via the arrow button,
-            // keep ArrowToggleButton as before
             style={{
               width: Dimensions.get('window').width,
               height: 40,
