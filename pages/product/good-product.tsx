@@ -34,13 +34,11 @@ import {
   earliestBookingText,
 } from "../../components/product/good-product-function";
 import { useProductStore } from "../../zustand/useProductStore";
-import Pdml from "../../components/pdml"; // reuse PDML components as detail
-import MapWebView from "../../components/product/map-webview";
+import Pdml from "../../components/pdml";
 import WebView from "@granite-js/native/react-native-webview";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// Use import.meta.env directly as requested
 const QUERY_PACKAGE_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryPackage`;
 const QUERY_PRODUCT_API = `${import.meta.env.API_ROUTE_RELEASE}/kkday/Product/QueryProduct`;
 const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY ?? "";
@@ -67,9 +65,6 @@ function stripHtmlTags(html?: string) {
   return stripped.replace(/\n\s*\n+/g, "\n").trim();
 }
 
-/**
- * Decode a few common HTML entities and numeric entities.
- */
 function decodeHTMLEntities(str: string) {
   if (!str) return str;
   let s = String(str);
@@ -105,26 +100,19 @@ function decodeHTMLEntities(str: string) {
   return s;
 }
 
-/**
- * Convert HTML introduction into array of cleaned lines.
- */
 function formatIntroduction(html?: string): string[] {
   if (!html) return [];
   let s = String(html);
 
-  // convert closing tags to newlines
   s = s.replace(/<\/li>/gi, "\n");
   s = s.replace(/<\/p>/gi, "\n");
   s = s.replace(/<br\s*\/?>/gi, "\n");
 
-  // remove opening li tags and other tags
   s = s.replace(/<li[^>]*>/gi, "");
   s = s.replace(/<[^>]+>/gi, "");
 
-  // decode entities
   s = decodeHTMLEntities(s);
 
-  // normalize newlines and whitespace
   s = s.replace(/\r\n|\r/g, "\n");
   s = s.replace(/\n\s*\n+/g, "\n"); // collapse multiple newlines
   const lines = s
@@ -173,11 +161,6 @@ function extractLocationFromModuleContent(moduleContent?: any) {
   return null;
 }
 
-/**
- * Native renderer for package description & refund policy.
- * Returns an array of React nodes (Text) formatted using typography="t6" and grey800.
- * This will be used both inline (inside card) and inside modal popup.
- */
 function renderPackageNodes(pkg: any): JSX.Element[] {
   const modRoot = pkg?.description_module ?? {};
   const pkgDescModule = modRoot?.PMDL_PACKAGE_DESC ?? null;
@@ -316,7 +299,6 @@ function renderPackageNodes(pkg: any): JSX.Element[] {
 }
 
 export default function ProductGoodProduct() {
-  // --- HOOKS (always executed, never conditional) ---
   const navigation = useNavigation();
   const params = Route.useParams();
 
@@ -332,7 +314,6 @@ export default function ProductGoodProduct() {
 
   const [pdmlExpanded, setPdmlExpanded] = useState(false);
 
-  // modal state for "설명 보기"
   const [pkgModalVisible, setPkgModalVisible] = useState(false);
   const [modalPkg, setModalPkg] = useState<any | null>(null);
 
@@ -385,7 +366,6 @@ export default function ProductGoodProduct() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, product, setPdt]);
 
-  // NEW: if pkgList is empty after product loaded, show alert + goBack
   useEffect(() => {
     if (!loading && product?.detail_loaded && Array.isArray(pkgList) && pkgList.length === 0) {
       Alert.alert(
@@ -408,7 +388,6 @@ export default function ProductGoodProduct() {
     }
   }, [loading, product, pkgList, navigation]);
 
-  // Derived values (hooks-free)
   const discountPrice = typeof product?.b2b_min_price === "number" ? product.b2b_min_price : Number(product?.b2b_min_price || 0);
   const originalPrice = typeof product?.b2c_min_price === "number" ? product.b2c_min_price : Number(product?.b2c_min_price || 0);
   const discountAmount = originalPrice > discountPrice ? (originalPrice - discountPrice) : 0;
@@ -508,7 +487,6 @@ export default function ProductGoodProduct() {
       const skus = firstItem?.skus ?? [];
       const payloadDateSetting = extractDateSettingPayload(product ?? {});
 
-      // NEW: If the only spec is the ticket spec ("티켓 종류"), handle it here and DO NOT navigate to select-spec.
       const isOnlyTicketSpec = Array.isArray(specs) && specs.length === 1 && typeof specs[0]?.spec_title === "string" && specs[0].spec_title.trim().toLowerCase() === "티켓 종류";
 
       if (isOnlyTicketSpec) {
@@ -587,7 +565,6 @@ export default function ProductGoodProduct() {
         return;
       }
 
-      // Fallback
       navigation.navigate("/product/select-spec", {
         prod_no: product?.prod_no ?? params.prod_no,
         prod_name: product?.prod_name ?? params.prod_name,
@@ -599,7 +576,6 @@ export default function ProductGoodProduct() {
         ...(itemUnit != null ? { item_unit: itemUnit } : {}),
       });
     } catch (err: any) {
-      console.error("[ProductGoodProduct] QueryPackage error", err);
       const msg = err?.response?.data?.result_msg ?? err?.message ?? "패키지 정보를 불러오는 중 오류가 발생했습니다.";
       Alert.alert("오류", msg);
     } finally {
@@ -609,7 +585,6 @@ export default function ProductGoodProduct() {
 
   const goReservation = () => {
     if (!selectedPkgNo) {
-      console.log("패키지넘거바없음")
       return;
     }
     handleReservePress();
@@ -633,7 +608,6 @@ export default function ProductGoodProduct() {
     setModalPkg(null);
   };
 
-  // PDML root + ordering
   const modulesRoot = product?.description_module_for_render ?? product?.description_module ?? {};
   const orderedModuleKeys = useMemo(() => {
     const prefer = [
@@ -669,12 +643,9 @@ export default function ProductGoodProduct() {
     </View>
   );
 
-  // --- RENDER (single return; conditionally show skeleton/content to keep hooks stable) ---
   return (
     <View style={{flex: 1, backgroundColor: "#fff"}}>
       <FixedBottomCTAProvider>
-        { /* Top: if loading show skeleton block, otherwise main content.
-             Note: we do NOT early-return — this keeps hook order stable */ }
         {loading ? (
           <AnimateSkeleton delay={400} withGradient={true} withShimmer={true}>
             <Skeleton height={291} width={"100%"} style={{ borderRadius: 0 }} />
@@ -814,7 +785,6 @@ export default function ProductGoodProduct() {
 
             <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
 
-            {/* 옵션(패키지) 선택 UI */}
             <View style={{ padding: 24 }}>
               <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>
                 옵션 선택
@@ -867,7 +837,6 @@ export default function ProductGoodProduct() {
                           </View>
                         )}
 
-                        {/* Inline: 설명 button (opens modal) */}
                         <View style={{ marginTop: 8 }}>
                           <Pressable onPress={() => openPkgModal(pkg)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                             <Text typography="t6" color={colors.blue600} fontWeight="bold">설명 보기</Text>
@@ -914,10 +883,8 @@ export default function ProductGoodProduct() {
               })}
             </View>
 
-            {/* divider line + PDML section */}
             <View style={{ height: 12, backgroundColor: colors.grey100, width: '100%' }} />
 
-            {/* PDML toggle and content */}
             <View style={{ paddingVertical: 18, paddingHorizontal: 20 }}>
               <TouchableOpacity
                 onPress={() => setPdmlExpanded((v) => !v)}
@@ -960,7 +927,6 @@ export default function ProductGoodProduct() {
                     return <PdmlComponent2 key={key} moduleKey={key} moduleData={moduleData} googleApiKey={GOOGLE_API_KEY} />;
                   }
 
-                  // fallback: simple safe render for text/list/media
                   const moduleTitle = moduleData.module_title ?? moduleData.title ?? key;
                   const content = moduleData.content ?? moduleData;
                   if (moduleData?.use_html && content?.type === "text" && content?.desc) {
@@ -1015,13 +981,11 @@ export default function ProductGoodProduct() {
           {reservationLoading ? '로딩 중...' : '예약하기'}
         </FixedBottomCTA>
 
-        {/* 중앙 카드형 Package Modal: 기존 모달 블록을 이 코드로 교체하세요 */}
         <Modal visible={pkgModalVisible} animationType="fade" transparent onRequestClose={closePkgModal}>
           <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center", padding: 16 }}>
-            {/* 배경 탭으로 닫기 */}
+
             <Pressable style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} onPress={closePkgModal} />
 
-            {/* 중앙 카드 */}
             <View
               style={{
                 width: "92%",
@@ -1045,7 +1009,6 @@ export default function ProductGoodProduct() {
                 })(),
               }}
             >
-              {/* 헤더 */}
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                 <Text typography="t5" fontWeight="bold" color={colors.grey900}>옵션 설명</Text>
                 <Pressable onPress={closePkgModal} hitSlop={{ top: 12, left: 12, right: 12, bottom: 12 }}>
@@ -1055,10 +1018,8 @@ export default function ProductGoodProduct() {
 
               <View style={{ height: 1, backgroundColor: colors.grey100, marginBottom: 12 }} />
 
-              {/* 내용 영역 (스크롤) */}
               <ScrollView contentContainerStyle={{ paddingBottom: 12 }}>
                 {modalPkg ? (
-                  // renderPackageNodes는 반드시 React element(예: <View>...</View>) 를 반환하도록 구현되어 있어야 합니다.
                   renderPackageNodes(modalPkg)
                 ) : (
                   <Text typography="t6" color={colors.grey800}>불러오는 중...</Text>

@@ -15,76 +15,8 @@ import { useProductStore } from "../../zustand/useProductStore";
 import { MiniProductCard } from "../../components/product/miniProductCard";
 import { formatPrice } from "../../components/product/pay-function";
 import { useBookingFields } from "../../kkday/kkdayBookingField";
-import GuideLangSelector from "../../components/product/payfield/GuideLangSelector";
-import EngLastNameInput from "../../components/product/payfield/EngLastNameInput";
-import EngFirstNameInput from "../../components/product/payfield/EngFirstNameInput";
 import useBookingStore from "../../zustand/useBookingStore";
 import { useReservationStore } from "../../zustand/useReservationStore";
-import GenderSelector from "../../components/product/payfield/GenderSelector";
-import NationalitySelector from "../../components/product/payfield/NationalitySelector";
-import MtpNoInput from "../../components/product/payfield/MtpNoInput";
-import IdNoInput from "../../components/product/payfield/IdNoInput";
-import PassportNoInput from "../../components/product/payfield/PassportNoInput";
-import BirthDateInput from "../../components/product/payfield/BirthDateInput";
-import HeightInput from "../../components/product/payfield/HeightInput";
-import HeightUnitSelector from "../../components/product/payfield/HeightUnitSelector";
-import WeightInput from "../../components/product/payfield/WeightInput";
-import WeightUnitSelector from "../../components/product/payfield/WeightUnitSelector";
-import ShoeInput from "../../components/product/payfield/ShoeInput";
-import ShoeUnitSelector from "../../components/product/payfield/ShoeUnitSelector";
-import ShoeTypeSelector from "../../components/product/payfield/ShoeTypeSelector";
-import GlassDegreeSelector from "../../components/product/payfield/GlassDegreeSelector";
-import MealSelector from "../../components/product/payfield/MealSelector";
-import AllergyFoodSelector from "../../components/product/payfield/AllergyFoodSelector";
-import NativeLastNameInput from "../../components/product/payfield/NativeLastNameInput";
-import NativeFirstNameInput from "../../components/product/payfield/NativeFirstNameInput";
-import TelCountryCodeSelector from "../../components/product/payfield/TelCountryCodeSelector";
-import TelNumberInput from "../../components/product/payfield/TelNumberInput";
-import CountryCitiesSelector from "../../components/product/payfield/CountryCitiesSelector";
-import AddressInput from "../../components/product/payfield/AddressInput";
-import HotelNameInput from "../../components/product/payfield/HotelNameInput";
-import HotelTelNumberInput from "../../components/product/payfield/HotelNumberInput";
-import BookingOrderNoInput from "../../components/product/payfield/BookingOrderNoInput";
-import CheckInDateInput from "../../components/product/payfield/CheckInDateInput";
-import CheckOutDateInput from "../../components/product/payfield/CheckOutDateInput";
-import ContactAppSelector from "../../components/product/payfield/ContactAppSelector";
-import ContactAppAccountInput from "../../components/product/payfield/ContactAppAccountInput";
-import HaveAppToggle from "../../components/product/payfield/HaveAppToggle";
-import ArrivalFlightTypeSelector from "../../components/product/traffic/ArrivalFlightTypeSelector";
-import ArrivalAirportSelector from "../../components/product/traffic/ArrivalAirportSelector";
-import ArrivalFlightNoInput from "../../components/product/traffic/ArrivalFlightNoInput";
-import ArrivalTerminalInput from "../../components/product/traffic/ArrivalTerminalInput";
-import ArrivalVisaToggle from "../../components/product/traffic/ArrivalVisaToggle";
-import ArrivalDateInput from "../../components/product/traffic/ArrivalDateInput";
-import ArrivalTimeInput from "../../components/product/traffic/ArrivalTimeInput";
-import DepartureFlightTypeSelector from "../../components/product/traffic/DepartureFlightTypeSelector";
-import DepartureAirportSelector from "../../components/product/traffic/DepartureAirportSelector";
-import DepartureAirlineInput from "../../components/product/traffic/DepartureAirlineInput";
-import DepartureFlightNoInput from "../../components/product/traffic/DepartureFlightNoInput";
-import DepartureTerminalInput from "../../components/product/traffic/DepartureTerminalInput";
-import DepartureHaveBeenInCountryInput from "../../components/product/traffic/DepartureHaveBeenInCountryInput";
-import DepartureDateInput from "../../components/product/traffic/DepartureDateInput";
-import DepartureTimeInput from "../../components/product/traffic/DepartureTimeInput";
-import CarPsgAdultInput from "../../components/product/traffic/CarPsgAdultInput";
-import CarPsgChildInput from "../../components/product/traffic/CarPsgChildInput";
-import CarPsgInfantInput from "../../components/product/traffic/CarPsgInfantInput";
-import SafetyseatSupChildInput from "../../components/product/traffic/SafetyseatSupChildInput";
-import SafetyseatSelfChildInput from "../../components/product/traffic/SafetyseatSelfChildInput";
-import SafetyseatSupInfantInput from "../../components/product/traffic/SafetyseatSupInfantInput";
-import LuggageCarryInput from "../../components/product/traffic/LuggageCarryInput";
-import LuggageCheckInput from "../../components/product/traffic/LuggageCheckInput";
-import RentcarLocationSelector from "../../components/product/traffic/RentcarLocationSelector";
-import RentcarDateInput from "../../components/product/traffic/RentcarDateInput";
-import RentcarTimeInput from "../../components/product/traffic/RentcarTimeInput";
-import PickupLocationInput from "../../components/product/traffic/PickupLocationInput";
-import PickupDateInput from "../../components/product/traffic/PickupDateInput";
-import PickupTimeInput from "../../components/product/traffic/PickupTimeInput";
-import VoucherLocationInput from "../../components/product/traffic/VoucherLocationInput";
-import PassportExpDateInput from "../../components/product/payfield/PassportExpDateInput";
-import ZipcodeInput from "../../components/product/payfield/ZipcodeInput";
-import ArrivalAirlineInput from "../../components/product/traffic/ArrivalAirlineInput";
-import SafetyseatSelfInfantInput from "../../components/product/traffic/SafetyseatSelfInfantInput";
-import RentcarCustomizeToggle from "../../components/product/traffic/RentcarCustomizeToggle";
 import CollapsibleSection from "../../components/product/collapsibleSection";
 import { buildReservationPayload } from "../../components/product/booking/buildReservationPayload";
 import {
@@ -97,6 +29,8 @@ import axios from "axios";
 import { TossPay } from "@apps-in-toss/framework";
 import useAuthStore from "../../zustand/useAuthStore";
 import { ConvertUrl } from "@tosspayments/widget-sdk-react-native/src/utils/convertUrl";
+import * as PayField from '../../components/product/payfield';
+import * as Traffic from '../../components/product/traffic';
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -110,7 +44,6 @@ function ProductPay() {
   const params = Route.useParams();
   const pkgData = params?.pkgData ?? null;
 
-  // reset booking store when product or package changes
   useEffect(() => {
     useBookingStore.getState().resetAll();
   }, [params?.prod_no, params?.pkg_no]);
@@ -121,7 +54,6 @@ function ProductPay() {
   const thumbnail = pdt?.prod_img_url ?? (pdt?.img_list && pdt.img_list[0]) ?? "";
   const title = pdt?.prod_name || pdt?.name;
 
-  // reservation date from store
   const s_date = useReservationStore((s: any) => s.s_date);
 
   const { fields: rawFields, loading: bfLoading, error: bfError } = useBookingFields({
@@ -152,31 +84,17 @@ function ProductPay() {
   const [agreeService, setAgreeService] = useState<boolean>(false);
   const [agreeMarketing, setAgreeMarketing] = useState<boolean>(false);
 
-  // payment UI state
   const [isPaying, setIsPaying] = useState<boolean>(false);
   const [showPaymentWebView, setShowPaymentWebView] = useState<boolean>(false);
   const [checkoutPageUrl, setCheckoutPageUrl] = useState<string | null>(null);
   const [expectedRetUrl, setExpectedRetUrl] = useState<string | null>(null);
   const webViewRef = useRef<WebView | null>(null);
 
-  // 1) 컴포넌트 상단: 기존 useState들 근처에 추가
   const [pendingBookingPayload, setPendingBookingPayload] = useState<any | null>(null);
   const [pendingPayToken, setPendingPayToken] = useState<string | null>(null);
   const [pendingAmount, setPendingAmount] = useState<number | null>(null);
 
   const setGuideLangCode = useBookingStore((s: any) => s.setGuideLangCode);
-  const buyerFirstName = useBookingStore((s: any) => s.buyer_first_name);
-  const setBuyerFirstName = useBookingStore((s: any) => s.setBuyerFirstName);
-  const buyerLastName = useBookingStore((s: any) => s.buyer_last_name);
-  const setBuyerLastName = useBookingStore((s: any) => s.setBuyerLastName);
-  const buyerEmail = useBookingStore((s: any) => s.buyer_Email);
-  const setBuyerEmail = useBookingStore((s: any) => s.setBuyerEmail);
-  const buyerTelCountryCode = useBookingStore((s: any) => s.buyer_tel_country_code);
-  const setBuyerTelCountryCode = useBookingStore((s: any) => s.setBuyerTelCountryCode);
-  const buyerTelNumber = useBookingStore((s: any) => s.buyer_tel_number);
-  const setBuyerTelNumber = useBookingStore((s: any) => s.setBuyerTelNumber);
-  const buyerCountry = useBookingStore((s: any) => s.buyer_country);
-  const setBuyerCountry = useBookingStore((s: any) => s.setBuyerCountry);
 
   useEffect(() => {
     if (agreePersonal && agreeService && agreeMarketing) setAgreeAll(true);
@@ -199,10 +117,6 @@ function ProductPay() {
     setCompletedSections((prev) => ({ ...prev, [sectionIndex]: true }));
     setOpenSections((prev) => ({ ...prev, [sectionIndex + 1]: true }));
     const store = useBookingStore.getState();
-    console.log("[BookingStore] guideLangCode:", store.guideLangCode);
-    console.log("[BookingStore] customMap:", store.customMap);
-    console.log("[BookingStore] customArray:", store.getCustomArray());
-    console.log("[BookingStore] trafficArray:", store.getTrafficArray());
   }
 
   const adultPrice = params?.adult_price ?? params?.display_price ?? pkgData?.item?.[0]?.b2c_min_price ?? pkgData?.b2c_min_price ?? 0;
@@ -241,36 +155,28 @@ function ProductPay() {
 
   const { loading: bookingLoading, error: bookingError, run } = useBookingApi();
 
-  // get userKey from zustand (sync access)
   const userKey = useAuthStore.getState().userKey;
 
-  // TEST API KEY from your message (client-side test only)
   const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY;
 
-  // ProductPay 함수 내부에 추가
   const urlConverter = useCallback((url: string): boolean => {
     if (!url) return true;
     try {
       const convertUrl = new ConvertUrl(url);
       if (convertUrl.isAppLink && convertUrl.isAppLink()) {
-        // 앱 링크인 경우 WebView에서 로드하지 말고 앱 실행 시도
         convertUrl.launchApp().then((launched: boolean) => {
-          // launched === false 면 앱 미설치로 PlayStore/앱마켓 이동 등 SDK가 처리함
           console.debug('[ProductPay] ConvertUrl.launchApp result:', launched);
         }).catch((e: any) => {
           console.warn('[ProductPay] ConvertUrl.launchApp threw', e);
         });
-        // WebView는 해당 URL을 로드하지 않음
         return false;
       }
     } catch (e) {
       console.warn('[ProductPay] urlConverter parse error', e);
-      // fallback: allow WebView to load
     }
-    // not an app link -> allow WebView to load
     return true;
   }, []);
-  // --- helper: axios post with retries (network blips) ---
+
   async function postWithRetry(url: string, body: any, headers: any, retries = 2) {
     for (let i = 0; i <= retries; i++) {
       try {
@@ -286,7 +192,6 @@ function ProductPay() {
 
   const refundTossPayment = async (payToken: string | null, amount: number) => {
     if (!payToken) {
-      console.warn("[ProductPay] refund skipped - no payToken");
       return { success: false, error: "no_paytoken" };
     }
     const url = "https://pay.toss.im/api/v2/refunds";
@@ -300,15 +205,12 @@ function ProductPay() {
     };
     try {
       const resp = await axios.post(url, body, { headers: { "Content-Type": "application/json" }, timeout: 15000 });
-      console.debug("[ProductPay] refund response:", resp.status, resp.data);
       return { success: true, data: resp.data };
     } catch (err: any) {
-      console.error("[ProductPay] refund failed:", err?.response ?? err);
       return { success: false, error: err?.response?.data ?? err?.message ?? err };
     }
   };
 
-  // Helper to parse query params
   const parseQueryParams = (url: string) => {
     try {
       const u = new URL(url);
@@ -328,7 +230,7 @@ function ProductPay() {
       }, {});
     }
   };
-  // Create Toss payment (v2)
+
   const createTossPayment = async (orderNo: string, amount: number, productDesc = "상품", retUrl = "https://pay.toss.im/payfront/demo/completed") => {
     const url = "https://pay.toss.im/api/v2/payments";
     const body = {
@@ -350,7 +252,6 @@ function ProductPay() {
       });
       return resp.data;
     } catch (err: any) {
-      console.error("[ProductPay] createTossPayment error:", err?.response ?? err);
       throw err;
     }
   };
@@ -361,7 +262,6 @@ function ProductPay() {
     setShowPaymentWebView(true);
   };
 
-  // 2) handleWebViewNavigationStateChange 수정: 결제 성공 시 pending 예약 실행 및 실패시 환불
   const handleWebViewNavigationStateChange = useCallback(
     async (navState: any) => {
       const { url } = navState;
@@ -371,20 +271,15 @@ function ProductPay() {
         const q = parseQueryParams(url);
         const status = q.status ?? null;
 
-        // close webview UI
         setShowPaymentWebView(false);
         setCheckoutPageUrl(null);
         setExpectedRetUrl(null);
 
         if (status === "PAY_COMPLETE" || status === "PAY_APPROVED") {
-          // Payment succeeded on v2 flow. Now, if we have pending payload, run booking.
           try {
             if (pendingBookingPayload) {
-              console.debug("[ProductPay][WebView] Payment success => running booking for pending payload");
               const runResult = await run(pendingBookingPayload);
-              console.debug("[ProductPay][WebView] booking runResult:", runResult);
 
-              // evaluate success same as main flow
               let bookingAllSucceeded = true;
               if (Array.isArray((runResult as any).results)) {
                 for (const r of (runResult as any).results) {
@@ -412,8 +307,6 @@ function ProductPay() {
                 });
                 return;
               } else {
-                // booking failed -> refund using pendingPayToken if available
-                console.warn("[ProductPay][WebView] booking failed after v2 payment. Initiating refund for payToken:", pendingPayToken);
                 if (pendingPayToken && pendingAmount) {
                   const refundRes = await refundTossPayment(pendingPayToken, pendingAmount);
                   if (refundRes.success) {
@@ -438,7 +331,6 @@ function ProductPay() {
                 return;
               }
             } else {
-              // No pending booking payload -> just navigate success
               Alert.alert("결제 완료", "결제가 완료되었습니다. (테스트 결과)");
               setIsPaying(false);
               navigation.reset({
@@ -452,7 +344,6 @@ function ProductPay() {
             }
           } catch (err: any) {
             console.error("[ProductPay][WebView] booking.run threw:", err);
-            // try refund if possible
             if (pendingPayToken && pendingAmount) {
               const refundRes = await refundTossPayment(pendingPayToken, pendingAmount);
               if (refundRes.success) {
@@ -478,7 +369,6 @@ function ProductPay() {
           }
         }
 
-        // status not success -> canceled or failed
         Alert.alert("결제 실패 또는 취소", `결제 상태: ${status ?? "UNKNOWN"}`);
         setIsPaying(false);
         navigation.reset({
@@ -494,7 +384,6 @@ function ProductPay() {
   );
 
   async function onPay() {
-    // 0) Email validation: block if invalid (always check current store value)
     const currentBuyerEmail = useBookingStore.getState().buyer_Email;
     const emailValue = String(currentBuyerEmail ?? "").trim();
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -503,7 +392,6 @@ function ProductPay() {
       return;
     }
 
-    // Final validation on press: re-run validation against current booking store before sending
     if (!rawFields) {
       Alert.alert("입력 오류", "입력 필드 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
       return;
@@ -537,12 +425,10 @@ function ProductPay() {
     if (isPaying) return;
     setIsPaying(true);
 
-    // Build payload for booking (kept for later)
     const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
     console.debug("[ProductPay] onPay - payload:", payload);
     console.debug("[ProductPay] userKey:", userKey);
 
-    // determine amount
     const amount = Number(payload?.total ?? payload?.total_price ?? 0);
     if (isNaN(amount) || amount <= 0) {
       Alert.alert("결제 오류", "결제 금액이 올바르지 않습니다.");
@@ -550,15 +436,12 @@ function ProductPay() {
       return;
     }
 
-    // apps-in-toss base endpoints (your previous flow)
     const payBase = "https://pay-apps-in-toss-api.toss.im";
     const makeUrl = `${payBase}/api-partner/v1/apps-in-toss/pay/make-payment`;
     const execUrl = `${payBase}/api-partner/v1/apps-in-toss/pay/execute-payment`;
 
-    // ensure there's an orderNo to make request idempotent
     const orderNoForMake = `order-${Date.now().toString(36)}`;
 
-    // 1) make-payment (with retries + detailed logging)
     const makeBody: any = {
       amount,
       amountTaxFree: 0,
@@ -576,12 +459,10 @@ function ProductPay() {
       payToken = makeData?.success?.payToken ?? makeData?.payToken ?? makeData?.checkout?.payToken ?? null;
 
       if (payToken) {
-        // overwrite partner_order_no so booking will store payToken as partner_order_no
         payload.partner_order_no = String(payToken);
         console.debug("[ProductPay] using payToken as partner_order_no for booking:", payload.partner_order_no);
       }
 
-      // if no payToken but checkoutPage present, try extract from url
       if (!payToken && (makeData?.checkoutPage || makeData?.checkout_page || makeData?.checkout_url)) {
         try {
           const checkoutUrl = makeData.checkoutPage ?? makeData.checkout_page ?? makeData.checkout_url;
@@ -593,29 +474,20 @@ function ProductPay() {
       }
 
       if (!payToken) {
-        console.warn("[ProductPay] make-payment did not return payToken (apps-in-toss). Will fallback to v2?", makeData);
         throw new Error("NO_PAYTOKEN_FROM_APPS_IN_TOSS");
       }
 
-      // If we have payToken from apps-in-toss, use TossPay.checkoutPayment (SDK)
       const checkoutResult = await TossPay.checkoutPayment({ payToken });
-      console.debug("[ProductPay] TossPay.checkoutPayment result:", checkoutResult);
       if (!checkoutResult?.success) {
         Alert.alert("결제 취소", "결제가 취소되었습니다.");
         setIsPaying(false);
         return;
       }
 
-      // execute via apps-in-toss
       const execBody = { payToken, isTestPayment: true };
       const execResp = await postWithRetry(execUrl, execBody, { "Content-Type": "application/json", "x-toss-user-key": userKey }, 2);
-      console.debug("[ProductPay] execute-payment response:", execResp.status, execResp.data);
 
-      // proceed to booking after successful exec
     } catch (primaryErr: any) {
-      console.warn("[ProductPay] primary apps-in-toss flow failed:", primaryErr?.message ?? primaryErr);
-
-      // If primary fail has server response, handle potential token reuse
       const respData = primaryErr?.response?.data;
       if (respData) {
         const maybeToken = respData?.payToken ?? respData?.success?.payToken ?? respData?.checkout?.payToken ?? null;
@@ -631,23 +503,18 @@ function ProductPay() {
             const execBody = { payToken, isTestPayment: true };
             await postWithRetry(execUrl, execBody, { "Content-Type": "application/json", "x-toss-user-key": userKey }, 2);
           } catch (e) {
-            console.error("[ProductPay] reuse-payToken flow failed:", e);
             Alert.alert("결제 오류", "결제 재시도 중 오류가 발생했습니다.");
             setIsPaying(false);
             return;
           }
         } else if (typeof respData?.message === "string" && /already|exists|duplicate|중복/i.test(respData.message)) {
-          console.warn("[ProductPay] duplicate order reported by apps-in-toss API; falling back to v2 createTossPayment");
-          // continue to fallback
         } else {
-          console.error("[ProductPay] apps-in-toss error body:", respData);
           Alert.alert("결제 생성 실패", "결제 생성 중 서버 오류가 발생했습니다. (콘솔 참조)");
           setIsPaying(false);
           return;
         }
       }
 
-      // Fallback: try v2 create + WebView flow
       try {
         const orderNoForMakeFallback = payload?.partner_order_no ?? payload?.order_no ?? `order-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
         const retUrl = "https://pay.toss.im/payfront/demo/completed";
@@ -674,22 +541,18 @@ function ProductPay() {
           return;
         }
 
-        // store pending booking info and open WebView
         setPendingBookingPayload(payload);
         setPendingPayToken(v2PayToken);
         setPendingAmount(amount);
         openCheckoutPage(checkoutPage, retUrl);
         return;
       } catch (v2Err: any) {
-        console.error("[ProductPay] createTossPayment fallback failed:", v2Err?.response ?? v2Err);
         Alert.alert("결제 생성 실패", "결제 생성 중 오류가 발생했습니다. (대체 수단도 실패)");
         setIsPaying(false);
         return;
       }
     }
 
-    // If we reach here, primary apps-in-toss flow succeeded and exec was done.
-    // Now run booking API. If booking fails, refund the payment.
     try {
       const runResult = await run(payload);
       console.debug("[ProductPay] booking runResult:", runResult);
@@ -722,7 +585,6 @@ function ProductPay() {
         });
         return;
       } else {
-        console.warn("[ProductPay] booking failed after payment. Initiating refund for payToken:", payToken);
         const refundRes = await refundTossPayment(payToken, amount);
         if (refundRes.success) {
           Alert.alert("예약 실패 - 환불 완료", "예약 처리에 실패하여 결제 금액을 환불했습니다.");
@@ -741,7 +603,6 @@ function ProductPay() {
       }
     } catch (bookingRunErr: any) {
       console.error("[ProductPay] booking.run threw:", bookingRunErr);
-      // run threw => refund
       try {
         const refundRes = await refundTossPayment(payToken, amount);
         if (refundRes.success) {
@@ -750,7 +611,6 @@ function ProductPay() {
           Alert.alert("예약 오류 - 환불 실패", `예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요. (${String(refundRes.error)})`);
         }
       } catch (refundErr) {
-        console.error("[ProductPay] refund after booking.run threw:", refundErr);
         Alert.alert("예약 오류", "예약 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.");
       } finally {
         setIsPaying(false);
@@ -774,7 +634,6 @@ function ProductPay() {
       map[section].push(item);
     };
 
-    // buyer required
     map[1] = [
       { key: "buyer_last_name", label: "구매자 성" },
       { key: "buyer_first_name", label: "구매자 이름" },
