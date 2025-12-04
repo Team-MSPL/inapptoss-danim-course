@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   content: {
-    // center content vertically with plenty of top spacing like the image
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",

@@ -49,19 +49,15 @@ function ProductReservation() {
   const [selected, setSelected] = useState<string | null>(null); // single selected date (used for single-date mode)
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  // For range mode ("02")
   const [rangeStart, setRangeStart] = useState<string | null>(null);
   const [rangeEnd, setRangeEnd] = useState<string | null>(null);
 
-  // modal/time states
   const [timeModalVisible, setTimeModalVisible] = useState(false);
   const [timeOptions, setTimeOptions] = useState<Array<{ time: string; price?: number }>>([]);
   const [pendingDate, setPendingDate] = useState<string | null>(null);
   const [modalSelectedTime, setModalSelectedTime] = useState<string | null>(null);
 
-  // calendar month
   const [currentMonth, setCurrentMonth] = useState(() => {
-    // prefer provided selected SKU's calendar start, then s_date, then params.online_s_date or today
     const selectedSkuFromParams = params?.selectedSku ?? null;
     if (selectedSkuFromParams && typeof selectedSkuFromParams === 'object') {
       const cal = selectedSkuFromParams.calendar_detail ?? selectedSkuFromParams.calendar ?? null;
@@ -75,7 +71,6 @@ function ProductReservation() {
     return dayjs(d).isValid() ? dayjs(d).startOf('month') : dayjs().startOf('month');
   });
 
-  // load pkgData: prefer params.pkgData, else fetch QueryPackage
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -104,11 +99,9 @@ function ProductReservation() {
           setLoading(false);
           return;
         }
-        // compute merged calendar as before if helper available
         const firstItem = data.item?.[0];
         const firstSku = firstItem?.skus?.[0];
         const calendar_detail = firstSku?.calendar_detail ?? firstSku?.calendar ?? firstItem?.calendar_detail ?? data.calendar_detail ?? {};
-        // build merged (reuse mergeSkuCalendars if available)
         let merged = {};
         try {
           merged = mergeSkuCalendars ? mergeSkuCalendars(data) : calendar_detail;
@@ -127,27 +120,22 @@ function ProductReservation() {
 
     load();
     return () => { mounted = false; };
-    // only when prod/pkg params change
   }, [params.prod_no, params.pkg_no, params.pkgData]);
 
-  // selectedSku handling: params.selectedSku object OR params.selectedSkuIndex + pkgData -> resolve to an object
   const resolvedSelectedSku = useMemo(() => {
     if (params?.selectedSku && typeof params.selectedSku === 'object') return params.selectedSku;
     if (typeof params?.selectedSkuIndex === 'number' && pkgData?.item?.[0]?.skus) {
       const idx = Number(params.selectedSkuIndex);
       return pkgData.item[0].skus[idx] ?? null;
     }
-    // no explicit selected sku
     return null;
   }, [params.selectedSku, params.selectedSkuIndex, pkgData]);
 
-  // build calInfo - prefer selectedSku calendar if provided, otherwise pkgData.item[0]
   const calInfo = useMemo(() => {
-    // if selected SKU provided, use it as primary source
     const selSku = resolvedSelectedSku;
     if (selSku) {
       const calendar_detail = selSku.calendar_detail ?? selSku.calendar ?? null;
-      // try deriving sale dates from calendar keys if present
+
       const bounds = getDateBoundsFromCalendar(calendar_detail);
       const sale_s_date = bounds.min ?? selSku.sale_s_date ?? null;
       const sale_e_date = bounds.max ?? selSku.sale_e_date ?? null;
@@ -165,7 +153,6 @@ function ProductReservation() {
       };
     }
 
-    // fallback to pkgData.item[0] behavior
     const firstItem = pkgData?.item?.[0] ?? null;
     const firstSku = firstItem?.skus?.[0] ?? null;
 
@@ -188,17 +175,14 @@ function ProductReservation() {
     };
   }, [resolvedSelectedSku, pkgData]);
 
-  // calendarData: prefer calInfo.calendar_detail, else fill fallback range using calInfo.sale_s_date..sale_e_date and price
   const calendarData = useMemo(() => {
     if (!calInfo) return {};
     const { calendar_detail, sale_s_date, sale_e_date, b2b_min_price } = calInfo;
 
     if (calendar_detail && Object.keys(calendar_detail).length > 0) {
-      // ensure entries are normalized objects (price/b2b_price fields)
       return calendar_detail;
     }
 
-    // fallback: if sale date range exists, fill with b2b_min_price (or b2c_price as secondary)
     const basePrice = safeNum(b2b_min_price) ?? safeNum(calInfo?.b2c_price) ?? undefined;
     if (sale_s_date && sale_e_date && basePrice !== undefined) {
       const start = dayjs(sale_s_date);
@@ -213,7 +197,6 @@ function ProductReservation() {
       }
     }
 
-    // last resort: try makeCalendarData (may throw)
     try {
       return makeCalendarData(calInfo);
     } catch (e) {
@@ -225,14 +208,12 @@ function ProductReservation() {
   const sale_s_date = calInfo.sale_s_date;
   const sale_e_date = calInfo.sale_e_date;
 
-  // month bounds
   const earliestMonth = sale_s_date ? dayjs(sale_s_date).startOf('month') : null;
   const latestMonth = sale_e_date ? dayjs(sale_e_date).startOf('month') : null;
 
   const prevDisabled = earliestMonth ? (currentMonth.year() === earliestMonth.year() && currentMonth.month() === earliestMonth.month()) : false;
   const nextDisabled = latestMonth ? (currentMonth.year() === latestMonth.year() && currentMonth.month() === latestMonth.month()) : false;
 
-  // build matrix using calendarData (merged or derived)
   const monthMatrix = useMemo(() => {
     return buildMonthMatrixLocal(
       currentMonth.year(),
@@ -243,7 +224,6 @@ function ProductReservation() {
     );
   }, [currentMonth, calendarData, sale_s_date, sale_e_date]);
 
-  // extract time options from a raw calendar entry (prefer b2b_price -> b2c_price -> price if they are time-keyed)
   function extractTimeOptionsFromEntry(entry: any) {
     if (!entry || typeof entry !== 'object') return [];
 
@@ -286,7 +266,6 @@ function ProductReservation() {
     return [];
   }
 
-  // get price info from a raw calendar entry (display/original/discount)
   function getPriceFromEntry(entry: any, time?: string | null) {
     const cal = entry ?? null;
 
@@ -315,47 +294,36 @@ function ProductReservation() {
     return { display, original, discountAmount };
   }
 
-  // Helper: choose calendar entry for a date prioritizing:
-  // 1) resolvedSelectedSku (if provided)
-  // 2) first SKU in pkgData.item[0].skus (if exists) <- this implements the requested preference
-  // 3) global calendarData (merged)
   function getCalendarEntryForDateBySkuPreference(dateStr: string) {
     if (!dateStr) return null;
 
-    // 1) resolvedSelectedSku
     if (resolvedSelectedSku) {
       const cal = resolvedSelectedSku.calendar_detail ?? resolvedSelectedSku.calendar ?? null;
       return cal ? cal[dateStr] : null;
     }
 
-    // 2) first SKU in pkgData.item[0].skus
     const firstSku = pkgData?.item?.[0]?.skus?.[0] ?? null;
     if (firstSku) {
       const cal = firstSku.calendar_detail ?? firstSku.calendar ?? null;
       if (cal && cal[dateStr] !== undefined) return cal[dateStr];
     }
 
-    // 3) global merged calendarData
     return calendarData?.[dateStr] ?? null;
   }
 
-  // get price info for a date using SKU-preferred calendar entry
   function getPriceForDatePreferredBySku(dateStr: string, time?: string | null) {
     const entry = getCalendarEntryForDateBySkuPreference(dateStr);
     return getPriceFromEntry(entry, time);
   }
 
-  // get price info for a date (display/original/discount) - kept for compatibility but prefer getPriceForDatePreferredBySku
   function getPriceForDate(dateStr: string, time?: string | null) {
     return getPriceForDatePreferredBySku(dateStr, time);
   }
 
-  // Helper: read date_setting and min/max constraints from params
-  const dateSetting = String(params?.date_setting ?? '01'); // default to single-day
-  const minDays = clampNumber(params?.min_date, 1); // minimum days for range selection (count of days)
-  const maxDays = clampNumber(params?.max_date, Infinity); // maximum days allowed for range (count of days)
+  const dateSetting = String(params?.date_setting ?? '01');
+  const minDays = clampNumber(params?.min_date, 1);
+  const maxDays = clampNumber(params?.max_date, Infinity);
 
-  // Helper: calculate inclusive day count between two YYYY-MM-DD strings
   const dayCountInclusive = (start: string, end: string) => {
     const s = dayjs(start);
     const e = dayjs(end);
@@ -363,32 +331,26 @@ function ProductReservation() {
     return Math.max(0, e.startOf('day').diff(s.startOf('day'), 'day') + 1);
   };
 
-  // Helper: check if a date is within selected range
   const isDateInRange = (date: string | null, start: string | null, end: string | null) => {
     if (!date || !start || !end) return false;
     const d = dayjs(date);
     return !d.isBefore(dayjs(start), 'day') && !d.isAfter(dayjs(end), 'day');
   };
 
-  // selection handler: supports single-day (default) and range ("02")
   const handleDayPress = (cell: any) => {
     if (!cell) return;
 
-    // compute whether this cell is selectable (has price or time options and not sold out)
     const entry = getCalendarEntryForDateBySkuPreference(cell.date);
     const timeOpts = extractTimeOptionsFromEntry(entry);
     const priceInfo = getPriceFromEntry(entry);
     const hasPrice = (timeOpts && timeOpts.length > 0) || (priceInfo && priceInfo.display !== undefined && priceInfo.display !== null);
 
-    // If no price and no time options, do nothing
     if (!hasPrice || cell.soldOut) return;
 
     const dateStr = cell.date;
 
-    // If this date has time options, open modal for time selection like before
     const options = extractTimeOptionsFromEntry(entry);
     if (options && options.length > 0) {
-      // For range mode we still allow time selection only when selecting a single date (treat as s_date==e_date)
       setTimeOptions(options);
       setPendingDate(dateStr);
       setModalSelectedTime(options[0]?.time ?? null);
@@ -397,20 +359,15 @@ function ProductReservation() {
     }
 
     if (dateSetting === '02') {
-      // Range selection mode: user picks start then end (or toggles)
-      // If no start selected yet -> set start
       if (!rangeStart) {
         setRangeStart(dateStr);
         setRangeEnd(null);
-        // reflect temporarily in reservation store? do not set s_date/e_date until valid finalization (we'll set when user confirms via Next)
         return;
       }
 
-      // If start exists but end not set -> try to set end
       if (rangeStart && !rangeEnd) {
         const tentativeStart = dayjs(rangeStart);
         const tentativeEnd = dayjs(dateStr);
-        // if user tapped earlier date than start, swap (allow selecting earlier end)
         let startDate = tentativeStart;
         let endDate = tentativeEnd;
         if (tentativeEnd.isBefore(tentativeStart, 'day')) {
@@ -418,28 +375,22 @@ function ProductReservation() {
           endDate = tentativeStart;
         }
         const days = dayCountInclusive(startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'));
-        // enforce min/max constraints
         if (days < minDays) {
-          // too short - set end but keep it invalid (user must pick a larger range) OR simply ignore?
-          // We'll still set end so user sees selection but Next remains disabled until valid.
           setRangeStart(startDate.format('YYYY-MM-DD'));
           setRangeEnd(endDate.format('YYYY-MM-DD'));
           return;
         }
         if (Number.isFinite(maxDays) && days > maxDays) {
-          // Clamp the end to start + maxDays - 1
           const clampedEnd = startDate.add(maxDays - 1, 'day');
           setRangeStart(startDate.format('YYYY-MM-DD'));
           setRangeEnd(clampedEnd.format('YYYY-MM-DD'));
           return;
         }
-        // within bounds
         setRangeStart(startDate.format('YYYY-MM-DD'));
         setRangeEnd(endDate.format('YYYY-MM-DD'));
         return;
       }
 
-      // If both start and end already set -> start a new selection using this date as start
       if (rangeStart && rangeEnd) {
         setRangeStart(dateStr);
         setRangeEnd(null);
@@ -448,7 +399,6 @@ function ProductReservation() {
       return;
     }
 
-    // Default: single date modes (01, 03, 04)
     setSelected(dateStr);
     setSelectedTime(null);
     setPendingDate(null);
@@ -456,15 +406,13 @@ function ProductReservation() {
     setEDate(dateStr);
   };
 
-  // When user confirms a time from modal, treat similarly to previous behavior.
   const handleChooseTime = (time: string | null) => {
     if (!pendingDate || !time) return;
 
     if (dateSetting === '02') {
-      // If in range mode and they selected a time on a specific date, we'll treat it as selecting a single-day reservation (start==end)
       setRangeStart(pendingDate);
       setRangeEnd(pendingDate);
-      // we do not set store s/e here until Next pressed, but for parity we'll also set local selectedTime
+
       setSelectedTime(time);
       setSDate(pendingDate);
       setEDate(pendingDate);
@@ -480,7 +428,6 @@ function ProductReservation() {
     setModalSelectedTime(null);
   };
 
-  // Helper: are current range selections valid w.r.t min/max (only matters for dateSetting === '02')
   const isRangeValid = () => {
     if (dateSetting !== '02') return true;
     if (!rangeStart || !rangeEnd) return false;
@@ -490,28 +437,23 @@ function ProductReservation() {
     return true;
   };
 
-  // Helper: determine whether next button should be enabled
   const canProceed = () => {
     if (dateSetting === '02') {
       return isRangeValid();
     }
-    // single day: must have selected (either selected or selectedTime via modal)
     return Boolean(selected || (pendingDate && modalSelectedTime));
   };
 
-  // When user clicks Next
   const goNext = () => {
     if (dateSetting === '02') {
       if (!isRangeValid()) {
         Alert.alert('날짜 선택', `선택 범위가 유효하지 않습니다. 최소 ${minDays}일, 최대 ${isFinite(maxDays) ? maxDays : '제한 없음'}일 사이로 선택하세요.`);
         return;
       }
-      // set s_date/e_date in reservation store and navigate
       const s = rangeStart!;
       const e = rangeEnd!;
       setSDate(s);
       setEDate(e);
-      // compute priceInfo maybe based on start date (use s for single-day price) - reuse existing logic using selectedTime if any
       const priceInfo = getPriceForDatePreferredBySku(s, selectedTime ?? null);
       const calEntry = getCalendarEntryForDateBySkuPreference(s);
       const filledSource = calEntry?.filled_price_source;
@@ -546,7 +488,6 @@ function ProductReservation() {
       return;
     }
 
-    // default single-day flow (unchanged but prefer first-sku pricing when multiple skus exist)
     if (!selected) return;
 
     const priceInfo = getPriceForDatePreferredBySku(selected, selectedTime ?? null);
@@ -584,21 +525,17 @@ function ProductReservation() {
     });
   };
 
-  // helper to render day cell styles in range mode
   const renderDayCellStyle = (cellDate: string) => {
     if (dateSetting === '02' && rangeStart && rangeEnd) {
       if (isDateInRange(cellDate, rangeStart, rangeEnd)) {
-        // if start or end, use selectedDay style, else use rangeDay
         if (cellDate === rangeStart || cellDate === rangeEnd) return styles.selectedDay;
         return styles.rangeDay;
       }
     }
-    // single-day
     if (selected === cellDate) return styles.selectedDay;
     return {};
   };
 
-  // helper to determine if a date has price or time options (selectable)
   const hasPriceOrTimeForDate = (dateStr: string) => {
     const entry = getCalendarEntryForDateBySkuPreference(dateStr);
     if (!entry) return false;
@@ -609,7 +546,6 @@ function ProductReservation() {
     return priceInfo && priceInfo.display !== undefined && priceInfo.display !== null;
   };
 
-  // loading / error UI
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -626,7 +562,6 @@ function ProductReservation() {
     );
   }
 
-  // month label
   const monthLabel = currentMonth.format("YYYY년 M월");
 
   const nextButtonDisabled = !canProceed();
@@ -718,7 +653,6 @@ function ProductReservation() {
           다음으로
         </FixedBottomCTA>
 
-        {/* time selection modal — replace existing Modal block with this */}
         <Modal
           visible={timeModalVisible}
           transparent
@@ -731,7 +665,6 @@ function ProductReservation() {
         >
           <View style={modalStyles.backdrop}>
             <View style={modalStyles.modalCard}>
-              {/* Header */}
               <View style={modalStyles.headerRow}>
                 <Text typography="t6" fontWeight="bold" color={colors.grey900}>시간 선택</Text>
                 <Pressable
@@ -746,7 +679,6 @@ function ProductReservation() {
                 </Pressable>
               </View>
 
-              {/* Selected date + price summary */}
               <View style={modalStyles.metaRow}>
                 <Text typography="t7" color={colors.grey700}>
                   {pendingDate ? dayjs(pendingDate).format("M월 D일 (ddd)") : "날짜 선택"}
@@ -763,7 +695,6 @@ function ProductReservation() {
                 </View>
               </View>
 
-              {/* Chip grid of times */}
               <ScrollView contentContainerStyle={{ paddingVertical: 6 }}>
                 <View style={modalStyles.chipsWrap}>
                   {timeOptions.map((opt) => {
@@ -796,7 +727,6 @@ function ProductReservation() {
                 </View>
               </ScrollView>
 
-              {/* Actions */}
               <View style={modalStyles.actionsRow}>
                 <Button
                   type="dark"

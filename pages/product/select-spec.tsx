@@ -28,7 +28,6 @@ function ProductSelectSpec() {
     return { ...pre };
   });
 
-  // Helper: find the ticket spec with EXACT title "티켓 종류" (case-insensitive, trimmed)
   const ticketSpec = useMemo(() => {
     return specs.find(s => {
       if (!s?.spec_title) return false;
@@ -37,13 +36,12 @@ function ProductSelectSpec() {
     }) ?? null;
   }, [specs]);
 
-  // If there are no selectable specs (excluding ticketSpec) immediately navigate to reservation
   useEffect(() => {
     if (!pkgData) return;
 
     const selectableSpecs = specs.filter(s => !(ticketSpec && s.spec_oid === ticketSpec.spec_oid));
     if ((selectableSpecs?.length ?? 0) < 1) {
-      // No option groups to select (excluding ticketSpec) -> navigate directly
+
       const matchedSkuIndex = (() => {
         const entries = Object.entries(selectedMap);
         if (entries.length === 0) return null;
@@ -66,18 +64,15 @@ function ProductSelectSpec() {
         max_date: params?.max_date ?? null,
         min_date: params?.min_date ?? null,
         has_ticket_combinations: Array.isArray(ticketSpec?.spec_items) && ticketSpec?.spec_items.length > 0,
-        // If ticketSpec exists, reservation page (or upstream code) can handle ticket combinations.
         selectedSpecs: selectedMap,
         selectedSkuIndex: matchedSkuIndex,
         selectedSku: matchedSkuIndex != null ? skus[matchedSkuIndex] : undefined,
         item_unit: params?.item_unit ?? null,
       });
     }
-    // run once on mount dependent on pkgData/specs length
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pkgData, specs, ticketSpec]);
 
-  // Compute matched SKU index for current full selection (same logic as before)
   const matchedSkuIndex = useMemo(() => {
     const selectedEntries = Object.entries(selectedMap);
     if (selectedEntries.length === 0) return null;
@@ -98,7 +93,6 @@ function ProductSelectSpec() {
   }, [selectedMap, skus]);
 
   useEffect(() => {
-    // kept for potential debug or side-effects
   }, [selectedMap, matchedSkuIndex]);
 
   const toggleSelect = (spec_oid: string, spec_item_oid: string) => {
@@ -113,7 +107,6 @@ function ProductSelectSpec() {
     });
   };
 
-  // Helper: find SKU index for a given selection map
   const findSkuIndexForSelection = (selection: Record<string, string>) => {
     const entries = Object.entries(selection);
     if (entries.length === 0) return null;
@@ -129,22 +122,18 @@ function ProductSelectSpec() {
   };
 
   const onConfirm = () => {
-    // 1) Build required-spec list EXCLUDING ticketSpec (if ticketSpec exists, user shouldn't pick it)
     const requiredSpecs = specs.filter(s => {
       if (!s?.spec_oid) return false;
-      // exclude ticketSpec from required set
       if (ticketSpec && s.spec_oid === ticketSpec.spec_oid) return false;
       return true;
     });
 
-    // 2) Check missing among requiredSpecs only
     const missing = requiredSpecs.filter(s => !selectedMap[s.spec_oid]);
     if (missing.length > 0) {
       Alert.alert('옵션 선택', `${missing.map(s => s.spec_title).join(', ')} 항목을 선택해 주세요.`);
       return;
     }
 
-    // 3) If ticketSpec exists, auto-expand ticket items for the chosen other specs:
     if (ticketSpec) {
       const combos: Array<{ selectedSpecs: Record<string, string>; matchedSkuIndex: number; matchedSku: any }> = [];
 
@@ -166,8 +155,6 @@ function ProductSelectSpec() {
         return;
       }
 
-      // If the only selectable spec(s) were ticketSpec (i.e. requiredSpecs.length === 0),
-      // auto-navigate immediately because user had nothing to pick here.
       if (requiredSpecs.length === 0) {
         navigation.navigate('/product/reservation', {
           prod_no: params?.prod_no ?? pkgData?.prod_no,
@@ -187,7 +174,6 @@ function ProductSelectSpec() {
         return;
       }
 
-      // Otherwise navigate with combos
       navigation.navigate('/product/reservation', {
         prod_no: params?.prod_no ?? pkgData?.prod_no,
         pkg_no: params?.pkg_no ?? (pkgData?.pkg && pkgData.pkg[0]?.pkg_no) ?? pkgData?.pkg_no,
@@ -207,7 +193,6 @@ function ProductSelectSpec() {
       return;
     }
 
-    // 4) Default (no ticketSpec): require all specs; matchedSkuIndex must exist
     if (matchedSkuIndex == null) {
       Alert.alert('조합 없음', '선택하신 옵션 조합에 해당하는 상품이 없습니다. 다른 조합을 선택해주세요.');
       return;
@@ -230,9 +215,6 @@ function ProductSelectSpec() {
     });
   };
 
-  /**
-   * isOptionEnabled
-   */
   const isOptionEnabled = (spec_oid: string, spec_item_oid: string) => {
     if (selectedMap[spec_oid] === spec_item_oid) return true;
 
@@ -250,7 +232,6 @@ function ProductSelectSpec() {
   const renderSpecGroup = (spec: Spec) => {
     const selectedValue = selectedMap[spec.spec_oid];
 
-    // Hide the ticketSpec entirely from UI (do not render)
     if (ticketSpec && spec.spec_oid === ticketSpec.spec_oid) {
       return null;
     }
