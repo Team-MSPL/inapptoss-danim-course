@@ -57,7 +57,7 @@ export default function JoinWho() {
       useNativeDriver: true,
     }).start();
   }, [showWarning]);
-  
+
   const { open: openBottomSheet, close: closeBottomSheet } = useBottomSheet();
 
   const handleNext = () => {

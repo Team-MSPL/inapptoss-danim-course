@@ -13,14 +13,11 @@ import { resetInquiryState, postInquiry } from '../../redux/inquirySlice';
 import { useNavigation } from "@granite-js/react-native";
 import {useAlbumPhotos} from "../../hooks/useAlbumPhotos";
 
-// useAlbumPhotos, usePermissionGate 등은 기존과 동일하게 사용
-
 export default function InfoOneOnOneInquiry() {
   const navigation = useNavigation();
   const [value, setValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // 확대 이미지 상태
   const [expandedPhoto, setExpandedPhoto] = useState<{ id: string; uri: string } | null>(null);
 
   const { albumPhotos, loadPhotos, deletePhoto } = useAlbumPhotos({ base64: true });
@@ -60,7 +57,6 @@ export default function InfoOneOnOneInquiry() {
     navigation.navigate('/main');
   };
 
-  // 사진 추가 UI
   const renderPhotoSection = () => (
     <View>
       <Text style={styles.photoLabel}>사진 추가</Text>
@@ -84,7 +80,6 @@ export default function InfoOneOnOneInquiry() {
     </View>
   );
 
-  // 확대 이미지 전용 뷰
   const renderExpandedPhoto = () => (
     <View style={{ flex: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
       <Image

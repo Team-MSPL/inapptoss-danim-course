@@ -98,12 +98,7 @@ function buildPeopleTextFromDtl(dtl?: any, listItem?: any): string {
   return "1명";
 }
 
-/**
- * InlineBadge - Toss TDS Badge를 일시 교체하기 위한 경량 구현.
- * 목적: 라이브러리 내부 에러 우회(개발용). 디자인은 단순화.
- */
 function InlineBadge({ children, type = "dark" }: { children: React.ReactNode; type?: string }) {
-  // map a few types to colors; extend as needed
   const bgMap: Record<string, string> = {
     yellow: "#FFF6E5",
     blue: "#EBF6FF",
