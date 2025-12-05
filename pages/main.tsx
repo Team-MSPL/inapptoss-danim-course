@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useCallback} from "react";
 import { View, StyleSheet } from "react-native";
 import MainHome from "./main/main-home";
 import MainTrip from "./main/main-trip";
@@ -10,6 +10,7 @@ import { useNavigation } from "@granite-js/react-native";
 import { useRegionModeStore } from "../zustand/modeStore";
 import MyReservation from "./info/my-reservation";
 import { useMainTabStore } from "../zustand/mainTabStore";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Main() {
   const tab = useMainTabStore((s) => s.tab);
@@ -17,21 +18,23 @@ export default function Main() {
   const navigation = useNavigation();
   const { addAccessoryButton } = useTopNavigation();
 
-  useEffect(() => {
-    addAccessoryButton({
-      title: "letter",
-      icon: {
-        name: "icon-letter-mono",
-      },
-      id: "letter",
-      onPress: () => {
-        setTab(3);
-        navigation.navigate("/info/my-inquiry-list");
-      },
-    });
-    useRegionModeStore.getState().setRegionMode("enroll");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      addAccessoryButton({
+        title: "letter",
+        icon: {
+          name: "icon-letter-mono",
+        },
+        id: "letter",
+        onPress: () => {
+          setTab(3);
+          navigation.navigate("/info/my-inquiry-list");
+        },
+      });
+
+      useRegionModeStore.getState().setRegionMode("enroll");
+    }, [addAccessoryButton, navigation, setTab])
+  );
 
   const renderScreen = () => {
     switch (tab) {
