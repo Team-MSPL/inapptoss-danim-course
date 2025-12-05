@@ -22,7 +22,6 @@ const COUNTRY_OPTIONS: Country[] = [
   { code: 'VN', dial: '84', label: '베트남', lang: 'vi' },
   { code: 'TH', dial: '66', label: '태국', lang: 'th' },
   { code: 'PH', dial: '63', label: '필리핀', lang: 'en' },
-  { code: 'SG', dial: '65', label: '싱가포르', lang: 'en' },
 ];
 
 function JoinCountry() {
