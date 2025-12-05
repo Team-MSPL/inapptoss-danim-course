@@ -18,8 +18,6 @@ export const Route = createRoute('/join/result-detail', {
   component: JoinResultDetail,
 });
 
-/* ---------- helpers (unchanged) ---------- */
-
 function getRegionStateByName(name: string) {
   const hardCodeMap: Record<string, { cityIndex: number; subIdx?: number }> = {
     '서울': { cityIndex: 1 },
@@ -113,8 +111,6 @@ function extractProductsFromResponse(res: any): any[] {
   return [];
 }
 
-/* ---------- small UI helpers ---------- */
-
 function PopularPlaceCardBig({ place }: { place: PlaceResult }) {
   return (
     <View style={styles.popularCardBig}>
@@ -141,8 +137,6 @@ function PopularPlaceCard({ place, idx }: { place: PlaceResult, idx: number }) {
   );
 }
 
-/* ---------- Component ---------- */
-
 function JoinResultDetail() {
   const params = Route.useParams();
   const place: PlaceResult = params.place;
@@ -154,14 +148,11 @@ function JoinResultDetail() {
   const { region, cityIndex, cityDistance } = getRegionStateByName(place?.name ?? '');
   const {presetDatas, season, country} = useAppSelector(state => state.travelSlice);
 
-  // get selected country in Korean from country store (if user selected earlier)
   const selectedCountryKo = useCountryStore((s) => s.selectedCountryKo);
 
-  // recommended products state & loading
   const [recommended, setRecommended] = useState<SmallProduct[]>([]);
   const [recLoading, setRecLoading] = useState(false);
 
-  // zustand store for recommend body
   const setRecommendBody = useRecommendStore((s) => s.setRecommendBody);
 
   useEffect(() => {
@@ -173,11 +164,6 @@ function JoinResultDetail() {
     try {
       setRecLoading(true);
 
-      // Build API body according to requested rules:
-      // 1) country should be the Korean string from countryStore (fallback to '한국')
-      // 2) pathList must be [[]]
-      // 3) selectList stays as constructed (tendencyList + season)
-      // 4) cityList should be [place.name]
       const apiCountry = selectedCountryKo ?? '한국';
 
       const data: any = {
@@ -188,10 +174,8 @@ function JoinResultDetail() {
         topK: 10,
       };
 
-      // --- SAVE THE REQUEST BODY TO ZUSTAND ---
       setRecommendBody(data);
 
-      console.log('[handleProduct] REQUEST body:', JSON.stringify(data, null, 2));
       try { console.debug('[handleProduct] axiosAuth.defaults.headers:', axiosAuth.defaults?.headers); } catch (e) {}
 
       const directResp = await axiosAuth.post('sellingProduct/recommend', data, {
@@ -199,12 +183,7 @@ function JoinResultDetail() {
         timeout: 15000,
       });
 
-      console.debug('[handleProduct] axios direct status:', directResp.status);
-      console.debug('[handleProduct] axios direct data type:', Object.prototype.toString.call(directResp.data));
-      console.debug('[handleProduct] axios direct data sample:', Array.isArray(directResp.data) ? directResp.data.slice(0,2) : directResp.data);
-
       const prods = extractProductsFromResponse(directResp.data);
-      console.debug('[handleProduct] extracted count:', prods.length);
 
       const mapped: SmallProduct[] = (prods ?? []).map((p:any, idx:number) => ({
         prod_no: p.prod_no ?? p._id ?? p.prodNo ?? `idx_${idx}`,
@@ -230,7 +209,6 @@ function JoinResultDetail() {
 
   const handleNext = () => {
     dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: tendencyList }));
-    // keep existing travelSlice country handling as-is; the UX/state mapping may expect numeric index
     dispatch(travelSliceActions.updateFiled({ field: 'country', value: 0 }));
     dispatch(travelSliceActions.updateFiled({ field: 'region', value: region }));
     dispatch(travelSliceActions.updateFiled({ field: 'popular', value: 10 }));
@@ -318,8 +296,6 @@ function JoinResultDetail() {
     </View>
   );
 }
-
-/* ---------- styles (unchanged) ---------- */
 
 const width = Dimensions.get('window').width;
 const IMAGE_HEIGHT = 220;

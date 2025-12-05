@@ -25,11 +25,9 @@ function clamp(v: number, a: number, b: number) {
 }
 
 function getInitialIndexesFromStore(selectPopular?: number[] | null): [number, number] {
-  // store keeps percentages [0..100] like [20,80]
   if (!selectPopular || selectPopular.length !== 2) return [2, 4]; // default [40,80] -> indexes 2 and 4 on 0..5 scale
   const low = clamp(Math.round(selectPopular[0] / 20), 0, 5);
   const high = clamp(Math.round(selectPopular[1] / 20), 0, 5);
-  // ensure minRange 1 : low < high
   const l = Math.min(low, Math.max(0, high - 1));
   const h = Math.max(high, l + 1);
   return [l, h];
@@ -38,18 +36,14 @@ function getInitialIndexesFromStore(selectPopular?: number[] | null): [number, n
 export default function PopularSensitivityScreen() {
   const navigation = useNavigation();
 
-  // Zustand usage
   const selectPopular = useRegionSearchStore((state) => state.selectPopular);
   const setSelectPopular = useRegionSearchStore((state) => state.setSelectPopular);
 
-  // local state for the dual-thumb slider values (0..5)
   const [low, setLow] = useState<number>(() => getInitialIndexesFromStore(selectPopular)[0]);
   const [high, setHigh] = useState<number>(() => getInitialIndexesFromStore(selectPopular)[1]);
 
-  // keep last written store pair to avoid unnecessary writes
   const lastWrittenRef = useRef<number[] | null>(null);
 
-  // when store changes externally, reflect into local slider state
   useEffect(() => {
     if (!Array.isArray(selectPopular) || selectPopular.length !== 2) return;
     const [sLow, sHigh] = getInitialIndexesFromStore(selectPopular);
@@ -60,7 +54,6 @@ export default function PopularSensitivityScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectPopular]);
 
-  // sync to zustand when slider values change, but avoid looping by comparing
   useEffect(() => {
     const newPercentPair: [number, number] = [low * 20, high * 20];
     const cur = Array.isArray(selectPopular) && selectPopular.length === 2 ? selectPopular : null;
@@ -69,20 +62,16 @@ export default function PopularSensitivityScreen() {
     const lastWritten = lastWrittenRef.current;
 
     if (changedFromStore) {
-      // avoid repeatedly writing the same pair
       if (!lastWritten || lastWritten[0] !== newPercentPair[0] || lastWritten[1] !== newPercentPair[1]) {
         setSelectPopular(newPercentPair);
         lastWrittenRef.current = newPercentPair;
       }
     }
-    // include selectPopular and low/high in deps to re-evaluate correctly
   }, [low, high, selectPopular, setSelectPopular]);
 
-  // debounce timer ref for "on slide end" logging
   const endTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const SLIDE_END_DEBOUNCE_MS = 200;
 
-  // helper UI components for RangeSlider rails/thumbs
   const Rail = () => <View style={styles.rail} />;
   const SelectRail = () => <View style={styles.railSelected} />;
   const Thumb = () => (
@@ -91,26 +80,21 @@ export default function PopularSensitivityScreen() {
     </View>
   );
 
-  // Called continuously during sliding; we update local state and schedule a debounced "end" log.
   const handleValueChanged = (newLow: number, newHigh: number) => {
     const l = clamp(Math.round(newLow), 0, 5);
     const h = clamp(Math.round(newHigh), 0, 5);
-    // enforce minRange of 1 (library should enforce but double-check)
     if (h - l < 1) return;
     setLow(l);
     setHigh(h);
 
-    // debounce "slide end" console log using captured l,h values
     if (endTimerRef.current) {
       clearTimeout(endTimerRef.current);
     }
     endTimerRef.current = setTimeout(() => {
-      console.log('[PopularSensitivityScreen] slider final range (percent):', [l * 20, h * 20]);
       endTimerRef.current = null;
     }, SLIDE_END_DEBOUNCE_MS);
   };
 
-  // navigate
   const goNext = () => {
     navigation.navigate('/join/distance');
   };
@@ -220,13 +204,13 @@ const styles = StyleSheet.create({
   rail: {
     height: 12,
     width: '100%',
-    backgroundColor: '#E5E8EB', // requested background color
+    backgroundColor: '#E5E8EB',
     borderRadius: 6,
   },
   railSelected: {
     height: 12,
     width: '100%',
-    backgroundColor: '#84FF03', // requested selected color
+    backgroundColor: '#84FF03',
     borderRadius: 6,
   },
   thumb: {

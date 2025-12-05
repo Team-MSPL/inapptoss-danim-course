@@ -7,12 +7,10 @@ import {
   Text,
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-// tendencyData import (상수로 분리했다면 경로 맞게 수정)
 import { tendencyData } from "../../components/join/constants/tendencyData";
 import TendencyButton from '../../components/tendency-button';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
-// Zustand store import
 import { useRegionSearchStore } from "../../zustand/regionSearchStore";
 import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
@@ -24,7 +22,6 @@ export const Route = createRoute('/join/activity', {
 export default function JoinActivity() {
   const navigation = useNavigation();
 
-  // Zustand 사용
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
@@ -32,11 +29,9 @@ export default function JoinActivity() {
   const activityIcons = tendencyData[2].photo;
   const activitySelect = selectList[2] ?? new Array(activityList.length).fill(0);
 
-  // 활동 버튼 클릭 핸들러
   const handleActivityButtonClick = (idx: number) => {
     const newActivityArr = [...activitySelect];
     newActivityArr[idx] = newActivityArr[idx] === 1 ? 0 : 1;
-    // selectList의 2번째(활동)만 바꿔서 저장
     const newSelectList = [...selectList];
     newSelectList[2] = newActivityArr;
     setSelectList(newSelectList);
@@ -47,13 +42,11 @@ export default function JoinActivity() {
       <NavigationBar />
       <CustomProgressBarJoin currentIndex={3} />
       <FixedBottomCTAProvider>
-        {/* Step Header */}
         <StepText
           title={'하고 싶은 활동이 있나요?'}
           subTitle1={'1. 여행 스타일을 알아볼게요'}
           subTitle2={'* 중복 선택 가능'}
         />
-        {/* 2x3 그리드 버튼 */}
         <View
           style={{
             flexDirection: 'row',

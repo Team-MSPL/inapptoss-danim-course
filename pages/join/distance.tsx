@@ -27,17 +27,11 @@ export const Route = createRoute('/join/distance', {
 const KOREA_CENTER = { latitude: 36.5, longitude: 127.8 };
 const INPUT_WIDTH = Math.min(340, Dimensions.get('window').width - 36);
 
-/**
- * Base radius table (meters) for slider steps 1..10.
- */
 const BASE_RADIUS_METERS = [
   50_000, 100_000, 150_000, 200_000, 250_000,
   300_000, 350_000, 400_000, 450_000, 500_000,
 ];
 
-/**
- * Country centroid map (approximate "central" point of country) in Korean keys.
- */
 const COUNTRY_CENTERS: Record<string, { latitude: number; longitude: number }> = {
   한국: { latitude: 36.5, longitude: 127.8 },
   일본: { latitude: 36.204824, longitude: 138.252924 },
@@ -49,13 +43,9 @@ const COUNTRY_CENTERS: Record<string, { latitude: number; longitude: number }> =
   '홍콩과 마카오': { latitude: 22.3193039, longitude: 114.1693611 },
 };
 
-/**
- * Country scale factors to reflect relative country "size" for map radius / zoom.
- * Increased 일본 scale so the maximum slider includes farther 북부(예: 삿포로)까지 보이도록 조정했습니다.
- */
 const COUNTRY_SCALE: Record<string, number> = {
   한국: 1.0,
-  일본: 3.0, // 조정: 기존 1.4 -> 3.0 (더 넓게 보여주기 위해)
+  일본: 3.0,
   중국: 6.0,
   베트남: 2.2,
   태국: 1.8,

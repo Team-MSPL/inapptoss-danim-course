@@ -44,13 +44,10 @@ function JoinCountry() {
         <CustomProgressBarJoin currentIndex={0} />
         <StepText title={'어디로 떠나시나요?'} subTitle1={'1. 여행 계획을 알려주세요.'} />
 
-        {/* CountrySelector renders the exact same button design as used elsewhere */}
         <CountrySelector
           countries={COUNTRY_OPTIONS}
           onSelect={handleSelect}
           columns={2}
-          // CountrySelector expects selectedCode (country code) to highlight the active button.
-          // Derive selectedCode from the stored Korean label if available.
           selectedCode={
             selectedCountryKo
               ? COUNTRY_OPTIONS.find((c) => c.label === selectedCountryKo)?.code
@@ -69,7 +66,6 @@ function JoinCountry() {
             <Button
               display="block"
               onPress={() => {
-                // pass the selected Korean country string to next route if desired
                 navigation.navigate('/join/who');
               }}
             >

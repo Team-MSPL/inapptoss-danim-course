@@ -37,23 +37,18 @@ export default function JoinWho() {
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
-  // 기존 핸들러에서 selectList[0]만 업데이트하도록 수정
   const whoList = tendencyData[0].list;
   const petIdx = whoList.indexOf('반려동물과');
   const showWarning = petIdx !== -1 && selectList[0]?.[petIdx] === 1;
 
-  // 버튼 클릭 핸들러 (Zustand로 반영)
   const handleWhoButtonClick = (idx: number) => {
-    // selectList[0]만 수정, 나머지는 그대로 유지
     const newWhoArr = [...(selectList[0] ?? new Array(whoList.length).fill(0))];
     newWhoArr[idx] = newWhoArr[idx] === 1 ? 0 : 1;
-    // selectList의 0번째만 갱신, 나머지 카테고리는 그대로
     const newSelectList = [...selectList];
     newSelectList[0] = newWhoArr;
     setSelectList(newSelectList);
   };
 
-  // 애니메이션
   const warningOpacity = useRef(new Animated.Value(showWarning ? 1 : 0)).current;
   useEffect(() => {
     Animated.timing(warningOpacity, {
@@ -62,8 +57,7 @@ export default function JoinWho() {
       useNativeDriver: true,
     }).start();
   }, [showWarning]);
-
-  // Toss BottomSheet 사용
+  
   const { open: openBottomSheet, close: closeBottomSheet } = useBottomSheet();
 
   const handleNext = () => {

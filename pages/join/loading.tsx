@@ -44,9 +44,7 @@ export default function RegionSearchLoading() {
 
     async function fetchData() {
       try {
-        // ---- NEW: read selected country (Korean) and map to English for API ----
         const selectedCountryKo = (useCountryStore as any).getState?.()?.selectedCountryKo;
-        // mapping based on provided list (includes common variants)
         const countryMap: Record<string, string> = {
           '대한민국': 'Korea',
           '한국': 'Korea',
@@ -56,7 +54,6 @@ export default function RegionSearchLoading() {
           '태국': 'Thailand',
           '필리핀': 'Philippines',
           '싱가포르': 'Singapore',
-          // keep flexibility for other labels (e.g. '홍콩과 마카오' not in this map)
         };
 
         if (selectedCountryKo) {
@@ -64,22 +61,16 @@ export default function RegionSearchLoading() {
           const mappedEn = countryMap[key];
           if (mappedEn) {
             try {
-              // update regionSearchStore.country to English value before building payload
               (useRegionSearchStore as any).setState({ country: mappedEn });
-              console.log('[RegionSearchLoading] region store country set to', mappedEn);
             } catch (e) {
               console.warn('[RegionSearchLoading] failed to set region store country', e);
             }
           } else {
-            console.log('[RegionSearchLoading] selected country not mapped to English:', selectedCountryKo);
-            // If not mapped, do not override store.country (leave existing)
+            // console.log('[RegionSearchLoading] selected country not mapped to English:', selectedCountryKo);
           }
         }
-        // ---- END new country mapping ----
-
-        // get freshest store state at runtime (after possible country update)
         const storeState = (useRegionSearchStore as any).getState();
-        // persist recent select list first (same as original flow)
+
         await patchRecentSelectList(storeState.selectList);
         const result = await postRegionSearch(storeState);
         if (cancelled) return;
@@ -166,7 +157,6 @@ export default function RegionSearchLoading() {
     return () => {
       cancelled = true;
     };
-    // run once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

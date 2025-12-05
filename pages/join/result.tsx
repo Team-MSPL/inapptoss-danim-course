@@ -139,7 +139,6 @@ function JoinResult() {
           title={'나그네님,\n이런 여행지는 어때요?'}
           subTitle2={'여행 성향을 기반으로 추천 여행지예요!'}
         />
-        {/* 카드 리스트 */}
         <View style={{ paddingHorizontal: 24, marginTop: 10 }}>
           {filteredPlaces.length === 0 && (
             <Text style={{ color: '#888', marginVertical: 36 }}>추천 결과가 없습니다.</Text>
@@ -207,7 +206,7 @@ const styles = StyleSheet.create({
   tooltipContainer: {
     alignSelf: 'center',
     alignItems: 'center',
-    marginBottom: -10, // 카드와 말풍선 사이 간격 조정
+    marginBottom: -10,
     zIndex: 2,
   },
   tooltipBox: {

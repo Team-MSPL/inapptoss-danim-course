@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, Animated } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
-// Zustand store import
 import { useRegionSearchStore} from "../../zustand/regionSearchStore";
-// tendencyData import (상수로 분리했다면 경로 맞게 수정)
 import { tendencyData} from "../../components/join/constants/tendencyData";
 import TendencyButton from '../../components/tendency-button';
 import {
@@ -20,8 +18,8 @@ import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-j
 
 const PLACE_IDX = 3;
 const PLACE_PAGE_SPLIT = [
-  [0, 6], // 첫 페이지: 0~5 (6개)
-  [6, 11], // 두 번째 페이지: 6~10 (5개)
+  [0, 6],
+  [6, 11],
 ];
 
 export const Route = createRoute('/join/place', {
@@ -34,26 +32,21 @@ export default function JoinPlace() {
   const [showConflictWarning, setShowConflictWarning] = useState(false);
   const navigation = useNavigation();
 
-  // Zustand 사용
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
-  // 누구와 list/반려동물 인덱스
   const whoList = tendencyData[0]?.list ?? [];
   const petIdx = whoList.indexOf('반려동물과');
   const isPetSelected = petIdx !== -1 && selectList[0]?.[petIdx] === 1;
 
-  // 장소/실내여행지 인덱스
   const placeList = tendencyData[PLACE_IDX]?.list ?? [];
   const placePhotoList = tendencyData[PLACE_IDX]?.photo ?? [];
   const indoorIdx = placeList.indexOf('실내여행지');
 
-  // 현재 페이지 범위
   const [start, end] = PLACE_PAGE_SPLIT[page];
   const curPlaceList = placeList.slice(start, end);
   const curPlacePhotoList = placePhotoList.slice(start, end);
 
-  // 경고 애니메이션
   const warningOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (showConflictWarning) {
@@ -71,14 +64,12 @@ export default function JoinPlace() {
     }
   }, [showConflictWarning]);
 
-  // 실내여행지 버튼 onPress 핸들러 (Zustand로 반영)
   const handlePlaceButtonPress = (idx: number) => {
     if (isPetSelected && start + idx === indoorIdx) {
       setShowConflictWarning(true);
       return;
     }
     setShowConflictWarning(false);
-    // selectList[3]만 수정
     const prevArr = selectList[PLACE_IDX] ?? new Array(placeList.length).fill(0);
     const newArr = [...prevArr];
     newArr[start + idx] = newArr[start + idx] === 1 ? 0 : 1;
@@ -97,7 +88,6 @@ export default function JoinPlace() {
           subTitle1={'1. 여행 스타일을 알아볼게요'}
           subTitle2={'* 중복 선택 가능'}
         />
-        {/* 경고 메시지 */}
         <Animated.View
           style={{
             marginHorizontal: 24,
