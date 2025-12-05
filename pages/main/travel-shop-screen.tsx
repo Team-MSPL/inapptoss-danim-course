@@ -13,21 +13,17 @@ export default function MainTravelShopScreen() {
   const route = useRoute();
   const navigation = useNavigation();
 
-  // route.params may be undefined depending on navigation implementation.
   const params = (route as any).params ?? {};
   const initialCountry: string | null = params.country ?? null;
 
   useEffect(() => {
-    // If no initialCountry was passed, optionally navigate back to country selection
-    // or handle it gracefully inside MainTravelShop.
     if (!initialCountry) {
-      // navigation.navigate("/country/select"); // optional
+      // navigation.navigate("/country/select");
     }
   }, [initialCountry]);
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Reuse your MainTravelShop component, passing the initialCountry prop */}
       <MainTravelShop initialCountry={initialCountry} />
     </View>
   );

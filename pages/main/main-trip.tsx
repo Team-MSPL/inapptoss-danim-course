@@ -34,7 +34,6 @@ import moment from 'moment';
 import { cityViewList } from '../../utill/city-list';
 import { useRegionCheckStore } from "../../zustand/timetableStore";
 
-// 월 헤더 라벨
 function getMonthLabel(dateStr: string) {
   const now = moment();
   const date = moment(dateStr);
@@ -44,7 +43,6 @@ function getMonthLabel(dateStr: string) {
   return `${date.year()}년 ${date.month() + 1}월`;
 }
 
-// (수정) 최근 시작일(가장 나중에 시작하는 여행)부터 내림차순 정렬
 function sortTravelListByStartDayDesc(list: any[]) {
   return [...list].sort((a, b) => {
     const aStart = Array.isArray(a.day) && a.day.length > 0 ? moment(a.day[0]) : moment('0000-01-01');
@@ -53,7 +51,6 @@ function sortTravelListByStartDayDesc(list: any[]) {
   });
 }
 
-// (수정) 내림차순 정렬된 리스트를 받아, 최신 월부터 헤더를 붙이는 함수
 function makeMonthHeaderizedListDescending(travelList: any[]) {
   if (!travelList || travelList.length === 0) return [];
   const sorted = sortTravelListByStartDayDesc(travelList);
@@ -86,15 +83,11 @@ export default function MainTrip() {
   const [loading, setLoading] = useState(false);
   const { open } = useToast();
 
-  // track currently deleting id to show spinner
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // map to track whether a long-press was activated for a given travelId
   const longPressActivatedRef = useRef<Map<string, boolean>>(new Map());
-  // map to hold timers for press-in per travelId (for manual long-press)
   const pressTimerMapRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  // 여행 리스트 불러오기
   const getTravelList = useCallback(async () => {
     try {
       setLoading(true);
@@ -112,14 +105,12 @@ export default function MainTrip() {
   }, [getTravelList]);
 
   useEffect(() => {
-    // cleanup timers on unmount
     return () => {
       pressTimerMapRef.current.forEach((t) => clearTimeout(t));
       pressTimerMapRef.current.clear();
     };
   }, []);
 
-  // 도시명 변환 함수
   const findCityFromPath = (path: string) => {
     const pathParts = path?.split('/');
     const targetCity = pathParts[2];
@@ -148,14 +139,12 @@ export default function MainTrip() {
     return path;
   };
 
-  // 여행 상세로 이동
   const goMyTravelDetail = async (item: any) => {
     try {
       const data = await dispatch(getOneTravelCourse({ travelId: item._id })).unwrap();
       console.log(data);
 
       const setRegionCheck = useRegionCheckStore.getState?.()?.setRegionCheck ?? useRegionCheckStore((s) => s.setRegionCheck);
-      // Ensure we only pass an array; fallback to empty array for safety
       const regionArray = Array.isArray(data?.region) ? data.region : [];
       setRegionCheck(regionArray);
 
@@ -175,7 +164,6 @@ export default function MainTrip() {
     }
   };
 
-  // 여행 D-Day 상태 계산
   const dDayCalculate = useCallback((item: any) => {
     const startSign = Math.sign(
       moment.duration(moment(item.startDay).hours(0).diff(moment())).asDays(),
@@ -204,7 +192,6 @@ export default function MainTrip() {
     return { result, endFlag };
   }, []);
 
-  // Long-press delete handler: show confirmation and call delete API
   const confirmAndDelete = async (travelId: string) => {
     Alert.alert(
       '삭제',
@@ -235,10 +222,8 @@ export default function MainTrip() {
     );
   };
 
-  // monthHeaderizedList (memoized)
   const monthHeaderizedList = useMemo(() => makeMonthHeaderizedListDescending(list), [list]);
 
-  // renderItem
   const renderItem = ({ item }: { item: any }) => {
     if (item.type === 'header') {
       return (
@@ -280,13 +265,11 @@ export default function MainTrip() {
         }).result
         : '';
 
-    // ensure map entry exists
     if (!longPressActivatedRef.current.has(travelItem._id)) {
       longPressActivatedRef.current.set(travelItem._id, false);
     }
 
     const handlePressIn = () => {
-      // start timer for 1s
       const existing = pressTimerMapRef.current.get(travelItem._id);
       if (existing) {
         clearTimeout(existing);
@@ -308,10 +291,8 @@ export default function MainTrip() {
       }
       const wasLong = longPressActivatedRef.current.get(travelItem._id);
       if (!wasLong) {
-        // treat as tap
         goMyTravelDetail(travelItem);
       } else {
-        // reset flag after handling
         longPressActivatedRef.current.set(travelItem._id, false);
       }
     };
@@ -358,7 +339,6 @@ export default function MainTrip() {
     );
   };
 
-  // Empty state
   const EmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyUpper}>

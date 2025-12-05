@@ -52,10 +52,6 @@ const COUNTRY_NAME_MAP: Record<string, string> = {
   SG: "싱가포르",
 };
 
-/* -------------------------
-   Helpers (unchanged)
-   ------------------------- */
-
 function flattenArray(arr: any[]): any[] {
   const out: any[] = [];
   (function f(a: any[]) {
@@ -87,17 +83,14 @@ function extract2DArray(maybe: any): any[] | null {
 function extractProductArrayFromResponseData(data: any): any[] | null {
   if (!data) return null;
 
-  // prefer standardized 'products' field if present (list mode)
   if (Array.isArray(data.products)) return data.products;
 
   if (data.prods && Array.isArray(data.prods)) return data.prods;
   if (Array.isArray(data)) {
-    // nested arrays case e.g. [ [ {...}, {...} ] ]
     if (data.length > 0 && Array.isArray(data[0])) {
       const flat = (data as any).flat ? (data as any).flat(Infinity) : flattenArray(data);
       return flat.filter((it: any) => it && typeof it === "object" && !Array.isArray(it));
     }
-    // simple array of objects
     return data;
   }
   if (Array.isArray(data.products)) return data.products;
@@ -131,10 +124,6 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
   } as Product;
 }
 
-/* -------------------------
-   Component
-   ------------------------- */
-
 export default function MainTravelShop({ initialCountry = null }: Props) {
   const navigation = useNavigation();
 
@@ -144,13 +133,11 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If initialCountry is provided, we start with that selected and hide the picker.
   const [selectedCountry, setSelectedCountry] = useState<string | null>(initialCountry ?? null);
   const [showCountryPicker, setShowCountryPicker] = useState<boolean>(!initialCountry);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  // pagination & mode
   const [mode] = useState<"recommend" | "list">("list"); // fixed to 'list'
   const [keyword, setKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(1);
@@ -160,10 +147,8 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
 
   const totalCountRef = useRef(0);
 
-  // debug state to inspect raw response on screen (optional)
   const [debugResponse, setDebugResponse] = useState<any | null>(null);
 
-  // read recommend body from zustand without subscribing to avoid re-renders
   const recommendStoreGet = useCallback(() => useRecommendStore.getState(), []);
 
   const prepareLocalRecommendBody = useCallback(
@@ -177,13 +162,11 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         topK: 10,
       };
       const countryName = countryCode ? COUNTRY_NAME_MAP[countryCode] ?? "" : storedBody.country ?? "";
-      // copy
       return { ...storedBody, country: countryName };
     },
     [recommendStoreGet]
   );
 
-  // fetchProducts: fetches products in 'list' mode and supports page-based append
   const fetchProducts = useCallback(
     async (opts?: {
       overrideCountryCode?: string;
@@ -201,7 +184,7 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
       } = opts ?? {};
 
       const countryToUse = overrideCountryCode ?? selectedCountry;
-      if (!countryToUse) return; // nothing to fetch
+      if (!countryToUse) return;
 
       if (append && loadingMore) return;
 
@@ -210,26 +193,20 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         else setLoading(true);
         setError(null);
 
-        // 1) obtain recent select list first
         const recentRaw = await getRecentSelectList();
-        console.debug("[MainTravelShop] recentRaw from getRecentSelectList():", recentRaw);
 
-        // 2) prepare local recommend body
         const localBody = prepareLocalRecommendBody(countryToUse);
 
-        // 3) override selectList if we can extract a 2D array
         const recent2D = extract2DArray(recentRaw);
         if (recent2D) {
           localBody.selectList = recent2D;
-          console.debug("[MainTravelShop] Overrode selectList with recent2D:", recent2D);
         } else {
-          console.debug("[MainTravelShop] No 2D selectList found in recentRaw; keeping stored selectList");
+          // console.debug("[MainTravelShop] No 2D selectList found in recentRaw; keeping stored selectList");
         }
 
         const finalPage = Math.max(1, Number(optPage ?? 1));
         const finalLimit = Math.max(1, Number(optLimit ?? 20));
 
-        // build request body for 'list' mode
         const postBody: any = {
           pathList: localBody.pathList ?? [[]],
           country: localBody.country ?? "",
@@ -241,28 +218,23 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
           keyword: optKeyword ?? "",
         };
 
-        console.debug("[MainTravelShop] FINAL POST body (about to send):", JSON.stringify(postBody, null, 2));
-
         const response = await axiosAuth.post(RECOMMEND_API_URL, postBody, {
           headers: { "Content-Type": "application/json" },
           timeout: 15000,
         });
 
         try {
-          console.debug("[MainTravelShop] recommend response.status:", response.status);
           setDebugResponse(response.data);
         } catch (logErr) {
-          console.debug("[MainTravelShop] error logging response:", logErr);
+          // console.debug("[MainTravelShop] error logging response:", logErr);
         }
 
-        // Expect response.data.products, response.data.totalCount, response.data.totalPage
         const resp = response.data ?? {};
         const rawProds = Array.isArray(resp.products) ? resp.products : extractProductArrayFromResponseData(resp);
         const respTotalCount = typeof resp.totalCount === "number" ? resp.totalCount : undefined;
         const respTotalPage = typeof resp.totalPage === "number" ? resp.totalPage : undefined;
 
         if (!rawProds) {
-          console.debug("[MainTravelShop] No product array found in response.data:", response.data);
           if (!append) {
             setProductList([]);
             setTotal(0);
@@ -280,17 +252,14 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
             setTotal(newTotal);
             totalCountRef.current = newList.length;
 
-            // determine pagination state
             const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? newList.length) / finalLimit));
             setTotalPage(tp);
-            // if finalPage >= totalPage then no more
             if (finalPage >= tp || uniques.length === 0 || mapped.length < finalLimit) {
               setHasMore(false);
             } else {
               setHasMore(true);
             }
           } else {
-            // replace
             setProductList(mapped.filter(Boolean));
             const newTotal = respTotalCount ?? mapped.length;
             setTotal(newTotal);
@@ -298,15 +267,15 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
 
             const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? mapped.length) / finalLimit));
             setTotalPage(tp);
-            // if only one page or returned less than limit -> no more
+
             if (finalPage >= tp || mapped.length < finalLimit) setHasMore(false);
             else setHasMore(true);
-            // ensure page state matches server
+
             setPage(finalPage);
           }
         }
       } catch (e: any) {
-        console.warn("[MainTravelShop] recommend fetch error:", e);
+        // console.warn("[MainTravelShop] recommend fetch error:", e);
         if (!append) {
           setProductList([]);
           setTotal(0);
@@ -321,20 +290,17 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
     [prepareLocalRecommendBody, selectedCountry, limit, keyword, productList, loadingMore]
   );
 
-  // If initialCountry prop changes later, update selection
   useEffect(() => {
     setSelectedCountry(initialCountry ?? null);
     setShowCountryPicker(!initialCountry);
   }, [initialCountry]);
 
-  // Load products when selectedCountry changes (initial load and when user selects a country)
   useEffect(() => {
     if (selectedCountry) {
       setPage(1);
       setHasMore(true);
       fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCountry, limit, keyword]);
 
   const onRefresh = useCallback(() => {
@@ -402,7 +368,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
   const isNoProduct = !loading && Array.isArray(productList) && productList.length === 0;
 
   if (!selectedCountry && showCountryPicker) {
-    // show country picker screen
     return (
       <View style={{ flex: 1, backgroundColor: "#fff", paddingVertical: 20, paddingHorizontal: 8 }}>
         <FixedBottomCTAProvider>
@@ -411,7 +376,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
             countries={COUNTRY_OPTIONS}
             selectedCode={undefined}
             onSelect={(code) => {
-              // set selection and allow effect to trigger data load
               setSelectedCountry(code);
               setShowCountryPicker(false);
             }}
@@ -447,7 +411,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
     );
   }
 
-  // Footer: loading indicator / centered plain-text "더 불러오기" / no-more message
   const ListFooter = () => {
     if (loadingMore) {
       return (
@@ -468,7 +431,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         </View>
       );
     }
-    // no more
     return (
       <View style={{ padding: 16, alignItems: "center" }}>
         <Text typography="t7" color={colors.grey400}>더 불러올 상품이 없습니다.</Text>

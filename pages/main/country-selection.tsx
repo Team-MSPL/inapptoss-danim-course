@@ -27,8 +27,6 @@ export default function MainCountrySelection() {
   const navigation = useNavigation();
 
   function onSelectCountry(code: string) {
-    // Navigate to the travel shop screen and pass the selected country as a param.
-    // Your app router must have a route registered for '/travel/shop' (or change the path accordingly).
     navigation.navigate("/main/travel-shop-screen", { country: code });
   }
 
