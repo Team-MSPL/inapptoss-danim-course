@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import NavigationBar from '../../components/navigation-bar';
 import { Button, FixedBottomCTA, FixedBottomCTAProvider } from '@toss-design-system/react-native';
@@ -34,7 +34,20 @@ function JoinCountry() {
     const picked = COUNTRY_OPTIONS.find((c) => c.code === code);
     const ko = picked ? picked.label : null;
     setSelectedCountryKo(ko);
-    console.log('선택한 국가:', ko);
+  };
+
+  const selectedCode = selectedCountryKo
+    ? COUNTRY_OPTIONS.find((c) => c.label === selectedCountryKo)?.code
+    : undefined;
+
+  const isNextDisabled = !selectedCountryKo;
+
+  const handleNextPress = () => {
+    if (isNextDisabled) {
+      Alert.alert('국가를 선택해주세요', '다음 단계로 진행하려면 국가를 선택해 주세요.');
+      return;
+    }
+    navigation.navigate('/join/who');
   };
 
   return (
@@ -48,11 +61,7 @@ function JoinCountry() {
           countries={COUNTRY_OPTIONS}
           onSelect={handleSelect}
           columns={2}
-          selectedCode={
-            selectedCountryKo
-              ? COUNTRY_OPTIONS.find((c) => c.label === selectedCountryKo)?.code
-              : undefined
-          }
+          selectedCode={selectedCode}
         />
 
         <FixedBottomCTA.Double
@@ -65,9 +74,8 @@ function JoinCountry() {
           rightButton={
             <Button
               display="block"
-              onPress={() => {
-                navigation.navigate('/join/who');
-              }}
+              disabled={isNextDisabled}
+              onPress={handleNextPress}
             >
               다음으로
             </Button>
