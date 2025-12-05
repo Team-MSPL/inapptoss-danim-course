@@ -11,7 +11,7 @@ import {
 import NavigationBar from '../../components/navigation-bar';
 import { CustomProgressBarJoin } from '../../components/join/custom-progress-bar-join';
 import { useRegionSearchStore } from "../../zustand/regionSearchStore";
-import { tendencyData } from "../../components/join/constants/tendencyData";
+import { tendencyDataJoin } from "../../components/join/constants/tendencyData";
 
 export const Route = createRoute('/join/season', {
   validateParams: (params) => params,
@@ -24,7 +24,7 @@ export default function SeasonSelect() {
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
-  const seasonData = tendencyData[4];
+  const seasonData = tendencyDataJoin[4];
   const seasonSelect = selectList[4] ?? [0, 0, 0, 0];
 
   const windowWidth = Dimensions.get('window').width;

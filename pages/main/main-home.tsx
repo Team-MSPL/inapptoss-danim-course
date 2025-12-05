@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { Image } from '@granite-js/react-native';
 import {
@@ -8,64 +8,76 @@ import {
   Text,
   Top,
   BottomSheet,
-  Button, useBottomSheet
+  Button,
+  useBottomSheet,
 } from '@toss-design-system/react-native';
 import { useNavigation } from '@granite-js/react-native';
 import { getRecentSelectList } from '../../zustand/api';
 import { useRegionSearchStore } from '../../zustand/regionSearchStore';
 import { useDispatch } from 'react-redux';
-import { travelSliceActions } from "../../redux/travle-slice";
-import {useRecentModeStore} from "../../zustand/modeStore";
+import { travelSliceActions } from '../../redux/travle-slice';
+import { useRecentModeStore } from '../../zustand/modeStore';
+import { tendencyData, tendencyDataJoin } from '../../components/join/constants/tendencyData';
 
 export default function MainHome() {
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();
   const setRecentMode = useRecentModeStore((state) => state.setRecentMode);
-
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
   const dispatch = useDispatch();
 
-  const handleNavigate = async (route: string) => {
-    try {
-      const data = await getRecentSelectList();
+  const EXPECTED_LENGTHS_JOIN = [6, 6, 7, 6, 4];
+  const EXPECTED_LENGTHS_ENROLL = [7, 6, 6, 11, 4];
 
-      const recent = Array.isArray(data) ? data : data?.recentSelectList;
+  function matchesExpectedLengths(arr: any, expected: number[]) {
+    if (!Array.isArray(arr) || arr.length !== expected.length) return false;
+    return expected.every((len, idx) => Array.isArray(arr[idx]) && arr[idx].length === len);
+  }
 
-      const hasValidRecent =
-        Array.isArray(recent) &&
-        recent.length > 0 &&
-        recent.some((inner) => Array.isArray(inner) && inner.length > 0);
-
-      if (hasValidRecent) {
-        confirmRecommend({ recentSelectList: recent }, route);
+  function mapRecentToRouteFormat(maybe: any, route: string) {
+    const wantEnroll = String(route).includes('/enroll');
+    const incomingIsJoin = matchesExpectedLengths(maybe, EXPECTED_LENGTHS_JOIN);
+    const incomingIsEnroll = matchesExpectedLengths(maybe, EXPECTED_LENGTHS_ENROLL);
+    let sourceLists = tendencyDataJoin;
+    if (incomingIsEnroll) {
+      sourceLists = tendencyData;
+    } else if (incomingIsJoin) {
+      sourceLists = tendencyDataJoin;
+    } else {
+      if (Array.isArray(maybe) && maybe.length === 5) {
+        const joinMatches = maybe.reduce((acc: number, cur: any, i: number) => acc + (Array.isArray(cur) && cur.length === EXPECTED_LENGTHS_JOIN[i] ? 1 : 0), 0);
+        const enrollMatches = maybe.reduce((acc: number, cur: any, i: number) => acc + (Array.isArray(cur) && cur.length === EXPECTED_LENGTHS_ENROLL[i] ? 1 : 0), 0);
+        if (enrollMatches > joinMatches) {
+          sourceLists = tendencyData;
+        } else {
+          sourceLists = tendencyDataJoin;
+        }
       } else {
-        navigation.navigate(route);
+        sourceLists = tendencyDataJoin;
       }
-    } catch (error) {
-      navigation.navigate(route);
     }
-  };
-
-  const EXPECTED_LENGTHS = [7, 6, 6, 11, 4];
-
-  function normalizeSelectList(maybe: any): number[][] {
-    const out: number[][] = [];
-
+    const targetLists = wantEnroll ? tendencyData : tendencyDataJoin;
+    const targetExpected = wantEnroll ? EXPECTED_LENGTHS_ENROLL : EXPECTED_LENGTHS_JOIN;
     if (!Array.isArray(maybe)) {
-      return EXPECTED_LENGTHS.map((len) => Array.from({ length: len }, () => 0));
+      return targetExpected.map((len) => Array.from({ length: len }, () => 0));
     }
-
-    for (let i = 0; i < EXPECTED_LENGTHS.length; i++) {
-      const expectedLen = EXPECTED_LENGTHS[i];
-      const provided = Array.isArray(maybe[i]) ? maybe[i] : [];
-      const normalized = new Array(expectedLen).fill(0);
-      for (let j = 0; j < Math.min(expectedLen, provided.length); j++) {
-        const v = Number(provided[j]) || 0;
-        normalized[j] = v;
+    const out: number[][] = [];
+    for (let catIdx = 0; catIdx < targetLists.length; catIdx++) {
+      const tList = targetLists[catIdx]?.list ?? [];
+      const sList = sourceLists[catIdx]?.list ?? [];
+      const sourceArr = Array.isArray(maybe[catIdx]) ? maybe[catIdx] : [];
+      const targetArr = new Array(targetLists[catIdx]?.list?.length ?? targetExpected[catIdx] ?? 0).fill(0);
+      for (let ti = 0; ti < tList.length; ti++) {
+        const label = tList[ti];
+        const sIndex = sList.findIndex((s: string) => String(s) === String(label));
+        if (sIndex >= 0 && sIndex < sourceArr.length) {
+          targetArr[ti] = Number(sourceArr[sIndex]) ? 1 : 0;
+        } else {
+          targetArr[ti] = 0;
+        }
       }
-      out.push(normalized);
+      out.push(targetArr);
     }
-
     return out;
   }
 
@@ -84,8 +96,8 @@ export default function MainHome() {
           <BottomSheet.CTA.Double
             leftButton={
               <Button type="dark" style="weak" display="block" onPress={() => {
-                if(route === '/join/who') {
-                  setSelectList([[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]]);
+                if (route === '/join/who') {
+                  setSelectList(EXPECTED_LENGTHS_JOIN.map((len) => new Array(len).fill(0)));
                 }
                 setRecentMode('current');
                 bottomSheet.close();
@@ -101,13 +113,15 @@ export default function MainHome() {
                 display="block"
                 onPress={() => {
                   setRecentMode('recent');
-                  const recentRaw = apiResult?.recentSelectList ?? [];
-                  const normalized = normalizeSelectList(recentRaw);
-
-                  if(route === '/join/who') {
-                    setSelectList(normalized);
+                  const recentRaw = apiResult?.recentSelectList ?? apiResult?.recent ?? [];
+                  const mapped = mapRecentToRouteFormat(recentRaw, route);
+                  console.log('mapRecentToRouteFormat:', { route, recentRaw, mapped });
+                  if (String(route).includes('/join')) {
+                    setSelectList(mapped);
+                    console.log('setSelectList mapped for join', mapped);
                   } else {
-                    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: normalized }));
+                    dispatch(travelSliceActions.updateFiled({ field: 'tendency', value: mapped }));
+                    console.log('dispatch updateFiled mapped for enroll', mapped);
                   }
                   bottomSheet.close();
                   navigation.navigate(route);
@@ -120,6 +134,25 @@ export default function MainHome() {
         </>
       ),
     });
+  };
+
+  const handleNavigate = async (route: string) => {
+    try {
+      const data = await getRecentSelectList();
+      const recent = Array.isArray(data) ? data : data?.recentSelectList ?? data?.recent ?? [];
+      console.log('handleNavigate recent:', { route, recent });
+      const hasValidRecent =
+        Array.isArray(recent) &&
+        recent.length === 5 &&
+        recent.some((inner) => Array.isArray(inner) && inner.length > 0);
+      if (hasValidRecent) {
+        confirmRecommend({ recentSelectList: recent }, route);
+      } else {
+        navigation.navigate(route);
+      }
+    } catch (error) {
+      navigation.navigate(route);
+    }
   };
 
   return (

@@ -7,7 +7,7 @@ import {
   Text,
 } from '@toss-design-system/react-native';
 import NavigationBar from '../../components/navigation-bar';
-import { tendencyData } from "../../components/join/constants/tendencyData";
+import { tendencyDataJoin } from "../../components/join/constants/tendencyData";
 import TendencyButton from '../../components/tendency-button';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { StepText } from '../../components/step-text';
@@ -25,8 +25,8 @@ export default function JoinTheme() {
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
-  const themeList = tendencyData[1].list;
-  const themeIcons = tendencyData[1].photo;
+  const themeList = tendencyDataJoin[1].list;
+  const themeIcons = tendencyDataJoin[1].photo;
   const themeSelect = selectList[1] ?? new Array(themeList.length).fill(0);
 
   const handleThemeButtonClick = (idx: number) => {

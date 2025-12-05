@@ -17,7 +17,7 @@ import { styles } from '../enroll/country';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 
 import { useRegionSearchStore} from "../../zustand/regionSearchStore";
-import {tendencyData} from "../../components/join/constants/tendencyData";
+import {tendencyDataJoin} from "../../components/join/constants/tendencyData";
 
 const buttonContainerStyle = {
   ...styles.ButtonsContainer,
@@ -37,7 +37,7 @@ export default function JoinWho() {
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
-  const whoList = tendencyData[0].list;
+  const whoList = tendencyDataJoin[0].list;
   const petIdx = whoList.indexOf('반려동물과');
   const showWarning = petIdx !== -1 && selectList[0]?.[petIdx] === 1;
 
@@ -150,7 +150,7 @@ export default function JoinWho() {
               label={item}
               divide={true}
               key={idx}
-              imageUrl={tendencyData[0].photo?.[idx]}
+              imageUrl={tendencyDataJoin[0].photo?.[idx]}
               onPress={() => handleWhoButtonClick(idx)}
             />
           ))}

@@ -15,7 +15,7 @@ interface RegionSearchState {
 }
 
 export const useRegionSearchStore = create<RegionSearchState>((set) => ({
-  selectList: [[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]],
+  selectList: [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0]],
   selectPopular: [40, 60],
   recentPosition: { lat: 0, lng: 0 },
   distanceSensitivity: 5,
@@ -27,7 +27,7 @@ export const useRegionSearchStore = create<RegionSearchState>((set) => ({
   setDistanceSensitivity: (value) => set({ distanceSensitivity: value }),
   reset: () =>
     set({
-      selectList: [[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]],
+      selectList:  [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0]],
       selectPopular: [40, 60],
       recentPosition: { lat: 0, lng: 0 },
       distanceSensitivity: 5,

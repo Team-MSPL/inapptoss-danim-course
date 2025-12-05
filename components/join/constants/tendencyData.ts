@@ -83,3 +83,77 @@ export const tendencyData: TendencyData = [
     ],
   },
 ];
+
+export const tendencyDataJoin: TendencyData = [
+  {
+    title: '누구와 떠나시나요?',
+    multi: true,
+    list: ['나홀로', '연인과', '친구와', '가족과', '효도', '자녀와'],
+    photo: [
+      'icon-person-default-man',
+      'https://static.toss.im/2d-emojis/png/4x/u1F491.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F468_u1F3FC_u200D_u1F91D_u200D_u1F468_u1F3FB.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F468_u200D_u1F469_u200D_u1F467_u200D_u1F466.png',
+      'icon-emoji-grandparents',
+      'icon-child',
+    ],
+  },
+  {
+    title: '테마는 무엇인가요?',
+    multi: true,
+    list: ['힐링', '활동적인', '배움이 있는', '맛있는', '교통이 편한', '알뜰한'],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F331.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F93F.png',
+      'icon-bulb-twinkle',
+      'icon-spoon-chopsticks-mono',
+      'icon-road-mono',
+      'icon-coin-yellow',
+    ],
+  },
+  {
+    title: '무엇을 하고싶으신가요?',
+    multi: true,
+    list: ['레저 스포츠', '산책', '드라이브', '이색체험', '쇼핑', '시티투어', '역사여행'],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F6B5.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F6B6.png',
+      'icon-car-handlebar',
+      'https://static.toss.im/2d-emojis/png/4x/u1FA82.png',
+      'icon-shopping-bag-blue',
+      'https://static.toss.im/2d-emojis/png/4x/u1F3D9.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F3DB.png',
+    ],
+  },
+  {
+    title: '가고 싶은 장소는 어디인가요?',
+    multi: true,
+    list: [
+      '바다',
+      '산',
+      '자연경관',
+      '문화시설',
+      '사진 명소',
+      '전통',
+    ],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F30A.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F3D4.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F30C.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F3B7.png',
+      'icon-camera-mono',
+      'icon-blue-house',
+    ],
+  },
+  {
+    title: '계절은 언제가 좋으신가요?',
+    multi: true,
+    list: ['봄', '여름', '가을', '겨울'],
+    photo: [
+      'https://static.toss.im/2d-emojis/png/4x/u1F33C.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F3DD.png',
+      'https://static.toss.im/2d-emojis/png/4x/u1F341.png',
+      'https://static.toss.im/2d-emojis/png/4x/u2744.png',
+    ],
+  },
+];

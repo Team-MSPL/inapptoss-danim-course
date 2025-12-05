@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, Animated } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import { useRegionSearchStore} from "../../zustand/regionSearchStore";
-import { tendencyData} from "../../components/join/constants/tendencyData";
+import { tendencyDataJoin } from "../../components/join/constants/tendencyData";
 import TendencyButton from '../../components/tendency-button';
 import {
   Icon,
@@ -17,10 +17,7 @@ import { StepText } from '../../components/step-text';
 import {CustomProgressBarJoin} from "../../components/join/custom-progress-bar-join";
 
 const PLACE_IDX = 3;
-const PLACE_PAGE_SPLIT = [
-  [0, 6],
-  [6, 11],
-];
+const VISIBLE_COUNT = 6;
 
 export const Route = createRoute('/join/place', {
   validateParams: (params) => params,
@@ -28,24 +25,22 @@ export const Route = createRoute('/join/place', {
 });
 
 export default function JoinPlace() {
-  const [page, setPage] = useState(0);
   const [showConflictWarning, setShowConflictWarning] = useState(false);
   const navigation = useNavigation();
 
   const selectList = useRegionSearchStore((state) => state.selectList);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
 
-  const whoList = tendencyData[0]?.list ?? [];
+  const whoList = tendencyDataJoin[0]?.list ?? [];
   const petIdx = whoList.indexOf('반려동물과');
   const isPetSelected = petIdx !== -1 && selectList[0]?.[petIdx] === 1;
 
-  const placeList = tendencyData[PLACE_IDX]?.list ?? [];
-  const placePhotoList = tendencyData[PLACE_IDX]?.photo ?? [];
+  const placeList = tendencyDataJoin[PLACE_IDX]?.list ?? [];
+  const placePhotoList = tendencyDataJoin[PLACE_IDX]?.photo ?? [];
   const indoorIdx = placeList.indexOf('실내여행지');
 
-  const [start, end] = PLACE_PAGE_SPLIT[page];
-  const curPlaceList = placeList.slice(start, end);
-  const curPlacePhotoList = placePhotoList.slice(start, end);
+  const curPlaceList = placeList.slice(0, VISIBLE_COUNT);
+  const curPlacePhotoList = placePhotoList.slice(0, VISIBLE_COUNT);
 
   const warningOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -62,17 +57,17 @@ export default function JoinPlace() {
         useNativeDriver: true,
       }).start();
     }
-  }, [showConflictWarning]);
+  }, [showConflictWarning, warningOpacity]);
 
   const handlePlaceButtonPress = (idx: number) => {
-    if (isPetSelected && start + idx === indoorIdx) {
+    if (isPetSelected && idx === indoorIdx) {
       setShowConflictWarning(true);
       return;
     }
     setShowConflictWarning(false);
     const prevArr = selectList[PLACE_IDX] ?? new Array(placeList.length).fill(0);
     const newArr = [...prevArr];
-    newArr[start + idx] = newArr[start + idx] === 1 ? 0 : 1;
+    newArr[idx] = newArr[idx] === 1 ? 0 : 1;
     const newSelectList = [...selectList];
     newSelectList[PLACE_IDX] = newArr;
     setSelectList(newSelectList);
@@ -117,7 +112,7 @@ export default function JoinPlace() {
             <TendencyButton
               key={item}
               marginBottom={12}
-              bgColor={selectList[PLACE_IDX]?.[start + idx] === 1}
+              bgColor={selectList[PLACE_IDX]?.[idx] === 1}
               label={item}
               divide
               imageUrl={curPlacePhotoList[idx]}
@@ -126,38 +121,7 @@ export default function JoinPlace() {
             />
           ))}
         </View>
-        {/* 페이지 이동 화살표 */}
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 0,
-            marginBottom: 16,
-            gap: 8,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => setPage(page - 1)}
-            disabled={page === 0}
-            style={{
-              opacity: page === 0 ? 0.3 : 1,
-              padding: 12,
-            }}
-          >
-            <Icon name="icon-arrow-left-sidebar-mono" size={28} color="#222" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setPage(page + 1)}
-            disabled={page === PLACE_PAGE_SPLIT.length - 1}
-            style={{
-              opacity: page === PLACE_PAGE_SPLIT.length - 1 ? 0.3 : 1,
-              padding: 12,
-            }}
-          >
-            <Icon name="icon-arrow-right-sidebar-mono" size={28} color="#222" />
-          </TouchableOpacity>
-        </View>
+
         <FixedBottomCTA.Double
           containerStyle={{ backgroundColor: 'white' }}
           leftButton={
