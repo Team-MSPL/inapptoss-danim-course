@@ -20,18 +20,6 @@ export default function Main() {
 
   useFocusEffect(
     useCallback(() => {
-      addAccessoryButton({
-        title: "letter",
-        icon: {
-          name: "icon-letter-mono",
-        },
-        id: "letter",
-        onPress: () => {
-          setTab(3);
-          navigation.navigate("/info/my-inquiry-list");
-        },
-      });
-
       useRegionModeStore.getState().setRegionMode("enroll");
     }, [addAccessoryButton, navigation, setTab])
   );
