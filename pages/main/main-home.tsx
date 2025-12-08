@@ -19,15 +19,21 @@ import { travelSliceActions } from '../../redux/travle-slice';
 import { useRecentModeStore } from '../../zustand/modeStore';
 import { tendencyData, tendencyDataJoin } from '../../components/join/constants/tendencyData';
 
+const EXPECTED_LENGTHS_JOIN = [6, 6, 7, 6, 4];
+const EXPECTED_LENGTHS_ENROLL = [7, 6, 6, 11, 4];
+
+/**
+ * @version 2025.12
+ * @todo
+ * @author dmstjdhdh
+ */
+
 export default function MainHome() {
   const navigation = useNavigation();
   const bottomSheet = useBottomSheet();
   const setRecentMode = useRecentModeStore((state) => state.setRecentMode);
   const setSelectList = useRegionSearchStore((state) => state.setSelectList);
   const dispatch = useDispatch();
-
-  const EXPECTED_LENGTHS_JOIN = [6, 6, 7, 6, 4];
-  const EXPECTED_LENGTHS_ENROLL = [7, 6, 6, 11, 4];
 
   function matchesExpectedLengths(arr: any, expected: number[]) {
     if (!Array.isArray(arr) || arr.length !== expected.length) return false;

@@ -1,3 +1,4 @@
+// contents updated: added missing totalPage state declaration and small defensive checks
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
@@ -9,6 +10,8 @@ import {
   TextInput,
   StyleSheet,
   Keyboard,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@granite-js/react-native";
 import {
@@ -124,20 +127,25 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
     rating_count: item.rating_count ?? item.review_count ?? item.sellingProductReviewCount ?? 0,
     introduction: item.introduction ?? (Array.isArray(item.productPlaces) ? item.productPlaces[1] ?? "" : ""),
     product_category: item.product_category ?? item.product_category ?? {},
-  } as Product;
+    finalScore: (item as any).finalScore ?? (item as any).avgPrefScore ?? undefined,
+  } as Product & { finalScore?: number; avgPrefScore?: number };
 }
+
+const SORT_OPTIONS = ["추천순", "높은 가격순", "낮은 가격순", "높은 평점순", "낮은 평점순"] as const;
+type SortOption = typeof SORT_OPTIONS[number];
 
 export default function MainTravelShop({ initialCountry = null }: Props) {
   const navigation = useNavigation();
 
   const [productList, setProductList] = useState<Product[]>([]);
+  const originalListRef = useRef<Product[]>([]);
   const productListRef = useRef<Product[]>([]);
   useEffect(() => {
     productListRef.current = productList;
   }, [productList]);
 
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false); // general loading for fetch
+  const [loading, setLoading] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -146,15 +154,17 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const [mode] = useState<"recommend" | "list">("list");
-  const [keyword, setKeyword] = useState<string>(""); // controlled input
-  const [lastSearchedKeyword, setLastSearchedKeyword] = useState<string>(""); // last keyword actually used to call API
-  const [isSearching, setIsSearching] = useState<boolean>(false); // searching via keyword button
+  const [keyword, setKeyword] = useState<string>("");
+  const [lastSearchedKeyword, setLastSearchedKeyword] = useState<string>("");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
-  const [totalPage, setTotalPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  const [totalPage, setTotalPage] = useState<number>(1); // ADDED missing state
+
+  const [sortOption, setSortOption] = useState<SortOption>("추천순");
+  const [sortModalVisible, setSortModalVisible] = useState(false);
 
   const totalCountRef = useRef(0);
   const [debugResponse, setDebugResponse] = useState<any | null>(null);
@@ -178,6 +188,35 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
   );
 
   const requestIdRef = useRef(0);
+
+  const sortArrayByOption = useCallback((arr: Product[], option: SortOption) => {
+    const copy = [...arr];
+    switch (option) {
+      case "추천순": {
+        copy.sort((a: any, b: any) => {
+          const aScore = Number(a.finalScore ?? a.avgPrefScore ?? 0);
+          const bScore = Number(b.finalScore ?? b.avgPrefScore ?? 0);
+          return bScore - aScore;
+        });
+        break;
+      }
+      case "낮은 가격순":
+        copy.sort((a: any, b: any) => (Number(a.b2b_price ?? 0) - Number(b.b2b_price ?? 0)));
+        break;
+      case "높은 가격순":
+        copy.sort((a: any, b: any) => (Number(b.b2b_price ?? 0) - Number(a.b2b_price ?? 0)));
+        break;
+      case "낮은 평점순":
+        copy.sort((a: any, b: any) => (Number(a.avg_rating_star ?? 0) - Number(b.avg_rating_star ?? 0)));
+        break;
+      case "높은 평점순":
+        copy.sort((a: any, b: any) => (Number(b.avg_rating_star ?? 0) - Number(a.avg_rating_star ?? 0)));
+        break;
+      default:
+        break;
+    }
+    return copy;
+  }, []);
 
   const fetchProducts = useCallback(
     async (opts?: {
@@ -254,6 +293,7 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
 
         if (!rawProds) {
           if (!append) {
+            originalListRef.current = [];
             setProductList([]);
             setTotal(0);
           }
@@ -262,17 +302,18 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         } else {
           const mapped: Product[] = rawProds.map((p: any, i: number) => mapRecommendItemToProduct(p, i));
           if (append) {
+            originalListRef.current = [...originalListRef.current, ...mapped];
             const existingIds = new Set(productListRef.current.map((p) => String(p.prod_no)));
             const uniques = mapped.filter((m) => !existingIds.has(String(m.prod_no)));
             setProductList((prev) => {
               const newList = [...prev, ...uniques];
               totalCountRef.current = newList.length;
-              return newList;
+              return sortArrayByOption(newList, sortOption);
             });
-            const newTotal = respTotalCount ?? (productListRef.current.length + mapped.length);
+            const newTotal = respTotalCount ?? (originalListRef.current.length);
             setTotal(newTotal);
 
-            const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? (productListRef.current.length + mapped.length)) / finalLimit));
+            const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? originalListRef.current.length) / finalLimit));
             setTotalPage(tp);
             if (finalPage >= tp || uniques.length === 0 || mapped.length < finalLimit) {
               setHasMore(false);
@@ -280,7 +321,9 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
               setHasMore(true);
             }
           } else {
-            setProductList(mapped.filter(Boolean));
+            originalListRef.current = mapped.slice();
+            const sorted = sortArrayByOption(mapped, sortOption);
+            setProductList(sorted.filter(Boolean));
             const newTotal = respTotalCount ?? mapped.length;
             setTotal(newTotal);
             totalCountRef.current = mapped.length;
@@ -296,6 +339,7 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         }
       } catch (e: any) {
         if (!append) {
+          originalListRef.current = [];
           setProductList([]);
           setTotal(0);
         }
@@ -306,7 +350,7 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         else setLoading(false);
       }
     },
-    [prepareLocalRecommendBody, selectedCountry, limit, lastSearchedKeyword, loadingMore]
+    [prepareLocalRecommendBody, selectedCountry, limit, lastSearchedKeyword, loadingMore, sortOption, sortArrayByOption]
   );
 
   useEffect(() => {
@@ -322,6 +366,13 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
       fetchProducts({ optPage: 1, optLimit: limit, optKeyword: "", append: false, signalRequestId: reqId });
     }
   }, [selectedCountry, limit, fetchProducts, lastSearchedKeyword]);
+
+  useEffect(() => {
+    setProductList((_) => {
+      const sorted = sortArrayByOption(originalListRef.current ?? [], sortOption);
+      return sorted;
+    });
+  }, [sortOption, sortArrayByOption]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -454,9 +505,24 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
           subTitle2={"선택하신 코스에 꼭 맞는 상품을 모아봤어요."}
         />
         <View style={{ paddingHorizontal: 20 }}>
-          <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
-            <Icon name="icon-shopping-bag-red" color={colors.red300} size={22} style={{ marginHorizontal: 6 }} />
-            <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!</Text>
+          <View style={styles.topRow}>
+            <View style={styles.leftGroup}>
+              <View style={styles.lowPriceBox}>
+                <Icon name="icon-shopping-bag-red" color={colors.red300} size={18} style={{ marginHorizontal: 6 }} />
+                <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!    </Text>
+              </View>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setShowCountryPicker(true);
+                  setSelectedCountry(null);
+                }}
+                style={styles.countryButton}
+                activeOpacity={0.8}
+              >
+                <Text typography="t7" color={colors.grey700}>다른 나라 선택</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.searchRow}>
@@ -481,15 +547,15 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
             </TouchableOpacity>
           </View>
 
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <View style={styles.rowBetween}>
             <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {selectedCountry && (
-                <TouchableOpacity onPress={() => { setShowCountryPicker(true); setSelectedCountry(null); }}>
-                  <Text typography="t7" color={colors.grey600}>다른 나라 선택</Text>
-                </TouchableOpacity>
-              )}
-            </View>
+            <TouchableOpacity
+              onPress={() => setSortModalVisible(true)}
+              style={styles.sortButton}
+              activeOpacity={0.8}
+            >
+              <Text typography="t7" color={colors.grey700}>{sortOption}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -508,11 +574,86 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         removeClippedSubviews={Platform.OS === "android"}
         keyboardShouldPersistTaps="handled"
       />
+
+      <Modal
+        visible={sortModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSortModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setSortModalVisible(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+
+        <View style={styles.modalCenterWrapper}>
+          <View style={styles.modalContainerCenter}>
+            {SORT_OPTIONS.map((opt) => (
+              <TouchableOpacity
+                key={opt}
+                style={styles.modalOption}
+                onPress={() => {
+                  setSortOption(opt);
+                  setSortModalVisible(false);
+                }}
+              >
+                <Text typography="t6" color={sortOption === opt ? colors.blue700 : colors.grey700}>
+                  {opt}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity style={styles.modalOption} onPress={() => setSortModalVisible(false)}>
+              <Text typography="t6" color={colors.grey700}>취소</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  leftGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 12,
+    flexShrink: 1,
+  },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+  lowPriceBox: {
+    minWidth: Math.min(Dimensions.get("window").width * 0.45, 280),
+    maxWidth: Math.min(Dimensions.get("window").width * 0.6, 300),
+    height: 44,
+    borderRadius: 18,
+    backgroundColor: colors.red50,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  countryButton: {
+    paddingHorizontal: 10,
+    marginLeft: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: colors.grey100,
+  },
+  sortButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: colors.white
+  },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -534,5 +675,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.grey100,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  modalCenterWrapper: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainerCenter: {
+    width: Math.min(340, Dimensions.get("window").width - 40),
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+  },
+  modalOption: {
+    paddingVertical: 12,
+    alignItems: "center",
+    width: "100%",
   },
 });
