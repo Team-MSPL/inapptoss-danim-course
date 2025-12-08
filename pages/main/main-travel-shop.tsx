@@ -6,6 +6,9 @@ import {
   Platform,
   ActivityIndicator,
   TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  Keyboard,
 } from "react-native";
 import { useNavigation } from "@granite-js/react-native";
 import {
@@ -116,7 +119,7 @@ function mapRecommendItemToProduct(item: any, idx: number): Product {
     prod_name: item.prod_name ?? item.prodName ?? item.name ?? "",
     prod_img_url: item.prod_img_url ?? item.prod_img ?? item.prodImg ?? item.prod_img_url ?? "",
     b2c_price: typeof item.b2c_price === "number" ? item.b2c_price : (item.b2c_price ?? item.b2cPrice ?? item.price ?? 0),
-    b2b_price: typeof item.b2b_price === "number" ? item.b2b_price : (item.b2b_price ?? item.b2bPrice ?? item.sale_price ?? 0),
+    b2b_price: typeof item.b2b_price === "number" ? item.b2b_price : (item.b2c_price ?? item.b2bPrice ?? item.sale_price ?? 0),
     avg_rating_star: item.avg_rating_star ?? item.avgRating ?? 0,
     rating_count: item.rating_count ?? item.review_count ?? item.sellingProductReviewCount ?? 0,
     introduction: item.introduction ?? (Array.isArray(item.productPlaces) ? item.productPlaces[1] ?? "" : ""),
@@ -128,8 +131,13 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
   const navigation = useNavigation();
 
   const [productList, setProductList] = useState<Product[]>([]);
+  const productListRef = useRef<Product[]>([]);
+  useEffect(() => {
+    productListRef.current = productList;
+  }, [productList]);
+
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false); // general loading for fetch
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,15 +146,17 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const [mode] = useState<"recommend" | "list">("list"); // fixed to 'list'
-  const [keyword, setKeyword] = useState<string>("");
+  const [mode] = useState<"recommend" | "list">("list");
+  const [keyword, setKeyword] = useState<string>(""); // controlled input
+  const [lastSearchedKeyword, setLastSearchedKeyword] = useState<string>(""); // last keyword actually used to call API
+  const [isSearching, setIsSearching] = useState<boolean>(false); // searching via keyword button
+
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(false);
 
   const totalCountRef = useRef(0);
-
   const [debugResponse, setDebugResponse] = useState<any | null>(null);
 
   const recommendStoreGet = useCallback(() => useRecommendStore.getState(), []);
@@ -167,6 +177,8 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
     [recommendStoreGet]
   );
 
+  const requestIdRef = useRef(0);
+
   const fetchProducts = useCallback(
     async (opts?: {
       overrideCountryCode?: string;
@@ -174,19 +186,23 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
       optLimit?: number;
       optKeyword?: string;
       append?: boolean;
+      signalRequestId?: number;
     }) => {
       const {
         overrideCountryCode,
         optPage = 1,
         optLimit = limit,
-        optKeyword = keyword,
+        optKeyword = lastSearchedKeyword ?? "",
         append = false,
+        signalRequestId,
       } = opts ?? {};
 
       const countryToUse = overrideCountryCode ?? selectedCountry;
       if (!countryToUse) return;
 
       if (append && loadingMore) return;
+
+      const currentRequestId = typeof signalRequestId === "number" ? signalRequestId : ++requestIdRef.current;
 
       try {
         if (append) setLoadingMore(true);
@@ -200,8 +216,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         const recent2D = extract2DArray(recentRaw);
         if (recent2D) {
           localBody.selectList = recent2D;
-        } else {
-          // console.debug("[MainTravelShop] No 2D selectList found in recentRaw; keeping stored selectList");
         }
 
         const finalPage = Math.max(1, Number(optPage ?? 1));
@@ -223,10 +237,14 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
           timeout: 15000,
         });
 
+        if (currentRequestId !== requestIdRef.current) {
+          return;
+        }
+
         try {
           setDebugResponse(response.data);
         } catch (logErr) {
-          // console.debug("[MainTravelShop] error logging response:", logErr);
+          // ignore
         }
 
         const resp = response.data ?? {};
@@ -244,15 +262,17 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         } else {
           const mapped: Product[] = rawProds.map((p: any, i: number) => mapRecommendItemToProduct(p, i));
           if (append) {
-            const existingIds = new Set(productList.map((p) => String(p.prod_no)));
+            const existingIds = new Set(productListRef.current.map((p) => String(p.prod_no)));
             const uniques = mapped.filter((m) => !existingIds.has(String(m.prod_no)));
-            const newList = [...productList, ...uniques];
-            setProductList(newList);
-            const newTotal = respTotalCount ?? newList.length;
+            setProductList((prev) => {
+              const newList = [...prev, ...uniques];
+              totalCountRef.current = newList.length;
+              return newList;
+            });
+            const newTotal = respTotalCount ?? (productListRef.current.length + mapped.length);
             setTotal(newTotal);
-            totalCountRef.current = newList.length;
 
-            const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? newList.length) / finalLimit));
+            const tp = respTotalPage ?? Math.max(1, Math.ceil((respTotalCount ?? (productListRef.current.length + mapped.length)) / finalLimit));
             setTotalPage(tp);
             if (finalPage >= tp || uniques.length === 0 || mapped.length < finalLimit) {
               setHasMore(false);
@@ -275,7 +295,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
           }
         }
       } catch (e: any) {
-        // console.warn("[MainTravelShop] recommend fetch error:", e);
         if (!append) {
           setProductList([]);
           setTotal(0);
@@ -287,7 +306,7 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         else setLoading(false);
       }
     },
-    [prepareLocalRecommendBody, selectedCountry, limit, keyword, productList, loadingMore]
+    [prepareLocalRecommendBody, selectedCountry, limit, lastSearchedKeyword, loadingMore]
   );
 
   useEffect(() => {
@@ -296,26 +315,46 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
   }, [initialCountry]);
 
   useEffect(() => {
-    if (selectedCountry) {
+    if (selectedCountry && lastSearchedKeyword === "") {
       setPage(1);
       setHasMore(true);
-      fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
+      const reqId = ++requestIdRef.current;
+      fetchProducts({ optPage: 1, optLimit: limit, optKeyword: "", append: false, signalRequestId: reqId });
     }
-  }, [selectedCountry, limit, keyword]);
+  }, [selectedCountry, limit, fetchProducts, lastSearchedKeyword]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setPage(1);
     setHasMore(true);
-    fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false }).finally(() => setRefreshing(false));
-  }, [fetchProducts, limit, keyword]);
+    const reqId = ++requestIdRef.current;
+    fetchProducts({ optPage: 1, optLimit: limit, optKeyword: lastSearchedKeyword ?? "", append: false, signalRequestId: reqId })
+      .finally(() => setRefreshing(false));
+  }, [fetchProducts, limit, lastSearchedKeyword]);
 
   const loadMore = useCallback(() => {
     if (!hasMore || loadingMore) return;
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchProducts({ optPage: nextPage, optLimit: limit, optKeyword: keyword, append: true });
-  }, [fetchProducts, page, limit, keyword, hasMore, loadingMore]);
+    const reqId = ++requestIdRef.current;
+    fetchProducts({ optPage: nextPage, optLimit: limit, optKeyword: lastSearchedKeyword ?? "", append: true, signalRequestId: reqId });
+  }, [fetchProducts, page, limit, lastSearchedKeyword, hasMore, loadingMore]);
+
+  const handleSearch = useCallback(() => {
+    if (!selectedCountry) return;
+    if (isSearching) return;
+    const query = String(keyword ?? "").trim();
+    setLastSearchedKeyword(query);
+    setIsSearching(true);
+    Keyboard.dismiss();
+    setPage(1);
+    setHasMore(true);
+    const reqId = ++requestIdRef.current;
+    fetchProducts({ optPage: 1, optLimit: limit, optKeyword: query, append: false, signalRequestId: reqId })
+      .finally(() => {
+        setIsSearching(false);
+      });
+  }, [fetchProducts, keyword, limit, selectedCountry, isSearching]);
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => {
@@ -330,39 +369,6 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
       );
     },
     [navigation]
-  );
-
-  const renderHeader = useCallback(
-    () => (
-      <View style={{ backgroundColor: "#fff" }}>
-        <StepText
-          title={"나그네님을 위한 맞춤 여행 상품"}
-          subTitle1={"상품 추천"}
-          subTitle2={"선택하신 코스에 꼭 맞는 상품을 모아봤어요."}
-        />
-        <View style={{ paddingHorizontal: 20 }}>
-          <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
-            <Icon name="icon-shopping-bag-red" color={colors.red300} size={22} style={{ marginHorizontal: 6 }} />
-            <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!</Text>
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {/* If a country is selected show a change-country link */}
-              {selectedCountry && (
-                <TouchableOpacity onPress={() => {
-                  setShowCountryPicker(true);
-                  setSelectedCountry(null);
-                }}>
-                  <Text typography="t7" color={colors.grey600}>다른 나라 선택</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        </View>
-      </View>
-    ),
-    [total, selectedCountry]
   );
 
   const isNoProduct = !loading && Array.isArray(productList) && productList.length === 0;
@@ -405,7 +411,8 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         <Button onPress={() => {
           setPage(1);
           setHasMore(true);
-          fetchProducts({ optPage: 1, optLimit: limit, optKeyword: keyword, append: false });
+          const reqId = ++requestIdRef.current;
+          fetchProducts({ optPage: 1, optLimit: limit, optKeyword: lastSearchedKeyword ?? "", append: false, signalRequestId: reqId });
         }}>다시 시도</Button>
       </View>
     );
@@ -440,11 +447,57 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
 
   return (
     <View style={{ flex: 1 }}>
+      <View style={{ backgroundColor: "#fff" }}>
+        <StepText
+          title={"나그네님을 위한 맞춤 여행 상품"}
+          subTitle1={"상품 추천"}
+          subTitle2={"선택하신 코스에 꼭 맞는 상품을 모아봤어요."}
+        />
+        <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ backgroundColor: colors.red50, borderRadius: 18, alignItems: "center", flexDirection: "row", padding: 10, width: 232, marginBottom: 14 }}>
+            <Icon name="icon-shopping-bag-red" color={colors.red300} size={22} style={{ marginHorizontal: 6 }} />
+            <Text typography="t6" color={colors.red400} fontWeight="medium">최저가로 즐기는 특별한 여행!</Text>
+          </View>
+
+          <View style={styles.searchRow}>
+            <TextInput
+              placeholder="상품명 또는 키워드로 검색"
+              placeholderTextColor={colors.grey500}
+              value={keyword}
+              onChangeText={setKeyword}
+              returnKeyType="search"
+              onSubmitEditing={() => handleSearch()}
+              style={styles.searchInput}
+              clearButtonMode="while-editing"
+              autoCorrect={false}
+              editable={!isSearching && !loading}
+            />
+            <TouchableOpacity onPress={handleSearch} style={styles.searchButton} disabled={isSearching || loading}>
+              {isSearching ? (
+                <ActivityIndicator />
+              ) : (
+                <Icon name="icon-search-mono" size={18} color={colors.grey600} />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <Text typography="t7" color={colors.grey700}>총 {total}개</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {selectedCountry && (
+                <TouchableOpacity onPress={() => { setShowCountryPicker(true); setSelectedCountry(null); }}>
+                  <Text typography="t7" color={colors.grey600}>다른 나라 선택</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </View>
+      </View>
+
       <FlatList
         data={productList.filter((item, idx, arr) => arr.findIndex((v) => v.prod_no === item.prod_no) === idx)}
         keyExtractor={(item) => String(item.prod_no)}
         renderItem={renderItem}
-        ListHeaderComponent={renderHeader}
         ListFooterComponent={ListFooter}
         contentContainerStyle={{ paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
@@ -453,7 +506,33 @@ export default function MainTravelShop({ initialCountry = null }: Props) {
         initialNumToRender={15}
         windowSize={11}
         removeClippedSubviews={Platform.OS === "android"}
+        keyboardShouldPersistTaps="handled"
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    backgroundColor: colors.grey100,
+    color: colors.grey700,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+  },
+  searchButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.grey100,
+  },
+});
