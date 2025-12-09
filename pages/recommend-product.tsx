@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, FlatList, Dimensions } from 'react-native';
+import {View, FlatList, Dimensions, TouchableOpacity} from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
 import {
   colors,
@@ -17,6 +17,8 @@ import ProductCardLarge, { Product } from "../components/main/product-card-large
 import useRecommendStore from "../zustand/recommendStore";
 import { useAppSelector } from "../src/store";
 import { useRegionCheckStore } from "../zustand/timetableStore";
+import ProductCard from "../components/main/product-card";
+import {useMainTabStore} from "../zustand/mainTabStore";
 
 export const Route = createRoute('/recommend-product', {
   validateParams: (params) => params,
@@ -332,12 +334,24 @@ export default function RecommendProduct() {
   const renderItem = useCallback(({ item }: { item: Product }) => {
     if (!item) return null;
     return (
-      <ProductCardLarge
+      <ProductCard
         product={item}
-        onPress={() => navigation.navigate('/product/good-product', { product: item })}
+        onPress={() => {
+          navigation.navigate("/product/good-product", { product: item });
+        }}
       />
     );
   }, [navigation]);
+
+  const onSkip = useCallback(() => {
+    navigation.reset({
+      index: 0,
+      routes: [
+        { name: `/${import.meta.env.APP_START_MODE}` },
+      ],
+    });
+    useMainTabStore.getState().setTab(3);
+  }, [])
 
   if (loading && productList.length === 0 && !refreshing) {
     return (
@@ -370,13 +384,19 @@ export default function RecommendProduct() {
       <FixedBottomCTAProvider>
         <Top
           title={
-            <Text typography="t6" fontWeight="medium" color={colors.grey600}>
-              일정과 어울리는 여행 상품을 추천합니다
+            <Text typography="t3" fontWeight="bold" color={colors.grey900}>
+              선택하신 일정에{` `}
+              <Text typography="t3" fontWeight="bold" color={colors.blue500}>
+                꼭 맞는 상품을 {`\n`}
+              </Text>
+              <Text typography="t3" fontWeight="bold" color={colors.grey900}>
+                모아봤어요
+              </Text>
             </Text>
           }
           subtitle1={
-            <Text typography="t3" fontWeight="bold" color={colors.grey900}>
-              이런 상품 어떠세요?
+            <Text typography="t6" fontWeight="medium" color={colors.grey600}>
+              잠깐!
             </Text>
           }
         />
@@ -385,7 +405,7 @@ export default function RecommendProduct() {
             data={productList.filter((item, idx, arr) => arr.findIndex((v) => v.prod_no === item.prod_no) === idx)}
             keyExtractor={(item) => String(item.prod_no)}
             renderItem={renderItem}
-            contentContainerStyle={{ paddingBottom: 110 }}
+            contentContainerStyle={{ paddingBottom: 20}}
             showsVerticalScrollIndicator={false}
             refreshing={refreshing}
             onRefresh={onRefresh}
@@ -398,6 +418,11 @@ export default function RecommendProduct() {
               </View>
             ) : null}
           />
+          <TouchableOpacity style={{alignItems: 'center'}} onPress={onSkip}>
+            <Text typography="t5" fontWeight="medium" color={colors.grey400}>
+              더보기
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {cameFromSave ? (

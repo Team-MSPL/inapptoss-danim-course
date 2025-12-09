@@ -364,7 +364,7 @@ function Preset() {
           }}
         />
         <Text typography="t3" fontWeight="bold" color={colors.grey900}>
-          <Text typography="t3" fontWeight="bold" style={{ color: colors.blue700 }}>
+          <Text typography="t3" fontWeight="bold" style={{ color: colors.blue500 }}>
             {region[0].split('/').at(-1)}
           </Text>
           {' '}
