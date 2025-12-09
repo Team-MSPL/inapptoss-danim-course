@@ -172,7 +172,7 @@ export default function MainHome() {
           }
           subtitle1={
             <Text typography="t3" fontWeight="bold" color={colors.grey900}>
-              여행지부터 일정까지,{`\n`}다님 AI 추천해 줄게요
+              내 취향에 딱 맞는 여행,{`\n`}다님 AI가 추천해 줘요
             </Text>
           }
         ></Top>
