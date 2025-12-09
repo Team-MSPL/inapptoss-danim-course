@@ -352,111 +352,29 @@ function Preset() {
   return (
     <View style={{ flex: 1 }}>
       <NavigationBar />
-      <Top
-        title={
-          <Text typography="t6" fontWeight="regular" color={colors.grey700}>
-            점수가 낮은 일정은 간단한 동선을 우선시했어요
-          </Text>
-        }
-        subtitle1={
-          <Text typography="t3" fontWeight="bold" color={colors.grey900}>
-            나그네님,{`\n`}이런 여행 일정은 어때요?
-          </Text>
-        }
-      ></Top>
-      <View style={{ paddingHorizontal: 24 }}>
-        <View
+      <View style={{ padding: 28 }}>
+        <Image
+          source={{ uri: regionInfo.photo }}
+          resizeMode="cover"
           style={{
-            height: 103,
-            borderRadius: 8,
-            overflow: 'hidden',
-            position: 'relative',
+            width: 68,
+            height: 68,
+            borderRadius: 34,
+            marginBottom: 20,
           }}
-        >
-          <Image
-            source={{ uri: regionInfo.photo }}
-            resizeMode="cover"
-            style={{
-              width: '100%',
-              height: 103,
-              position: 'absolute',
-              left: 0,
-              top: 0,
-            }}
-          />
-
-          {/* 검정색 오버레이 (반투명) */}
-          <LinearGradient
-            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              width: '100%',
-              height: 103,
-              borderRadius: 16,
-            }}
-          />
-
-          {/* 텍스트 및 뱃지 등 컨텐츠 */}
-          <View
-            style={{
-              height: 103,
-              width: '100%',
-              padding: 20,
-              justifyContent: 'center',
-              position: 'relative',
-            }}
-          >
-            <Text typography="st5" fontWeight="semibold" color={colors.white}>
-              {region[0].split('/').at(-1)}
-              {region.length >= 2 ? ` 외 ${region.length - 1}지역` : ''}
-            </Text>
-            <View style={{ flexDirection: 'row', marginTop: 8, gap: 8 }}>
-              {topNames.slice(0, 3).map((item, idx) => (
-                <View
-                  key={item + idx}
-                  style={{
-                    borderRadius: 12,
-                    paddingHorizontal: 7,
-                    paddingVertical: 3,
-                    backgroundColor: 'rgba(255,255,255,0.3)',
-                  }}
-                >
-                  <Text
-                    typography="t7"
-                    fontWeight="medium"
-                    color={colors.white}
-                    style={{ alignSelf: 'center' }}
-                  >
-                    {item}
-                  </Text>
-                </View>
-              ))}
-              {topNames.length >= 4 && (
-                <Text
-                  typography="t7"
-                  fontWeight="medium"
-                  color={colors.white}
-                  style={{ alignSelf: 'center' }}
-                >
-                  +{topNames.length - 3}
-                </Text>
-              )}
-            </View>
-          </View>
-        </View>
+        />
+        <Text typography="t3" fontWeight="bold" color={colors.grey900}>
+          <Text typography="t3" fontWeight="bold" style={{ color: colors.blue700 }}>
+            {region[0].split('/').at(-1)}
+          </Text>
+          {' '}
+          {nDay === 0 ? '당일치기' : `${nDay}박 ${nDay + 1}일`} 일정 추천
+        </Text>
+        <Text typography="t6" fontWeight="regular" color={colors.grey700} style={{marginTop: 6}}>
+          나그네님을 위해 알찬 일정을 만들어봤어요!
+        </Text>
       </View>
-      <Text
-        typography="t6"
-        fontWeight="medium"
-        color={colors.blue700}
-        style={{ marginHorizontal: 24, marginTop: 16 }}
-      >
-        * {nDay == 0 ? '당일치기' : nDay + '박 ' + (nDay + 1) + '일'} 일정이에요
-      </Text>
+
       <Tab
         fluid
         size="large"
