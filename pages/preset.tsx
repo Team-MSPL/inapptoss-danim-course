@@ -218,7 +218,7 @@ function Preset() {
                 .slice(0, tendencyViewIndex[index] ? 4 : sortedTendencyPairs.length)
                 .map((item, i) => {
                   // 최고점수만 yellow, 나머지는 blue
-                  const badgeType = i === 0 ? 'yellow' : 'blue';
+                  const badgeType = i === 0 ? 'blue' : 'elephant';
                   return (
                     <Badge
                       size="medium"
