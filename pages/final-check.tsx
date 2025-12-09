@@ -16,7 +16,7 @@ import {
   useToast,
 } from '@toss-design-system/react-native';
 import React, { useCallback, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import {Pressable, TouchableOpacity, View} from 'react-native';
 import { createRoute, Stack, useNavigation } from '@granite-js/react-native';
 import { Image } from '@granite-js/react-native';
 import { useAppDispatch, useAppSelector } from 'store';
@@ -92,6 +92,34 @@ function FinalCheck() {
   const [value, setValue] = useState('0');
 
   const { tendencyList, countryList } = useTendencyHandler();
+
+  const moveList_transit = [
+    {
+      name: '자동차·렌트카',
+      onPress: () => dispatch(travelSliceActions.enrollTransit(0)),
+      icon: 'icon-car-blue',
+    },
+    {
+      name: '대중교통',
+      onPress: () => dispatch(travelSliceActions.enrollTransit(1)),
+      icon: 'icon-train-blue',
+    },
+  ];
+
+  const moveList_busy = [
+    {
+      name: '알찬 일정',
+      onPress: () => dispatch(travelSliceActions.enrollBandwidth(false)),
+      image: 'https://static.toss.im/2d-emojis/png/4x/u1F3C3.png',
+    },
+    {
+      name: '여유있는 일정',
+      onPress: () => dispatch(travelSliceActions.enrollBandwidth(true)),
+      image: 'https://static.toss.im/2d-emojis/png/4x/u1F6B6.png',
+    },
+  ];
+
+  const distance_list = [0, 1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, 12.0, 13.5, 15.0, 16.5]
 
   const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
   const bottomSheet = useBottomSheet();
@@ -270,6 +298,10 @@ function FinalCheck() {
     tendencyList,
     countryList,
   ]);
+
+  let tendency_34 = [...tendency[3], ...tendency[4]];
+  console.log(tendency_34);
+
   return loading ? (
     <AnimateSkeleton delay={500} withGradient={true} withShimmer={true}>
       <Skeleton height={60} />
@@ -296,124 +328,27 @@ function FinalCheck() {
         </Text>
         <Border type="full" style={{ marginVertical: 16 }} />
 
-        <View
-          style={{
-            borderRadius: 8,
-            overflow: 'hidden',
-            marginHorizontal: 24,
-            height: 200,
-            position: 'relative',
-          }}
-        >
-          {/* 배경 이미지 */}
-          <Image
-            source={{ uri: regionInfo.photo }}
-            resizeMode="cover"
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: 200,
-              left: 0,
-              top: 0,
-            }}
-          />
+        <View style={{ paddingHorizontal: 28, alignItems: 'flex-start', flexDirection: 'column', gap: 8, paddingVertical: 12}}>
+          <Text typography="t7" fontWeight="medium" color={colors.grey700}>
+            {day[0].format('YY.MM.DD') + ' - ' + day[nDay].format('YY.MM.DD')}
+          </Text>
 
-          {/* 검정색 오버레이 */}
-          <LinearGradient
-            colors={['rgba(0,0,0,0.45)', 'rgba(0,0,0,0.45)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: 200,
-              left: 0,
-              top: 0,
-              borderRadius: 8,
-            }}
-          />
-
-          {/* 컨텐츠 */}
-          <Stack.Vertical gutter={0} style={{ padding: 24, position: 'relative', height: 200 }}>
-            <Stack.Horizontal justify="space-between">
-              <Text typography="t7" fontWeight="medium" color={colors.white}>
-                {day[0].format('YY.MM.DD') + ' - ' + day[nDay].format('YY.MM.DD')}
-              </Text>
-              <Text typography="t6" fontWeight="medium" color={colors.white}>
-                편집
-              </Text>
-            </Stack.Horizontal>
-            <Text typography="st5" fontWeight="semibold" color={colors.white}>
-              {cityViewList[country][cityIndex].title + ' ' + region}
-            </Text>
-            <Stack.Horizontal gutter={7} style={{ marginTop: 12 }}>
-              <View
-                style={{
-                  borderRadius: 8,
-                  backgroundColor: 'rgba(255,255,255,0.3)',
-                }}
-              >
-                <Image
-                  style={{ width: 42, height: 42 }}
-                  source={{
-                    uri: seasonList[season.findIndex((item) => item == 1)]?.svg,
-                  }}
-                />
-              </View>
-              <Text
-                typography="st8"
-                fontWeight="bold"
-                color={colors.white}
-                style={{ alignSelf: 'center' }}
-              >
-                {tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]}
-                {tendency[0].find((item) => item == 1) == undefined
-                  ? ''
-                  : tendency[0].findIndex((item) => item == 1) == 0 ||
-                  tendency[0].findIndex((item) => item == 1) == 4
-                    ? ' '
-                    : ' 함께하는 '}
-                {seasonList[season.findIndex((item) => item == 1)].title} 여행
-              </Text>
-            </Stack.Horizontal>
-            <Stack.Horizontal gutter={12} style={{ marginTop: 16 }}>
-              <View
-                style={{
-                  borderRadius: 12,
-                  paddingHorizontal: 7,
-                  paddingVertical: 3,
-                  backgroundColor: 'rgba(255,255,255,0.3)',
-                }}
-              >
-                <Text
-                  typography="t7"
-                  fontWeight="medium"
-                  color={colors.white}
-                  style={{ alignSelf: 'center' }}
-                >
-                  {!transit ? '자동차·렌트카' : '대중교통'}
-                </Text>
-              </View>
-              <View
-                style={{
-                  borderRadius: 12,
-                  paddingHorizontal: 7,
-                  paddingVertical: 3,
-                  backgroundColor: 'rgba(255,255,255,0.3)',
-                }}
-              >
-                <Text
-                  typography="t7"
-                  fontWeight="medium"
-                  color={colors.white}
-                  style={{ alignSelf: 'center' }}
-                >
-                  {bandwidth ? '여유있는 일정' : '알찬 일정'}
-                </Text>
-              </View>
-            </Stack.Horizontal>
-          </Stack.Vertical>
+          <Text
+            typography="t3"
+            fontWeight="bold"
+            color={colors.black}
+          >
+            {tendencyList[0]?.list[tendency[0].findIndex((item) => item == 1)]}
+            {tendency[0].find((item) => item == 1) == undefined
+              ? ''
+              : tendency[0].findIndex((item) => item == 1) == 0 ||
+              tendency[0].findIndex((item) => item == 1) == 4
+                ? ' '
+                : ' 함께하는 '}
+            {seasonList[season.findIndex((item) => item == 1)].title} 여행
+          </Text>
         </View>
+
         <Tab fluid defaultValue={'0'} size="large" onChange={setValue} style={{ marginTop: 8 }}>
           {['내 여행 성향', ...Array.from({ length: nDay + 1 }, (item, index) => index)].map(
             (item, idx) => {
@@ -436,81 +371,142 @@ function FinalCheck() {
                 marginTop: 10,
               }}
             >
-              <Text
-                style={{ position: 'absolute', right: 20, top: 20 }}
-                onPress={() => {
-                  showHourBottomSheet(3, [1, 2]);
-                }}
-                typography="t5"
-                fontWeight="medium"
-                color={colors.grey800}
-                textAlign="right"
-              >
-                편집
-              </Text>
               <Stack.Vertical gutter={21}>
-                {tendency[1].find((item) => item == 1) && (
-                  <Stack.Vertical gutter={13}>
+                {tendency[0].find((item) => item == 1) && (
+                  <Stack.Vertical>
+                    <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(0, [0, 0])}>
+                      <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                        여행메이트
+                      </Text>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                        {tendency[0].map((item, inx) => {
+                          return item ? (
+                            <Badge size="medium" type="blue" badgeStyle="weak" key={inx}>
+                              {tendencyList[0]?.list[inx]}
+                            </Badge>
+                          ) : null;
+                        })}
+                      </View>
+                    </TouchableOpacity>
+                  </Stack.Vertical>
+                )}
+                <Stack.Vertical>
+                  <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(1, [1, 1])}>
                     <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                      여행테마
+                      이동 수단
                     </Text>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-                      {tendency[1].map((item, inx) => {
-                        return item ? (
-                          <Badge size="medium" type="blue" badgeStyle="weak" key={inx}>
-                            {tendencyList[1]?.list[inx]}
-                          </Badge>
-                        ) : null;
-                      })}
+                      <Badge size="medium" type="blue" badgeStyle="weak" key={transit}>
+                        {moveList_transit[transit]?.name}
+                      </Badge>
                     </View>
+                  </TouchableOpacity>
+                </Stack.Vertical>
+                <Stack.Vertical>
+                  <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(2, [2, 2])}>
+                    <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                      여행 유형
+                    </Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                      <Badge size="medium" type="blue" badgeStyle="weak" key={Number(bandwidth)}>
+                        {moveList_busy[Number(bandwidth)]?.name}
+                      </Badge>
+                    </View>
+                  </TouchableOpacity>
+                </Stack.Vertical>
+                {tendency[1].find((item) => item == 1) && (
+                  <Stack.Vertical>
+                    <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(3, [3, 3])}>
+                      <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                        여행테마
+                      </Text>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                        {tendency[1].map((item, inx) => {
+                          return item ? (
+                            <Badge size="medium" type="blue" badgeStyle="weak" key={inx}>
+                              {tendencyList[1]?.list[inx]}
+                            </Badge>
+                          ) : null;
+                        })}
+                      </View>
+                    </TouchableOpacity>
                   </Stack.Vertical>
                 )}
                 {tendency[2].find((item) => item == 1) && (
-                  <Stack.Vertical gutter={13}>
+                  <Stack.Vertical>
+                    <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(4, [4, 4])}>
+                      <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                        이런 걸 하고 싶어요
+                      </Text>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                        {tendency[2].map((item, inx) => {
+                          return item ? (
+                            <Badge size="medium" type="blue" badgeStyle="weak" key={inx}>
+                              {tendencyList[2]?.list[inx]}
+                            </Badge>
+                          ) : null;
+                        })}
+                      </View>
+                    </TouchableOpacity>
+                  </Stack.Vertical>
+                )}
+                {tendency_34.find((item) => item == 1) && (
+                  <Stack.Vertical>
+                    <TouchableOpacity
+                      style={{
+                        width: '100%',
+                        paddingVertical: 8,
+                      }}
+                      onPress={() => showHourBottomSheet(5, [5, 5])}
+                      activeOpacity={0.8}
+                    >
+                      <Text typography="t5" fontWeight="medium" color={colors.grey800} style={{ marginBottom: 8 }}>
+                        이런 곳에 가고 싶어요
+                      </Text>
+
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                        {tendency_34.map((item, inx) => {
+                          let badgeLabel = '';
+                          if (inx < 6) {
+                            badgeLabel = tendencyList[3]?.list[inx];
+                          } else {
+                            badgeLabel = tendencyList[4]?.list[inx - 6];
+                          }
+                          if (!item || !badgeLabel || badgeLabel.length === 0) return null;
+
+                          return (
+                            <View key={inx} style={{ marginRight: 8, marginBottom: 8 }}>
+                              <Badge size="medium" type="blue" badgeStyle="weak">
+                                {badgeLabel}
+                              </Badge>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    </TouchableOpacity>
+                  </Stack.Vertical>
+                )}
+                <Stack.Vertical>
+                  <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(6, [6, 6])}>
                     <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                      이런 걸 하고 싶어요
+                      여행지 인기도
+                    </Text>
+                    <Badge size="medium" type="blue" badgeStyle="weak">
+                      {popular}
+                    </Badge>
+                  </TouchableOpacity>
+                </Stack.Vertical>
+                <Stack.Vertical gutter={13}>
+                  <TouchableOpacity style={{gap: 13}} onPress={() => showHourBottomSheet(7, [7, 7])}>
+                    <Text typography="t5" fontWeight="medium" color={colors.grey800}>
+                      위치 반경
                     </Text>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-                      {tendency[2].map((item, inx) => {
-                        return item ? (
-                          <Badge size="medium" type="red" badgeStyle="weak" key={inx}>
-                            {tendencyList[2]?.list[inx]}
-                          </Badge>
-                        ) : null;
-                      })}
+                      <Badge size="medium" type="blue" badgeStyle="weak" key={distance}>
+                        {distance_list[distance]}
+                      </Badge>
                     </View>
-                  </Stack.Vertical>
-                )}
-                {tendency[3].find((item) => item == 1) && (
-                  <Stack.Vertical gutter={13}>
-                    <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                      이런 곳에 가고 싶어요
-                    </Text>
-                    <Stack.Horizontal gutter={4}>
-                      {tendency[3].map((item, inx) => {
-                        let badgeLabel = '';
-                        if (inx < 6) {
-                          badgeLabel = tendencyList[3]?.list[inx];
-                        } else {
-                          badgeLabel = tendencyList[4]?.list[inx - 6];
-                        }
-                        if (!item || !badgeLabel || badgeLabel.length === 0) return null;
-                        return (
-                          <Badge key={inx} size="medium" type="teal" badgeStyle="weak">
-                            {badgeLabel}
-                          </Badge>
-                        );
-                      })}
-                    </Stack.Horizontal>
-                  </Stack.Vertical>
-                )}
-                <Stack.Vertical gutter={13}>
-                  <Text typography="t5" fontWeight="medium" color={colors.grey800}>
-                    여행지 인기도
-                  </Text>
-                  <Badge size="medium" type="yellow" badgeStyle="weak">
-                    {popular}
-                  </Badge>
+                  </TouchableOpacity>
                 </Stack.Vertical>
               </Stack.Vertical>
             </Stack.Vertical>
