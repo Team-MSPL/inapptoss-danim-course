@@ -7,18 +7,6 @@ import { useAppDispatch, useAppSelector } from "store";
 import { travelSliceActions } from "../../redux/travle-slice";
 import { RouteButton } from "../../components/route-button";
 
-/**
- * EnrollPopular with preloading and "show full-page loading until all images are warmed" behavior.
- *
- * - Keeps the existing prefetch / hidden-image warm-up approach.
- * - Shows a full-screen loading state until all images have been attempted to load/warm (or until a short timeout).
- * - Timeout fallback: if preloading takes too long (network issues), we stop blocking after `MAX_WAIT_MS` and render page anyway.
- */
-
-/* -------------------------
-   helpers / hook
-   ------------------------- */
-
 function usePreloadImages(urls: string[]) {
   const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
 
@@ -39,15 +27,12 @@ function usePreloadImages(urls: string[]) {
           })
           .catch(() => {
             if (!mounted) return;
-            // mark as attempted but failed (false)
             setLoadedMap((s) => ({ ...s, [url]: false }));
           })
       );
 
-      // Wait for all jobs to finish (we don't block here, but callbacks above set the map)
       Promise.all(jobs).catch(() => {});
     } else {
-      // fallback: initialize map entries to false and rely on hidden Images onLoad to set true
       const map: Record<string, boolean> = {};
       urls.forEach((u) => (map[u] = false));
       if (mounted) setLoadedMap(map);
@@ -60,10 +45,6 @@ function usePreloadImages(urls: string[]) {
 
   return [loadedMap, setLoadedMap] as const;
 }
-
-/* -------------------------
-   Component
-   ------------------------- */
 
 type EnrollPopularProps = {
   contentRatio?: number;
@@ -80,7 +61,6 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
   const [value, setValue] = useState<number>(popular ?? 1);
   const navigation = useNavigation();
 
-  // image list
   const imageList = useMemo(
     () => [
       "https://firebasestorage.googleapis.com/v0/b/danim-image/o/popular%2Fasd.png?alt=media&token=3df1ca25-0ab7-4289-aec1-268172db19be",
@@ -92,30 +72,23 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
     []
   );
 
-  // preload hook
   const [loadedMap, setLoadedMap] = usePreloadImages(imageList);
 
-  // compute index (1..10 slider mapped to 0..4)
   const currentIdx = Math.max(0, Math.min(imageList.length - 1, Math.ceil(value / 2) - 1));
   const currentUrl = imageList[currentIdx];
 
-  // is the current image already loaded (prefetched or warmed)
   const isCurrentLoaded = Boolean(loadedMap[currentUrl]);
 
-  // onLoad handler for fallback hidden images
   const handleHiddenImageLoad = (url: string) => {
     setLoadedMap((s) => ({ ...s, [url]: true }));
   };
 
-  // determine whether preloading attempts for all URLs have finished (either success or failure)
   const allAttempted = imageList.length > 0 && imageList.every((u) => Object.prototype.hasOwnProperty.call(loadedMap, u));
 
-  // optional: treat "all successful" if you want to block until success (not just attempted)
   const allSucceeded = imageList.length > 0 && imageList.every((u) => loadedMap[u] === true);
 
-  // show a full-screen loading view until allAttempted is true OR timeout reached
   const [timedOut, setTimedOut] = useState(false);
-  const MAX_WAIT_MS = 8000; // 8s fallback to avoid permanent block on flaky networks
+  const MAX_WAIT_MS = 8000;
 
   useEffect(() => {
     setTimedOut(false);
@@ -123,14 +96,10 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
       setTimedOut(true);
     }, MAX_WAIT_MS);
     return () => clearTimeout(t);
-  }, []); // start timeout on mount
+  }, []);
 
   const shouldShowBlockingLoader = !allAttempted && !timedOut;
 
-  // If you prefer to block until allSucceeded (all true), replace allAttempted with allSucceeded
-  // const shouldShowBlockingLoader = !allSucceeded && !timedOut;
-
-  // If blocking loader is active, render full-screen loader
   if (shouldShowBlockingLoader) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#ffffff" }}>
@@ -142,7 +111,6 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
     );
   }
 
-  // Normal page render (after preloading attempts finished or timeout)
   return (
     <View style={{ marginHorizontal: 24, backgroundColor: "#ffffff" }}>
       <View
@@ -155,7 +123,6 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
           backgroundColor: "#ffffff",
         }}
       >
-        {/* Visible image: if already loaded, render normally, otherwise show placeholder + ActivityIndicator */}
         {isCurrentLoaded ? (
           <Image
             source={{ uri: currentUrl }}
@@ -173,11 +140,10 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
               height: 300 * contentRatio,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "#ffffff", // changed from #f0f0f0 to white
+              backgroundColor: "#ffffff",
             }}
           >
             <ActivityIndicator size="small" color={colors.green300} />
-            {/* fallback hidden image to warm cache */}
             <Image
               source={{ uri: currentUrl }}
               style={{
@@ -193,9 +159,7 @@ export function EnrollPopular({ contentRatio = 0.88 }: EnrollPopularProps) {
           </View>
         )}
 
-        {/* hidden warming images (render only those not yet attempted or failed) */}
         {imageList.map((url) => {
-          // if already attempted (hasOwnProperty) and true/false set, skip rendering extra warming images
           if (Object.prototype.hasOwnProperty.call(loadedMap, url)) return null;
           return (
             <Image
