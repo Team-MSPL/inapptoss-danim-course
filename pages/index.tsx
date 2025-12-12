@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
-import { Text, colors, FixedBottomCTAProvider, useToast } from '@toss-design-system/react-native';
+import {
+  colors,
+  Text,
+  ListRow,
+  Top,
+  FixedBottomCTA,
+  FixedBottomCTAProvider,
+  useToast,
+} from '@toss-design-system/react-native';
 import { appLogin } from '@apps-in-toss/framework';
 import { useAppDispatch, useAppSelector } from 'store';
 import { socialConnect, tossUser, travelSliceActions } from '../redux/travle-slice';
-import useAuthStore from '../zustand/useAuthStore';
+import useAuthStore from "../zustand/useAuthStore";
 
 export const Route = createRoute('/', {
   validateParams: (params) => params,
@@ -14,109 +22,153 @@ export const Route = createRoute('/', {
 
 export function Index() {
   const navigation = useNavigation();
+
   const dispatch = useAppDispatch();
   const { userId, userJwtToken } = useAppSelector((state) => state.travelSlice);
-  const setUserKey = useAuthStore((s) => s.setUserKey);
   const { open } = useToast();
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [errored, setErrored] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
-  const navigateToStart = () => {
-    try {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: `/${import.meta.env.APP_START_MODE}` }],
-      });
-    } catch {
-      navigation.goBack();
+  const handleNext = async () => {
+    if (loading) return;
+    if (userId != null) {
+      dispatch(travelSliceActions.reset({ userId: userId, userJwtToken: userJwtToken }));
+      navigation.reset({ index: 0, routes: [{ name: `/${import.meta.env.APP_START_MODE}`}] });
+    } else {
+      setLoading(true);
+      try {
+        await handleLogin();
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const runLoginFlow = async () => {
-    if (userId != null) {
-      dispatch(travelSliceActions.reset({ userId, userJwtToken }));
-      navigateToStart();
-      return;
-    }
+  const setUserKey = useAuthStore((s) => s.setUserKey);
 
-    setErrored(false);
-    setLoading(true);
-
+  const handleLogin = useCallback(async () => {
     try {
       const { authorizationCode, referrer } = await appLogin();
       const userData = await dispatch(tossUser({ authorizationCode, referrer })).unwrap();
-
-      if (userData?.resultType === 'SUCCESS') {
+      if (userData?.resultType == 'SUCCESS') {
         await dispatch(socialConnect({ userToken: userData?.success?.userKey }));
         const userKey = userData.success?.userKey ?? null;
         setUserKey(userKey);
-        navigateToStart();
+        navigation.navigate(`/${import.meta.env.APP_START_MODE}`);
       } else {
-        setErrored(true);
-        open('로그인에 잠시 문제가 생겼어요', { icon: 'icon-warning-circle' });
+        open('로그인에 잠시 문제가 생겼어요', {
+          icon: 'icon-warning-circle',
+        });
       }
     } catch (e) {
-      console.warn('auto-login error', e);
-      setErrored(true);
-      open('로그인 중 오류가 발생했어요', { icon: 'icon-warning-circle' });
-    } finally {
-      setLoading(false);
+      console.log(e);
+      open('로그인 중 오류가 발생했어요', {
+        icon: 'icon-warning-circle',
+      });
     }
-  };
-
-  useEffect(() => {
-    runLoginFlow();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch, navigation, open]);
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <FixedBottomCTAProvider>
-        {loading ? (
-          <View style={styles.center}>
-            <ActivityIndicator size="large" color={colors.PointGreen1} />
-            <Text typography="t6" color={colors.grey700} style={styles.message}>
-              로그인 중입니다...
+        <Top
+          title={
+            <Text typography="t6" fontWeight="medium" color={colors.grey600}>
+              성향을 토대로 다님 AI가 추천을해줘요
             </Text>
-          </View>
-        ) : errored ? (
-          <View style={styles.center}>
-            <Text typography="t5" color={colors.grey800} style={{ marginBottom: 12 }}>
-              자동 로그인에 실패했습니다.
+          }
+          subtitle1={
+            <Text typography="t3" fontWeight="bold" color={colors.grey900}>
+              다님으로 1분만에{`\n`}여행 일정을 추천받을 수 있어요
             </Text>
-            <TouchableOpacity
-              style={styles.retryButton}
-              onPress={() => {
-                runLoginFlow();
+          }
+        />
+
+        <ListRow
+          left={
+            <ListRow.Image
+              type="3d-emoji"
+              source={{
+                uri: 'https://static.toss.im/2d-emojis/png/4x/u1F31E.png',
               }}
-              activeOpacity={0.8}
-            >
-              <Text typography="t6" color="#ffffff">
-                다시 시도
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.center}>
-            <Text typography="t6" color={colors.grey700}>
-              준비 중입니다...
-            </Text>
-          </View>
-        )}
+            />
+          }
+          contents={
+            <ListRow.Texts
+              type="2RowTypeA"
+              top="성향에 맞춘 여행 일정"
+              bottom="내 취향에 꼭 맞는 여행 일정을 추천해줘요"
+              topProps={{
+                typography: 't5',
+                fontWeight: 'semiBold',
+                color: colors.grey700,
+              }}
+              bottomProps={{
+                typography: 't6',
+                fontWeight: 'regular',
+                color: colors.grey600,
+              }}
+            />
+          }
+        />
+        <ListRow
+          left={
+            <ListRow.Image
+              type="3d-emoji"
+              source={{
+                uri: 'https://static.toss.im/2d-emojis/png/4x/u23F3.png',
+              }}
+            />
+          }
+          contents={
+            <ListRow.Texts
+              type="2RowTypeA"
+              top="시간 절약"
+              bottom="1분 만에 여행 일정을 알려줘서 빠르게 준비할 수 있어요"
+              topProps={{
+                typography: 't5',
+                fontWeight: 'semiBold',
+                color: colors.grey700,
+              }}
+              bottomProps={{
+                typography: 't6',
+                fontWeight: 'regular',
+                color: colors.grey600,
+              }}
+            />
+          }
+        />
+        <ListRow
+          left={
+            <ListRow.Image
+              type="3d-emoji"
+              source={{
+                uri: 'https://static.toss.im/2d-emojis/png/4x/u1F4F1.png',
+              }}
+            />
+          }
+          contents={
+            <ListRow.Texts
+              type="2RowTypeA"
+              top="손쉬운 조작"
+              bottom="누구나 쉽게 사용할 수 있도록 간단하고 편리하게 만들었어요"
+              topProps={{
+                typography: 't5',
+                fontWeight: 'semiBold',
+                color: colors.grey700,
+              }}
+              bottomProps={{
+                typography: 't6',
+                fontWeight: 'regular',
+                color: colors.grey600,
+              }}
+            />
+          }
+        />
+        <FixedBottomCTA onPress={handleNext} disabled={loading}>
+          {loading ? '잠시만 기다려주세요...' : '시작하기'}
+        </FixedBottomCTA>
       </FixedBottomCTAProvider>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
-  message: { marginTop: 12, textAlign: 'center' },
-  retryButton: {
-    backgroundColor: colors.green300,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-});
