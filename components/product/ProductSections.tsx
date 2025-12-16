@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, TextInput } from "react-native";
 import CollapsibleSection from "./collapsibleSection";
 import BuyerInfoSection from "../product/sections/BuyerInfoSection";
 import { Text, Button, colors } from "@toss-design-system/react-native";
@@ -43,6 +43,8 @@ export default function ProductSections(props: any) {
     productAmount,
     originalPerPerson,
     salePerPerson,
+    orderNote,
+    setOrderNote,
   } = props;
 
   return (
@@ -237,8 +239,6 @@ export default function ProductSections(props: any) {
       {hasFlight && (
         <CollapsibleSection title="항공편 정보" open={!!openSections[7]} onToggle={() => toggleSection(7)} completed={!!completedSections[7]}>
           <View>
-            {/* find flight spec once to simplify access like original file */}
-            {/* The original file had many repeated rawFields.traffics.find(...) usages; replicate same fields */}
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_flightType && (<Traffic.ArrivalFlightTypeSelector trafficType="flight" rawFields={rawFields} required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_flightType?.is_require ?? "").toLowerCase() === "true"} />)}
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airport && (<Traffic.ArrivalAirportSelector trafficType="flight" rawFields={rawFields} required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airport?.is_require ?? "").toLowerCase() === "true"} />)}
             {rawFields.traffics.find((t:any) => t?.traffic_type?.traffic_type_value === "flight")?.arrival_airlineName && (<Traffic.ArrivalAirlineInput trafficType="flight" required={String(rawFields.traffics.find((t:any)=>t?.traffic_type?.traffic_type_value==="flight")?.arrival_airlineName?.is_require ?? "").toLowerCase() === "true"} />)}
@@ -358,7 +358,14 @@ export default function ProductSections(props: any) {
 
       <CollapsibleSection title="요청 사항" open={!!openSections[12]} onToggle={() => toggleSection(12)} completed={!!completedSections[12]}>
         <View style={{ paddingHorizontal: 20 }}>
-          <Text>요청사항을 입력하세요</Text>
+          <TextInput
+            placeholder="요청사항을 입력하세요"
+            placeholderTextColor={colors.grey400}
+            value={orderNote}
+            onChangeText={setOrderNote}
+            style={[styles.input]}
+            multiline
+          />
         </View>
       </CollapsibleSection>
 
