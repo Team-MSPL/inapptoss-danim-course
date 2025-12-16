@@ -16,12 +16,11 @@ import {
 import useBookingApi from "../../hooks/useBookingApi";
 import axios from "axios";
 import useAuthStore from "../../zustand/useAuthStore";
-import { ConvertUrl } from "@tosspayments/widget-sdk-react-native/src/utils/convertUrl";
 import * as PayField from '../../components/product/payfield';
 import * as Traffic from '../../components/product/traffic';
 import ProductSections from "../../components/product/ProductSections";
 import PaymentFooter from "../../components/product/PaymentFooter";
-import PaymentWebViewModal from "../../components/product/PaymentWebViewModal";
+import { startTossPayment } from "../../hooks/useTossCheckout";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -76,10 +75,6 @@ function ProductPay() {
   const [agreeMarketing, setAgreeMarketing] = useState<boolean>(false);
 
   const [isPaying, setIsPaying] = useState<boolean>(false);
-  const [showPaymentWebView, setShowPaymentWebView] = useState<boolean>(false);
-  const [checkoutPageUrl, setCheckoutPageUrl] = useState<string | null>(null);
-  const [expectedRetUrl, setExpectedRetUrl] = useState<string | null>(null);
-  const webViewRef = useRef<any>(null);
 
   const [pendingBookingPayload, setPendingBookingPayload] = useState<any | null>(null);
   const [pendingPayToken, setPendingPayToken] = useState<string | null>(null);
@@ -107,7 +102,6 @@ function ProductPay() {
   const markCompleteAndNext = useCallback((sectionIndex: number) => {
     setCompletedSections((prev) => ({ ...prev, [sectionIndex]: true }));
     setOpenSections((prev) => ({ ...prev, [sectionIndex + 1]: true }));
-    // kept intentionally minimal — original used store reference
     useBookingStore.getState();
   }, []);
 
@@ -150,32 +144,6 @@ function ProductPay() {
   const userKey = useAuthStore.getState().userKey;
   const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY;
 
-  const urlConverter = useCallback((url: string): boolean => {
-    if (!url) return true;
-    try {
-      const convertUrl = new ConvertUrl(url);
-      if (convertUrl.isAppLink && convertUrl.isAppLink()) {
-        convertUrl.launchApp().catch((e: any) => console.warn('[ProductPay] ConvertUrl.launchApp threw', e));
-        return false;
-      }
-    } catch (e) {
-      console.warn('[ProductPay] urlConverter parse error', e);
-    }
-    return true;
-  }, []);
-
-  async function postWithRetry(url: string, body: any, headers: any, retries = 2) {
-    for (let i = 0; i <= retries; i++) {
-      try {
-        return await axios.post(url, body, { headers, timeout: 15000 });
-      } catch (err: any) {
-        console.error(`[postWithRetry] attempt ${i} failed:`, err?.message ?? err);
-        if (i === retries) throw err;
-        await new Promise((r) => setTimeout(r, 400 * (i + 1)));
-      }
-    }
-  }
-
   const refundTossPayment = useCallback(async (payToken: string | null, amount: number) => {
     if (!payToken) return { success: false, error: "no_paytoken" };
     const url = "https://pay.toss.im/api/v2/refunds";
@@ -189,153 +157,13 @@ function ProductPay() {
     }
   }, [TOSS_PAY_API_KEY]);
 
-  const parseQueryParams = useCallback((url: string) => {
-    try {
-      const u = new URL(url);
-      const paramsObj: Record<string, string> = {};
-      u.searchParams.forEach((v, k) => { paramsObj[k] = v; });
-      return paramsObj;
-    } catch {
-      const idx = url.indexOf("?");
-      if (idx < 0) return {};
-      const q = url.slice(idx + 1);
-      return q.split("&").reduce((acc: any, pair) => {
-        const [k, v] = pair.split("=");
-        if (k) acc[decodeURIComponent(k)] = decodeURIComponent(v || "");
-        return acc;
-      }, {});
-    }
-  }, []);
-
-  const createTossPayment = useCallback(async (orderNo: string, amount: number, productDesc = "상품", retUrl = "https://pay.toss.im/payfront/demo/completed") => {
-    const url = "https://pay.toss.im/api/v2/payments";
-    const body = { orderNo, amount, amountTaxFree: 0, productDesc, apiKey: TOSS_PAY_API_KEY, autoExecute: true, resultCallback: "", retUrl, retCancelUrl: retUrl };
-    const resp = await axios.post(url, body, { headers: { "Content-Type": "application/json" }, timeout: 15000 });
-    return resp.data;
-  }, [TOSS_PAY_API_KEY]);
-
-  const openCheckoutPage = useCallback((checkoutUrl: string, retUrlToMatch: string) => {
-    setCheckoutPageUrl(checkoutUrl);
-    setExpectedRetUrl(retUrlToMatch);
-    setShowPaymentWebView(true);
-  }, []);
-
-  const handleWebViewNavigationStateChange = useCallback(
-    async (navState: any) => {
-      const { url } = navState;
-      if (!url || !expectedRetUrl) return;
-      if (url.startsWith(expectedRetUrl) || url.includes(expectedRetUrl)) {
-        const q = parseQueryParams(url);
-        const status = q.status ?? null;
-
-        setShowPaymentWebView(false);
-        setCheckoutPageUrl(null);
-        setExpectedRetUrl(null);
-
-        if (status === "PAY_COMPLETE" || status === "PAY_APPROVED") {
-          try {
-            if (pendingBookingPayload) {
-              const runResult = await run(pendingBookingPayload);
-              let bookingAllSucceeded = true;
-              if (Array.isArray((runResult as any).results)) {
-                for (const r of (runResult as any).results) {
-                  const br = r?.bookingResponse;
-                  const ok = !!(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
-                  if (!ok) { bookingAllSucceeded = false; break; }
-                }
-              } else {
-                const br = (runResult as any).bookingResponse ?? null;
-                bookingAllSucceeded = !!(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
-              }
-
-              if (bookingAllSucceeded) {
-                Alert.alert("예약 및 결제 성공", "결제 및 예약이 정상적으로 처리되었습니다.");
-                setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
-                navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-success" }] });
-                return;
-              } else {
-                if (pendingPayToken && pendingAmount) {
-                  const refundRes = await refundTossPayment(pendingPayToken, pendingAmount);
-                  if (refundRes.success) {
-                    Alert.alert("예약 실패 - 환불 완료", "예약 처리에 실패하여 결제 금액을 환불했습니다.");
-                  } else {
-                    Alert.alert("예약 실패 - 환불 실패", `예약 처리에 실패했습니다. 환불도 실패했습니다. 관리자에게 문의해주세요. (${String(refundRes.error)})`);
-                  }
-                } else {
-                  Alert.alert("예약 실패", "예약 처리에 실패했습니다. (환불 불가: payToken 없음)");
-                }
-                setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
-                navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
-                return;
-              }
-            } else {
-              Alert.alert("결제 완료", "결제가 완료되었습니다. (테스트 결과)");
-              setIsPaying(false);
-              navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-success" }] });
-              return;
-            }
-          } catch (err: any) {
-            console.error("[ProductPay][WebView] booking.run threw:", err);
-            if (pendingPayToken && pendingAmount) {
-              const refundRes = await refundTossPayment(pendingPayToken, pendingAmount);
-              if (refundRes.success) {
-                Alert.alert("예약 오류 및 환불 완료", "예약 처리 중 오류가 발생하여 결제 금액을 환불했습니다.");
-              } else {
-                Alert.alert("예약 오류 - 환불 실패", `예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요. (${String(refundRes.error)})`);
-              }
-            } else {
-              Alert.alert("예약 오류", "예약 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.");
-            }
-            setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
-            navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
-            return;
-          }
-        }
-
-        Alert.alert("결제 실패 또는 취소", `결제 상태: ${status ?? "UNKNOWN"}`);
-        setIsPaying(false);
-        navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
-      }
-    },
-    [expectedRetUrl, navigation, pendingBookingPayload, pendingPayToken, pendingAmount, run, parseQueryParams, refundTossPayment]
-  );
-
-  // onCompletePress: validation wrapper used by sections
-  const onCompletePress = useCallback((sectionIndex: number) => {
-    const validateSectionFn = makeValidateSectionBuilt(rawFields, requiredMap);
-    const missing = typeof validateSectionFn === "function"
-      ? validateSectionFn(sectionIndex)
-      : validateSectionHelper(rawFields, sectionIndex, {
-        hasCus01, hasCus02, hasContact, hasSend,
-        hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03,
-        hasPickup03, hasPickup04, hasVoucher
-      });
-
-    if (Array.isArray(missing) && missing.length > 0) {
-      Alert.alert("입력 오류", `다음 항목이 비어있습니다:\n${missing.slice(0,20).join("\n")}`);
-      return false;
-    }
-
-    markCompleteAndNext(sectionIndex);
-    return true;
-  }, [rawFields, requiredMap, hasCus01, hasCus02, hasContact, hasSend, hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03, hasPickup03, hasPickup04, hasVoucher, markCompleteAndNext]);
-
-  // onPay simplified orchestration placeholder (detailed logic left intact above)
-  const onPay = useCallback(async () => {
+  const preparePayment = useCallback(() => {
     const currentBuyerEmail = useBookingStore.getState().buyer_Email;
     const emailValue = String(currentBuyerEmail ?? "").trim();
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRe.test(emailValue)) {
-      Alert.alert("이메일 형식 오류", "유효한 이메일을 입력해 주세요.");
-      return;
-    }
+    if (!emailRe.test(emailValue)) throw new Error("INVALID_EMAIL");
+    if (!rawFields) throw new Error("NO_FIELDS");
 
-    if (!rawFields) {
-      Alert.alert("입력 오류", "입력 필드 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
-      return;
-    }
-
-    // validate sections
     const validateSectionFn = makeValidateSectionBuilt(rawFields, requiredMap);
     const sectionsToCheck = Object.keys(requiredMap).map((k) => Number(k)).filter((n) => !Number.isNaN(n) && n !== 12);
     for (const sectionIndex of sectionsToCheck) {
@@ -346,34 +174,129 @@ function ProductPay() {
           hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03,
           hasPickup03, hasPickup04, hasVoucher
         });
+      if (Array.isArray(missing) && missing.length > 0) throw new Error(`MISSING_FIELDS_IN_SECTION_${sectionIndex}`);
+    }
+
+    if (!agreePersonal || !agreeService) throw new Error("AGREEMENTS_NOT_ACCEPTED");
+
+    const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
+    const amount = Number(payload?.total ?? payload?.total_price ?? 0);
+    if (isNaN(amount) || amount <= 0) throw new Error("INVALID_AMOUNT");
+
+    const orderNoForMake = `order-${Date.now().toString(36)}`;
+    const makeBody: any = {
+      orderNo: orderNoForMake,
+      productDesc: payload?.product?.name ?? payload?.productName ?? title,
+      amount,
+      amountTaxFree: 0,
+      isTestPayment: true,
+    };
+
+    return { payload, amount, makeBody, orderNo: orderNoForMake };
+  }, [
+    rawFields, requiredMap, makeValidateSectionBuilt, params, pkgData, pdt, s_date, orderNote,
+    agreePersonal, agreeService, title, hasCus01, hasCus02, hasContact, hasSend,
+    hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03, hasPickup03, hasPickup04, hasVoucher
+  ]);
+
+  const onCompletePress = useCallback((sectionIndex: number) => {
+    try {
+      const validateSectionFn = makeValidateSectionBuilt(rawFields, requiredMap);
+      const missing = typeof validateSectionFn === "function"
+        ? validateSectionFn(sectionIndex)
+        : validateSectionHelper(rawFields, sectionIndex, {
+          hasCus01, hasCus02, hasContact, hasSend,
+          hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03,
+          hasPickup03, hasPickup04, hasVoucher
+        });
       if (Array.isArray(missing) && missing.length > 0) {
-        Alert.alert("입력 오류", "입력이 필요한 정보를 모두 입력해주세요");
-        return;
+        Alert.alert("입력 오류", `다음 항목이 비어있습니다:\n${missing.slice(0,20).join("\n")}`);
+        return false;
       }
+      markCompleteAndNext(sectionIndex);
+      return true;
+    } catch {
+      Alert.alert("검증 오류", "입력 검증 중 오류가 발생했습니다.");
+      return false;
     }
+  }, [rawFields, requiredMap, makeValidateSectionBuilt, hasCus01, hasCus02, hasContact, hasSend, hasFlight, hasPsgQty, hasRentcar01, hasRentcar02, hasRentcar03, hasPickup03, hasPickup04, hasVoucher, markCompleteAndNext]);
 
-    if (!agreePersonal || !agreeService) {
-      Alert.alert("약관 동의 필요", "개인정보 처리방침 및 서비스 이용 약관에 동의해 주세요.");
-      return;
-    }
-
+  const onPay = useCallback(async () => {
     if (isPaying) return;
     setIsPaying(true);
 
-    const payload = buildReservationPayload({ params, pkgData, pdt, s_date, orderNote });
-    console.debug("[ProductPay] onPay - payload:", payload, "userKey:", userKey);
+    try {
+      const { payload, amount, makeBody } = preparePayment();
+      setPendingBookingPayload(payload);
+      setPendingAmount(amount);
 
-    const amount = Number(payload?.total ?? payload?.total_price ?? 0);
-    if (isNaN(amount) || amount <= 0) {
-      Alert.alert("결제 오류", "결제 금액이 올바르지 않습니다.");
+      const result = await startTossPayment(makeBody, userKey);
+
+      if (!result?.success) {
+        Alert.alert("결제 실패", result?.errorMessage ?? "결제 시작에 실패했습니다.");
+        setIsPaying(false);
+        return;
+      }
+
+      const payToken = result.payToken ?? null;
+      if (payToken) setPendingPayToken(payToken);
+
+      try {
+        const runResult = await run(payload);
+        let bookingAllSucceeded = true;
+        if (Array.isArray((runResult as any).results)) {
+          for (const r of (runResult as any).results) {
+            const br = r?.bookingResponse;
+            const ok = !!(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
+            if (!ok) { bookingAllSucceeded = false; break; }
+          }
+        } else {
+          const br = (runResult as any).bookingResponse ?? null;
+          bookingAllSucceeded = !!(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
+        }
+
+        if (bookingAllSucceeded) {
+          Alert.alert("예약 및 결제 성공", "결제 및 예약이 정상적으로 처리되었습니다.");
+          setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
+          navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-success" }] });
+          return;
+        } else {
+          const refundRes = await refundTossPayment(payToken, amount);
+          if (refundRes.success) {
+            Alert.alert("예약 실패 - 환불 완료", "예약 처리에 실패하여 결제 금액을 환불했습니다.");
+          } else {
+            Alert.alert("예약 실패 - 환불 실패", `예약 처리에 실패했습니다. 환불도 실패했습니다. 관리자에게 문의해주세요. (${String(refundRes.error)})`);
+          }
+          setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
+          navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
+          return;
+        }
+      } catch (bookingErr: any) {
+        const refundRes = await refundTossPayment(payToken, amount);
+        if (refundRes.success) {
+          Alert.alert("예약 오류 및 환불 완료", "예약 처리 중 오류가 발생하여 결제 금액을 환불했습니다.");
+        } else {
+          Alert.alert("예약 오류 - 환불 실패", `예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요. (${String(refundRes.error)})`);
+        }
+        setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
+        navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
+        return;
+      }
+    } catch (err: any) {
+      const code = String(err?.message ?? err);
+      if (code === "INVALID_EMAIL") Alert.alert("이메일 형식 오류", "유효한 이메일을 입력해 주세요.");
+      else if (code === "NO_FIELDS") Alert.alert("입력 오류", "입력 필드 정보를 불러오지 못했습니다.");
+      else if (code.startsWith("MISSING_FIELDS_IN_SECTION_")) Alert.alert("입력 오류", "필수 항목을 모두 채워주세요.");
+      else if (code === "AGREEMENTS_NOT_ACCEPTED") Alert.alert("약관 동의 필요", "개인정보 처리방침 및 서비스 이용 약관에 동의해 주세요.");
+      else if (code === "INVALID_AMOUNT") Alert.alert("결제 오류", "결제 금액이 올바르지 않습니다.");
+      else {
+        console.error("[ProductPay][onPay] unexpected error:", err);
+        Alert.alert("결제 오류", "결제 준비 중 오류가 발생했습니다. 콘솔을 확인하세요.");
+      }
       setIsPaying(false);
       return;
     }
-
-    // keep original detailed network & booking logic in file (omitted here for brevity)
-    Alert.alert("결제 시도", "결제 로직이 시작됩니다. (콘솔 참조)");
-    setIsPaying(false);
-  }, [rawFields, requiredMap, agreePersonal, agreeService, isPaying, params, pkgData, pdt, s_date, orderNote, userKey]);
+  }, [preparePayment, startTossPayment, userKey, run, refundTossPayment, isPaying]);
 
   const requiredMap = useMemo(() => {
     const map: Record<number, Array<any>> = {};
@@ -512,24 +435,6 @@ function ProductPay() {
           toggleAgreeAll={toggleAgreeAll}
           onPay={onPay}
           bookingLoading={bookingLoading}
-        />
-
-        <PaymentWebViewModal
-          visible={showPaymentWebView}
-          checkoutUrl={checkoutPageUrl}
-          onRequestClose={() => {
-            setShowPaymentWebView(false);
-            setCheckoutPageUrl(null);
-            setExpectedRetUrl(null);
-            setIsPaying(false);
-          }}
-          onNavigationStateChange={(navState: any) => {
-            const allowed = urlConverter(navState.url);
-            if (allowed) {
-              handleWebViewNavigationStateChange(navState);
-            }
-          }}
-          urlConverter={urlConverter}
         />
       </FixedBottomCTAProvider>
     </View>
