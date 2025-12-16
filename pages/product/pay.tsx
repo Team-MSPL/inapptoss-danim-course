@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { View, Alert, StyleSheet } from "react-native";
 import { createRoute, useNavigation } from "@granite-js/react-native";
 import { FixedBottomCTAProvider, Text, colors } from "@toss-design-system/react-native";
@@ -227,9 +227,12 @@ function ProductPay() {
 
     try {
       const { payload, amount, makeBody } = preparePayment();
+      // makeBody가 토스 API에 전송할 바디입니다.
+      // 숫자 필드(amount 등)이 숫자 타입으로 들어가도록 preparePayment에서 보장합니다.
       setPendingBookingPayload(payload);
       setPendingAmount(amount);
 
+      // userKey는 useAuthStore에서 가져옵니다.
       const result = await startTossPayment(makeBody, userKey);
 
       if (!result?.success) {
@@ -296,7 +299,7 @@ function ProductPay() {
       setIsPaying(false);
       return;
     }
-  }, [preparePayment, startTossPayment, userKey, run, refundTossPayment, isPaying]);
+  }, [preparePayment, userKey, run, refundTossPayment, isPaying]);
 
   const requiredMap = useMemo(() => {
     const map: Record<number, Array<any>> = {};

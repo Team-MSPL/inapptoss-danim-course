@@ -379,7 +379,6 @@ export default function ProductSections(props: any) {
         </View>
       </CollapsibleSection>
 
-      <View style={{ height: 12, backgroundColor: colors.grey100, marginTop: 8 }} />
     </>
   );
 }
