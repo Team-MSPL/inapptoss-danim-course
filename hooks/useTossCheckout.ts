@@ -20,21 +20,8 @@ const EXECUTE_PATH = "/apps-in-toss/execute-payment";
 const STATUS_PATH = "/apps-in-toss/get-payment-status";
 const REFUND_PATH = "/apps-in-toss/refund-payment";
 
-function maskKey(key: any): string | null {
-  if (key === null || key === undefined) return null;
-  if (typeof key !== "string") {
-    try {
-      key = String(key);
-    } catch {
-      return null;
-    }
-  }
-  if (key.length <= 8) return `${key.slice(0, 2)}****${key.slice(-2)}`;
-  return `${key.slice(0, 4)}...${key.slice(-4)}`;
-}
-
 export async function startTossPayment(makeBody: any, tossUserKey: string | null): Promise<StartTossPaymentResult> {
-  console.debug("[useTossCheckout] startTossPayment start", { path: MAKE_PATH, makeBody, tossUserKey: maskKey(tossUserKey) });
+  console.debug("[useTossCheckout] startTossPayment start", { path: MAKE_PATH, makeBody, tossUserKey: tossUserKey });
   if (!tossUserKey) {
     console.error("[useTossCheckout] startTossPayment missing tossUserKey");
     return { success: false, errorMessage: "missing_user_key" };
@@ -65,7 +52,7 @@ export async function startTossPayment(makeBody: any, tossUserKey: string | null
 }
 
 export async function executeTossPayment(payToken: string, tossUserKey: string | null): Promise<ExecuteTossPaymentResult> {
-  console.debug("[useTossCheckout] executeTossPayment start", { path: EXECUTE_PATH, payToken: payToken ? `${payToken.slice(0,6)}...` : null, tossUserKey: maskKey(tossUserKey) });
+  console.debug("[useTossCheckout] executeTossPayment start", { path: EXECUTE_PATH, payToken: payToken ? `${payToken.slice(0,6)}...` : null, tossUserKey: tossUserKey });
   if (!tossUserKey) {
     console.error("[useTossCheckout] executeTossPayment missing tossUserKey");
     return { success: false, errorMessage: "missing_user_key" };
@@ -93,7 +80,7 @@ export async function executeTossPayment(payToken: string, tossUserKey: string |
 }
 
 export async function getTossPaymentStatus(orderNo: string, tossUserKey: string | null): Promise<ExecuteTossPaymentResult> {
-  console.debug("[useTossCheckout] getTossPaymentStatus start", { path: STATUS_PATH, orderNo, tossUserKey: maskKey(tossUserKey) });
+  console.debug("[useTossCheckout] getTossPaymentStatus start", { path: STATUS_PATH, orderNo, tossUserKey: tossUserKey });
   if (!tossUserKey) {
     console.error("[useTossCheckout] getTossPaymentStatus missing tossUserKey");
     return { success: false, errorMessage: "missing_user_key" };
@@ -120,7 +107,7 @@ export async function getTossPaymentStatus(orderNo: string, tossUserKey: string 
 }
 
 export async function refundTossPayment(payToken: string | null, amount: number, tossUserKey: string | null) {
-  console.debug("[useTossCheckout] refundTossPayment start", { path: REFUND_PATH, payToken: payToken ? `${payToken.slice(0,6)}...` : null, amount, tossUserKey: maskKey(tossUserKey) });
+  console.debug("[useTossCheckout] refundTossPayment start", { path: REFUND_PATH, payToken: payToken ? `${payToken.slice(0,6)}...` : null, amount, tossUserKey: tossUserKey });
   if (!tossUserKey) {
     console.error("[useTossCheckout] refundTossPayment missing tossUserKey");
     return { success: false, error: "missing_user_key" };

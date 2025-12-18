@@ -146,19 +146,6 @@ function ProductPay() {
   const userKey = useAuthStore.getState().userKey;
   const TOSS_PAY_API_KEY = import.meta.env.TOSS_PAY_API_KEY;
 
-  const refundTossPayment = useCallback(async (payToken: string | null, amount: number) => {
-    if (!payToken) return { success: false, error: "no_paytoken" };
-    const url = "https://pay.toss.im/api/v2/refunds";
-    const refundNo = `refund-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-    const body: any = { apiKey: TOSS_PAY_API_KEY, payToken, refundNo, amount, amountTaxFree: 0 };
-    try {
-      const resp = await axios.post(url, body, { headers: { "Content-Type": "application/json" }, timeout: 15000 });
-      return { success: true, data: resp.data };
-    } catch (err: any) {
-      return { success: false, error: err?.response?.data ?? err?.message ?? err };
-    }
-  }, [TOSS_PAY_API_KEY]);
-
   const preparePayment = useCallback(() => {
     const currentBuyerEmail = useBookingStore.getState().buyer_Email;
     const emailValue = String(currentBuyerEmail ?? "").trim();
