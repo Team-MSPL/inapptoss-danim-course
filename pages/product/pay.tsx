@@ -21,6 +21,8 @@ import * as Traffic from '../../components/product/traffic';
 import ProductSections from "../../components/product/ProductSections";
 import PaymentFooter from "../../components/product/PaymentFooter";
 import { startTossPayment } from "../../hooks/useTossCheckout";
+import axiosAuth from "../../redux/api";
+import {TossPay} from "@apps-in-toss/framework";
 
 export const Route = createRoute("/product/pay", {
   validateParams: (params) => params,
@@ -226,29 +228,70 @@ function ProductPay() {
     setIsPaying(true);
 
     try {
-      const { payload, amount, makeBody } = preparePayment();
-      // makeBody가 토스 API에 전송할 바디입니다.
-      // 숫자 필드(amount 등)이 숫자 타입으로 들어가도록 preparePayment에서 보장합니다.
+      const { payload, amount, makeBody, orderNo } = preparePayment();
       setPendingBookingPayload(payload);
       setPendingAmount(amount);
 
-      // userKey는 useAuthStore에서 가져옵니다.
-      const result = await startTossPayment(makeBody, userKey);
-
-      if (!result?.success) {
-        Alert.alert("결제 실패", result?.errorMessage ?? "결제 시작에 실패했습니다.");
+      const makeResult = await startTossPayment(makeBody, userKey);
+      if (!makeResult?.success) {
+        Alert.alert("결제 실패", makeResult?.errorMessage ?? "결제 생성에 실패했습니다.");
         setIsPaying(false);
         return;
       }
 
-      const payToken = result.payToken ?? null;
-      if (payToken) setPendingPayToken(payToken);
+      const payToken = makeResult.payToken ?? null;
+      const returnedOrderNo = makeResult.orderNo ?? orderNo ?? null;
 
+      // 서버에서 생성된 merchant orderNo를 payload에 보관 (추적용)
+      if (!payload.partner_order_no) payload.partner_order_no = String(returnedOrderNo ?? orderNo);
+
+      if (!payToken) {
+        Alert.alert("결제 실패", "payToken을 받지 못했습니다.");
+        setIsPaying(false);
+        return;
+      }
+
+      setPendingPayToken(payToken);
+
+      // 결제 인증(UI)
+      const checkoutResult = await TossPay.checkoutPayment({ payToken });
+      if (!checkoutResult?.success) {
+        Alert.alert("결제 취소", "결제가 취소되었거나 인증에 실패했습니다.");
+        setIsPaying(false);
+        return;
+      }
+
+      // 인증 성공 -> 서버 execute 호출
+      try {
+        const execResp = await axiosAuth.post("/apps-in-toss/execute-payment", {
+          payToken,
+          tossUserKey: userKey,
+          orderNo: returnedOrderNo ?? orderNo,
+        });
+
+        const execData = execResp?.data ?? null;
+        // exec 응답 체크: 필요에 따라 성공 판별 로직을 조정하세요
+        const execOk = execResp.status >= 200 && execResp.status < 300;
+        if (!execOk) {
+          console.error("[onPay] execute-payment failed", execResp.status, execData);
+          Alert.alert("결제 실행 실패", "결제 실행 중 오류가 발생했습니다.");
+          setIsPaying(false);
+          return;
+        }
+      } catch (execErr: any) {
+        console.error("[onPay] execute-payment exception", execErr?.response?.data ?? execErr?.message ?? execErr);
+        Alert.alert("결제 실행 오류", "결제 실행 중 오류가 발생했습니다.");
+        setIsPaying(false);
+        return;
+      }
+
+      // execute 성공 시 예약 진행
       try {
         const runResult = await run(payload);
+
         let bookingAllSucceeded = true;
         if (Array.isArray((runResult as any).results)) {
-          for (const r of (runResult as any).results) {
+          for (const r of (runResult as any).results as any[]) {
             const br = r?.bookingResponse;
             const ok = !!(br?.order_no ?? br?.orderNo ?? (br?.data && br.data.order_no));
             if (!ok) { bookingAllSucceeded = false; break; }
@@ -260,29 +303,51 @@ function ProductPay() {
 
         if (bookingAllSucceeded) {
           Alert.alert("예약 및 결제 성공", "결제 및 예약이 정상적으로 처리되었습니다.");
-          setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
+          setPendingBookingPayload(null);
+          setPendingPayToken(null);
+          setPendingAmount(null);
+          setIsPaying(false);
           navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-success" }] });
           return;
-        } else {
-          const refundRes = await refundTossPayment(payToken, amount);
-          if (refundRes.success) {
-            Alert.alert("예약 실패 - 환불 완료", "예약 처리에 실패하여 결제 금액을 환불했습니다.");
-          } else {
-            Alert.alert("예약 실패 - 환불 실패", `예약 처리에 실패했습니다. 환불도 실패했습니다. 관리자에게 문의해주세요. (${String(refundRes.error)})`);
-          }
-          setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
-          navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
-          return;
         }
-      } catch (bookingErr: any) {
-        const refundRes = await refundTossPayment(payToken, amount);
-        if (refundRes.success) {
-          Alert.alert("예약 오류 및 환불 완료", "예약 처리 중 오류가 발생하여 결제 금액을 환불했습니다.");
-        } else {
-          Alert.alert("예약 오류 - 환불 실패", `예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요. (${String(refundRes.error)})`);
+
+        // 예약 실패 -> 환불 요청
+        try {
+          const refundResp = await axiosAuth.post("/apps-in-toss/refund-payment", {
+            payToken,
+            amount,
+            tossUserKey: userKey,
+          });
+          const refundData = refundResp?.data ?? null;
+          console.warn("[onPay] booking failed, refundResp:", refundData);
+          Alert.alert("예약 실패 - 환불 처리", "예약 처리에 실패하여 환불을 시도했습니다.");
+        } catch (refundErr: any) {
+          console.error("[onPay] refund failed", refundErr?.response?.data ?? refundErr?.message ?? refundErr);
+          Alert.alert("예약 실패 - 환불 실패", "예약 처리에 실패했고, 환불도 실패했습니다. 관리자에게 문의하세요.");
         }
-        setPendingBookingPayload(null); setPendingPayToken(null); setPendingAmount(null); setIsPaying(false);
+
+        setPendingBookingPayload(null);
+        setPendingPayToken(null);
+        setPendingAmount(null);
+        setIsPaying(false);
         navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
+        return;
+      } catch (bookingErr: any) {
+        console.error("[onPay] booking.run threw:", bookingErr);
+        // 예약 중 오류 -> 환불 시도
+        try {
+          await axiosAuth.post("/apps-in-toss/refund-payment", { payToken, amount, tossUserKey: userKey });
+          Alert.alert("예약 오류 및 환불 완료", "예약 처리 중 오류가 발생하여 결제 금액을 환불했습니다.");
+        } catch (refundErr: any) {
+          console.error("[onPay] refund after booking error failed", refundErr?.response?.data ?? refundErr?.message ?? refundErr);
+          Alert.alert("예약 오류 - 환불 실패", "예약 처리 중 오류가 발생했고, 환불에도 실패했습니다. 관리자에게 문의하세요.");
+        } finally {
+          setPendingBookingPayload(null);
+          setPendingPayToken(null);
+          setPendingAmount(null);
+          setIsPaying(false);
+          navigation.reset({ index: 1, routes: [{ name: `/${import.meta.env.APP_START_MODE}` }, { name: "/product/pay-fail" }] });
+        }
         return;
       }
     } catch (err: any) {
@@ -294,12 +359,12 @@ function ProductPay() {
       else if (code === "INVALID_AMOUNT") Alert.alert("결제 오류", "결제 금액이 올바르지 않습니다.");
       else {
         console.error("[ProductPay][onPay] unexpected error:", err);
-        Alert.alert("결제 오류", "결제 준비 중 오류가 발생했습니다. 콘솔을 확인하세요.");
+        Alert.alert("결제 오류", "결제 처리 중 오류가 발생했습니다. 콘솔을 확인하세요.");
       }
       setIsPaying(false);
       return;
     }
-  }, [preparePayment, userKey, run, refundTossPayment, isPaying]);
+  }, [preparePayment, startTossPayment, userKey, run, isPaying, navigation]);
 
   const requiredMap = useMemo(() => {
     const map: Record<number, Array<any>> = {};
