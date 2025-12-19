@@ -584,6 +584,9 @@ export default function ProductGoodProduct() {
   };
 
   const goReservation = () => {
+    navigation.goBack();
+    return;
+
     if (!selectedPkgNo) {
       return;
     }
@@ -785,103 +788,103 @@ export default function ProductGoodProduct() {
 
             <View style={{backgroundColor: colors.grey100, height: 18, width: '100%'}}/>
 
-            <View style={{ padding: 24 }}>
-              <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>
-                옵션 선택
-              </Text>
-              {pkgList.map((pkg, idx) => {
-                const isSoldOut = !(pkg.sale_s_date && pkg.sale_e_date);
-                const isSelected = selectedPkgNo === pkg.pkg_no && !isSoldOut;
+            {/*<View style={{ padding: 24 }}>*/}
+            {/*  <Text typography="t4" fontWeight="bold" style={{ marginBottom: 18 }}>*/}
+            {/*    옵션 선택*/}
+            {/*  </Text>*/}
+            {/*  {pkgList.map((pkg, idx) => {*/}
+            {/*    const isSoldOut = !(pkg.sale_s_date && pkg.sale_e_date);*/}
+            {/*    const isSelected = selectedPkgNo === pkg.pkg_no && !isSoldOut;*/}
 
-                return (
-                  <View key={pkg.pkg_no} style={{ marginBottom: 16 }}>
-                    <TouchableOpacity
-                      onPress={() => onSelectPkg(pkg.pkg_no, isSoldOut)}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: isSoldOut ? colors.grey200 : (isSelected ? colors.blue500 : colors.grey200),
-                        borderRadius: 12,
-                        backgroundColor: isSoldOut ? "#fff" : (isSelected ? colors.blue50 : "#fafbfc"),
-                        padding: 18,
-                        opacity: isSoldOut ? 0.7 : 1,
-                      }}
-                      activeOpacity={isSoldOut ? 1 : 0.8}
-                    >
-                      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                        <PlanLabel index={idx} pkg_name={pkg.pkg_name} />
-                      </View>
+            {/*    return (*/}
+            {/*      <View key={pkg.pkg_no} style={{ marginBottom: 16 }}>*/}
+            {/*        <TouchableOpacity*/}
+            {/*          onPress={() => onSelectPkg(pkg.pkg_no, isSoldOut)}*/}
+            {/*          style={{*/}
+            {/*            borderWidth: 1,*/}
+            {/*            borderColor: isSoldOut ? colors.grey200 : (isSelected ? colors.blue500 : colors.grey200),*/}
+            {/*            borderRadius: 12,*/}
+            {/*            backgroundColor: isSoldOut ? "#fff" : (isSelected ? colors.blue50 : "#fafbfc"),*/}
+            {/*            padding: 18,*/}
+            {/*            opacity: isSoldOut ? 0.7 : 1,*/}
+            {/*          }}*/}
+            {/*          activeOpacity={isSoldOut ? 1 : 0.8}*/}
+            {/*        >*/}
+            {/*          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>*/}
+            {/*            <PlanLabel index={idx} pkg_name={pkg.pkg_name} />*/}
+            {/*          </View>*/}
 
-                      <View style={{ marginTop: 10 }}>
-                        {getRefundTag(pkg) && (
-                          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-                            <Icon name="icon-check" size={24} color={colors.blue500} />
-                            <Text typography="t6" color={colors.grey800} style={{ marginLeft: 8 }}>{getRefundTag(pkg)}</Text>
-                          </View>
-                        )}
+            {/*          <View style={{ marginTop: 10 }}>*/}
+            {/*            {getRefundTag(pkg) && (*/}
+            {/*              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>*/}
+            {/*                <Icon name="icon-check" size={24} color={colors.blue500} />*/}
+            {/*                <Text typography="t6" color={colors.grey800} style={{ marginLeft: 8 }}>{getRefundTag(pkg)}</Text>*/}
+            {/*              </View>*/}
+            {/*            )}*/}
 
-                        {earliestBookingText(pkg) && (
-                          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                            <Icon name="icon-calendar-clock" size={24} />
-                            <Text typography="t6" color={colors.grey800} style={{ marginLeft: 8 }}>{earliestBookingText(pkg)}</Text>
-                          </View>
-                        )}
+            {/*            {earliestBookingText(pkg) && (*/}
+            {/*              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>*/}
+            {/*                <Icon name="icon-calendar-clock" size={24} />*/}
+            {/*                <Text typography="t6" color={colors.grey800} style={{ marginLeft: 8 }}>{earliestBookingText(pkg)}</Text>*/}
+            {/*              </View>*/}
+            {/*            )}*/}
 
-                        {firstNLinesFromPackageDesc(pkg, 3).length > 0 && (
-                          <View style={{ marginTop: 6 }}>
-                            {firstNLinesFromPackageDesc(pkg, 3).map((line, i) => (
-                              <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>
-                                <Text typography="t6" color={colors.grey800} style={{ marginRight: 8 }}>•</Text>
-                                <Text typography="t6" color={colors.grey800} style={{ flex: 1 }}>{line}</Text>
-                              </View>
-                            ))}
-                          </View>
-                        )}
+            {/*            {firstNLinesFromPackageDesc(pkg, 3).length > 0 && (*/}
+            {/*              <View style={{ marginTop: 6 }}>*/}
+            {/*                {firstNLinesFromPackageDesc(pkg, 3).map((line, i) => (*/}
+            {/*                  <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 }}>*/}
+            {/*                    <Text typography="t6" color={colors.grey800} style={{ marginRight: 8 }}>•</Text>*/}
+            {/*                    <Text typography="t6" color={colors.grey800} style={{ flex: 1 }}>{line}</Text>*/}
+            {/*                  </View>*/}
+            {/*                ))}*/}
+            {/*              </View>*/}
+            {/*            )}*/}
 
-                        <View style={{ marginTop: 8 }}>
-                          <Pressable onPress={() => openPkgModal(pkg)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                            <Text typography="t6" color={colors.blue600} fontWeight="bold">설명 보기</Text>
-                          </Pressable>
-                        </View>
-                      </View>
+            {/*            <View style={{ marginTop: 8 }}>*/}
+            {/*              <Pressable onPress={() => openPkgModal(pkg)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>*/}
+            {/*                <Text typography="t6" color={colors.blue600} fontWeight="bold">설명 보기</Text>*/}
+            {/*              </Pressable>*/}
+            {/*            </View>*/}
+            {/*          </View>*/}
 
-                      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 8 }}>
-                        <View style={{ alignItems: 'flex-start' }}>
-                          {getPriceInfo(pkg).hasDiscount ? (
-                            <>
-                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text typography="t6" color={colors.grey400} style={{ textDecorationLine: 'line-through', marginRight: 8 }}>
-                                  {formatPrice(getPriceInfo(pkg).original)}원
-                                </Text>
-                                <Text typography="t6" color={'#3b5afe'} fontWeight="semibold">
-                                  {discountAmount >= 10000
-                                    ? `${formatPrice(discountAmount)}원 할인`
-                                    : `${getPriceInfo(pkg).discountPercent}% 할인`}
-                                </Text>
-                              </View>
-                              <Text typography="t5" fontWeight="bold" style={{ marginTop: 6 }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>
-                            </>
-                          ) : (
-                            <Text typography="t5" fontWeight="bold">{formatPrice(getPriceInfo(pkg).display)}원</Text>
-                          )}
-                        </View>
+            {/*          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 8 }}>*/}
+            {/*            <View style={{ alignItems: 'flex-start' }}>*/}
+            {/*              {getPriceInfo(pkg).hasDiscount ? (*/}
+            {/*                <>*/}
+            {/*                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>*/}
+            {/*                    <Text typography="t6" color={colors.grey400} style={{ textDecorationLine: 'line-through', marginRight: 8 }}>*/}
+            {/*                      {formatPrice(getPriceInfo(pkg).original)}원*/}
+            {/*                    </Text>*/}
+            {/*                    <Text typography="t6" color={'#3b5afe'} fontWeight="semibold">*/}
+            {/*                      {discountAmount >= 10000*/}
+            {/*                        ? `${formatPrice(discountAmount)}원 할인`*/}
+            {/*                        : `${getPriceInfo(pkg).discountPercent}% 할인`}*/}
+            {/*                    </Text>*/}
+            {/*                  </View>*/}
+            {/*                  <Text typography="t5" fontWeight="bold" style={{ marginTop: 6 }}>{formatPrice(getPriceInfo(pkg).display)}원</Text>*/}
+            {/*                </>*/}
+            {/*              ) : (*/}
+            {/*                <Text typography="t5" fontWeight="bold">{formatPrice(getPriceInfo(pkg).display)}원</Text>*/}
+            {/*              )}*/}
+            {/*            </View>*/}
 
-                        <View style={{ flexDirection: "row", alignItems: "center" }}>
-                          <Button
-                            type={isSoldOut ? 'dark' : 'primary'}
-                            size="medium"
-                            style="fill"
-                            onPress={() => { if (!isSoldOut) onSelectPkg(pkg.pkg_no, isSoldOut); }}
-                            disabled={isSoldOut}
-                          >
-                            {isSoldOut ? '매진' : (selectedPkgNo === pkg.pkg_no ? '선택됨' : '선택하기')}
-                          </Button>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
-            </View>
+            {/*            <View style={{ flexDirection: "row", alignItems: "center" }}>*/}
+            {/*              <Button*/}
+            {/*                type={isSoldOut ? 'dark' : 'primary'}*/}
+            {/*                size="medium"*/}
+            {/*                style="fill"*/}
+            {/*                onPress={() => { if (!isSoldOut) onSelectPkg(pkg.pkg_no, isSoldOut); }}*/}
+            {/*                disabled={isSoldOut}*/}
+            {/*              >*/}
+            {/*                {isSoldOut ? '매진' : (selectedPkgNo === pkg.pkg_no ? '선택됨' : '선택하기')}*/}
+            {/*              </Button>*/}
+            {/*            </View>*/}
+            {/*          </View>*/}
+            {/*        </TouchableOpacity>*/}
+            {/*      </View>*/}
+            {/*    );*/}
+            {/*  })}*/}
+            {/*</View>*/}
 
             <View style={{ height: 12, backgroundColor: colors.grey100, width: '100%' }} />
 
@@ -978,7 +981,7 @@ export default function ProductGoodProduct() {
         )}
 
         <FixedBottomCTA onPress={goReservation}>
-          {reservationLoading ? '로딩 중...' : '예약하기'}
+          {reservationLoading ? '뒤로 가기' : '뒤로 가기'}
         </FixedBottomCTA>
 
         <Modal visible={pkgModalVisible} animationType="fade" transparent onRequestClose={closePkgModal}>
