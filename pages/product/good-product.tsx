@@ -584,7 +584,7 @@ export default function ProductGoodProduct() {
   };
 
   const goReservation = () => {
-    navigation.goBack();
+    Alert.alert('상품 판매 중지', '현재 상품 판매가 중지되었습니다.');
     return;
 
     if (!selectedPkgNo) {
@@ -981,7 +981,7 @@ export default function ProductGoodProduct() {
         )}
 
         <FixedBottomCTA onPress={goReservation}>
-          {reservationLoading ? '뒤로 가기' : '뒤로 가기'}
+          {reservationLoading ? '로딩 중...' : '예약하기'}
         </FixedBottomCTA>
 
         <Modal visible={pkgModalVisible} animationType="fade" transparent onRequestClose={closePkgModal}>
